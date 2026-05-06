@@ -25,6 +25,7 @@ import analyticsRoutes from './routes/analytics.js';
 import reservationsRoutes from './routes/reservations.js';
 import reportsRoutes from './routes/reports.js';
 import sitemapRoutes from './routes/sitemap.js';
+import merchantRoutes from './routes/merchant.js';
 
 const app = express();
 console.log('DEBUG: Express app initialized');
@@ -194,8 +195,9 @@ app.get('/compartir/item/:id', async (req, res) => {
     }
 });
 
-// ─── Sitemap ───────────────────────────────────────────────────────────────────
+// ─── Sitemap & Merchant Feed ───────────────────────────────────────────────────
 app.use('/sitemap.xml', sitemapRoutes);
+app.use('/api/merchant', merchantRoutes);
 
 // ─── Health Check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
