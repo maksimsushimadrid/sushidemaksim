@@ -198,7 +198,15 @@ export default function Footer() {
                         </motion.div>
                     </div>
 
-                    <span className="order-1 md:order-2">TODOS LOS DERECHOS RESERVADOS</span>
+                    <div className="flex flex-wrap items-center justify-center gap-6 order-1 md:order-2">
+                        <Link
+                            to="/refund-policy"
+                            className="hover:text-orange-600 transition-colors"
+                        >
+                            Política de Devoluciones
+                        </Link>
+                        <span>TODOS LOS DERECHOS RESERVADOS</span>
+                    </div>
                 </div>
             </div>
         </footer>
