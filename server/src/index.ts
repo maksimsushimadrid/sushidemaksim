@@ -197,6 +197,7 @@ app.get('/compartir/item/:id', async (req, res) => {
 
 // ─── Sitemap & Merchant Feed ───────────────────────────────────────────────────
 app.use('/sitemap.xml', sitemapRoutes);
+app.use('/merchant-feed.xml', merchantRoutes);
 app.use('/api/merchant', merchantRoutes);
 
 // ─── Health Check ──────────────────────────────────────────────────────────────

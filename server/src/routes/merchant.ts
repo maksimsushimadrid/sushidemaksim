@@ -6,11 +6,11 @@ import { asyncHandler } from '../middleware/asyncHandler.js';
 const router = Router();
 
 /**
- * GET /api/merchant/feed.xml
+ * GET /api/merchant/feed.xml or /merchant-feed.xml
  * Generates a Google Shopping XML feed (RSS 2.0) for menu items.
  */
 router.get(
-    '/feed.xml',
+    ['/', '/feed.xml'],
     asyncHandler(async (_req: Request, res: Response) => {
         try {
             const baseUrl = config.frontendUrl || 'https://www.sushidemaksim.com';
