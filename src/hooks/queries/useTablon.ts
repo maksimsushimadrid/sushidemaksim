@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { api } from '../../utils/api';
+import { useAuth } from '../useAuth';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -24,6 +25,7 @@ export interface TablonPost {
     whatsappPhone: string | null;
     images: string[];
     isApproved: boolean;
+    moderationStatus: 'pending' | 'approved' | 'rejected';
     createdAt: string;
     updatedAt: string;
     commentCount: number;
@@ -70,8 +72,8 @@ export interface TablonFilters {
 
 const TABLON_KEYS = {
     all: ['tablon'] as const,
-    posts: (filters: TablonFilters) => ['tablon', 'posts', filters] as const,
-    post: (id: string) => ['tablon', 'post', id] as const,
+    posts: (filters: TablonFilters, auth: boolean) => ['tablon', 'posts', filters, auth] as const,
+    post: (id: string, auth: boolean) => ['tablon', 'post', id, auth] as const,
     categories: ['tablon', 'categories'] as const,
     pending: ['tablon', 'pending'] as const,
 };
@@ -80,6 +82,7 @@ const TABLON_KEYS = {
 
 /** Fetch paginated & filtered posts */
 export const useTablonPosts = (filters: TablonFilters = {}) => {
+    const { isAuthenticated } = useAuth();
     const params = new URLSearchParams();
     if (filters.page) params.set('page', String(filters.page));
     if (filters.limit) params.set('limit', String(filters.limit));
@@ -90,7 +93,7 @@ export const useTablonPosts = (filters: TablonFilters = {}) => {
     const qs = params.toString();
 
     return useQuery<TablonPostsResponse>({
-        queryKey: TABLON_KEYS.posts(filters),
+        queryKey: TABLON_KEYS.posts(filters, isAuthenticated),
         queryFn: () => api.get(`/tablon${qs ? `?${qs}` : ''}`),
         staleTime: 2 * 60 * 1000,
         placeholderData: keepPreviousData,
@@ -99,8 +102,9 @@ export const useTablonPosts = (filters: TablonFilters = {}) => {
 
 /** Fetch a single post with comments */
 export const useTablonPost = (id: string) => {
+    const { isAuthenticated } = useAuth();
     return useQuery<TablonPostDetailResponse>({
-        queryKey: TABLON_KEYS.post(id),
+        queryKey: TABLON_KEYS.post(id, isAuthenticated),
         queryFn: () => api.get(`/tablon/${id}`),
         enabled: !!id,
     });
@@ -189,7 +193,7 @@ export const useCreateTablonComment = () => {
             parentId?: string | null;
         }) => api.post(`/tablon/${postId}/comments`, { message, parentId }),
         onSuccess: (_data, variables) => {
-            queryClient.invalidateQueries({ queryKey: TABLON_KEYS.post(variables.postId) });
+            queryClient.invalidateQueries({ queryKey: ['tablon', 'post', variables.postId] });
             queryClient.invalidateQueries({ queryKey: TABLON_KEYS.all });
         },
     });
@@ -202,7 +206,7 @@ export const useToggleReaction = () => {
         mutationFn: ({ postId, reactionType }: { postId: string; reactionType: string }) =>
             api.post(`/tablon/${postId}/react`, { reactionType }),
         onSuccess: (_data, variables) => {
-            queryClient.invalidateQueries({ queryKey: TABLON_KEYS.post(variables.postId) });
+            queryClient.invalidateQueries({ queryKey: ['tablon', 'post', variables.postId] });
             queryClient.invalidateQueries({ queryKey: TABLON_KEYS.all });
         },
     });

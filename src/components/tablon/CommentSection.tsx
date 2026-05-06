@@ -4,6 +4,7 @@ import type { TablonComment } from '../../hooks/queries/useTablon';
 import { useCreateTablonComment, useDeleteTablonComment } from '../../hooks/queries/useTablon';
 import { useAuth } from '../../hooks/useAuth';
 import { TranslateMessage } from './TranslateMessage';
+import { ConfirmModal } from '../common/ConfirmModal';
 
 interface CommentSectionProps {
     postId: string;
@@ -23,6 +24,7 @@ export function CommentSection({
     const deleteComment = useDeleteTablonComment();
     const [message, setMessage] = useState('');
     const [replyTo, setReplyTo] = useState<string | null>(null);
+    const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
     const replyingToName = useMemo(() => {
@@ -77,13 +79,16 @@ export function CommentSection({
         }, 100);
     }, []);
 
-    const handleDelete = useCallback(
-        async (commentId: string) => {
-            if (!confirm('¿Eliminar este comentario?')) return;
-            await deleteComment.mutateAsync(commentId);
-        },
-        [deleteComment]
-    );
+    const handleDelete = useCallback((commentId: string) => {
+        setCommentToDelete(commentId);
+    }, []);
+
+    const confirmDeleteComment = useCallback(async () => {
+        if (!commentToDelete) return;
+        const id = commentToDelete;
+        setCommentToDelete(null);
+        await deleteComment.mutateAsync(id);
+    }, [commentToDelete, deleteComment]);
 
     const isModerator = user?.role === 'moderator' || user?.role === 'admin' || user?.isSuperadmin;
 
@@ -189,6 +194,18 @@ export function CommentSection({
                     ))}
                 </div>
             )}
+
+            {/* Confirm Delete Modal */}
+            <ConfirmModal
+                isOpen={!!commentToDelete}
+                title="¿Eliminar comentario?"
+                message="Tu comentario desaparecerá permanentemente. ¿Estás seguro?"
+                confirmText="Sí, eliminar"
+                cancelText="Cancelar"
+                isDanger={true}
+                onConfirm={confirmDeleteComment}
+                onCancel={() => setCommentToDelete(null)}
+            />
         </div>
     );
 }

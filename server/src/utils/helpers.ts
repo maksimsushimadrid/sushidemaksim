@@ -212,6 +212,7 @@ export function formatTablonPost(
         whatsappPhone: isAuthenticated ? p.whatsapp_phone : null,
         images: p.images || [],
         isApproved: !!p.is_approved,
+        moderationStatus: p.moderation_status || 'pending',
         createdAt: p.created_at,
         updatedAt: p.updated_at,
         commentCount,

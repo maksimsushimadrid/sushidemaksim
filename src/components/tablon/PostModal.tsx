@@ -54,6 +54,7 @@ export function PostModal({ isOpen, onClose, post }: PostModalProps) {
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            (window as any).lenis?.stop();
             setCategoryId(post?.category?.id || '');
             setMessage(post?.message || '');
             setWhatsappPhone(post?.whatsappPhone || user?.phone || '');
@@ -63,10 +64,12 @@ export function PostModal({ isOpen, onClose, post }: PostModalProps) {
             setSuccess(false);
         } else {
             document.body.style.overflow = 'unset';
+            (window as any).lenis?.start();
         }
 
         return () => {
             document.body.style.overflow = 'unset';
+            (window as any).lenis?.start();
         };
     }, [isOpen, post, user?.phone]);
 

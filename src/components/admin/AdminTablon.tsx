@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import {
     useTablonPending,
     useModerateTablonPost,
     useApproveCategory,
 } from '../../hooks/queries/useTablon';
+import { ConfirmModal } from '../common/ConfirmModal';
 import { useQuery } from '@tanstack/react-query';
 import { api } from '../../utils/api';
 import { useToast } from '../../context/ToastContext';
@@ -48,6 +49,7 @@ export default function AdminTablon({ language }: AdminTablonProps) {
     const labels = t[language];
     const [tab, setTab] = useState<'posts' | 'categories'>('posts');
     const [isSyncing, setIsSyncing] = useState(false);
+    const [postToReject, setPostToReject] = useState<string | null>(null);
     const { success, error } = useToast();
 
     const {
@@ -80,6 +82,20 @@ export default function AdminTablon({ language }: AdminTablonProps) {
             setIsSyncing(false);
         }
     };
+
+    const confirmRejectPost = useCallback(async () => {
+        if (!postToReject) return;
+        const id = postToReject;
+        setPostToReject(null);
+        try {
+            await moderatePost.mutateAsync({
+                id: id,
+                approved: false,
+            });
+        } catch (err) {
+            console.error('Error rejecting post:', err);
+        }
+    }, [postToReject, moderatePost]);
 
     const pendingPosts = pendingData?.posts || [];
     const suggestedCategories = suggestedData?.categories || [];
@@ -249,14 +265,7 @@ export default function AdminTablon({ language }: AdminTablonProps) {
                                         ✅ {labels.approve}
                                     </button>
                                     <button
-                                        onClick={() => {
-                                            if (!confirm('¿Rechazar y eliminar esta publicación?'))
-                                                return;
-                                            moderatePost.mutateAsync({
-                                                id: post.id,
-                                                approved: false,
-                                            });
-                                        }}
+                                        onClick={() => setPostToReject(post.id)}
                                         disabled={moderatePost.isPending}
                                         className="flex-1 py-2.5 bg-red-50 text-red-600 rounded-xl text-sm font-bold hover:bg-red-100 disabled:opacity-50 transition-all active:scale-95 border border-red-100"
                                         data-testid={`reject-${post.id}`}
@@ -308,6 +317,18 @@ export default function AdminTablon({ language }: AdminTablonProps) {
                     )}
                 </div>
             )}
+
+            {/* Confirm Reject Modal */}
+            <ConfirmModal
+                isOpen={!!postToReject}
+                title="¿Rechazar publicación?"
+                message="El anuncio se moverá al archivo de rechazados. Podrás volver a revisarlo más tarde si es necesario."
+                confirmText="Sí, rechazar"
+                cancelText="Cancelar"
+                isDanger={true}
+                onConfirm={confirmRejectPost}
+                onCancel={() => setPostToReject(null)}
+            />
         </div>
     );
 }

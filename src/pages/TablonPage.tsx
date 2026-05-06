@@ -79,10 +79,21 @@ export default function TablonPage() {
                 </div>
 
                 {/* Content */}
-                <div className="relative z-10 max-w-6xl mx-auto px-4 pb-20 flex-1 w-full">
+                <div className="relative z-10 max-w-6xl mx-auto px-4 pb-20 flex-1 w-full pt-8 md:pt-12">
+                    {/* Page Title */}
+                    <div className="mb-10 md:mb-14">
+                        <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter uppercase italic">
+                            Tablón
+                            <span className="text-orange-500 not-italic ml-1">.</span>
+                        </h1>
+                        <p className="text-gray-500 text-sm md:text-base mt-2 font-medium max-w-lg">
+                            Anuncios, ofertas y noticias de nuestra comunidad. ¡Comparte y descubre!
+                        </p>
+                    </div>
+
                     {/* Sticky Header for Filters */}
-                    <div className="sticky top-[var(--header-height,64px)] z-30 bg-[#0d0d0d]/95 backdrop-blur-xl -mx-4 px-4 py-4 mb-8 border-b border-white/10 shadow-lg shadow-black/20 md:mx-0 md:rounded-2xl md:border-t">
-                        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div className="sticky top-[var(--header-height,64px)] z-50 bg-[#0d0d0d]/95 backdrop-blur-xl -mx-4 px-4 py-4 mb-8 border-b border-white/10 shadow-lg shadow-black/20 md:mx-0 md:bg-transparent md:backdrop-blur-none md:border-none md:shadow-none md:px-0 md:py-0 md:mb-12">
+                        <div className="flex flex-col gap-6">
                             {!catsLoading && (
                                 <CategoryFilter
                                     categories={categories}
@@ -91,9 +102,9 @@ export default function TablonPage() {
                                 />
                             )}
 
-                            <div className="flex items-center gap-3 w-full md:w-auto">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                 {/* Search */}
-                                <div className="flex-1 max-w-md relative">
+                                <div className="w-full md:max-w-md relative">
                                     <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500">
                                         <Search size={16} />
                                     </span>
@@ -102,7 +113,7 @@ export default function TablonPage() {
                                         placeholder="Buscar..."
                                         value={searchInput}
                                         onChange={e => setSearchInput(e.target.value)}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-orange-500/50 transition-all"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder:text-gray-600 focus:outline-none focus:border-orange-500/50 transition-all shadow-inner"
                                     />
                                     {searchInput && (
                                         <button
@@ -115,7 +126,7 @@ export default function TablonPage() {
                                 </div>
 
                                 {/* Sort */}
-                                <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10 relative h-10 flex-shrink-0">
+                                <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10 relative h-11 flex-shrink-0">
                                     {[
                                         { id: 'newest', icon: Clock },
                                         { id: 'popular', icon: Flame },
@@ -131,7 +142,7 @@ export default function TablonPage() {
                                                         item.id as 'newest' | 'oldest' | 'popular'
                                                     )
                                                 }
-                                                className={`relative p-2 rounded-lg transition-colors duration-300 z-10 ${
+                                                className={`relative px-4 py-2 rounded-lg transition-colors duration-300 z-10 flex items-center gap-2 ${
                                                     isActive
                                                         ? 'text-white'
                                                         : 'text-gray-500 hover:text-gray-300'
@@ -139,6 +150,13 @@ export default function TablonPage() {
                                                 title={item.id}
                                             >
                                                 <Icon size={16} strokeWidth={2.5} />
+                                                <span className="text-[10px] font-bold uppercase tracking-wider hidden lg:block">
+                                                    {item.id === 'newest'
+                                                        ? 'Recientes'
+                                                        : item.id === 'popular'
+                                                          ? 'Populares'
+                                                          : 'Antiguos'}
+                                                </span>
                                                 {isActive && (
                                                     <motion.div
                                                         layoutId="activeTabHeader"

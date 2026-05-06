@@ -8,6 +8,7 @@ import { CommentSection } from '../components/tablon/CommentSection';
 import { PostModal } from '../components/tablon/PostModal';
 import { PostReactions } from '../components/tablon/PostReactions';
 import { TranslateMessage } from '../components/tablon/TranslateMessage';
+import { ConfirmModal } from '../components/common/ConfirmModal';
 import { getCategoryIcon } from '../utils/tablonIcons';
 
 export default function TablonPostPage() {
@@ -19,15 +20,20 @@ export default function TablonPostPage() {
 
     const [showLoginToast, setShowLoginToast] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     const handleLoginPrompt = useCallback(() => {
         setShowLoginToast(true);
         setTimeout(() => setShowLoginToast(false), 3000);
     }, []);
 
-    const handleDelete = useCallback(async () => {
+    const handleDelete = useCallback(() => {
+        setIsDeleteModalOpen(true);
+    }, []);
+
+    const confirmDeletePost = useCallback(async () => {
         if (!id) return;
-        if (!confirm('¿Estás seguro de que quieres eliminar este anuncio?')) return;
+        setIsDeleteModalOpen(false);
         await deletePost.mutateAsync(id);
         navigate('/tablon');
     }, [id, deletePost, navigate]);
@@ -303,6 +309,18 @@ export default function TablonPostPage() {
                         🔒 Inicia sesión para ver el contacto y comentar
                     </div>
                 )}
+
+                {/* Confirm Delete Modal */}
+                <ConfirmModal
+                    isOpen={isDeleteModalOpen}
+                    title="¿Eliminar anuncio?"
+                    message="Esta acción no se puede deshacer. Tu anuncio desaparecerá del tablón permanentemente."
+                    confirmText="Sí, eliminar"
+                    cancelText="No, mantener"
+                    isDanger={true}
+                    onConfirm={confirmDeletePost}
+                    onCancel={() => setIsDeleteModalOpen(false)}
+                />
             </div>
         </>
     );

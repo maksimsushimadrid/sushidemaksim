@@ -39,7 +39,7 @@ router.get(
                  tablon_categories!tablon_posts_category_id_fkey(id, name, emoji)`,
                 { count: 'exact' }
             )
-            .eq('is_approved', true);
+            .eq('moderation_status', 'approved');
 
         if (category) {
             query = query.eq('category_id', category);
@@ -157,7 +157,7 @@ router.get(
                  tablon_categories!tablon_posts_category_id_fkey(id, name, emoji)`
             )
             .eq('id', id)
-            .eq('is_approved', true)
+            .eq('moderation_status', 'approved')
             .single();
 
         if (error || !post) {
@@ -249,7 +249,8 @@ router.post(
                 message: message.trim(),
                 whatsapp_phone: whatsappPhone.trim(),
                 images: images || [],
-                is_approved: false, // Requires moderation
+                is_approved: false, // Legacy field
+                moderation_status: 'pending', // Requires moderation
             })
             .select(
                 `id, user_id, category_id, tags, message, whatsapp_phone, images, is_approved, created_at, updated_at,
@@ -408,7 +409,7 @@ router.post(
             .from('tablon_posts')
             .select('id')
             .eq('id', id)
-            .eq('is_approved', true)
+            .eq('moderation_status', 'approved')
             .single();
 
         if (!post) {
@@ -674,10 +675,10 @@ router.patch(
         if (approved) {
             const { data: post, error } = await supabase
                 .from('tablon_posts')
-                .update({ is_approved: true })
+                .update({ is_approved: true, moderation_status: 'approved' })
                 .eq('id', id)
                 .select(
-                    `id, user_id, category_id, tags, message, whatsapp_phone, images, is_approved, created_at, updated_at,
+                    `id, user_id, category_id, tags, message, whatsapp_phone, images, is_approved, moderation_status, created_at, updated_at,
                      users!tablon_posts_user_id_fkey(id, name, avatar),
                      tablon_categories!tablon_posts_category_id_fkey(id, name, emoji)`
                 )
@@ -692,12 +693,26 @@ router.patch(
                 message: 'Publicación aprobada',
             });
         } else {
-            // Reject = delete
-            const { error } = await supabase.from('tablon_posts').delete().eq('id', id);
+            // Reject = update status to rejected
+            const { data: post, error } = await supabase
+                .from('tablon_posts')
+                .update({ is_approved: false, moderation_status: 'rejected' })
+                .eq('id', id)
+                .select(
+                    `id, user_id, category_id, tags, message, whatsapp_phone, images, is_approved, moderation_status, created_at, updated_at,
+                     users!tablon_posts_user_id_fkey(id, name, avatar),
+                     tablon_categories!tablon_posts_category_id_fkey(id, name, emoji)`
+                )
+                .single();
+
             if (error) {
                 return res.status(500).json({ error: 'Error al rechazar la publicación' });
             }
-            res.json({ success: true, message: 'Publicación rechazada y eliminada' });
+
+            res.json({
+                post: formatTablonPost(post, true, 0, [], req.userId || null),
+                message: 'Publicación rechazada (archivada)',
+            });
         }
     })
 );
@@ -729,7 +744,7 @@ router.get(
                  users!tablon_posts_user_id_fkey(id, name, avatar),
                  tablon_categories!tablon_posts_category_id_fkey(id, name, emoji)`
             )
-            .eq('is_approved', false)
+            .eq('moderation_status', 'pending')
             .order('created_at', { ascending: true });
 
         if (error) {

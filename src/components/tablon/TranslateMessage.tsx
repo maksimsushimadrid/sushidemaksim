@@ -111,21 +111,21 @@ export function TranslateMessage({
 
     const currentLabels = labels[browserLang] || labels.es;
 
-    // Show translate button only if browser is not Spanish (posts are Spanish by default)
-    const shouldShowTranslate = browserLang !== 'es' || (showTranslated && translatedText);
+    // Show translate button always to allow translating any post language
+    const shouldShowTranslate = true;
 
     return (
         <div className={className} onClick={e => e.stopPropagation()}>
             <p className={textClassName}>
                 {showTranslated && translatedText ? translatedText : originalText}
             </p>
-            <div className="flex items-center gap-4 mt-2">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mt-2">
                 {shouldShowTranslate && (
                     <button
                         type="button"
                         onClick={handleTranslate}
                         disabled={isLoading}
-                        className="text-[10px] uppercase tracking-widest text-gray-500 hover:text-orange-400 font-black transition-colors disabled:opacity-50 inline-flex items-center gap-1.5 active:scale-95"
+                        className="text-[10px] uppercase tracking-widest text-gray-500 hover:text-orange-400 font-black transition-colors disabled:opacity-50 inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap"
                     >
                         <Languages size={12} strokeWidth={2.5} />
                         {isLoading
@@ -140,7 +140,7 @@ export function TranslateMessage({
                     <button
                         type="button"
                         onClick={handleShare}
-                        className="text-[10px] uppercase tracking-widest text-gray-500 hover:text-orange-400 font-black transition-colors inline-flex items-center gap-1.5 active:scale-95"
+                        className="text-[10px] uppercase tracking-widest text-gray-500 hover:text-orange-400 font-black transition-colors inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap"
                     >
                         <Share2 size={12} strokeWidth={2.5} />
                         {browserLang === 'ru'
@@ -150,13 +150,13 @@ export function TranslateMessage({
                               : 'Compartir'}
                     </button>
                 )}
-
-                {showTranslated && (
-                    <span className="text-[10px] text-gray-700 italic ml-auto">
-                        {currentLabels.by}
-                    </span>
-                )}
             </div>
+
+            {showTranslated && (
+                <p className="text-[9px] text-gray-700 italic mt-1 animate-fade-in">
+                    {currentLabels.by}
+                </p>
+            )}
         </div>
     );
 }

@@ -22,8 +22,8 @@ export function CategoryFilter({ categories, selectedCategoryId, onSelect }: Cat
                 onClick={() => onSelect(null)}
                 className={`flex-shrink-0 px-4 py-2 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2 border-2 ${
                     selectedCategoryId === null
-                        ? 'bg-orange-500/10 border-orange-500/50 text-orange-500 shadow-lg shadow-orange-500/10'
-                        : 'bg-white/5 border-transparent text-gray-500 hover:bg-white/10 hover:text-gray-300'
+                        ? 'bg-orange-500/10 border-orange-500/50 text-orange-500'
+                        : 'bg-transparent border-white/5 text-gray-500 hover:border-white/20 hover:text-gray-300'
                 }`}
             >
                 <LayoutGrid size={14} strokeWidth={2.5} />
@@ -41,8 +41,8 @@ export function CategoryFilter({ categories, selectedCategoryId, onSelect }: Cat
                         onClick={() => onSelect(isActive ? null : cat.id.toString())}
                         className={`flex-shrink-0 px-4 py-2 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 flex items-center gap-2 border-2 ${
                             isActive
-                                ? 'bg-orange-500/10 border-orange-500/50 text-orange-500 shadow-lg shadow-orange-500/10'
-                                : 'bg-white/5 border-transparent text-gray-500 hover:bg-white/10 hover:text-gray-300'
+                                ? 'bg-orange-500/10 border-orange-500/50 text-orange-500'
+                                : 'bg-transparent border-white/5 text-gray-500 hover:border-white/20 hover:text-gray-300'
                         }`}
                     >
                         <Icon size={14} strokeWidth={2.5} />
