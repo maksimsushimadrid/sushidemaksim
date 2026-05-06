@@ -31,8 +31,10 @@ router.get(
                     const title = escapeXml(item.name);
                     const description = escapeXml(item.description || item.name);
                     const link = `${baseUrl}/menu?category=${item.category}`;
-                    const imageLink = item.image 
-                        ? (item.image.startsWith('http') ? item.image : `${storageBase}/${item.image}`)
+                    const imageLink = item.image
+                        ? item.image.startsWith('http')
+                            ? item.image
+                            : `${storageBase}/${item.image}`
                         : `${baseUrl}/logo.svg`;
                     const price = `${Number(item.price).toFixed(2)} EUR`;
 
@@ -73,14 +75,20 @@ ${xmlItems}
 
 /** Helper to escape XML special characters */
 function escapeXml(unsafe: string): string {
-    return unsafe.replace(/[<>&"']/g, (c) => {
+    return unsafe.replace(/[<>&"']/g, c => {
         switch (c) {
-            case '<': return '&lt;';
-            case '>': return '&gt;';
-            case '&': return '&amp;';
-            case '"': return '&quot;';
-            case "'": return '&apos;';
-            default: return c;
+            case '<':
+                return '&lt;';
+            case '>':
+                return '&gt;';
+            case '&':
+                return '&amp;';
+            case '"':
+                return '&quot;';
+            case "'":
+                return '&apos;';
+            default:
+                return c;
         }
     });
 }
