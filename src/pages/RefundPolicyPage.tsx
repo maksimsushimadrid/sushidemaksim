@@ -21,7 +21,7 @@ export default function RefundPolicyPage() {
                         className="bg-white rounded-3xl p-8 md:p-12 shadow-xl shadow-orange-900/5 border border-orange-100"
                     >
                         <div className="flex items-center gap-4 mb-8">
-                            <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-600">
+                            <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-600 shrink-0">
                                 <RefreshCcw size={28} />
                             </div>
                             <h1 className="text-3xl md:text-4xl font-black text-gray-900 uppercase tracking-tight">
