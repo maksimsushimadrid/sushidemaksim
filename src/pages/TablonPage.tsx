@@ -91,8 +91,8 @@ export default function TablonPage() {
                         </p>
                     </div>
 
-                    {/* Sticky Header for Filters */}
-                    <div className="sticky top-[var(--header-height,64px)] z-50 bg-[#0d0d0d]/95 backdrop-blur-xl -mx-4 px-4 py-4 mb-8 border-b border-white/10 shadow-lg shadow-black/20 md:mx-0 md:bg-transparent md:backdrop-blur-none md:border-none md:shadow-none md:px-0 md:py-0 md:mb-12">
+                    {/* Filters & Search Panel - Now scrolls with content */}
+                    <div className="relative z-20 mb-8 md:mb-12">
                         <div className="flex flex-col gap-6">
                             {!catsLoading && (
                                 <CategoryFilter
