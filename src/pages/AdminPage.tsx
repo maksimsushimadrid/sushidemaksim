@@ -94,8 +94,8 @@ export default function AdminPage() {
     useEffect(() => {
         localStorage.setItem('admin_sound_enabled', String(isSoundEnabled));
     }, [isSoundEnabled]);
-    const pendingReminders = useRef<Map<number, number>>(new Map());
-    const pendingResReminders = useRef<Map<number, number>>(new Map());
+    const pendingReminders = useRef<Map<string, number>>(new Map());
+    const pendingResReminders = useRef<Map<string, number>>(new Map());
     const audioRef = useRef<HTMLAudioElement | null>(null);
     const audioMesaRef = useRef<HTMLAudioElement | null>(null);
     const [audioBlocked, setAudioBlocked] = useState(false);
@@ -305,7 +305,7 @@ export default function AdminPage() {
                     // If it's a new order (INSERT), play alert and set reminder
                     if (payload.eventType === 'INSERT' && isSoundEnabled) {
                         const now = Date.now();
-                        pendingReminders.current.set(newOrder.id, now);
+                        pendingReminders.current.set(String(newOrder.id), now);
                         playAlert(isMesa ? 'mesa' : 'delivery');
                         console.log(
                             `🔔 Realtime: New ${isMesa ? 'Mesa' : 'Delivery'} order ${newOrder.id}. Next reminder in 5m.`
@@ -453,7 +453,8 @@ export default function AdminPage() {
 
             // 1. Check Orders
             currentPendingOrders.forEach((order: any) => {
-                const lastNotified = pendingReminders.current.get(order.id);
+                const orderId = String(order.id);
+                const lastNotified = pendingReminders.current.get(orderId);
                 const isMesa = order.deliveryAddress?.toUpperCase().includes('MESA');
 
                 if (!lastNotified) {
@@ -462,32 +463,33 @@ export default function AdminPage() {
                         if (isMesa) shouldPlayMesa = true;
                         else shouldPlayDelivery = true;
                     }
-                    pendingReminders.current.set(order.id, now);
+                    pendingReminders.current.set(orderId, now);
                 } else if (now - lastNotified >= 300000) {
                     // 5 minutes
                     if (isSoundEnabled) {
                         if (isMesa) shouldPlayMesa = true;
                         else shouldPlayDelivery = true;
-                        console.log(`⏰ Reminder: Order ${order.id} is still pending after 5m.`);
+                        console.log(`⏰ Reminder: Order ${orderId} is still pending after 5m.`);
                     }
-                    pendingReminders.current.set(order.id, now);
+                    pendingReminders.current.set(orderId, now);
                 }
             });
 
             // 2. Check Reservations
             currentPendingRes.forEach((res: any) => {
-                const lastNotified = pendingResReminders.current.get(res.id);
+                const resId = String(res.id);
+                const lastNotified = pendingResReminders.current.get(resId);
                 if (!lastNotified) {
                     if (!isFirstLoad.current && isSoundEnabled) shouldPlayDelivery = true;
-                    pendingResReminders.current.set(res.id, now);
+                    pendingResReminders.current.set(resId, now);
                 } else if (now - lastNotified >= 300000) {
                     if (isSoundEnabled) {
                         shouldPlayDelivery = true;
                         console.log(
-                            `⏰ Reminder: Reservation ${res.id} is still pending after 5m.`
+                            `⏰ Reminder: Reservation ${resId} is still pending after 5m.`
                         );
                     }
-                    pendingResReminders.current.set(res.id, now);
+                    pendingResReminders.current.set(resId, now);
                 }
             });
 
@@ -504,17 +506,28 @@ export default function AdminPage() {
         const heartbeat = setInterval(checkReminders, 10000);
 
         // Cleanup stale reminders
-        const pendingIds = new Set(currentPendingOrders.map((o: any) => o.id));
+        const pendingIds = new Set(currentPendingOrders.map((o: any) => String(o.id)));
         for (const id of pendingReminders.current.keys()) {
             if (!pendingIds.has(id)) pendingReminders.current.delete(id);
         }
 
-        const pendingResIds = new Set(currentPendingRes.map((r: any) => r.id));
+        const pendingResIds = new Set(currentPendingRes.map((r: any) => String(r.id)));
         for (const id of pendingResReminders.current.keys()) {
             if (!pendingResIds.has(id)) pendingResReminders.current.delete(id);
         }
 
-        return () => clearInterval(heartbeat);
+        // Wake up instantly when tab is focused
+        const handleVisibility = () => {
+            if (document.visibilityState === 'visible') {
+                checkReminders();
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibility);
+
+        return () => {
+            clearInterval(heartbeat);
+            document.removeEventListener('visibilitychange', handleVisibility);
+        };
     }, [pendingOrders, pendingResData, isSoundEnabled, playAlert]);
 
     const navLinks = useMemo(
