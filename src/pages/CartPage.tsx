@@ -356,8 +356,14 @@ export default function CartPage() {
                 lon,
                 isDefault: true,
             });
-        } catch (saveErr) {
-            console.error('Failed to save address to profile', saveErr);
+        } catch (saveErr: any) {
+            // Silently handle address limit reached error as it's a common business logic limit
+            const errorMsg = saveErr?.message || '';
+            if (errorMsg.includes('límite máximo de 5')) {
+                console.warn('Address not saved: profile address limit reached (5)');
+            } else {
+                console.error('Failed to save address to profile', saveErr);
+            }
         }
     };
 
