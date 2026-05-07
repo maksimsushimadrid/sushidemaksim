@@ -302,9 +302,12 @@ export default function AdminPage() {
                     const address = newOrder?.delivery_address || newOrder?.deliveryAddress || '';
                     const isMesa = address.toUpperCase().includes('MESA');
 
-                    // If it's a new order (INSERT), play alert
+                    // If it's a new order (INSERT), play alert and set reminder
                     if (payload.eventType === 'INSERT' && isSoundEnabled) {
+                        const now = Date.now();
+                        pendingReminders.current.set(newOrder.id, now);
                         playAlert(isMesa ? 'mesa' : 'delivery');
+                        console.log(`🔔 Realtime: New ${isMesa ? 'Mesa' : 'Delivery'} order ${newOrder.id}. Next reminder in 5m.`);
                     }
 
                     // Refresh relevant data
@@ -435,48 +438,65 @@ export default function AdminPage() {
         const currentPendingRes = pendingResData?.reservations || [];
 
         if (!currentPendingOrders.length && !currentPendingRes.length) {
-            // Cleanup reminders if no pending items
             pendingReminders.current.clear();
             pendingResReminders.current.clear();
             isFirstLoad.current = false;
             return;
         }
 
-        let shouldPlayDelivery = false;
-        let shouldPlayMesa = false;
-        const now = Date.now();
+        const checkReminders = () => {
+            let shouldPlayDelivery = false;
+            let shouldPlayMesa = false;
+            const now = Date.now();
 
-        // 1. Check Orders
-        currentPendingOrders.forEach((order: any) => {
-            const lastNotified = pendingReminders.current.get(order.id);
-            const isMesa = order.deliveryAddress?.toUpperCase().includes('MESA');
+            // 1. Check Orders
+            currentPendingOrders.forEach((order: any) => {
+                const lastNotified = pendingReminders.current.get(order.id);
+                const isMesa = order.deliveryAddress?.toUpperCase().includes('MESA');
 
-            if (!lastNotified) {
-                if (!isFirstLoad.current && isSoundEnabled) {
-                    if (isMesa) shouldPlayMesa = true;
-                    else shouldPlayDelivery = true;
+                if (!lastNotified) {
+                    // First time seeing this order (if not first load)
+                    if (!isFirstLoad.current && isSoundEnabled) {
+                        if (isMesa) shouldPlayMesa = true;
+                        else shouldPlayDelivery = true;
+                    }
+                    pendingReminders.current.set(order.id, now);
+                } else if (now - lastNotified >= 300000) { // 5 minutes
+                    if (isSoundEnabled) {
+                        if (isMesa) shouldPlayMesa = true;
+                        else shouldPlayDelivery = true;
+                        console.log(`⏰ Reminder: Order ${order.id} is still pending after 5m.`);
+                    }
+                    pendingReminders.current.set(order.id, now);
                 }
-                pendingReminders.current.set(order.id, now);
-            } else if (now - lastNotified >= 300000) {
-                if (isSoundEnabled) {
-                    if (isMesa) shouldPlayMesa = true;
-                    else shouldPlayDelivery = true;
-                }
-                pendingReminders.current.set(order.id, now);
-            }
-        });
+            });
 
-        // 2. Check Reservations (Standard Delivery sound or specific later)
-        currentPendingRes.forEach((res: any) => {
-            const lastNotified = pendingResReminders.current.get(res.id);
-            if (!lastNotified) {
-                if (!isFirstLoad.current && isSoundEnabled) shouldPlayDelivery = true;
-                pendingResReminders.current.set(res.id, now);
-            } else if (now - lastNotified >= 300000) {
-                if (isSoundEnabled) shouldPlayDelivery = true;
-                pendingResReminders.current.set(res.id, now);
-            }
-        });
+            // 2. Check Reservations
+            currentPendingRes.forEach((res: any) => {
+                const lastNotified = pendingResReminders.current.get(res.id);
+                if (!lastNotified) {
+                    if (!isFirstLoad.current && isSoundEnabled) shouldPlayDelivery = true;
+                    pendingResReminders.current.set(res.id, now);
+                } else if (now - lastNotified >= 300000) {
+                    if (isSoundEnabled) {
+                        shouldPlayDelivery = true;
+                        console.log(`⏰ Reminder: Reservation ${res.id} is still pending after 5m.`);
+                    }
+                    pendingResReminders.current.set(res.id, now);
+                }
+            });
+
+            if (shouldPlayMesa) playAlert('mesa');
+            else if (shouldPlayDelivery) playAlert('delivery');
+
+            isFirstLoad.current = false;
+        };
+
+        // Run immediately
+        checkReminders();
+
+        // Heartbeat: Check every 10 seconds for reminders
+        const heartbeat = setInterval(checkReminders, 10000);
 
         // Cleanup stale reminders
         const pendingIds = new Set(currentPendingOrders.map((o: any) => o.id));
@@ -489,13 +509,7 @@ export default function AdminPage() {
             if (!pendingResIds.has(id)) pendingResReminders.current.delete(id);
         }
 
-        if (shouldPlayMesa) {
-            playAlert('mesa');
-        } else if (shouldPlayDelivery) {
-            playAlert('delivery');
-        }
-
-        isFirstLoad.current = false;
+        return () => clearInterval(heartbeat);
     }, [pendingOrders, pendingResData, isSoundEnabled, playAlert]);
 
     const navLinks = useMemo(
