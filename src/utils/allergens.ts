@@ -4,8 +4,8 @@ export const ALLERGEN_INFO: Record<
 > = {
     gluten: { icon: '🌾', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-100' },
     trigo: { icon: '🌾', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-100' },
-    soja: { icon: '🫛', bg: 'bg-stone-100', text: 'text-stone-700', border: 'border-stone-200' },
-    soy: { icon: '🫛', bg: 'bg-stone-100', text: 'text-stone-700', border: 'border-stone-200' },
+    soja: { icon: '🌿', bg: 'bg-stone-100', text: 'text-stone-700', border: 'border-stone-200' },
+    soy: { icon: '🌿', bg: 'bg-stone-100', text: 'text-stone-700', border: 'border-stone-200' },
     pescado: { icon: '🐟', bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-100' },
     fish: { icon: '🐟', bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-100' },
     crustaceos: { icon: '🦐', bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-100' },
@@ -39,7 +39,7 @@ export const ALLERGEN_INFO: Record<
         text: 'text-purple-700',
         border: 'border-purple-100',
     },
-    altramuz: { icon: '🫘', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-100' },
+    altramuz: { icon: '🌰', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-100' },
     moluscos: { icon: '🦑', bg: 'bg-slate-50', text: 'text-slate-700', border: 'border-slate-100' },
 };
 
