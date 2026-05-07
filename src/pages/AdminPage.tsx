@@ -307,7 +307,9 @@ export default function AdminPage() {
                         const now = Date.now();
                         pendingReminders.current.set(newOrder.id, now);
                         playAlert(isMesa ? 'mesa' : 'delivery');
-                        console.log(`🔔 Realtime: New ${isMesa ? 'Mesa' : 'Delivery'} order ${newOrder.id}. Next reminder in 5m.`);
+                        console.log(
+                            `🔔 Realtime: New ${isMesa ? 'Mesa' : 'Delivery'} order ${newOrder.id}. Next reminder in 5m.`
+                        );
                     }
 
                     // Refresh relevant data
@@ -461,7 +463,8 @@ export default function AdminPage() {
                         else shouldPlayDelivery = true;
                     }
                     pendingReminders.current.set(order.id, now);
-                } else if (now - lastNotified >= 300000) { // 5 minutes
+                } else if (now - lastNotified >= 300000) {
+                    // 5 minutes
                     if (isSoundEnabled) {
                         if (isMesa) shouldPlayMesa = true;
                         else shouldPlayDelivery = true;
@@ -480,7 +483,9 @@ export default function AdminPage() {
                 } else if (now - lastNotified >= 300000) {
                     if (isSoundEnabled) {
                         shouldPlayDelivery = true;
-                        console.log(`⏰ Reminder: Reservation ${res.id} is still pending after 5m.`);
+                        console.log(
+                            `⏰ Reminder: Reservation ${res.id} is still pending after 5m.`
+                        );
                     }
                     pendingResReminders.current.set(res.id, now);
                 }
