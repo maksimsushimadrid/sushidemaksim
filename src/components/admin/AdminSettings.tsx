@@ -137,7 +137,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                     data.closedMessage || 'Lo sentimos, la cocina está cerrada temporalmente.',
                 ratingTheFork: data.ratingTheFork || 9.1,
                 ratingGoogle: data.ratingGoogle || 4.8,
-                ratingReviewsCount: data.ratingReviewsCount || 1000,
+                ratingReviewsCount: data.ratingReviewsCount || 543,
                 isTodayClosed: data.isTodayClosed === 'true',
                 isPickupOnly: data.isPickupOnly === 'true',
             };

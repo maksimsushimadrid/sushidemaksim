@@ -61,7 +61,7 @@ export default function Schema() {
                     aggregateRating: {
                         '@type': 'AggregateRating',
                         ratingValue: (settings.ratingTheFork || 9.1).toString(),
-                        reviewCount: (settings.ratingReviewsCount || 1000).toString(),
+                        reviewCount: (settings.ratingReviewsCount || 543).toString(),
                         bestRating: '10',
                         worstRating: '1',
                         author: {

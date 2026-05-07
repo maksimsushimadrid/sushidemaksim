@@ -57,7 +57,7 @@ const RatingsBanner = () => {
     // Default values if settings not loaded yet
     const ratingGoogle = settings?.ratingGoogle || 4.8;
     const ratingTheFork = settings?.ratingTheFork || 9.1;
-    const reviewsCount = settings?.ratingReviewsCount || 534;
+    const reviewsCount = settings?.ratingReviewsCount || 543;
 
     return (
         <section className="bg-white py-4 md:py-6 border-y border-gray-100 overflow-hidden">
