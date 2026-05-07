@@ -485,9 +485,7 @@ export default function AdminPage() {
                 } else if (now - lastNotified >= 300000) {
                     if (isSoundEnabled) {
                         shouldPlayDelivery = true;
-                        console.log(
-                            `⏰ Reminder: Reservation ${resId} is still pending after 5m.`
-                        );
+                        console.log(`⏰ Reminder: Reservation ${resId} is still pending after 5m.`);
                     }
                     pendingResReminders.current.set(resId, now);
                 }
