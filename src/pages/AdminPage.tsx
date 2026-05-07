@@ -32,6 +32,7 @@ const AdminDashboard = lazy(() => import('../components/admin/AdminDashboard'));
 const AdminAnalytics = lazy(() => import('../components/admin/AdminAnalytics'));
 const AdminDeliveryZones = lazy(() => import('../components/admin/AdminDeliveryZones'));
 const AdminReservations = lazy(() => import('../components/admin/AdminReservations'));
+import { useTablonPending } from '../hooks/queries/useTablon';
 import { AdminSkeleton, AdminContentSkeleton } from '../components/skeletons/AdminSkeleton';
 import { supabase } from '../utils/supabase';
 import { useQueryClient } from '@tanstack/react-query';
@@ -220,7 +221,7 @@ export default function AdminPage() {
         queryKey: ['admin-pending-monitor'],
         queryFn: () => api.get('/admin/orders?status=pending&limit=100'),
         enabled: isAuthenticated && (user?.role === 'admin' || user?.isSuperadmin),
-        refetchInterval: 1000 * 60 * 30, // 30 min fallback
+        refetchInterval: 1000 * 30, // 30 sec fallback (increased from 30 min)
     });
 
     // Pending Reservations Query
@@ -228,7 +229,18 @@ export default function AdminPage() {
         queryKey: ['admin-pending-res-monitor'],
         queryFn: () => api.get('/admin/reservations?status=pending'),
         enabled: isAuthenticated && (user?.role === 'admin' || user?.isSuperadmin),
-        refetchInterval: 1000 * 60 * 30, // 30 min fallback
+        refetchInterval: 1000 * 30, // 30 sec fallback
+    });
+
+    // Pending Tablon Posts Query
+    const { data: pendingTablonData } = useTablonPending();
+
+    // Pending Tablon Categories Query
+    const { data: pendingTablonCategoriesData } = useQuery({
+        queryKey: ['tablon', 'suggested-categories'],
+        queryFn: () => api.get('/admin/tablon-categories?approved=false'),
+        enabled: isAuthenticated && (user?.role === 'admin' || user?.isSuperadmin),
+        refetchInterval: 1000 * 30, // 30 sec fallback
     });
 
     // Initial New Users Count
@@ -341,10 +353,37 @@ export default function AdminPage() {
             )
             .subscribe();
 
+        const tablonChannel = supabase
+            .channel('admin-tablon-monitor')
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'tablon_posts',
+                },
+                () => {
+                    queryClient.invalidateQueries({ queryKey: ['tablon', 'pending'] });
+                }
+            )
+            .on(
+                'postgres_changes',
+                {
+                    event: '*',
+                    schema: 'public',
+                    table: 'tablon_categories',
+                },
+                () => {
+                    queryClient.invalidateQueries({ queryKey: ['tablon', 'suggested-categories'] });
+                }
+            )
+            .subscribe();
+
         return () => {
             supabase.removeChannel(ordersChannel);
             supabase.removeChannel(resChannel);
             supabase.removeChannel(usersChannel);
+            supabase.removeChannel(tablonChannel);
         };
     }, [isAuthenticated, user, isSoundEnabled, queryClient, playAlert, activeTab]);
 
@@ -478,7 +517,18 @@ export default function AdminPage() {
                 badge: newUsersCount > 0 ? newUsersCount : null,
             },
             { id: 'promos', label: t.nav.promos, icon: ShoppingBag },
-            { id: 'tablon', label: t.nav.tablon, icon: Activity },
+            {
+                id: 'tablon',
+                label: t.nav.tablon,
+                icon: Activity,
+                badge:
+                    (pendingTablonData?.posts?.length || 0) +
+                        (pendingTablonCategoriesData?.categories?.length || 0) >
+                    0
+                        ? (pendingTablonData?.posts?.length || 0) +
+                          (pendingTablonCategoriesData?.categories?.length || 0)
+                        : null,
+            },
             { id: 'settings', label: t.nav.settings, icon: DollarSign },
             {
                 id: 'reservations',
@@ -488,7 +538,14 @@ export default function AdminPage() {
             },
             { id: 'delivery', label: t.nav.delivery, icon: MapIcon },
         ],
-        [pendingCount, pendingResData?.total, t, newUsersCount]
+        [
+            pendingCount,
+            pendingResData?.total,
+            t,
+            newUsersCount,
+            pendingTablonData,
+            pendingTablonCategoriesData,
+        ]
     );
 
     // Authorization Check
@@ -554,16 +611,8 @@ export default function AdminPage() {
                 description="Gestión interna de Sushi de Maksim"
                 robots="noindex, nofollow"
             />
-            <audio
-                ref={audioRef}
-                src="https://assets.mixkit.co/active_storage/sfx/22/22-preview.mp3"
-                preload="auto"
-            />
-            <audio
-                ref={audioMesaRef}
-                src="https://assets.mixkit.co/active_storage/sfx/22/22-preview.mp3"
-                preload="auto"
-            />
+            <audio ref={audioRef} src="/sounds/order-new.mp3" preload="auto" />
+            <audio ref={audioMesaRef} src="/sounds/mesa-new.mp3" preload="auto" />
             {/* Mobile Overlay */}
             <AnimatePresence>
                 {isMobileMenuOpen && (
