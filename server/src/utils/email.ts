@@ -364,6 +364,17 @@ export async function sendOrderReceiptEmail(
         <a href="${waUrl}" style="display: block; background-color: #25D366; color: #ffffff; padding: 16px 20px; border-radius: 16px; text-decoration: none; font-weight: 900; font-size: 16px; text-align: center; box-shadow: 0 4px 12px rgba(37,211,102,0.2); margin-bottom: 12px;">
           CONFIRMAR EN WHATSAPP
         </a>
+        
+        ${
+            !deliveryType.includes('RECOGIDA')
+                ? `
+        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(orderData.deliveryAddress + ', Madrid, Spain')}" target="_blank" style="display: block; background-color: #4285F4; color: #ffffff; padding: 14px 20px; border-radius: 16px; text-decoration: none; font-weight: 800; font-size: 14px; text-align: center; margin-bottom: 12px; line-height: 1.4;">
+          🗺️ MAPA: ${orderData.deliveryAddress}
+        </a>
+        `
+                : ''
+        }
+
         <table style="width: 100%; border-collapse: collapse;">
           <tr>
             ${
