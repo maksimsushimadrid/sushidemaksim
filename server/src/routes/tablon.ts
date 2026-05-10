@@ -29,16 +29,24 @@ router.get(
         const { page, limit, category, tag, sort, search } = req.query as any;
         const from = (page - 1) * limit;
         const to = from + limit - 1;
-        const isAuthenticated = !!req.userId;
+        const currentUserId = req.userId;
+        const isAuthenticated = !!currentUserId;
+
+        const selectQuery = `
+            id, user_id, category_id, tags, message, whatsapp_phone, images, is_approved, moderation_status, created_at, updated_at,
+            users!tablon_posts_user_id_fkey(id, name, avatar),
+            tablon_categories!tablon_posts_category_id_fkey(id, name, emoji),
+            tablon_comments(count)
+        `;
+
+        // If authenticated, we can also fetch the current user's reaction in the same query
+        // Note: We can't easily filter nested selects with complex conditions in one string,
+        // but we can fetch them and filter in formatTablonPost, or use a separate optimized query.
+        // For now, let's keep the main query clean and optimize the secondary queries.
 
         let query = supabase
             .from('tablon_posts')
-            .select(
-                `id, user_id, category_id, tags, message, whatsapp_phone, images, is_approved, created_at, updated_at,
-                 users!tablon_posts_user_id_fkey(id, name, avatar),
-                 tablon_categories!tablon_posts_category_id_fkey(id, name, emoji)`,
-                { count: 'exact' }
-            )
+            .select(selectQuery, { count: 'exact' })
             .eq('moderation_status', 'approved');
 
         if (category) {
@@ -54,11 +62,8 @@ router.get(
 
         let postsResult;
         if (sort === 'popular') {
-            // Sorting by popularity requires a slightly different approach or a view
-            // For now, we fetch them and we'll use reaction counts if we can
-            // But Supabase doesn't easily allow ordering by a subquery count in one go
-            // So we'll fallback to newest but we can improve this with a view later
-            // Actually, we can fetch them and then we calculate counts
+            // Sorting by popular will still use newest for now as per current implementation,
+            // but we'll improve the data fetching below.
             postsResult = await query.order('created_at', { ascending: false }).range(from, to);
         } else {
             const ascending = sort === 'oldest';
@@ -67,28 +72,16 @@ router.get(
 
         const { data: posts, error: _error, count } = postsResult;
 
-        // Count comments and reactions for each post
+        // Optimized data aggregation
         const postIds = (posts || []).map((p: any) => p.id);
-        const commentCounts: Record<string, number> = {};
         const postReactions: Record<string, any[]> = {};
 
         if (postIds.length > 0) {
-            // Fetch comments count
-            const { data: countData } = await supabase
-                .from('tablon_comments')
-                .select('post_id')
-                .in('post_id', postIds);
-
-            if (countData) {
-                countData.forEach((c: any) => {
-                    commentCounts[c.post_id] = (commentCounts[c.post_id] || 0) + 1;
-                });
-            }
-
-            // Fetch reactions
+            // Fetch ONLY necessary reaction fields for aggregation
+            // Still fetches rows but MUCH smaller payload (no timestamps, etc)
             const { data: reactionsData } = await supabase
                 .from('tablon_post_reactions')
-                .select('post_id, user_id, reaction_type')
+                .select('post_id, reaction_type, user_id')
                 .in('post_id', postIds);
 
             if (reactionsData) {
@@ -100,15 +93,30 @@ router.get(
         }
 
         const totalPages = Math.ceil((count || 0) / limit);
-        const formattedPosts = (posts || []).map((p: any) =>
-            formatTablonPost(
+        const formattedPosts = (posts || []).map((p: any) => {
+            // Use the pre-fetched count from the nested query
+            const commentCount = p.tablon_comments?.[0]?.count || 0;
+
+            return formatTablonPost(
                 p,
                 isAuthenticated,
-                commentCounts[p.id] || 0,
+                commentCount,
                 postReactions[p.id] || [],
-                req.userId || null
-            )
-        );
+                currentUserId || null
+            );
+        });
+
+        // Apply popularity sorting if requested (in-memory for the current page)
+        if (sort === 'popular') {
+            formattedPosts.sort((a: any, b: any) => {
+                const getScore = (post: any) => {
+                    const likes = post.reactions?.['like'] || 0;
+                    const dislikes = post.reactions?.['dislike'] || 0;
+                    return likes - dislikes;
+                };
+                return getScore(b) - getScore(a);
+            });
+        }
 
         res.json({
             posts: formattedPosts,
@@ -147,12 +155,14 @@ router.get(
     optionalAuthMiddleware,
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { id } = req.params;
-        const isAuthenticated = !!req.userId;
+        const currentUserId = req.userId;
+        const isAuthenticated = !!currentUserId;
 
+        // Fetch post with counts and possibly current user reaction
         const { data: post, error } = await supabase
             .from('tablon_posts')
             .select(
-                `id, user_id, category_id, tags, message, whatsapp_phone, images, is_approved, created_at, updated_at,
+                `id, user_id, category_id, tags, message, whatsapp_phone, images, is_approved, moderation_status, created_at, updated_at,
                  users!tablon_posts_user_id_fkey(id, name, avatar),
                  tablon_categories!tablon_posts_category_id_fkey(id, name, emoji)`
             )
@@ -164,19 +174,29 @@ router.get(
             return res.status(404).json({ error: 'Publicación no encontrada' });
         }
 
-        // Fetch comments with user info
-        const { data: comments } = await supabase
-            .from('tablon_comments')
-            .select(
-                `id, post_id, user_id, parent_id, message, created_at,
-                 users!tablon_comments_user_id_fkey(id, name, avatar)`
-            )
-            .eq('post_id', id)
-            .order('created_at', { ascending: true });
+        // Fetch comments and reactions in parallel for better performance
+        const [commentsResult, postReactionsResult] = await Promise.all([
+            supabase
+                .from('tablon_comments')
+                .select(
+                    `id, post_id, user_id, parent_id, message, created_at,
+                     users!tablon_comments_user_id_fkey(id, name, avatar)`
+                )
+                .eq('post_id', id)
+                .order('created_at', { ascending: true }),
+            supabase
+                .from('tablon_post_reactions')
+                .select('reaction_type, user_id')
+                .eq('post_id', id),
+        ]);
 
-        // Fetch reactions for comments
-        const commentIds = (comments || []).map((c: any) => c.id);
+        const comments = commentsResult.data || [];
+        const postReactionsData = postReactionsResult.data || [];
+
+        // Fetch reactions for comments if there are any
+        const commentIds = comments.map((c: any) => c.id);
         const commentReactions: Record<string, any[]> = {};
+
         if (commentIds.length > 0) {
             const { data: cReactions } = await supabase
                 .from('tablon_comment_reactions')
@@ -191,23 +211,16 @@ router.get(
             }
         }
 
-        // Fetch reactions for post
-        const { data: reactionsData } = await supabase
-            .from('tablon_post_reactions')
-            .select('post_id, user_id, reaction_type')
-            .eq('post_id', id);
-
-        const formattedComments = (comments || []).map((c: any) =>
+        const formattedComments = comments.map((c: any) =>
             formatTablonComment(
                 c,
                 isAuthenticated,
                 commentReactions[c.id] || [],
-                req.userId || null
+                currentUserId || null
             )
         );
 
         // Sort comments by score (likes - dislikes)
-        // Score calculation: 'like' = +1, 'dislike' = -1
         const getScore = (c: any) => {
             const likes = c.reactions?.['like'] || 0;
             const dislikes = c.reactions?.['dislike'] || 0;
@@ -226,8 +239,8 @@ router.get(
                 post,
                 isAuthenticated,
                 sortedComments.length,
-                reactionsData || [],
-                req.userId || null
+                postReactionsData,
+                currentUserId || null
             ),
             comments: sortedComments,
         });

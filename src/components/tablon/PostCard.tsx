@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, MessageSquare, User, Camera, ChevronLeft, ChevronRight } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { getCategoryIcon } from '../../utils/tablonIcons';
 import type { TablonPost } from '../../hooks/queries/useTablon';
 import { TranslateMessage } from './TranslateMessage';
@@ -36,18 +35,13 @@ export function PostCard({ post, isAuthenticated }: PostCardProps) {
             {/* Images slider */}
             {post.images.length > 0 ? (
                 <div className="relative h-64 md:h-48 overflow-hidden rounded-2xl md:rounded-none group/slider bg-black">
-                    <AnimatePresence initial={false}>
-                        <motion.img
-                            key={currentImageIndex}
-                            src={post.images[currentImageIndex]}
-                            initial={{ x: 200 }}
-                            animate={{ x: 0 }}
-                            exit={{ x: -200 }}
-                            transition={{ duration: 0.3 }}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                        />
-                    </AnimatePresence>
+                    <img
+                        key={currentImageIndex}
+                        src={post.images[currentImageIndex]}
+                        className="w-full h-full object-cover transition-opacity duration-300"
+                        loading="lazy"
+                        alt=""
+                    />
 
                     {post.images.length > 1 && (
                         <>
