@@ -20,6 +20,7 @@ import {
     Activity,
     ChefHat,
     Printer,
+    ExternalLink,
 } from 'lucide-react';
 import { api, ApiError } from '../../utils/api';
 import { cn } from '../../utils/cn';
@@ -823,11 +824,40 @@ export default function AdminOrders({
                                                             <Monitor size={16} strokeWidth={2} />
                                                             <span className="text-[11px] font-black uppercase tracking-widest">
                                                                 {t.deliveryAddress}
+                                                                {!order.deliveryAddress
+                                                                    ?.toUpperCase()
+                                                                    .includes('MESA') && (
+                                                                    <span className="ml-2 text-[9px] text-blue-500 font-bold lowercase tracking-normal bg-blue-50 px-1.5 py-0.5 rounded-lg border border-blue-100">
+                                                                        clic para mapa
+                                                                    </span>
+                                                                )}
                                                             </span>
                                                         </div>
-                                                        <p className="text-[14px] text-gray-700 leading-relaxed font-black break-words bg-gray-50/30 p-3 rounded-2xl border border-dashed border-gray-100">
-                                                            {order.deliveryAddress}
-                                                        </p>
+                                                        {order.deliveryAddress
+                                                            ?.toUpperCase()
+                                                            .includes('MESA') ? (
+                                                            <p className="text-[14px] text-gray-700 leading-relaxed font-black break-words bg-gray-50/30 p-3 rounded-2xl border border-dashed border-gray-100">
+                                                                {order.deliveryAddress}
+                                                            </p>
+                                                        ) : (
+                                                            <a
+                                                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.deliveryAddress + ', Madrid, Spain')}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="block group/address transition-all active:scale-95"
+                                                                title="Abrir en Google Maps"
+                                                            >
+                                                                <div className="text-[14px] text-blue-700 leading-relaxed font-black break-words bg-blue-50/30 p-3 rounded-2xl border border-dashed border-blue-200 group-hover/address:bg-blue-50 group-hover/address:border-blue-400 transition-colors flex items-start gap-3">
+                                                                    <span className="flex-1">
+                                                                        {order.deliveryAddress}
+                                                                    </span>
+                                                                    <ExternalLink
+                                                                        size={14}
+                                                                        className="text-blue-400 shrink-0 mt-1 group-hover/address:text-blue-600 transition-colors"
+                                                                    />
+                                                                </div>
+                                                            </a>
+                                                        )}
                                                     </div>
                                                 )}
 
