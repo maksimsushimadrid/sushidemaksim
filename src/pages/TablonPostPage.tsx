@@ -1,7 +1,17 @@
 import { useState, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { MessageCircle, Lock, Trash2, Edit3, User, Camera } from 'lucide-react';
+import {
+    MessageCircle,
+    Lock,
+    Trash2,
+    Edit3,
+    User,
+    Camera,
+    ChevronLeft,
+    ChevronRight,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../hooks/useAuth';
 import { useTablonPost, useDeleteTablonPost } from '../hooks/queries/useTablon';
 import { CommentSection } from '../components/tablon/CommentSection';
@@ -21,6 +31,7 @@ export default function TablonPostPage() {
     const [showLoginToast, setShowLoginToast] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     const handleLoginPrompt = useCallback(() => {
         setShowLoginToast(true);
@@ -103,44 +114,70 @@ export default function TablonPostPage() {
 
                     {/* Post Card */}
                     <article className="bg-transparent border-none md:bg-gray-900/50 md:backdrop-blur-sm md:border md:border-white/10 rounded-none md:rounded-2xl overflow-visible md:overflow-hidden">
-                        {/* Images */}
+                        {/* Image Slider - Edge to Edge on mobile */}
                         {post.images.length > 0 ? (
-                            <div
-                                className={`grid ${
-                                    post.images.length === 1
-                                        ? 'grid-cols-1'
-                                        : post.images.length === 2
-                                          ? 'grid-cols-2'
-                                          : 'grid-cols-2'
-                                } gap-1`}
-                            >
-                                {post.images.map((img, idx) => (
-                                    <a
-                                        key={idx}
-                                        href={img}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className={`relative overflow-hidden ${
-                                            post.images.length === 1
-                                                ? 'h-64 md:h-96'
-                                                : post.images.length === 3 && idx === 0
-                                                  ? 'h-64 md:h-80 row-span-2'
-                                                  : 'h-32 md:h-40'
-                                        }`}
-                                    >
-                                        <img
-                                            src={img}
-                                            alt={`Foto ${idx + 1} del anuncio`}
-                                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                                            loading={idx === 0 ? 'eager' : 'lazy'}
-                                            width={600}
-                                            height={400}
-                                        />
-                                    </a>
-                                ))}
+                            <div className="relative group bg-black aspect-[4/3] md:aspect-[16/9] overflow-hidden -mx-4 md:mx-0 rounded-none md:rounded-none">
+                                <AnimatePresence initial={false}>
+                                    <motion.img
+                                        key={currentImageIndex}
+                                        src={post.images[currentImageIndex]}
+                                        initial={{ x: 300 }}
+                                        animate={{ x: 0 }}
+                                        exit={{ x: -300 }}
+                                        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                                        className="absolute inset-0 w-full h-full object-cover"
+                                        alt={`Imagen ${currentImageIndex + 1} del anuncio`}
+                                    />
+                                </AnimatePresence>
+
+                                {/* Navigation Arrows */}
+                                {post.images.length > 1 && (
+                                    <>
+                                        <button
+                                            onClick={() =>
+                                                setCurrentImageIndex(prev =>
+                                                    prev === 0 ? post.images.length - 1 : prev - 1
+                                                )
+                                            }
+                                            className="absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 text-white backdrop-blur-md border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                                        >
+                                            <ChevronLeft size={24} />
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                setCurrentImageIndex(prev =>
+                                                    prev === post.images.length - 1 ? 0 : prev + 1
+                                                )
+                                            }
+                                            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/40 text-white backdrop-blur-md border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                                        >
+                                            <ChevronRight size={24} />
+                                        </button>
+
+                                        {/* Pagination Dots */}
+                                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+                                            {post.images.map((_, idx) => (
+                                                <button
+                                                    key={idx}
+                                                    onClick={() => setCurrentImageIndex(idx)}
+                                                    className={`w-1.5 h-1.5 rounded-full transition-all ${
+                                                        idx === currentImageIndex
+                                                            ? 'bg-orange-500 w-4'
+                                                            : 'bg-white/40 hover:bg-white/60'
+                                                    }`}
+                                                />
+                                            ))}
+                                        </div>
+
+                                        {/* Counter */}
+                                        <div className="absolute top-4 right-4 px-2.5 py-1 rounded-lg bg-black/40 text-white text-[10px] font-bold backdrop-blur-md border border-white/10 z-20">
+                                            {currentImageIndex + 1} / {post.images.length}
+                                        </div>
+                                    </>
+                                )}
                             </div>
                         ) : (
-                            <div className="relative h-64 md:h-80 bg-white/5 flex flex-col items-center justify-center gap-4 border-b border-white/5">
+                            <div className="relative h-64 md:h-80 bg-white/5 flex flex-col items-center justify-center gap-4 border-b border-white/5 -mx-4 md:mx-0">
                                 <Camera size={48} strokeWidth={1} className="text-gray-800" />
                                 <span className="text-xs font-black text-gray-800 uppercase tracking-[0.3em]">
                                     Sin fotos

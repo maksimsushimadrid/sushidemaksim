@@ -225,9 +225,25 @@ export function formatTablonPost(
 }
 
 /** Cleanly maps a Tablón comment from DB to Frontend, with privacy controls */
-export function formatTablonComment(c: any, isAuthenticated: boolean) {
+export function formatTablonComment(
+    c: any,
+    isAuthenticated: boolean,
+    reactionsData: any[] = [],
+    currentUserId: string | null = null
+) {
     if (!c) return null;
     const user = c.users;
+
+    // Aggregate reactions
+    const reactions: Record<string, number> = {};
+    let userReaction: string | null = null;
+
+    reactionsData.forEach(r => {
+        reactions[r.reaction_type] = (reactions[r.reaction_type] || 0) + 1;
+        if (currentUserId && r.user_id === currentUserId) {
+            userReaction = r.reaction_type;
+        }
+    });
 
     return {
         id: c.id,
@@ -236,6 +252,8 @@ export function formatTablonComment(c: any, isAuthenticated: boolean) {
         parentId: c.parent_id || null,
         message: c.message,
         createdAt: c.created_at,
+        reactions,
+        userReaction,
         author: isAuthenticated
             ? { id: user?.id, name: user?.name || 'Usuario', avatar: user?.avatar || null }
             : { id: null, name: null, avatar: null },
@@ -270,6 +288,13 @@ export function getMadridHour() {
             hour12: false,
         })
     );
+}
+
+/** Get today's date in YYYY-MM-DD format (Madrid time) */
+export function getMadridTodayString() {
+    return new Date().toLocaleDateString('en-CA', {
+        timeZone: 'Europe/Madrid',
+    });
 }
 
 /**

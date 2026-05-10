@@ -53,7 +53,7 @@ export default function UserActions({
               .slice(0, 2)
         : '';
 
-    if (isTable) {
+    if (isTable && !isAuthenticated) {
         return (
             <button
                 onClick={() => {
@@ -75,7 +75,7 @@ export default function UserActions({
                 <div ref={userMenuRef} className="relative">
                     <button
                         onClick={() => setShowUserMenu(!showUserMenu)}
-                        className={`flex items-center gap-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 pl-1 pr-3 py-1 rounded-2xl cursor-pointer transition-all duration-200
+                        className={`flex items-center gap-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 p-1 md:pl-1 md:pr-3 md:py-1 rounded-2xl cursor-pointer transition-all duration-200
     ${showUserMenu ? 'ring-2 ring-orange-600/20 bg-white' : ''}`}
                     >
                         <div
@@ -102,13 +102,13 @@ export default function UserActions({
                                 <span className="select-none">{initials}</span>
                             )}
                         </div>
-                        <span className="text-sm font-bold text-gray-700 max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">
+                        <span className="hidden md:block text-sm font-bold text-gray-700 max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap">
                             {user.name.split(' ')[0]}
                         </span>
                         <ChevronDown
                             size={14}
                             strokeWidth={1.5}
-                            className={`text-gray-400 transition-transform duration-300 ${showUserMenu ? 'rotate-180' : ''}`}
+                            className={`hidden md:block text-gray-400 transition-transform duration-300 ${showUserMenu ? 'rotate-180' : ''}`}
                         />
                     </button>
 

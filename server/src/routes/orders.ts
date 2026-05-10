@@ -390,7 +390,7 @@ router.post(
             // Return order with items
             const { data: fullOrder, error: fetchError } = await supabase
                 .from('orders')
-                .select('*, order_items(*)')
+                .select('*, order_items(*), users(name, email)')
                 .eq('id', orderId)
                 .single();
 
@@ -415,6 +415,7 @@ router.post(
                         paymentMethod: (fullOrder as any).payment_method || paymentMethod,
                         estimatedDeliveryTime:
                             (fullOrder as any).estimated_delivery_time || serverEstimatedTime,
+                        customerEmail: (fullOrder as any).users?.email || email,
                     },
                     true
                 );
@@ -437,6 +438,7 @@ router.post(
                         paymentMethod: (fullOrder as any).payment_method || paymentMethod,
                         estimatedDeliveryTime:
                             (fullOrder as any).estimated_delivery_time || serverEstimatedTime,
+                        customerEmail: targetEmail,
                     });
                 } catch (customerEmailErr) {
                     console.error('Failed to send customer receipt email:', customerEmailErr);

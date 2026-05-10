@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Clock, Calendar, Flame, Plus } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import { useTablonPosts, useTablonCategories } from '../hooks/queries/useTablon';
@@ -21,6 +21,7 @@ export default function TablonPage() {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showLoginToast, setShowLoginToast] = useState(false);
     const [searchInput, setSearchInput] = useState('');
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const debouncedSearch = useDebounce(searchInput, 500);
 
     const { data: categoriesData, isLoading: catsLoading } = useTablonCategories();
@@ -103,8 +104,8 @@ export default function TablonPage() {
                             )}
 
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                {/* Search */}
-                                <div className="w-full md:max-w-md relative">
+                                {/* Search - Hidden on mobile, visible on desktop */}
+                                <div className="hidden md:block w-full md:max-w-md relative">
                                     <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500">
                                         <Search size={16} />
                                     </span>
@@ -125,52 +126,101 @@ export default function TablonPage() {
                                     )}
                                 </div>
 
-                                {/* Sort */}
-                                <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10 relative h-11 flex-shrink-0">
-                                    {[
-                                        { id: 'newest', icon: Clock },
-                                        { id: 'popular', icon: Flame },
-                                        { id: 'oldest', icon: Calendar },
-                                    ].map(item => {
-                                        const isActive = filters.sort === item.id;
-                                        const Icon = item.icon;
-                                        return (
-                                            <button
-                                                key={item.id}
-                                                onClick={() =>
-                                                    handleSortChange(
-                                                        item.id as 'newest' | 'oldest' | 'popular'
-                                                    )
-                                                }
-                                                className={`relative px-4 py-2 rounded-lg transition-colors duration-300 z-10 flex items-center gap-2 ${
-                                                    isActive
-                                                        ? 'text-white'
-                                                        : 'text-gray-500 hover:text-gray-300'
-                                                }`}
-                                                title={item.id}
+                                {/* Sort & Mobile Search Toggle */}
+                                <div className="flex items-center gap-1 bg-white/5 p-1 rounded-xl border border-white/10 relative h-11 flex-shrink-0 w-full md:w-auto overflow-hidden">
+                                    <AnimatePresence>
+                                        {isSearchExpanded ? (
+                                            <motion.div
+                                                initial={{ x: 100, opacity: 0 }}
+                                                animate={{ x: 0, opacity: 1 }}
+                                                exit={{ x: 100, opacity: 0 }}
+                                                className="flex-1 flex items-center px-2 gap-2"
                                             >
-                                                <Icon size={16} strokeWidth={2.5} />
-                                                <span className="text-[10px] font-bold uppercase tracking-wider hidden lg:block">
-                                                    {item.id === 'newest'
-                                                        ? 'Recientes'
-                                                        : item.id === 'popular'
-                                                          ? 'Populares'
-                                                          : 'Antiguos'}
-                                                </span>
-                                                {isActive && (
-                                                    <motion.div
-                                                        layoutId="activeTabHeader"
-                                                        className="absolute inset-0 bg-orange-500 rounded-lg shadow-lg shadow-orange-500/20 z-[-1]"
-                                                        transition={{
-                                                            type: 'spring',
-                                                            stiffness: 400,
-                                                            damping: 30,
-                                                        }}
-                                                    />
-                                                )}
-                                            </button>
-                                        );
-                                    })}
+                                                <input
+                                                    autoFocus
+                                                    type="text"
+                                                    placeholder="Buscar..."
+                                                    value={searchInput}
+                                                    onChange={e => setSearchInput(e.target.value)}
+                                                    className="w-full bg-transparent border-none text-sm text-white placeholder:text-gray-600 focus:outline-none h-full"
+                                                />
+                                                <button
+                                                    onClick={() => {
+                                                        setIsSearchExpanded(false);
+                                                        setSearchInput('');
+                                                    }}
+                                                    className="text-gray-500 hover:text-white"
+                                                >
+                                                    <X size={18} />
+                                                </button>
+                                            </motion.div>
+                                        ) : (
+                                            <motion.div
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                exit={{ opacity: 0 }}
+                                                className="flex items-center w-full justify-between md:justify-start"
+                                            >
+                                                <div className="flex items-center gap-1">
+                                                    {[
+                                                        { id: 'newest', icon: Clock },
+                                                        { id: 'popular', icon: Flame },
+                                                        { id: 'oldest', icon: Calendar },
+                                                    ].map(item => {
+                                                        const isActive = filters.sort === item.id;
+                                                        const Icon = item.icon;
+                                                        return (
+                                                            <button
+                                                                key={item.id}
+                                                                onClick={() =>
+                                                                    handleSortChange(
+                                                                        item.id as
+                                                                            | 'newest'
+                                                                            | 'oldest'
+                                                                            | 'popular'
+                                                                    )
+                                                                }
+                                                                className={`relative px-4 py-2 rounded-lg transition-colors duration-300 z-10 flex items-center gap-2 ${
+                                                                    isActive
+                                                                        ? 'text-white'
+                                                                        : 'text-gray-500 hover:text-gray-300'
+                                                                }`}
+                                                                title={item.id}
+                                                            >
+                                                                <Icon size={16} strokeWidth={2.5} />
+                                                                <span className="text-[10px] font-bold uppercase tracking-wider hidden lg:block">
+                                                                    {item.id === 'newest'
+                                                                        ? 'Recientes'
+                                                                        : item.id === 'popular'
+                                                                          ? 'Populares'
+                                                                          : 'Antiguos'}
+                                                                </span>
+                                                                {isActive && (
+                                                                    <motion.div
+                                                                        layoutId="activeTabHeader"
+                                                                        className="absolute inset-0 bg-orange-500 rounded-lg shadow-lg shadow-orange-500/20 z-[-1]"
+                                                                        transition={{
+                                                                            type: 'spring',
+                                                                            stiffness: 400,
+                                                                            damping: 30,
+                                                                        }}
+                                                                    />
+                                                                )}
+                                                            </button>
+                                                        );
+                                                    })}
+                                                </div>
+
+                                                {/* Mobile Search Icon */}
+                                                <button
+                                                    onClick={() => setIsSearchExpanded(true)}
+                                                    className="md:hidden w-10 h-10 flex items-center justify-center text-gray-500 hover:text-white"
+                                                >
+                                                    <Search size={18} />
+                                                </button>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
                                 </div>
                             </div>
                         </div>
@@ -195,13 +245,31 @@ export default function TablonPage() {
                     ) : (
                         <>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {posts.map(post => (
-                                    <PostCard
-                                        key={post.id}
-                                        post={post}
-                                        isAuthenticated={isAuthenticated}
-                                    />
-                                ))}
+                                <AnimatePresence mode="popLayout">
+                                    {posts.map(post => (
+                                        <motion.div
+                                            key={post.id}
+                                            layout
+                                            initial={{ opacity: 0, scale: 0.9 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.9 }}
+                                            transition={{
+                                                layout: {
+                                                    type: 'spring',
+                                                    stiffness: 120,
+                                                    damping: 20,
+                                                    mass: 1.2,
+                                                },
+                                                opacity: { duration: 0.4 },
+                                            }}
+                                        >
+                                            <PostCard
+                                                post={post}
+                                                isAuthenticated={isAuthenticated}
+                                            />
+                                        </motion.div>
+                                    ))}
+                                </AnimatePresence>
                             </div>
 
                             {/* Pagination */}

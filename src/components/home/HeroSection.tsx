@@ -69,17 +69,18 @@ export function HeroSection() {
                     }}
                 />
                 <video
-                    ref={useCallback((el: HTMLVideoElement | null) => {
-                        if (el) el.playbackRate = 0.5;
+                    ref={useCallback((_el: HTMLVideoElement | null) => {
+                        // Play at normal speed for maximum smoothness
                     }, [])}
                     autoPlay
                     muted
                     loop
                     playsInline
                     preload="auto"
-                    poster="/sushidemaksim_black_style_photos/Chef%20Gourmet%20XL_sushidemaksim_black.webp"
+                    poster="/hero-poster.jpg"
                     className="absolute inset-0 w-full h-full object-cover"
                 >
+                    <source src="/hero-video.webm" type="video/webm" />
                     <source src="/hero-video.mp4" type="video/mp4" />
                 </video>
             </div>

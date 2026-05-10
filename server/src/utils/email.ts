@@ -276,6 +276,7 @@ export async function sendOrderReceiptEmail(
 
     // Prepare WhatsApp message for admin
     let waUrl = '';
+    let waMessage = '';
     if (isAdminCopy) {
         const itemsListText = regularItems
             .map((item: any) => {
@@ -300,7 +301,8 @@ export async function sendOrderReceiptEmail(
                   ? 'Efectivo'
                   : paymentMethod;
 
-        const waMessage = `Tu pedido #${String(orderData.orderId).padStart(5, '0')} está confirmado${scheduledText}\n\n${itemsListText}${deliveryFeeText}\n\n*Total: ${orderData.total.toFixed(2)}€*\n*Método de pago: ${paymentMethodLabel}*`;
+        const statusMessage = `¡Hola! Hemos recibido tu pedido и ya lo estamos preparando. Te lo entregaremos en unos 30 - 60 minutos.\n\n`;
+        waMessage = `${statusMessage}Tu pedido #${String(orderData.orderId).padStart(5, '0')} está confirmado${scheduledText}\n\n${itemsListText}${deliveryFeeText}\n\n*Total: ${orderData.total.toFixed(2)}€*\n*Método de pago: ${paymentMethodLabel}*`;
         const cleanPhone = orderData.phoneNumber.replace(/\D/g, '');
         // wa.me doesn't like '+' prefix usually, digits only is safest
         waUrl = `https://wa.me/${cleanPhone}/?text=${encodeURIComponent(waMessage)}`;
@@ -358,10 +360,30 @@ export async function sendOrderReceiptEmail(
       ${
           isAdminCopy
               ? `
-      <div style="margin-bottom: 24px; text-align: center;">
-        <a href="${waUrl}" style="display: block; background-color: #25D366; color: #ffffff; padding: 16px 20px; border-radius: 16px; text-decoration: none; font-weight: 900; font-size: 16px; text-align: center; box-shadow: 0 4px 12px rgba(37,211,102,0.2);">
+      <div style="margin-bottom: 24px;">
+        <a href="${waUrl}" style="display: block; background-color: #25D366; color: #ffffff; padding: 16px 20px; border-radius: 16px; text-decoration: none; font-weight: 900; font-size: 16px; text-align: center; box-shadow: 0 4px 12px rgba(37,211,102,0.2); margin-bottom: 12px;">
           CONFIRMAR EN WHATSAPP
         </a>
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            ${
+                orderData.customerEmail
+                    ? `
+            <td style="width: 50%; padding-right: 4px;">
+              <a href="mailto:${orderData.customerEmail}?subject=${encodeURIComponent(`Pedido #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`)}&body=${encodeURIComponent(waMessage.replace(/\*/g, ''))}" style="display: block; background-color: #ffffff; color: #111827; padding: 12px 0; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 13px; text-align: center; border: 1px solid #e2e8f0;">
+                ✉️ RESPONDER EMAIL
+              </a>
+            </td>
+            `
+                    : ''
+            }
+            <td style="width: ${orderData.customerEmail ? '50%' : '100%'}; padding-left: 4px;">
+              <a href="tel:${orderData.phoneNumber}" style="display: block; background-color: #ea580c; color: #ffffff; padding: 12px 0; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 13px; text-align: center;">
+                📞 LLAMAR CLIENTE
+              </a>
+            </td>
+          </tr>
+        </table>
       </div>
       `
               : ''

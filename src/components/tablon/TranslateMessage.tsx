@@ -87,31 +87,34 @@ export function TranslateMessage({
     // Localized labels
     const labels: Record<
         string,
-        { translate: string; original: string; translating: string; by: string }
+        { translate: string; original: string; translating: string; by: string; share: string }
     > = {
         ru: {
             translate: 'Перевести',
             original: 'Оригинал',
             translating: 'Перевод...',
             by: 'Переведено Google',
+            share: 'Поделиться',
         },
         en: {
             translate: 'Translate',
             original: 'Show original',
             translating: 'Translating...',
             by: 'Translated by Google',
+            share: 'Share',
         },
         es: {
             translate: 'Ver traducción',
             original: 'Ver original',
             translating: 'Traduciendo...',
             by: 'Traducido por Google',
+            share: 'Compartir',
         },
     };
 
     const currentLabels = labels[browserLang] || labels.es;
 
-    // Show translate button always to allow translating any post language
+    // Show translate button always since we don't know the source language beforehand
     const shouldShowTranslate = true;
 
     return (
@@ -143,11 +146,7 @@ export function TranslateMessage({
                         className="text-[10px] uppercase tracking-widest text-gray-500 hover:text-orange-400 font-black transition-colors inline-flex items-center gap-1.5 active:scale-95 whitespace-nowrap"
                     >
                         <Share2 size={12} strokeWidth={2.5} />
-                        {browserLang === 'ru'
-                            ? 'Поделиться'
-                            : browserLang === 'en'
-                              ? 'Share'
-                              : 'Compartir'}
+                        {currentLabels.share}
                     </button>
                 )}
             </div>

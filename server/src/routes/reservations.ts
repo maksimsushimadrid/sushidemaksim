@@ -7,6 +7,8 @@ import { createReservationSchema } from '../schemas/reservation.schema.js';
 import { isTimeWithinBusinessHours } from '../utils/storeStatus.js';
 import { sendReservationEmail } from '../utils/email.js';
 
+import { getMadridTodayString } from '../utils/helpers.js';
+
 const router = Router();
 
 // Create a new reservation
@@ -15,6 +17,22 @@ router.post(
     validateResource(createReservationSchema),
     asyncHandler(async (req, res) => {
         const { name, email, phone, date, time, guests, notes, user_id } = req.body;
+
+        // Check if reservations for TODAY are closed
+        const today = getMadridTodayString();
+        if (date === today) {
+            const { data: settings } = await supabase
+                .from('site_settings')
+                .select('value')
+                .eq('key', 'isReservationsTodayClosed')
+                .maybeSingle();
+
+            if (settings?.value === 'true') {
+                return res.status(403).json({
+                    error: `Lo sentimos, para hoy (${today}) todas las mesas están reservadas. Puedes reservar para cualquier otro día.`,
+                });
+            }
+        }
 
         // Validate time within business hours using the generic string approach
         if (!isTimeWithinBusinessHours(date, time)) {

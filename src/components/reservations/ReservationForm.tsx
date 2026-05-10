@@ -7,6 +7,8 @@ import { BUSINESS_HOURS } from '../../utils/storeStatus';
 import CustomDatePicker from '../ui/CustomDatePicker';
 import CustomTimePicker from '../ui/CustomTimePicker';
 
+import { useSettings } from '../../hooks/queries/useSettings';
+
 interface ReservationFormProps {
     onSuccess?: () => void;
     className?: string;
@@ -19,9 +21,12 @@ export default function ReservationForm({
     showTitle = false,
 }: ReservationFormProps) {
     const { user, isAuthenticated } = useAuth();
+    const { data: settings } = useSettings();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const isReservationsTodayClosed = settings?.isReservationsTodayClosed === true;
 
     const [formData, setFormData] = useState({
         name: user?.name || '',
@@ -210,6 +215,21 @@ export default function ReservationForm({
                         </div>
                     )}
 
+                    {isReservationsTodayClosed && (
+                        <div className="p-4 bg-orange-50 border border-orange-100 rounded-2xl flex flex-col gap-2 text-orange-800 animate-in fade-in slide-in-from-top-2 duration-500">
+                            <div className="flex items-center gap-3">
+                                <AlertCircle size={18} className="text-orange-600" />
+                                <span className="text-sm font-black uppercase tracking-tight">
+                                    Hoy está completo
+                                </span>
+                            </div>
+                            <p className="text-[11px] font-medium leading-relaxed opacity-80">
+                                Lo sentimos, para hoy todas las mesas están reservadas. Pero puedes
+                                reservar para cualquier otro día disponible en el calendario.
+                            </p>
+                        </div>
+                    )}
+
                     {/* 1. Nombre Completo — full width */}
                     <div className="space-y-2">
                         <label className="text-[11px] font-black text-gray-400 uppercase tracking-widest ml-1">
@@ -241,8 +261,9 @@ export default function ReservationForm({
                             <CustomDatePicker
                                 value={formData.date}
                                 onChange={date => {
-                                    const today = new Date().toLocaleDateString('en-CA');
-                                    if (date < today && date !== '') return;
+                                    const todayStr = new Date().toLocaleDateString('en-CA');
+                                    if (date < todayStr && date !== '') return;
+                                    if (isReservationsTodayClosed && date === todayStr) return;
                                     setFormData(prev => ({
                                         ...prev,
                                         date,
@@ -251,6 +272,7 @@ export default function ReservationForm({
                                 }}
                                 min={today}
                                 disabledDays={[1, 2]}
+                                disabledDates={isReservationsTodayClosed ? [today] : []}
                                 placeholder="Fecha"
                             />
                         </div>

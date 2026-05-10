@@ -15,15 +15,15 @@ export const createTablonPostSchema = z.object({
             .default([]),
         message: z
             .string()
-            .min(10, 'El mensaje debe tener al menos 10 caracteres')
-            .max(500, 'El mensaje no puede superar los 500 caracteres'),
+            .min(25, 'El mensaje debe tener al menos 25 caracteres')
+            .max(2000, 'El mensaje no puede superar los 2000 caracteres'),
         whatsappPhone: z
             .string()
             .min(6, 'El teléfono debe tener al menos 6 dígitos')
             .max(20, 'El teléfono es demasiado largo'),
         images: z
             .array(z.string().url('URL de imagen inválida'))
-            .max(3, 'Máximo 3 imágenes')
+            .max(9, 'Máximo 9 imágenes')
             .default([]),
     }),
 });
@@ -36,11 +36,11 @@ export const updateTablonPostSchema = z.object({
         tags: z.array(z.string().max(30)).max(3).optional(),
         message: z
             .string()
-            .min(10, 'El mensaje debe tener al menos 10 caracteres')
-            .max(500, 'El mensaje no puede superar los 500 caracteres')
+            .min(25, 'El mensaje debe tener al menos 25 caracteres')
+            .max(2000, 'El mensaje no puede superar los 2000 caracteres')
             .optional(),
         whatsappPhone: z.string().min(6).max(20).optional(),
-        images: z.array(z.string().url()).max(3).optional(),
+        images: z.array(z.string().url()).max(9).optional(),
         categoryId: z.number().optional(),
     }),
     params: z.object({

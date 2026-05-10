@@ -55,7 +55,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                             </button>
                         </div>
 
-                        <div className="px-6 py-2 flex flex-col gap-4 overflow-visible">
+                        <div className="px-6 py-2 flex flex-col gap-4 overflow-visible pb-10">
                             <ReservationForm onSuccess={() => {}} />
                         </div>
                     </motion.div>

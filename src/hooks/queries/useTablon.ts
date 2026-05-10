@@ -42,6 +42,8 @@ export interface TablonComment {
     message: string;
     createdAt: string;
     author: TablonAuthor;
+    reactions: Record<string, number>;
+    userReaction: string | null;
 }
 
 export interface TablonPostsResponse {
@@ -76,9 +78,32 @@ const TABLON_KEYS = {
     post: (id: string, auth: boolean) => ['tablon', 'post', id, auth] as const,
     categories: ['tablon', 'categories'] as const,
     pending: ['tablon', 'pending'] as const,
+    approved: ['tablon', 'approved'] as const,
 };
 
 // ─── Queries ──────────────────────────────────────────────────────────────────
+
+/** Fetch approved posts (moderators only) */
+export const useTablonApproved = () => {
+    return useQuery<{ posts: TablonPost[] }>({
+        queryKey: TABLON_KEYS.approved,
+        queryFn: () => api.get('/tablon/moderation/approved'),
+        staleTime: 30 * 1000,
+    });
+};
+
+// ─── Mutations ────────────────────────────────────────────────────────────────
+
+/** Sync posts from Threads (admin only) */
+export const useSyncThreads = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: () => api.post('/admin/threads/sync', {}),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: TABLON_KEYS.all });
+        },
+    });
+};
 
 /** Fetch paginated & filtered posts */
 export const useTablonPosts = (filters: TablonFilters = {}) => {
@@ -204,10 +229,170 @@ export const useToggleReaction = () => {
     const queryClient = useQueryClient();
     return useMutation({
         mutationFn: ({ postId, reactionType }: { postId: string; reactionType: string }) =>
-            api.post(`/tablon/${postId}/react`, { reactionType }),
-        onSuccess: (_data, variables) => {
-            queryClient.invalidateQueries({ queryKey: ['tablon', 'post', variables.postId] });
-            queryClient.invalidateQueries({ queryKey: TABLON_KEYS.all });
+            api.post(`/tablon/${postId}/react`, { reactionType: reactionType.toLowerCase() }),
+        onMutate: async variables => {
+            // We don't know the exact filters, so we invalidate all posts queries
+            // but for a smooth animation we can try to update all active posts queries
+            const queryCache = queryClient.getQueryCache();
+            const queries = queryCache.findAll({ queryKey: ['tablon', 'posts'] });
+
+            const previousQueriesData = queries.map(query => ({
+                queryKey: query.queryKey,
+                data: query.state.data,
+            }));
+
+            // Optimistically update all matching queries
+            queries.forEach(query => {
+                const queryKey = query.queryKey;
+                queryClient.setQueryData(queryKey, (old: any) => {
+                    if (!old || !old.posts) return old;
+
+                    const updatedPosts = old.posts.map((p: any) => {
+                        if (String(p.id) === String(variables.postId)) {
+                            const newReactions = { ...(p.reactions || {}) };
+                            const oldReaction = p.userReaction;
+                            const newReaction = variables.reactionType.toLowerCase();
+
+                            // Remove old
+                            if (oldReaction && newReactions[oldReaction]) {
+                                newReactions[oldReaction] = Math.max(
+                                    0,
+                                    newReactions[oldReaction] - 1
+                                );
+                            }
+
+                            // Add new
+                            let finalUserReaction: string | null = newReaction;
+                            if (oldReaction === newReaction) {
+                                finalUserReaction = null;
+                            } else {
+                                newReactions[newReaction] = (newReactions[newReaction] || 0) + 1;
+                            }
+
+                            return {
+                                ...p,
+                                reactions: newReactions,
+                                userReaction: finalUserReaction,
+                            };
+                        }
+                        return p;
+                    });
+
+                    // Sort if needed (if sort is 'popular')
+                    // The filters are in the queryKey[2]
+                    const filters = queryKey[2] as any;
+                    if (filters?.sort === 'popular') {
+                        updatedPosts.sort((a: any, b: any) => {
+                            const getScore = (post: any) => {
+                                const likes = post.reactions?.['like'] || 0;
+                                const dislikes = post.reactions?.['dislike'] || 0;
+                                return likes - dislikes;
+                            };
+                            return getScore(b) - getScore(a);
+                        });
+                    }
+
+                    return { ...old, posts: updatedPosts };
+                });
+            });
+
+            return { previousQueriesData };
+        },
+        onError: (_err, _variables, context) => {
+            context?.previousQueriesData?.forEach(item => {
+                queryClient.setQueryData(item.queryKey, item.data);
+            });
+        },
+        onSettled: () => {
+            queryClient.invalidateQueries({ queryKey: ['tablon', 'posts'] });
+            queryClient.invalidateQueries({ queryKey: ['tablon', 'post'] });
+        },
+    });
+};
+
+/** Toggle a reaction (like) on a comment */
+export const useToggleCommentReaction = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: ({
+            postId: _postId,
+            commentId,
+            reactionType,
+        }: {
+            postId: string;
+            commentId: string;
+            reactionType: string;
+        }) =>
+            api
+                .post(`/tablon/comments/${commentId}/react`, {
+                    reactionType: reactionType.toLowerCase(),
+                })
+                .then(res => res.data),
+        onMutate: async variables => {
+            const queryKey = ['tablon', 'post', String(variables.postId)];
+            await queryClient.cancelQueries({ queryKey });
+
+            const previousData = queryClient.getQueryData<any>(queryKey);
+
+            if (previousData) {
+                const updatedComments = previousData.comments.map((c: any) => {
+                    if (String(c.id) === String(variables.commentId)) {
+                        const newReactions = { ...(c.reactions || {}) };
+                        const oldReaction = c.userReaction;
+                        const newReaction = variables.reactionType.toLowerCase();
+
+                        // Remove old reaction
+                        if (oldReaction && newReactions[oldReaction]) {
+                            newReactions[oldReaction] = Math.max(0, newReactions[oldReaction] - 1);
+                        }
+
+                        // Add new reaction (unless it's a toggle off)
+                        let finalUserReaction: string | null = newReaction;
+                        if (oldReaction === newReaction) {
+                            finalUserReaction = null;
+                        } else {
+                            newReactions[newReaction] = (newReactions[newReaction] || 0) + 1;
+                        }
+
+                        return {
+                            ...c,
+                            reactions: newReactions,
+                            userReaction: finalUserReaction,
+                        };
+                    }
+                    return c;
+                });
+
+                // Sort comments by (likes - dislikes)
+                updatedComments.sort((a: any, b: any) => {
+                    const getScore = (comment: any) => {
+                        const likes = comment.reactions?.['like'] || 0;
+                        const dislikes = comment.reactions?.['dislike'] || 0;
+                        return likes - dislikes;
+                    };
+                    return getScore(b) - getScore(a);
+                });
+
+                queryClient.setQueryData(queryKey, {
+                    ...previousData,
+                    comments: updatedComments,
+                });
+            }
+
+            return { previousData };
+        },
+        onError: (err, variables, context) => {
+            if (context?.previousData) {
+                queryClient.setQueryData(
+                    ['tablon', 'post', String(variables.postId)],
+                    context.previousData
+                );
+            }
+        },
+        onSettled: (_data, _error, variables) => {
+            queryClient.invalidateQueries({
+                queryKey: ['tablon', 'post', String(variables.postId)],
+            });
         },
     });
 };

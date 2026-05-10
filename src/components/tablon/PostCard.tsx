@@ -1,5 +1,7 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Heart, MessageSquare, User, Camera } from 'lucide-react';
+import { Heart, MessageSquare, User, Camera, ChevronLeft, ChevronRight } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { getCategoryIcon } from '../../utils/tablonIcons';
 import type { TablonPost } from '../../hooks/queries/useTablon';
 import { TranslateMessage } from './TranslateMessage';
@@ -10,7 +12,20 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, isAuthenticated }: PostCardProps) {
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const timeAgo = getTimeAgo(post.createdAt);
+
+    const handlePrevImage = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setCurrentImageIndex(prev => (prev === 0 ? post.images.length - 1 : prev - 1));
+    };
+
+    const handleNextImage = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setCurrentImageIndex(prev => (prev === post.images.length - 1 ? 0 : prev + 1));
+    };
 
     return (
         <Link
@@ -18,22 +33,54 @@ export function PostCard({ post, isAuthenticated }: PostCardProps) {
             data-testid={`tablon-post-${post.id}`}
             className="group flex flex-col h-full bg-transparent border-none md:bg-gray-900/50 md:backdrop-blur-sm md:border md:border-white/10 rounded-none md:rounded-2xl overflow-visible md:overflow-hidden hover:border-orange-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-orange-500/5"
         >
-            {/* Images preview */}
+            {/* Images slider */}
             {post.images.length > 0 ? (
-                <div className="relative h-64 md:h-48 overflow-hidden rounded-2xl md:rounded-none">
-                    <img
-                        src={post.images[0]}
-                        alt="Foto del anuncio"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
-                        width={400}
-                        height={192}
-                    />
+                <div className="relative h-64 md:h-48 overflow-hidden rounded-2xl md:rounded-none group/slider bg-black">
+                    <AnimatePresence initial={false}>
+                        <motion.img
+                            key={currentImageIndex}
+                            src={post.images[currentImageIndex]}
+                            initial={{ x: 200 }}
+                            animate={{ x: 0 }}
+                            exit={{ x: -200 }}
+                            transition={{ duration: 0.3 }}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                        />
+                    </AnimatePresence>
+
                     {post.images.length > 1 && (
-                        <div className="absolute bottom-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[10px] font-black px-2 py-1 rounded-lg flex items-center gap-1.5 border border-white/10 uppercase tracking-widest">
-                            <Camera size={10} strokeWidth={3} />
-                            <span>+{post.images.length - 1}</span>
-                        </div>
+                        <>
+                            <button
+                                onClick={handlePrevImage}
+                                className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/40 text-white backdrop-blur-md border border-white/10 opacity-0 group-hover/slider:opacity-100 transition-opacity z-10"
+                            >
+                                <ChevronLeft size={16} />
+                            </button>
+                            <button
+                                onClick={handleNextImage}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/40 text-white backdrop-blur-md border border-white/10 opacity-0 group-hover/slider:opacity-100 transition-opacity z-10"
+                            >
+                                <ChevronRight size={16} />
+                            </button>
+
+                            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+                                {post.images.map((_, idx) => (
+                                    <div
+                                        key={idx}
+                                        className={`w-1 h-1 rounded-full transition-all ${
+                                            idx === currentImageIndex
+                                                ? 'bg-orange-500 w-3'
+                                                : 'bg-white/40'
+                                        }`}
+                                    />
+                                ))}
+                            </div>
+
+                            <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white text-[8px] font-black px-1.5 py-0.5 rounded-md flex items-center gap-1 border border-white/10 uppercase tracking-widest z-10">
+                                {currentImageIndex + 1} / {post.images.length}
+                            </div>
+                        </>
                     )}
                 </div>
             ) : (

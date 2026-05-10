@@ -14,6 +14,7 @@ export interface SiteSettings {
     ratingTheFork: number;
     ratingGoogle: number;
     ratingReviewsCount: number;
+    isReservationsTodayClosed: boolean;
 }
 
 export function useSettings() {
@@ -35,6 +36,7 @@ export function useSettings() {
                 ratingTheFork: data.ratingTheFork || 9.1,
                 ratingGoogle: data.ratingGoogle || 4.8,
                 ratingReviewsCount: data.ratingReviewsCount || 543,
+                isReservationsTodayClosed: data.isReservationsTodayClosed === 'true',
             };
         },
         staleTime: 1000 * 60 * 60, // 1 hour

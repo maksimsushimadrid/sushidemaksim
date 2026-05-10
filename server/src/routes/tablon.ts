@@ -174,26 +174,131 @@ router.get(
             .eq('post_id', id)
             .order('created_at', { ascending: true });
 
-        // Fetch reactions
+        // Fetch reactions for comments
+        const commentIds = (comments || []).map((c: any) => c.id);
+        const commentReactions: Record<string, any[]> = {};
+        if (commentIds.length > 0) {
+            const { data: cReactions } = await supabase
+                .from('tablon_comment_reactions')
+                .select('comment_id, user_id, reaction_type')
+                .in('comment_id', commentIds);
+
+            if (cReactions) {
+                cReactions.forEach((r: any) => {
+                    if (!commentReactions[r.comment_id]) commentReactions[r.comment_id] = [];
+                    commentReactions[r.comment_id].push(r);
+                });
+            }
+        }
+
+        // Fetch reactions for post
         const { data: reactionsData } = await supabase
             .from('tablon_post_reactions')
             .select('post_id, user_id, reaction_type')
             .eq('post_id', id);
 
         const formattedComments = (comments || []).map((c: any) =>
-            formatTablonComment(c, isAuthenticated)
+            formatTablonComment(
+                c,
+                isAuthenticated,
+                commentReactions[c.id] || [],
+                req.userId || null
+            )
         );
+
+        // Sort comments by score (likes - dislikes)
+        // Score calculation: 'like' = +1, 'dislike' = -1
+        const getScore = (c: any) => {
+            const likes = c.reactions?.['like'] || 0;
+            const dislikes = c.reactions?.['dislike'] || 0;
+            return likes - dislikes;
+        };
+
+        const sortedComments = [...formattedComments].sort((a: any, b: any) => {
+            const scoreA = getScore(a);
+            const scoreB = getScore(b);
+            if (scoreA !== scoreB) return scoreB - scoreA;
+            return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        });
 
         res.json({
             post: formatTablonPost(
                 post,
                 isAuthenticated,
-                formattedComments.length,
+                sortedComments.length,
                 reactionsData || [],
                 req.userId || null
             ),
-            comments: formattedComments,
+            comments: sortedComments,
         });
+    })
+);
+
+// POST /api/tablon/comments/:commentId/react — Toggle reaction on comment
+router.post(
+    '/comments/:commentId/react',
+    authMiddleware,
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        try {
+            const { commentId } = req.params;
+            const { reactionType = 'like' } = req.body;
+            const commentIdNum = parseInt(commentId);
+            if (isNaN(commentIdNum)) throw new Error('ID de comentario inválido');
+
+            console.log(
+                `[REACTION] User ${req.userId} toggling ${reactionType} on comment ${commentId}`
+            );
+
+            const { data: existing, error: fetchError } = await supabase
+                .from('tablon_comment_reactions')
+                .select('id, reaction_type')
+                .eq('comment_id', commentIdNum)
+                .eq('user_id', req.userId)
+                .maybeSingle();
+
+            if (fetchError) {
+                console.error('[REACTION] Fetch error:', fetchError);
+                throw fetchError;
+            }
+
+            if (existing) {
+                if (existing.reaction_type === reactionType) {
+                    const { error: delError } = await supabase
+                        .from('tablon_comment_reactions')
+                        .delete()
+                        .eq('id', existing.id);
+                    if (delError) throw delError;
+                    console.log('[REACTION] Removed existing reaction');
+                    return res.json({ success: true, action: 'removed' });
+                } else {
+                    const { error: updError } = await supabase
+                        .from('tablon_comment_reactions')
+                        .update({ reaction_type: reactionType })
+                        .eq('id', existing.id);
+                    if (updError) throw updError;
+                    console.log('[REACTION] Swapped reaction type');
+                    return res.json({ success: true, action: 'swapped' });
+                }
+            } else {
+                const { error: insError } = await supabase.from('tablon_comment_reactions').insert({
+                    comment_id: commentIdNum,
+                    user_id: req.userId,
+                    reaction_type: reactionType,
+                });
+                if (insError) {
+                    console.error('[REACTION] Insert error:', insError);
+                    throw insError;
+                }
+                console.log('[REACTION] Added new reaction');
+                res.json({ success: true, action: 'added' });
+            }
+        } catch (err: any) {
+            console.error('[REACTION] Critical error:', err);
+            res.status(500).json({
+                error: 'Error al procesar la reacción',
+                details: err.message || err,
+            });
+        }
     })
 );
 

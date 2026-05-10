@@ -1,10 +1,16 @@
 import { useState, useCallback, useMemo, useRef } from 'react';
-import { X, CornerDownRight, Trash2, Send, User } from 'lucide-react';
+import { X, CornerDownRight, Trash2, Send, User, Heart, ThumbsDown } from 'lucide-react'; // Icons for interactions
+import { motion, AnimatePresence } from 'framer-motion';
 import type { TablonComment } from '../../hooks/queries/useTablon';
-import { useCreateTablonComment, useDeleteTablonComment } from '../../hooks/queries/useTablon';
+import {
+    useCreateTablonComment,
+    useDeleteTablonComment,
+    useToggleCommentReaction,
+} from '../../hooks/queries/useTablon';
 import { useAuth } from '../../hooks/useAuth';
 import { TranslateMessage } from './TranslateMessage';
 import { ConfirmModal } from '../common/ConfirmModal';
+import { useToast } from '../../context/ToastContext';
 
 interface CommentSectionProps {
     postId: string;
@@ -20,8 +26,10 @@ export function CommentSection({
     onLoginPrompt,
 }: CommentSectionProps) {
     const { user } = useAuth();
+    const toast = useToast();
     const createComment = useCreateTablonComment();
     const deleteComment = useDeleteTablonComment();
+    const toggleReaction = useToggleCommentReaction();
     const [message, setMessage] = useState('');
     const [replyTo, setReplyTo] = useState<string | null>(null);
     const [commentToDelete, setCommentToDelete] = useState<string | null>(null);
@@ -178,20 +186,64 @@ export function CommentSection({
                 </p>
             ) : (
                 <div className="space-y-4">
-                    {threadedComments.topLevel.map(comment => (
-                        <CommentItem
-                            key={comment.id}
-                            comment={comment}
-                            childMap={threadedComments.childMap}
-                            isAuthenticated={isAuthenticated}
-                            currentUserId={user?.id}
-                            isModerator={!!isModerator}
-                            onReply={handleReply}
-                            onDelete={handleDelete}
-                            onLoginPrompt={onLoginPrompt}
-                            depth={0}
-                        />
-                    ))}
+                    <AnimatePresence mode="popLayout">
+                        {threadedComments.topLevel.map(comment => (
+                            <motion.div
+                                key={comment.id}
+                                layout
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{
+                                    layout: {
+                                        type: 'spring',
+                                        stiffness: 120,
+                                        damping: 20,
+                                        mass: 1.2,
+                                    },
+                                }}
+                            >
+                                <CommentItem
+                                    key={comment.id}
+                                    comment={comment}
+                                    postId={postId}
+                                    childMap={threadedComments.childMap}
+                                    isAuthenticated={isAuthenticated}
+                                    currentUserId={user?.id}
+                                    isModerator={!!isModerator}
+                                    onReply={handleReply}
+                                    onDelete={handleDelete}
+                                    onToggleReaction={(cid, rt) => {
+                                        const type = rt.toLowerCase();
+                                        toggleReaction.mutate(
+                                            { postId, commentId: cid, reactionType: type },
+                                            {
+                                                onSuccess: (res: any) => {
+                                                    const action = res?.action;
+                                                    if (action === 'removed') {
+                                                        toast.success('Reacción eliminada');
+                                                    } else if (
+                                                        action === 'added' ||
+                                                        action === 'swapped'
+                                                    ) {
+                                                        toast.success('¡Reacción guardada!');
+                                                    }
+                                                },
+                                                onError: (err: any) => {
+                                                    toast.error(
+                                                        err.response?.data?.error ||
+                                                            'Error al procesar la reacción'
+                                                    );
+                                                },
+                                            }
+                                        );
+                                    }}
+                                    onLoginPrompt={onLoginPrompt}
+                                    depth={0}
+                                />
+                            </motion.div>
+                        ))}
+                    </AnimatePresence>
                 </div>
             )}
 
@@ -214,24 +266,28 @@ export function CommentSection({
 
 interface CommentItemProps {
     comment: TablonComment;
+    postId: string;
     childMap: Record<string, TablonComment[]>;
     isAuthenticated: boolean;
     currentUserId?: string;
     isModerator: boolean;
     onReply: (id: string) => void;
     onDelete: (id: string) => void;
+    onToggleReaction: (commentId: string, reactionType: string) => void;
     onLoginPrompt: () => void;
     depth: number;
 }
 
 function CommentItem({
     comment,
+    postId,
     childMap,
     isAuthenticated,
     currentUserId,
     isModerator,
     onReply,
     onDelete,
+    onToggleReaction,
     onLoginPrompt,
     depth,
 }: CommentItemProps) {
@@ -269,7 +325,63 @@ function CommentItem({
                         className="mt-1"
                         textClassName="text-sm text-gray-300 break-words whitespace-pre-wrap"
                     />
-                    <div className="flex gap-3 mt-2">
+                    <div className="flex gap-4 mt-2 items-center">
+                        <div className="flex items-center bg-white/5 rounded-lg p-0.5 border border-white/5">
+                            <button
+                                onClick={() => {
+                                    if (!isAuthenticated) {
+                                        onLoginPrompt();
+                                        return;
+                                    }
+                                    onToggleReaction(comment.id, 'like');
+                                }}
+                                className={`p-1.5 flex items-center gap-1 text-[10px] font-black uppercase tracking-widest transition-all rounded-md ${
+                                    comment.userReaction === 'like'
+                                        ? 'text-orange-500 bg-orange-500/10'
+                                        : 'text-gray-500 hover:text-orange-400 hover:bg-white/5'
+                                }`}
+                                title="Me gusta"
+                            >
+                                <Heart
+                                    size={12}
+                                    strokeWidth={3}
+                                    fill={comment.userReaction === 'like' ? 'currentColor' : 'none'}
+                                />
+                                {comment.reactions?.['like'] > 0 && (
+                                    <span className="ml-0.5">{comment.reactions['like']}</span>
+                                )}
+                            </button>
+
+                            <div className="w-[1px] h-3 bg-white/10 mx-0.5" />
+
+                            <button
+                                onClick={() => {
+                                    if (!isAuthenticated) {
+                                        onLoginPrompt();
+                                        return;
+                                    }
+                                    onToggleReaction(comment.id, 'dislike');
+                                }}
+                                className={`p-1.5 flex items-center gap-1 text-[10px] font-black uppercase tracking-widest transition-all rounded-md ${
+                                    comment.userReaction === 'dislike'
+                                        ? 'text-blue-500 bg-blue-500/10'
+                                        : 'text-gray-500 hover:text-blue-400 hover:bg-white/5'
+                                }`}
+                                title="No me gusta"
+                            >
+                                <ThumbsDown
+                                    size={12}
+                                    strokeWidth={3}
+                                    fill={
+                                        comment.userReaction === 'dislike' ? 'currentColor' : 'none'
+                                    }
+                                />
+                                {comment.reactions?.['dislike'] > 0 && (
+                                    <span className="ml-0.5">{comment.reactions['dislike']}</span>
+                                )}
+                            </button>
+                        </div>
+
                         <button
                             onClick={() => {
                                 if (!isAuthenticated) {
@@ -278,18 +390,18 @@ function CommentItem({
                                 }
                                 onReply(comment.id);
                             }}
-                            className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-orange-400 transition-colors"
+                            className="flex items-center justify-center text-gray-500 hover:text-orange-400 transition-colors p-2 rounded-lg hover:bg-white/5"
+                            title="Responder"
                         >
-                            <CornerDownRight size={10} strokeWidth={3} />
-                            Responder
+                            <CornerDownRight size={14} strokeWidth={3} />
                         </button>
                         {canDelete && (
                             <button
                                 onClick={() => onDelete(comment.id)}
-                                className="flex items-center gap-1 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-red-400 transition-colors"
+                                className="flex items-center justify-center text-gray-500 hover:text-red-400 transition-colors p-2 rounded-lg hover:bg-white/5"
+                                title="Eliminar"
                             >
-                                <Trash2 size={10} strokeWidth={3} />
-                                Eliminar
+                                <Trash2 size={14} strokeWidth={3} />
                             </button>
                         )}
                     </div>
@@ -305,12 +417,14 @@ function CommentItem({
                         <CommentItem
                             key={reply.id}
                             comment={reply}
+                            postId={postId}
                             childMap={childMap}
                             isAuthenticated={isAuthenticated}
                             currentUserId={currentUserId}
                             isModerator={isModerator}
                             onReply={onReply}
                             onDelete={onDelete}
+                            onToggleReaction={onToggleReaction}
                             onLoginPrompt={onLoginPrompt}
                             depth={depth + 1}
                         />

@@ -58,6 +58,9 @@ const SETTINGS_TRANSLATIONS = {
         isPickupOnly: 'Только самовывоз на сегодня',
         isPickupOnlyDesc:
             'Если включено, клиенты смогут сделать заказ на сегодня, но только с забором из ресторана. Доставка будет отключена.',
+        isReservationsTodayClosed: 'Закрыть резервы на сегодня',
+        isReservationsTodayClosedDesc:
+            'Если включено, клиенты не смогут забронировать стол на сегодня (все столы заняты), но смогут на будущие даты.',
     },
     es: {
         title: 'Configuración de Contactos',
@@ -108,6 +111,9 @@ const SETTINGS_TRANSLATIONS = {
         isPickupOnly: 'Sólo recogida hoy',
         isPickupOnlyDesc:
             'Si se activa, los clientes podrán pedir para hoy pero solo para recoger en el local. El reparto a domicilio quedará desactivado.',
+        isReservationsTodayClosed: 'Cerrar reservas para hoy',
+        isReservationsTodayClosedDesc:
+            'Si se activa, los clientes не смогут забронировать стол на сегодня (мест нет), но смогут на будущие даты.',
     },
 } as const;
 
@@ -140,6 +146,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 ratingReviewsCount: data.ratingReviewsCount || 543,
                 isTodayClosed: data.isTodayClosed === 'true',
                 isPickupOnly: data.isPickupOnly === 'true',
+                isReservationsTodayClosed: data.isReservationsTodayClosed === 'true',
             };
         },
         refetchOnWindowFocus: false,
@@ -295,6 +302,39 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                         isTodayClosed: e.target.checked
                                             ? false
                                             : localSettings.isTodayClosed,
+                                    })
+                                }
+                                className="sr-only peer"
+                            />
+                            <div
+                                className="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer 
+                                           peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full 
+                                           peer-checked:after:border-white after:content-[''] after:absolute 
+                                           after:top-1 after:start-[4px] after:bg-white after:border-gray-300 
+                                           after:border after:rounded-full after:h-6 after:w-6 after:transition-all 
+                                           peer-checked:bg-orange-600"
+                            ></div>
+                        </label>
+                    </div>
+                </div>
+                <div className="flex flex-col md:flex-row gap-6 p-6 bg-orange-50/50 rounded-2xl border border-orange-100 mb-8">
+                    <div className="flex-1">
+                        <h4 className="text-sm font-black text-orange-900 uppercase tracking-tight mb-1">
+                            {t.isReservationsTodayClosed}
+                        </h4>
+                        <p className="text-[11px] text-orange-800/80 font-medium">
+                            {t.isReservationsTodayClosedDesc}
+                        </p>
+                    </div>
+                    <div className="flex items-center">
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={localSettings.isReservationsTodayClosed}
+                                onChange={e =>
+                                    setLocalSettings({
+                                        ...localSettings,
+                                        isReservationsTodayClosed: e.target.checked,
                                     })
                                 }
                                 className="sr-only peer"

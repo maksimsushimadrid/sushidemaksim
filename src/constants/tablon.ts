@@ -11,7 +11,7 @@ export const TABLON_DEFAULT_CATEGORIES = [
 ] as const;
 
 /** Maximum photos allowed per post */
-export const TABLON_MAX_IMAGES = 3;
+export const TABLON_MAX_IMAGES = 9;
 
 /** Maximum tags allowed per post */
 export const TABLON_MAX_TAGS = 3;

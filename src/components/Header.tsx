@@ -12,10 +12,14 @@ import HeaderLogo from './header/HeaderLogo';
 import DesktopNav from './header/DesktopNav';
 import CartButton from './header/CartButton';
 import UserActions from './header/UserActions';
+import { useAuth } from '../hooks/useAuth';
+import SafeImage from './common/SafeImage';
+import { getSharpAvatar } from '../utils/avatar';
 import MobileMenu from './header/MobileMenu';
 
 export default function Header() {
     const { itemCount, total, isLoading: cartLoading } = useCart();
+    const { user, isAuthenticated } = useAuth();
     const location = useLocation();
 
     // Global Header States
@@ -98,6 +102,15 @@ export default function Header() {
     const isTable = location.pathname === '/table';
     const isTransparentHeaderPage = (isHome || isProfile) && !isTable;
 
+    const initials = user
+        ? user.name
+              .split(' ')
+              .map(n => n[0])
+              .join('')
+              .toUpperCase()
+              .slice(0, 2)
+        : '';
+
     return (
         <>
             <header
@@ -161,7 +174,7 @@ export default function Header() {
 
                                     <button
                                         onClick={() => setShowMobileMenu(!showMobileMenu)}
-                                        className={`md:hidden border-none p-3 rounded-xl cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] transition-all ${
+                                        className={`md:hidden border-none p-1 rounded-xl cursor-pointer flex items-center justify-center min-w-[44px] min-h-[44px] transition-all ${
                                             isScrolled || !isHome
                                                 ? 'bg-gray-50 text-gray-800 shadow-sm hover:shadow-md'
                                                 : 'bg-white/15 text-white border border-white/20 backdrop-blur-md shadow-lg'
@@ -169,6 +182,35 @@ export default function Header() {
                                     >
                                         {showMobileMenu ? (
                                             <X size={22} strokeWidth={1.5} />
+                                        ) : isAuthenticated && user ? (
+                                            <div
+                                                className={`w-9 h-9 rounded-lg flex items-center justify-center text-[10px] font-black text-white shadow-sm overflow-hidden shrink-0
+                                                    ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[14px]' : 'bg-orange-600'}`}
+                                            >
+                                                {user.avatar ? (
+                                                    user.avatar.startsWith('http') ? (
+                                                        <SafeImage
+                                                            src={user.avatar}
+                                                            getOptimizedUrl={getSharpAvatar}
+                                                            alt={user.name}
+                                                            className="w-full h-full object-cover"
+                                                            fallbackContent={
+                                                                <span className="select-none text-[16px] text-gray-900">
+                                                                    {initials}
+                                                                </span>
+                                                            }
+                                                        />
+                                                    ) : (
+                                                        <span className="select-none text-[20px]">
+                                                            {user.avatar}
+                                                        </span>
+                                                    )
+                                                ) : (
+                                                    <span className="select-none text-[16px]">
+                                                        {initials}
+                                                    </span>
+                                                )}
+                                            </div>
                                         ) : (
                                             <Menu size={22} strokeWidth={1.5} />
                                         )}

@@ -13,6 +13,7 @@ import {
     Megaphone,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { compressImage } from '../../utils/imageCompression';
 import {
     useTablonCategories,
     useCreateTablonPost,
@@ -115,12 +116,14 @@ export function PostModal({ isOpen, onClose, post }: PostModalProps) {
                 }
 
                 for (const file of filesToUpload) {
-                    if (file.size > 5 * 1024 * 1024) {
-                        setError('Cada imagen debe pesar menos de 5MB');
-                        continue;
+                    try {
+                        const compressedFile = await compressImage(file);
+                        const result = await uploadImage.mutateAsync(compressedFile);
+                        setImages(prev => [...prev, result.url]);
+                    } catch (uploadError) {
+                        console.error('Failed to upload single image:', uploadError);
+                        // Continue with other images
                     }
-                    const result = await uploadImage.mutateAsync(file);
-                    setImages(prev => [...prev, result.url]);
                 }
             } catch {
                 setError('Error al subir las imágenes');
@@ -157,8 +160,8 @@ export function PostModal({ isOpen, onClose, post }: PostModalProps) {
             setError('Selecciona una categoría');
             return;
         }
-        if (message.trim().length < 10) {
-            setError('El mensaje debe tener al menos 10 caracteres');
+        if (message.trim().length < 25) {
+            setError('El mensaje debe tener al menos 25 caracteres');
             return;
         }
         if (!whatsappPhone.trim()) {
@@ -364,12 +367,12 @@ export function PostModal({ isOpen, onClose, post }: PostModalProps) {
                                 onChange={e => setMessage(e.target.value)}
                                 placeholder="Escribe tu anuncio aquí..."
                                 rows={4}
-                                maxLength={500}
-                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-500 resize-none focus:outline-none focus:border-orange-500/50 transition-colors"
+                                maxLength={2000}
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-500 resize-none focus:outline-none focus:border-orange-500/50 transition-colors h-48"
                                 data-testid="post-message"
                             />
                             <p className="text-xs text-gray-500 mt-1 text-right">
-                                {message.length}/500
+                                {message.length}/2000
                             </p>
                         </div>
 
