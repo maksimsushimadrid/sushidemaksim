@@ -28,83 +28,84 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
     // Intensity of the 'fisheye' bump: From 2.2x up to 4.5x
     const bulgeFactor = 2.2 + scaleRatio * 2.3;
 
+    const bagVariants = {
+        idle: {
+            scaleX: baseScale,
+            scaleY: baseScale,
+            borderRadius: `${15 + scaleRatio * 15}% / 100%`,
+            y: 0,
+            rotate: 0,
+        },
+        bump: {
+            // Aggressive horizontal scaling for side bulge
+            scaleX: [baseScale, baseScale * bulgeFactor * 1.5, baseScale * 0.9, baseScale],
+            scaleY: [baseScale, baseScale * bulgeFactor * 0.7, baseScale * 1.05, baseScale],
+            borderRadius: [
+                `${15 + scaleRatio * 15}% / 100%`,
+                '50% / 100%',
+                '5% / 100%',
+                `${15 + scaleRatio * 15}% / 100%`,
+            ],
+            y: [0, 8, -4, 0],
+            rotate: [0, -5, 5, 0],
+        },
+    };
+
     return (
         <div className="flex items-center gap-2 md:gap-3">
             <motion.div className="relative cursor-pointer overflow-visible group">
                 <Link
                     id="cart-icon"
                     to="/cart"
-                    className="relative no-underline transition-all flex items-center justify-center min-w-[52px] min-h-[52px] active:scale-90"
+                    className="relative no-underline transition-all flex items-center justify-center min-w-[80px] min-h-[80px] active:scale-90"
                 >
-                    {/* The Bag Image with Fisheye Distortion */}
-                    <motion.img
-                        key={itemCount}
-                        src="/cart.png"
-                        alt="Cart"
-                        className="w-12 h-12 object-contain z-10"
-                        animate={{
-                            scaleX: isCartBumping
-                                ? [
-                                      baseScale,
-                                      baseScale * bulgeFactor * 1.3,
-                                      baseScale * 0.5,
-                                      baseScale * 1.15,
-                                      baseScale,
-                                  ]
-                                : baseScale,
-                            scaleY: isCartBumping
-                                ? [
-                                      baseScale,
-                                      baseScale * bulgeFactor * 0.7,
-                                      baseScale * 0.9,
-                                      baseScale * 1.05,
-                                      baseScale,
-                                  ]
-                                : baseScale,
-                            y: isCartBumping ? [0, 20, -15, 0] : 0,
-                            rotate: isCartBumping ? [0, -25, 25, 0] : 0,
-                        }}
-                        transition={{
-                            duration: 0.8,
-                            type: 'spring',
-                            stiffness: 400,
-                            damping: 10,
-                        }}
-                        style={{
-                            filter: isCartBumping
-                                ? `drop-shadow(0 15px 25px rgba(0,0,0,0.25))`
-                                : `drop-shadow(0 8px 12px rgba(0,0,0,${0.1 + scaleRatio * 0.1}))`,
-                        }}
-                    />
+                    {/* Wrapper to pin the badge to the bag */}
+                    <div className="relative">
+                        {/* The Bag Image with Fisheye Distortion and Dynamic Rounding */}
+                        <motion.img
+                            src="/cart.png"
+                            alt="Cart"
+                            className="w-11 h-11 object-cover z-10 overflow-hidden"
+                            variants={bagVariants}
+                            initial="idle"
+                            animate={isCartBumping ? 'bump' : 'idle'}
+                            transition={{
+                                duration: 1.0,
+                                type: 'spring',
+                                stiffness: 120,
+                                damping: 12,
+                            }}
+                        />
+
+                        <AnimatePresence>
+                            {!cartLoading && itemCount > 0 && (
+                                <motion.span
+                                    key={itemCount}
+                                    initial={{ scale: 0, opacity: 0, y: 15 }}
+                                    animate={{
+                                        scale: [0, 1.8, 1],
+                                        opacity: 1,
+                                        y: 0,
+                                    }}
+                                    exit={{ scale: 0, opacity: 0 }}
+                                    transition={{
+                                        type: 'spring',
+                                        stiffness: 800,
+                                        damping: 12,
+                                    }}
+                                    className="absolute -top-2 -right-2 bg-orange-600 text-white text-[13px] font-black rounded-full min-w-[24px] h-[24px] flex items-center justify-center px-1 shadow-2xl border-2 border-white z-20"
+                                >
+                                    {itemCount}
+                                </motion.span>
+                            )}
+                        </AnimatePresence>
+                    </div>
 
                     {!cartLoading && total > 0 && (
                         <span className="hidden md:block ml-2 text-[16px] font-black whitespace-nowrap text-gray-900 bg-white/95 backdrop-blur-xl px-3.5 py-2 rounded-2xl border border-gray-100 shadow-2xl">
                             {total.toFixed(2)} €
                         </span>
                     )}
-
-                    <AnimatePresence>
-                        {!cartLoading && itemCount > 0 && (
-                            <motion.span
-                                key={itemCount}
-                                initial={{ scale: 0, opacity: 0, y: 15 }}
-                                animate={{
-                                    scale: [0, 1.8, 1],
-                                    opacity: 1,
-                                    y: 0,
-                                }}
-                                exit={{ scale: 0, opacity: 0 }}
-                                transition={{
-                                    type: 'spring',
-                                    stiffness: 800,
-                                    damping: 12,
-                                }}
-                                className="absolute -top-1 -right-1 bg-orange-600 text-white text-[13px] font-black rounded-full min-w-[26px] h-[26px] flex items-center justify-center px-1 shadow-2xl border-2 border-white z-20"
-                            >
-                                {itemCount}
-                            </motion.span>
-                        )}
-                    </AnimatePresence>
                 </Link>
             </motion.div>
         </div>
