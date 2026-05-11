@@ -32,7 +32,10 @@ export default function PrivacyPage() {
                         <div className="space-y-8 text-gray-600 leading-relaxed">
                             <section>
                                 <p className="mb-4">
-                                    En <strong>Sushi de Maksim</strong>, valoramos tu privacidad y nos comprometemos a proteger tus datos personales. Esta política explica cómo recopilamos, usamos y protegemos tu información de acuerdo con el Reglamento General de Protección de Datos (RGPD).
+                                    En <strong>Sushi de Maksim</strong>, valoramos tu privacidad y
+                                    nos comprometemos a proteger tus datos personales. Esta política
+                                    explica cómo recopilamos, usamos y protegemos tu información de
+                                    acuerdo con el Reglamento General de Protección de Datos (RGPD).
                                 </p>
                             </section>
 
@@ -41,11 +44,22 @@ export default function PrivacyPage() {
                                     <Database className="text-orange-600" size={20} />
                                     Datos que recopilamos
                                 </h2>
-                                <p className="mb-2">Para procesar tus pedidos y mejorar tu experiencia, recopilamos:</p>
+                                <p className="mb-2">
+                                    Para procesar tus pedidos y mejorar tu experiencia, recopilamos:
+                                </p>
                                 <ul className="list-disc ml-5 space-y-2">
-                                    <li><strong>Información de contacto:</strong> Nombre, apellidos, número de teléfono y dirección de correo electrónico.</li>
-                                    <li><strong>Información de entrega:</strong> Dirección completa para el envío de tus pedidos en Madrid.</li>
-                                    <li><strong>Datos de navegación:</strong> Información sobre cómo utilizas nuestro sitio web para mejorar el servicio.</li>
+                                    <li>
+                                        <strong>Información de contacto:</strong> Nombre, apellidos,
+                                        número de teléfono y dirección de correo electrónico.
+                                    </li>
+                                    <li>
+                                        <strong>Información de entrega:</strong> Dirección completa
+                                        para el envío de tus pedidos en Madrid.
+                                    </li>
+                                    <li>
+                                        <strong>Datos de navegación:</strong> Información sobre cómo
+                                        utilizas nuestro sitio web para mejorar el servicio.
+                                    </li>
                                 </ul>
                             </section>
 
@@ -58,7 +72,10 @@ export default function PrivacyPage() {
                                 <ul className="list-disc ml-5 mt-2 space-y-1 text-sm">
                                     <li>Gestionar y entregar tus pedidos de sushi.</li>
                                     <li>Enviarte actualizaciones sobre el estado de tu pedido.</li>
-                                    <li>Comunicarte ofertas especiales (solo si has dado tu consentimiento).</li>
+                                    <li>
+                                        Comunicarte ofertas especiales (solo si has dado tu
+                                        consentimiento).
+                                    </li>
                                     <li>Cumplir con nuestras obligaciones legales y contables.</li>
                                 </ul>
                             </section>
@@ -69,7 +86,10 @@ export default function PrivacyPage() {
                                     Seguridad de tus datos
                                 </h2>
                                 <p>
-                                    Implementamos medidas técnicas y organizativas para garantizar que tu información esté segura. No vendemos ni compartimos tus datos personales con terceros para fines comerciales ajenos a Sushi de Maksim.
+                                    Implementamos medidas técnicas y organizativas para garantizar
+                                    que tu información esté segura. No vendemos ni compartimos tus
+                                    datos personales con terceros para fines comerciales ajenos a
+                                    Sushi de Maksim.
                                 </p>
                             </section>
 
@@ -79,13 +99,25 @@ export default function PrivacyPage() {
                                     Tus derechos
                                 </h2>
                                 <p className="mb-4">
-                                    Tienes derecho a acceder, rectificar, limitar o solicitar la eliminación de tus datos personales en cualquier momento.
+                                    Tienes derecho a acceder, rectificar, limitar o solicitar la
+                                    eliminación de tus datos personales en cualquier momento.
                                 </p>
                                 <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
                                     <Mail className="text-orange-600 shrink-0" size={20} />
                                     <div>
-                                        <p className="text-sm font-bold text-gray-900">¿Quieres eliminar tus datos?</p>
-                                        <p className="text-xs">Escríbenos a <a href="mailto:alekseevpo@gmail.com" className="text-orange-600 hover:underline">alekseevpo@gmail.com</a> y procesaremos tu solicitud de inmediato.</p>
+                                        <p className="text-sm font-bold text-gray-900">
+                                            ¿Quieres eliminar tus datos?
+                                        </p>
+                                        <p className="text-xs">
+                                            Escríbenos a{' '}
+                                            <a
+                                                href="mailto:alekseevpo@gmail.com"
+                                                className="text-orange-600 hover:underline"
+                                            >
+                                                alekseevpo@gmail.com
+                                            </a>{' '}
+                                            y procesaremos tu solicitud de inmediato.
+                                        </p>
                                     </div>
                                 </div>
                             </section>
