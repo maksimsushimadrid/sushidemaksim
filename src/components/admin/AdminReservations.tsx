@@ -71,7 +71,9 @@ const RESERVATIONS_TRANSLATIONS = {
             confirm: 'Подтвердить',
             cancel: 'Отменить',
             delete: 'Удалить',
+            whatsapp: 'WhatsApp',
         },
+        createdAt: 'Создано:',
     },
     es: {
         title: 'Reservas',
@@ -105,7 +107,9 @@ const RESERVATIONS_TRANSLATIONS = {
             confirm: 'Confirmar',
             cancel: 'Cancelar',
             delete: 'Eliminar',
+            whatsapp: 'WhatsApp',
         },
+        createdAt: 'Creado:',
     },
 } as const;
 
@@ -313,6 +317,11 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                                                 </span>
                                             </span>
                                         </h3>
+                                        <div className="w-1 h-1 bg-gray-200 rounded-full" />
+                                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                                            {(t as any).createdAt}{' '}
+                                            {format(new Date(res.created_at), 'dd.MM.yyyy HH:mm')}
+                                        </span>
                                     </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -363,6 +372,35 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                                 </div>
 
                                 <div className="flex flex-wrap gap-3 lg:w-48 justify-end">
+                                    <button
+                                        onClick={() => {
+                                            const cleanPhone = res.phone.replace(/\D/g, '');
+                                            const dateStr = format(
+                                                new Date(res.reservation_date),
+                                                language === 'ru'
+                                                    ? 'eeee, d MMMM'
+                                                    : "eeee, d 'de' MMMM",
+                                                { locale: dateLocale }
+                                            );
+                                            const capitalizedDate =
+                                                dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+
+                                            const message =
+                                                language === 'ru'
+                                                    ? `Здравствуйте, ${res.name}! Ваше бронирование подтверждено на ${capitalizedDate} в ${res.reservation_time} (${res.guests} чел.). Ждем вас!`
+                                                    : `Hola ${res.name}, tu reserva está confirmada para el ${capitalizedDate} a las ${res.reservation_time} (${res.guests} personas). ¡Te esperamos!`;
+
+                                            window.open(
+                                                `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`,
+                                                '_blank'
+                                            );
+                                        }}
+                                        className="h-14 w-14 rounded-2xl bg-[#25D366] text-white flex items-center justify-center hover:bg-black transition-all shadow-xl shadow-green-100 active:scale-90"
+                                        title={(t as any).actions.whatsapp}
+                                    >
+                                        <MessageSquare size={24} strokeWidth={2.5} />
+                                    </button>
+
                                     {res.status === 'pending' && (
                                         <>
                                             <button

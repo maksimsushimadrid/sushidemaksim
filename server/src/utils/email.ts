@@ -873,7 +873,7 @@ export async function sendReservationEmail(
                               month: 'long',
                           });
                           dateStr = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
-                          const waMessage = `Hola ${reservationData.name}, confirmo tu reserva para el ${dateStr} a las ${reservationData.reservation_time} (${reservationData.guests} personas). ¡Te esperamos!`;
+                          const waMessage = `Hola ${reservationData.name}, tu reserva está confirmada para el ${dateStr} a las ${reservationData.reservation_time} (${reservationData.guests} personas). ¡Te esperamos!`;
                           const cleanPhone = reservationData.phone.replace(/\D/g, '');
                           const waUrl = `https://wa.me/${cleanPhone}/?text=${encodeURIComponent(waMessage)}`;
 
