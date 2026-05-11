@@ -30,70 +30,52 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
 
     return (
         <div className="flex items-center gap-2 md:gap-3">
-            <motion.div
-                animate={{
-                    y: isCartBumping ? [0, 18, -12, 0] : 0,
-                    // Intensified non-uniform scaling for fish-eye
-                    scaleX: isCartBumping
-                        ? [
-                              baseScale,
-                              baseScale * bulgeFactor * 1.2,
-                              baseScale * 0.6,
-                              baseScale * 1.1,
-                              baseScale,
-                          ]
-                        : baseScale,
-                    scaleY: isCartBumping
-                        ? [
-                              baseScale,
-                              baseScale * bulgeFactor * 0.8,
-                              baseScale * 0.9,
-                              baseScale * 1.05,
-                              baseScale,
-                          ]
-                        : baseScale,
-                    rotate: isCartBumping ? [0, -20, 20, 0] : 0,
-                }}
-                transition={{
-                    duration: 0.85,
-                    type: 'spring',
-                    stiffness: 450,
-                    damping: 10,
-                }}
-                className="relative cursor-pointer overflow-visible group"
-            >
+            <motion.div className="relative cursor-pointer overflow-visible group">
                 <Link
                     id="cart-icon"
                     to="/cart"
                     className="relative no-underline transition-all flex items-center justify-center min-w-[60px] min-h-[60px] active:scale-90"
                 >
-                    {/* The Bag Image */}
-                    <img
+                    {/* The Bag Image with Fisheye Distortion */}
+                    <motion.img
+                        key={itemCount}
                         src="/cart.png"
                         alt="Cart"
-                        className="w-16 h-16 object-contain transition-all"
+                        className="w-16 h-16 object-contain z-10"
+                        animate={{
+                            scaleX: isCartBumping
+                                ? [
+                                      baseScale,
+                                      baseScale * bulgeFactor * 1.2,
+                                      baseScale * 0.7,
+                                      baseScale * 1.05,
+                                      baseScale,
+                                  ]
+                                : baseScale,
+                            scaleY: isCartBumping
+                                ? [
+                                      baseScale,
+                                      baseScale * bulgeFactor * 0.8,
+                                      baseScale * 0.9,
+                                      baseScale * 1.02,
+                                      baseScale,
+                                  ]
+                                : baseScale,
+                            y: isCartBumping ? [0, 15, -10, 0] : 0,
+                            rotate: isCartBumping ? [0, -15, 15, 0] : 0,
+                        }}
+                        transition={{
+                            duration: 0.8,
+                            type: 'spring',
+                            stiffness: 400,
+                            damping: 10,
+                        }}
                         style={{
                             filter: isCartBumping
-                                ? `drop-shadow(0 0 30px rgba(234, 88, 12, ${0.4 + scaleRatio * 0.4})) brightness(1.2)`
+                                ? `drop-shadow(0 0 25px rgba(234, 88, 12, 0.4))`
                                 : `drop-shadow(0 8px 12px rgba(0,0,0,${0.1 + scaleRatio * 0.1}))`,
                         }}
                     />
-
-                    {/* Fisheye / Spherical Reflection Overlay */}
-                    <AnimatePresence>
-                        {isCartBumping && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.3 }}
-                                animate={{ opacity: 0.8, scale: 1.4 }}
-                                exit={{ opacity: 0 }}
-                                className="absolute inset-0 rounded-full pointer-events-none z-10"
-                                style={{
-                                    background:
-                                        'radial-gradient(circle at 35% 35%, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 50%, rgba(0,0,0,0.1) 100%)',
-                                }}
-                            />
-                        )}
-                    </AnimatePresence>
 
                     {!cartLoading && total > 0 && (
                         <span className="hidden md:block ml-2 text-[16px] font-black whitespace-nowrap text-gray-900 bg-white/95 backdrop-blur-xl px-3.5 py-2 rounded-2xl border border-gray-100 shadow-2xl">
