@@ -8,19 +8,11 @@ const STATIC_ROUTES = [
     { url: '', changefreq: 'daily', priority: '1.0' },
     { url: '/menu', changefreq: 'weekly', priority: '0.9' },
     { url: '/promo', changefreq: 'weekly', priority: '0.8' },
-    { url: '/contacts', changefreq: 'weekly', priority: '0.7' },
+    { url: '/reservar', changefreq: 'monthly', priority: '0.8' },
+    { url: '/contacts', changefreq: 'monthly', priority: '0.7' },
     { url: '/tablon', changefreq: 'daily', priority: '0.8' },
-];
-
-const MENU_CATEGORIES = [
-    'entrantes',
-    'rollos-grandes',
-    'rollos-clasicos',
-    'rollos-fritos',
-    'sopas',
-    'menus',
-    'extras',
-    'postre',
+    { url: '/partners', changefreq: 'monthly', priority: '0.5' },
+    { url: '/refund-policy', changefreq: 'monthly', priority: '0.3' },
 ];
 
 router.get('/', async (req: Request, res: Response) => {
@@ -37,17 +29,6 @@ router.get('/', async (req: Request, res: Response) => {
         <priority>${route.priority}</priority>
     </url>`
         ).join('\n');
-
-        // 2. Menu Categories
-        const categoryItems = MENU_CATEGORIES.map(
-            cat => `    <url>
-        <loc>${baseUrl}/menu?category=${cat}</loc>
-        <lastmod>${today}</lastmod>
-        <changefreq>weekly</changefreq>
-        <priority>0.7</priority>
-    </url>`
-        ).join('\n');
-        xmlItems += '\n' + categoryItems;
 
         // 3. Dynamic Tablón Posts
         const { data: posts } = await supabase

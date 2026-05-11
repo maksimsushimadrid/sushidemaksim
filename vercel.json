@@ -22,6 +22,21 @@
             ],
             "destination": "https://www.sushidemaksim.com/$1",
             "permanent": true
+        },
+        {
+            "source": "/blog/:slug",
+            "destination": "/tablon",
+            "permanent": true
+        },
+        {
+            "source": "/blog",
+            "destination": "/tablon",
+            "permanent": true
+        },
+        {
+            "source": "/contacto",
+            "destination": "/contacts",
+            "permanent": true
         }
     ],
     "rewrites": [
