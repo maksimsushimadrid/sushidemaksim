@@ -877,6 +877,48 @@ router.get(
     })
 );
 
+// GET /api/tablon/moderation/approved — List already approved posts
+router.get(
+    '/moderation/approved',
+    authMiddleware,
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const { data: currentUser } = await supabase
+            .from('users')
+            .select('role, is_superadmin')
+            .eq('id', req.userId)
+            .single();
+
+        const isModerator =
+            currentUser?.role === 'moderator' ||
+            currentUser?.role === 'admin' ||
+            !!currentUser?.is_superadmin;
+
+        if (!isModerator) {
+            return res.status(403).json({ error: 'Acceso denegado' });
+        }
+
+        const { data: posts, error } = await supabase
+            .from('tablon_posts')
+            .select(
+                `id, user_id, category_id, tags, message, whatsapp_phone, images, is_approved, moderation_status, created_at, updated_at,
+                 users!tablon_posts_user_id_fkey(id, name, avatar),
+                 tablon_categories!tablon_posts_category_id_fkey(id, name, emoji)`
+            )
+            .eq('moderation_status', 'approved')
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            return res.status(500).json({ error: 'Error al obtener publicaciones aprobadas' });
+        }
+
+        res.json({
+            posts: (posts || []).map((p: any) =>
+                formatTablonPost(p, true, 0, [], req.userId || null)
+            ),
+        });
+    })
+);
+
 // PATCH /api/tablon/categories/:id/approve — Approve a suggested category
 router.patch(
     '/categories/:id/approve',
