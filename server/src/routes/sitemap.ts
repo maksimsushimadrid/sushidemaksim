@@ -13,6 +13,7 @@ const STATIC_ROUTES = [
     { url: '/tablon', changefreq: 'daily', priority: '0.8' },
     { url: '/partners', changefreq: 'monthly', priority: '0.5' },
     { url: '/refund-policy', changefreq: 'monthly', priority: '0.3' },
+    { url: '/privacy', changefreq: 'monthly', priority: '0.3' },
 ];
 
 router.get('/', async (req: Request, res: Response) => {

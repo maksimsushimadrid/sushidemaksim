@@ -26,6 +26,7 @@ import reservationsRoutes from './routes/reservations.js';
 import reportsRoutes from './routes/reports.js';
 import sitemapRoutes from './routes/sitemap.js';
 import merchantRoutes from './routes/merchant.js';
+import threadsRoutes from './routes/threads.js';
 
 const app = express();
 console.log('DEBUG: Express app initialized');
@@ -70,6 +71,7 @@ app.use('/api/delivery-zones', deliveryZonesRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/reservations', reservationsRoutes);
 app.use('/api/admin/reports', reportsRoutes);
+app.use('/api/threads', threadsRoutes);
 
 // ─── Invitations Social Preview (Priority) ────────────────────────────────────
 // Handles Telegram/WhatsApp link previews BEFORE the React frontend can override them
