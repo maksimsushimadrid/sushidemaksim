@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag } from 'lucide-react';
 import { useRef, useEffect, useState } from 'react';
 
 interface CartButtonProps {
@@ -21,13 +20,6 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
         }
         prevCountRef.current = itemCount;
     }, [itemCount]);
-
-    // Dynamic animation based on weight (itemCount)
-    // The more items, the heavier it drops (y) and bulges (scaleX)
-    const weightFactor = Math.min(itemCount, 10); // Cap the effect
-    const dropAmount = isCartBumping ? [0, 2 + weightFactor * 0.5, 0] : 0;
-    const squashScaleX = isCartBumping ? [1, 1.1 + weightFactor * 0.02, 0.95, 1] : 1;
-    const squashScaleY = isCartBumping ? [1, 0.9 - weightFactor * 0.02, 1.05, 1] : 1;
 
     const remainingToFreeDelivery = 80 - total;
     const showFreeDeliveryHint = total >= 50 && total < 80;
@@ -54,46 +46,50 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
 
             <motion.div
                 animate={{
-                    y: dropAmount,
-                    scaleX: squashScaleX,
-                    scaleY: squashScaleY,
-                    rotate: isCartBumping ? [0, -3, 3, 0] : 0,
+                    y: isCartBumping ? [0, 5, -2, 0] : 0,
+                    scale: isCartBumping ? [1, 1.4, 0.85, 1.1, 1] : 1,
+                    rotate: isCartBumping ? [0, -10, 10, -5, 5, 0] : 0,
                 }}
                 transition={{
-                    duration: 0.4,
-                    ease: 'easeInOut',
+                    duration: 0.6,
+                    ease: 'anticipate',
                 }}
+                className="relative cursor-pointer"
             >
                 <Link
                     id="cart-icon"
                     to="/cart"
-                    className="relative p-2.5 no-underline rounded-xl transition-all flex items-center justify-center min-w-[40px] min-h-[40px] text-white bg-orange-600 shadow-lg shadow-orange-600/20 active:scale-95"
+                    className="relative no-underline transition-all flex items-center justify-center min-w-[44px] min-h-[44px] active:scale-90"
                 >
-                    {/* Visual indicator of weight inside the bag icon can be simulated by adding a slight strokeWidth change or fill if supported, 
-                    but just using ShoppingBag works well. */}
-                    <ShoppingBag size={20} strokeWidth={2.5} />
+                    <img
+                        src="/cart.png"
+                        alt="Cart"
+                        className="w-10 h-10 object-contain drop-shadow-md"
+                        style={{ filter: isCartBumping ? 'brightness(1.1)' : 'none' }}
+                    />
+
                     {!cartLoading && total > 0 && (
-                        <span className="hidden md:block ml-1.5 text-[13px] font-black whitespace-nowrap text-white">
+                        <span className="hidden md:block ml-2 text-[14px] font-black whitespace-nowrap text-gray-900 bg-white/80 backdrop-blur-sm px-2 py-1 rounded-lg border border-gray-100 shadow-sm">
                             {total.toFixed(2)} €
                         </span>
                     )}
+
                     <AnimatePresence>
                         {!cartLoading && itemCount > 0 && (
                             <motion.span
                                 key={itemCount}
-                                initial={{ scale: 0.5, opacity: 0 }}
+                                initial={{ scale: 0, opacity: 0 }}
                                 animate={{
-                                    scale: [0.5, 1.3 + weightFactor * 0.05, 1],
+                                    scale: [0, 1.5, 1],
                                     opacity: 1,
                                 }}
                                 exit={{ scale: 0, opacity: 0 }}
                                 transition={{
                                     type: 'spring',
-                                    stiffness: 500,
-                                    damping: Math.max(15 - weightFactor * 0.5, 8), // Gets less bouncy as it's heavier
-                                    mass: 1 + weightFactor * 0.1, // Heavier mass
+                                    stiffness: 600,
+                                    damping: 15,
                                 }}
-                                className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] font-black rounded-lg min-w-[20px] h-[20px] flex items-center justify-center px-1 shadow-md border-2 border-white"
+                                className="absolute -top-1 -right-1 bg-orange-600 text-white text-[11px] font-black rounded-full min-w-[22px] h-[22px] flex items-center justify-center px-1 shadow-lg border-2 border-white"
                             >
                                 {itemCount}
                             </motion.span>
