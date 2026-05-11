@@ -253,7 +253,7 @@ export default function MenuPage() {
             // Remove flying element after animation finishes
             setTimeout(() => {
                 setFlyingItems(prev => prev.filter(f => f.id !== animId));
-            }, 900);
+            }, 1000);
         } catch (err) {
             console.error('Animation error:', err);
         }

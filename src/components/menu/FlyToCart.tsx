@@ -42,22 +42,25 @@ export default function FlyToCart({ items }: FlyToCartProps) {
                         rotate: [0, -15, 15],
                     }}
                     transition={{
-                        duration: 0.7,
-                        x: { ease: 'easeInOut', duration: 0.7 },
+                        duration: 0.8,
+                        ease: [0.22, 1, 0.36, 1], // Smooth custom cubic bezier
+                        x: {
+                            duration: 0.8,
+                            ease: [0.4, 0, 0.2, 1],
+                        },
                         y: {
-                            ease: ['easeOut', 'easeIn'],
-                            times: [0, 0.35, 1],
-                            duration: 0.7,
+                            duration: 0.8,
+                            ease: [0, 0.55, 0.45, 1], // Different ease for Y to create an arc
+                            times: [0, 0.4, 1],
                         },
                         scale: {
+                            duration: 0.8,
                             ease: 'easeIn',
-                            times: [0, 0.4, 1],
-                            duration: 0.7,
                         },
                         opacity: {
+                            duration: 0.8,
                             ease: 'linear',
-                            times: [0, 0.8, 1],
-                            duration: 0.7,
+                            times: [0, 0.85, 1],
                         },
                     }}
                     className="fixed top-0 left-0 z-[1000] pointer-events-none rounded-full overflow-hidden shadow-lg flex items-center justify-center bg-white border-2 border-orange-500"

@@ -14,9 +14,13 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
 
     useEffect(() => {
         if (itemCount > prevCountRef.current) {
-            setIsCartBumping(true);
-            const timer = setTimeout(() => setIsCartBumping(false), 800);
-            return () => clearTimeout(timer);
+            // Delay bump to sync with flying item arrival (~0.7s flight)
+            const delayTimer = setTimeout(() => {
+                setIsCartBumping(true);
+                const resetTimer = setTimeout(() => setIsCartBumping(false), 600);
+                return () => clearTimeout(resetTimer);
+            }, 700);
+            return () => clearTimeout(delayTimer);
         }
         prevCountRef.current = itemCount;
     }, [itemCount]);
@@ -46,8 +50,8 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
                 '5% / 100%',
                 `${15 + scaleRatio * 15}% / 100%`,
             ],
-            y: [0, 8, -4, 0],
-            rotate: [0, -5, 5, 0],
+            y: [0, -6, 4, -3, 2, 0],
+            rotate: [0, -8, 8, -6, 6, -3, 3, 0],
         },
     };
 
@@ -63,7 +67,7 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
                     <div className="relative">
                         {/* The Bag Image with Fisheye Distortion and Dynamic Rounding */}
                         <motion.img
-                            src="/cart.png"
+                            src="/cart.webp"
                             alt="Cart"
                             className="w-11 h-11 object-cover z-10 overflow-hidden"
                             variants={bagVariants}
