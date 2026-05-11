@@ -69,4 +69,64 @@ router.get('/callback', async (req: Request, res: Response) => {
     }
 });
 
+// 3. Sync Posts
+router.get('/sync', async (req: Request, res: Response) => {
+    try {
+        // A. Get token from DB
+        const { data: integration, error: dbError } = await supabase
+            .from('integrations')
+            .select('*')
+            .eq('service', 'threads')
+            .single();
+
+        if (dbError || !integration) {
+            return res.status(404).json({ error: 'Threads integration not found. Please authenticate first.' });
+        }
+
+        // B. Fetch posts from Threads Graph API
+        const threadsResponse = await axios.get(
+            `https://graph.threads.net/v1.0/me/threads?fields=id,media_product_type,media_type,media_url,permalink,owner,username,text,timestamp,shortcode,is_quote_post&access_token=${integration.access_token}`
+        );
+
+        const posts = threadsResponse.data.data;
+        let syncedCount = 0;
+
+        // C. Save to tablon_posts
+        for (const post of posts) {
+            // We only care about IMAGE or VIDEO or TEXT posts
+            if (!post.text && !post.media_url) continue;
+
+            const { error: upsertError } = await supabase.from('tablon_posts').upsert(
+                {
+                    external_id: post.id,
+                    text: post.text || '',
+                    image_url: post.media_url || null,
+                    source: 'threads',
+                    permalink: post.permalink,
+                    created_at: post.timestamp,
+                    // By default, mark as pending if you want manual approval, 
+                    // or approved: true if you trust your Threads
+                    approved: false, 
+                    author_name: post.username,
+                },
+                { onConflict: 'external_id' }
+            );
+
+            if (!upsertError) syncedCount++;
+        }
+
+        res.json({
+            message: `Successfully synced ${syncedCount} posts from Threads`,
+            total_fetched: posts.length
+        });
+
+    } catch (error: any) {
+        console.error('Threads Sync Error:', error.response?.data || error.message);
+        res.status(500).json({ 
+            error: 'Failed to sync posts',
+            details: error.response?.data || error.message 
+        });
+    }
+});
+
 export default router;

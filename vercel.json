@@ -65,6 +65,10 @@
             "destination": "/api/[...path]"
         },
         {
+            "source": "/api/threads/(.*)",
+            "destination": "/api/[...path]"
+        },
+        {
             "source": "/api/(.*)",
             "destination": "/api/[...path]"
         },
