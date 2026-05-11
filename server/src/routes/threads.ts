@@ -80,7 +80,9 @@ router.get('/sync', async (req: Request, res: Response) => {
             .single();
 
         if (dbError || !integration) {
-            return res.status(404).json({ error: 'Threads integration not found. Please authenticate first.' });
+            return res
+                .status(404)
+                .json({ error: 'Threads integration not found. Please authenticate first.' });
         }
 
         // B. Fetch posts from Threads Graph API
@@ -104,9 +106,9 @@ router.get('/sync', async (req: Request, res: Response) => {
                     source: 'threads',
                     permalink: post.permalink,
                     created_at: post.timestamp,
-                    // By default, mark as pending if you want manual approval, 
+                    // By default, mark as pending if you want manual approval,
                     // or approved: true if you trust your Threads
-                    approved: false, 
+                    approved: false,
                     author_name: post.username,
                 },
                 { onConflict: 'external_id' }
@@ -117,14 +119,13 @@ router.get('/sync', async (req: Request, res: Response) => {
 
         res.json({
             message: `Successfully synced ${syncedCount} posts from Threads`,
-            total_fetched: posts.length
+            total_fetched: posts.length,
         });
-
     } catch (error: any) {
         console.error('Threads Sync Error:', error.response?.data || error.message);
-        res.status(500).json({ 
+        res.status(500).json({
             error: 'Failed to sync posts',
-            details: error.response?.data || error.message 
+            details: error.response?.data || error.message,
         });
     }
 });
