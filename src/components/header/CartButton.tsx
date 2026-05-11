@@ -21,12 +21,12 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
         prevCountRef.current = itemCount;
     }, [itemCount]);
 
-    // Base scale grows with total: from 1.0 (at 10€) up to 1.5 (at 120€)
+    // Base scale grows with total: from 1.0 (at 10€) up to 1.55 (at 120€)
     const scaleRatio = Math.max(0, Math.min((total - 10) / 110, 1));
-    const baseScale = 1 + scaleRatio * 0.5;
+    const baseScale = 1 + scaleRatio * 0.55;
 
-    // Intensity of the 'fisheye' bump increases with total
-    const bulgeFactor = 1.8 + scaleRatio * 1.7;
+    // Intensity of the 'fisheye' bump: From 2.2x up to 4.5x
+    const bulgeFactor = 2.2 + scaleRatio * 2.3;
 
     return (
         <div className="flex items-center gap-2 md:gap-3">
@@ -34,35 +34,35 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
                 <Link
                     id="cart-icon"
                     to="/cart"
-                    className="relative no-underline transition-all flex items-center justify-center min-w-[60px] min-h-[60px] active:scale-90"
+                    className="relative no-underline transition-all flex items-center justify-center min-w-[52px] min-h-[52px] active:scale-90"
                 >
                     {/* The Bag Image with Fisheye Distortion */}
                     <motion.img
                         key={itemCount}
                         src="/cart.png"
                         alt="Cart"
-                        className="w-16 h-16 object-contain z-10"
+                        className="w-12 h-12 object-contain z-10"
                         animate={{
                             scaleX: isCartBumping
                                 ? [
                                       baseScale,
-                                      baseScale * bulgeFactor * 1.2,
-                                      baseScale * 0.7,
-                                      baseScale * 1.05,
+                                      baseScale * bulgeFactor * 1.3,
+                                      baseScale * 0.5,
+                                      baseScale * 1.15,
                                       baseScale,
                                   ]
                                 : baseScale,
                             scaleY: isCartBumping
                                 ? [
                                       baseScale,
-                                      baseScale * bulgeFactor * 0.8,
+                                      baseScale * bulgeFactor * 0.7,
                                       baseScale * 0.9,
-                                      baseScale * 1.02,
+                                      baseScale * 1.05,
                                       baseScale,
                                   ]
                                 : baseScale,
-                            y: isCartBumping ? [0, 15, -10, 0] : 0,
-                            rotate: isCartBumping ? [0, -15, 15, 0] : 0,
+                            y: isCartBumping ? [0, 20, -15, 0] : 0,
+                            rotate: isCartBumping ? [0, -25, 25, 0] : 0,
                         }}
                         transition={{
                             duration: 0.8,
