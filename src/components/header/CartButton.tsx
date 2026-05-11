@@ -61,7 +61,7 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
                 <Link
                     id="cart-icon"
                     to="/cart"
-                    className="relative no-underline transition-all flex items-center justify-center min-w-[80px] min-h-[80px] active:scale-90"
+                    className="relative no-underline transition-all flex items-center justify-center min-w-[52px] min-h-[52px] active:scale-90"
                 >
                     {/* Wrapper to pin the badge to the bag */}
                     <div className="relative">
