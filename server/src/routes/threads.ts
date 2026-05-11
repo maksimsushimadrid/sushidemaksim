@@ -131,9 +131,12 @@ router.get('/sync', async (req: Request, res: Response) => {
                 continue;
             }
 
+            const title = post.text ? post.text.slice(0, 50) + (post.text.length > 50 ? '...' : '') : 'Threads Post';
+
             const { error: insertError } = await supabase.from('tablon_posts').insert({
                 user_id: admin.id,
                 category_id: category.id,
+                title: title, // Added missing required field
                 message: post.text || '',
                 images: post.media_url ? [post.media_url] : [],
                 tags: [threadTag, 'threads'],
