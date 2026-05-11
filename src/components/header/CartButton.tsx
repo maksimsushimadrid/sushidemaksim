@@ -50,8 +50,8 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
                 '5% / 100%',
                 `${15 + scaleRatio * 15}% / 100%`,
             ],
-            y: [0, -6, 4, -3, 2, 0],
-            rotate: [0, -8, 8, -6, 6, -3, 3, 0],
+            y: [0, -12, 8, -6, 4, -2, 0],
+            rotate: [0, -18, 18, -14, 14, -8, 8, -4, 0],
         },
     };
 
@@ -74,10 +74,10 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
                             initial="idle"
                             animate={isCartBumping ? 'bump' : 'idle'}
                             transition={{
-                                duration: 1.0,
+                                duration: 0.8,
                                 type: 'spring',
-                                stiffness: 120,
-                                damping: 12,
+                                stiffness: 200,
+                                damping: 10,
                             }}
                         />
 
