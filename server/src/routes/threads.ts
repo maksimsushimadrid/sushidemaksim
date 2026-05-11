@@ -85,40 +85,73 @@ router.get('/sync', async (req: Request, res: Response) => {
                 .json({ error: 'Threads integration not found. Please authenticate first.' });
         }
 
-        // B. Fetch posts from Threads Graph API
+        // B. Fetch default admin and category
+        const { data: admin } = await supabase
+            .from('users')
+            .select('id')
+            .eq('role', 'admin')
+            .limit(1)
+            .single();
+
+        const { data: category } = await supabase
+            .from('tablon_categories')
+            .select('id')
+            .limit(1)
+            .single();
+
+        if (!admin || !category) {
+            return res.status(500).json({ error: 'No admin or category found in DB' });
+        }
+
+        // C. Fetch posts from Threads Graph API
         const threadsResponse = await axios.get(
-            `https://graph.threads.net/v1.0/me/threads?fields=id,media_product_type,media_type,media_url,permalink,owner,username,text,timestamp,shortcode,is_quote_post&access_token=${integration.access_token}`
+            `https://graph.threads.net/v1.0/me/threads?fields=id,media_type,media_url,permalink,text,timestamp,username&access_token=${integration.access_token}`
         );
 
         const posts = threadsResponse.data.data;
         let syncedCount = 0;
+        let skippedCount = 0;
 
-        // C. Save to tablon_posts
+        // D. Save to tablon_posts
         for (const post of posts) {
-            // We only care about IMAGE or VIDEO or TEXT posts
             if (!post.text && !post.media_url) continue;
 
-            const { error: upsertError } = await supabase.from('tablon_posts').upsert(
-                {
-                    external_id: post.id,
-                    text: post.text || '',
-                    image_url: post.media_url || null,
-                    source: 'threads',
-                    permalink: post.permalink,
-                    created_at: post.timestamp,
-                    // By default, mark as pending if you want manual approval,
-                    // or approved: true if you trust your Threads
-                    approved: false,
-                    author_name: post.username,
-                },
-                { onConflict: 'external_id' }
-            );
+            const threadTag = `threads:${post.id}`;
 
-            if (!upsertError) syncedCount++;
+            // Check for duplicates using the threadTag
+            const { data: existing } = await supabase
+                .from('tablon_posts')
+                .select('id')
+                .contains('tags', [threadTag])
+                .maybeSingle();
+
+            if (existing) {
+                skippedCount++;
+                continue;
+            }
+
+            const { error: insertError } = await supabase.from('tablon_posts').insert({
+                user_id: admin.id,
+                category_id: category.id,
+                message: post.text || '',
+                images: post.media_url ? [post.media_url] : [],
+                tags: [threadTag, 'threads'],
+                whatsapp_phone: '',
+                is_approved: false,
+                moderation_status: 'pending',
+                created_at: post.timestamp,
+            });
+
+            if (insertError) {
+                console.error(`Error inserting post ${post.id}:`, insertError);
+                continue;
+            }
+            syncedCount++;
         }
 
         res.json({
-            message: `Successfully synced ${syncedCount} posts from Threads`,
+            message: `Successfully synced ${syncedCount} new posts from Threads`,
+            skipped: skippedCount,
             total_fetched: posts.length,
         });
     } catch (error: any) {
