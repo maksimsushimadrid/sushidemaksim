@@ -131,7 +131,9 @@ router.get('/sync', async (req: Request, res: Response) => {
                 continue;
             }
 
-            const title = post.text ? post.text.slice(0, 50) + (post.text.length > 50 ? '...' : '') : 'Threads Post';
+            const title = post.text
+                ? post.text.slice(0, 50) + (post.text.length > 50 ? '...' : '')
+                : 'Threads Post';
 
             const { error: insertError } = await supabase.from('tablon_posts').insert({
                 user_id: admin.id,
