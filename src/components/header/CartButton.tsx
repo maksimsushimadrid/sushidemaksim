@@ -72,7 +72,7 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
                         }}
                         style={{
                             filter: isCartBumping
-                                ? `drop-shadow(0 0 25px rgba(234, 88, 12, 0.4))`
+                                ? `drop-shadow(0 15px 25px rgba(0,0,0,0.25))`
                                 : `drop-shadow(0 8px 12px rgba(0,0,0,${0.1 + scaleRatio * 0.1}))`,
                         }}
                     />
