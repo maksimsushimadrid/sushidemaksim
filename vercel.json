@@ -2,7 +2,7 @@
     "version": 2,
     "redirects": [
         {
-            "source": "/((?!api/|sitemap.xml|robots.txt|merchant-feed.xml|invitacion/|compartir/).*)",
+            "source": "/(.*)",
             "has": [
                 {
                     "type": "host",
@@ -13,7 +13,7 @@
             "permanent": true
         },
         {
-            "source": "/((?!api/|sitemap.xml|robots.txt|merchant-feed.xml|invitacion/|compartir/).*)",
+            "source": "/(.*)",
             "has": [
                 {
                     "type": "host",
