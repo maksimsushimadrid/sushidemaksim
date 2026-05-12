@@ -71,19 +71,23 @@ router.get('/callback', async (req: Request, res: Response) => {
 });
 
 // 3. Sync Posts (Admin only)
-router.get('/sync', authMiddleware, async (req: Request, res: Response) => {
+router.post('/sync', authMiddleware, async (req: Request, res: Response) => {
     try {
+        console.log('DEBUG: Starting Threads sync...');
+
         // A. Get token from DB
         const { data: integration, error: dbError } = await supabase
             .from('integrations')
             .select('*')
             .eq('service', 'threads')
-            .single();
+            .maybeSingle();
 
-        if (dbError || !integration) {
-            return res
-                .status(404)
-                .json({ error: 'Threads integration not found. Please authenticate first.' });
+        if (dbError || !integration || !integration.access_token) {
+            console.error('DEBUG: Missing Threads credentials in DB');
+            return res.status(500).json({
+                error: 'Missing API credentials',
+                details: 'Threads access token not found in database. Please re-authenticate.',
+            });
         }
 
         // B. Fetch default admin and ensure 'Threads' category exists
