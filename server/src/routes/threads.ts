@@ -50,8 +50,9 @@ router.get('/callback', async (req: Request, res: Response) => {
         const longLivedToken = longLivedResponse.data.access_token;
         const expiresIn = longLivedResponse.data.expires_in;
 
-        // C. Save to Supabase (assuming a 'settings' or 'integrations' table)
-        const { error } = await supabase.from('integrations').upsert(
+        // C. Save to Supabase
+        console.log('DEBUG: Upserting Threads token into DB...');
+        const { error: upsertError } = await supabase.from('integrations').upsert(
             {
                 service: 'threads',
                 access_token: longLivedToken,
@@ -61,12 +62,16 @@ router.get('/callback', async (req: Request, res: Response) => {
             { onConflict: 'service' }
         );
 
-        if (error) throw error;
+        if (upsertError) {
+            console.error('DEBUG: Upsert Error:', upsertError);
+            return res.status(500).send(`Failed to save token: ${upsertError.message}`);
+        }
 
+        console.log('DEBUG: Threads token saved successfully!');
         res.send('Successfully connected to Threads! You can close this window.');
     } catch (error: any) {
         console.error('Threads Auth Error:', error.response?.data || error.message);
-        res.status(500).send('Failed to authenticate with Threads');
+        res.status(500).send(`Auth Error: ${error.message}`);
     }
 });
 
@@ -74,6 +79,8 @@ router.get('/callback', async (req: Request, res: Response) => {
 router.post('/sync', authMiddleware, async (req: Request, res: Response) => {
     try {
         console.log('DEBUG: Starting Threads sync...');
+        const isServiceRole = !!config.supabase.serviceRoleKey;
+        console.log('DEBUG: Using Service Role Key:', isServiceRole);
 
         // A. Get token from DB
         const { data: integration, error: dbError } = await supabase
@@ -86,14 +93,15 @@ router.post('/sync', authMiddleware, async (req: Request, res: Response) => {
             console.error('DEBUG: Missing Threads credentials in DB', {
                 dbError,
                 hasIntegration: !!integration,
+                isServiceRole,
             });
             return res.status(500).json({
                 error: 'Missing API credentials',
                 details: dbError
                     ? `DB Error: ${dbError.message}`
                     : !integration
-                      ? `No record for "threads" in integrations table. Total data returned: ${JSON.stringify(integration)}`
-                      : `Token field is empty. Integration keys: ${Object.keys(integration).join(', ')}`,
+                      ? `No record for "threads" in integrations table. (ServiceRole: ${isServiceRole})`
+                      : `Token field is empty.`,
             });
         }
 
