@@ -1045,8 +1045,7 @@ router.get(
             user_avatar: o.users?.avatar,
         }));
 
-        // 5. Unified Data Processing (Last 90 days)
-        const ninetyDaysAgo = new Date(Date.now() - 90 * 24 * 60 * 60 * 1000).toISOString();
+        // 5. Unified Data Processing (Last 30 days)
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
         const { data: orders90 } = await supabase
@@ -1055,7 +1054,7 @@ router.get(
                 'id, total, status, created_at, user_id, device_type, os_name, browser_name, delivery_address'
             )
             .eq('is_archived', false)
-            .gte('created_at', ninetyDaysAgo);
+            .gte('created_at', thirtyDaysAgo);
 
         const orderIds90 = (orders90 || []).filter(o => o.status !== 'cancelled').map(o => o.id);
 

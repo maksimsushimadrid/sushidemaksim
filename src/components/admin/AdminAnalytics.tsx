@@ -40,7 +40,7 @@ interface AdminAnalyticsProps {
 const ANALYTICS_TRANSLATIONS = {
     ru: {
         title: 'Продвинутая аналитика',
-        period: 'Последние 90 дней',
+        period: 'Последние 30 дней',
         loading: 'Загрузка аналитики...',
         ltv: {
             label: 'Средний LTV',
@@ -101,7 +101,7 @@ const ANALYTICS_TRANSLATIONS = {
                 'Определяет часы пиковой нагрузки на кухню. Помогает планировать заготовки и количество поваров.',
         },
         promoEffectiveness: {
-            title: 'Эффективность акций (90д)',
+            title: 'Эффективность акций (30д)',
             discountOrders: 'Заказы со скидкой',
             totalSavings: 'Общая экономия клиентов',
             avgDiscount: 'Средняя скидка',
@@ -130,7 +130,7 @@ const ANALYTICS_TRANSLATIONS = {
             tipText: 'Используйте фото именно этих блюд в рекламе Facebook/Instagram.',
         },
         abcAnalysis: {
-            title: 'ABC-анализ меню (Прибыльность 90д)',
+            title: 'ABC-анализ меню (Прибыльность 30д)',
             catA: 'Кат A (80%)',
             catB: 'Кат B (15%)',
             catC: 'Кат C (5%)',
@@ -178,7 +178,7 @@ const ANALYTICS_TRANSLATIONS = {
 
     es: {
         title: 'Analítica Avanzada',
-        period: 'Últimos 90 días',
+        period: 'Últimos 30 días',
         loading: 'Cargando analítica...',
         ltv: {
             label: 'LTV Promedio',
@@ -243,7 +243,7 @@ const ANALYTICS_TRANSLATIONS = {
                 'Identifica las horas pico de la cocina. Si a las 19:00 siempre hay pico, los cocineros deben estar preparados.',
         },
         promoEffectiveness: {
-            title: 'Efectividad de Promociones (90d)',
+            title: 'Efectividad de Promociones (30d)',
             discountOrders: 'Pedidos con Descuento',
             totalSavings: 'Ahorro Total Cliente',
             avgDiscount: 'Descuento Promedio',
@@ -273,7 +273,7 @@ const ANALYTICS_TRANSLATIONS = {
             tipText: 'Usa fotos de estos platos en tus anuncios de Instagram o Facebook.',
         },
         abcAnalysis: {
-            title: 'Análisis ABC del Menú (Rentabilidad 90d)',
+            title: 'Análisis ABC del Menú (Rentabilidad 30d)',
             catA: 'Cat A (80%)',
             catB: 'Cat B (15%)',
             catC: 'Cat C (5%)',
