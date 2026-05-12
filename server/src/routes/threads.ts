@@ -135,10 +135,19 @@ router.get('/sync', async (req: Request, res: Response) => {
                 ? post.text.slice(0, 50) + (post.text.length > 50 ? '...' : '')
                 : 'Threads Post';
 
+            // Generate a simple slug from title + short id for uniqueness
+            const slug =
+                title
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/(^-|-$)+/g, '') || 'post';
+            const uniqueSlug = `${slug}-${post.id.slice(0, 8)}`;
+
             const { error: insertError } = await supabase.from('tablon_posts').insert({
                 user_id: admin.id,
                 category_id: category.id,
-                title: title, // Added missing required field
+                title: title,
+                slug: uniqueSlug, // Added missing required field
                 message: post.text || '',
                 images: post.media_url ? [post.media_url] : [],
                 tags: [threadTag, 'threads'],
