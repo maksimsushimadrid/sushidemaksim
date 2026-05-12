@@ -71,6 +71,7 @@ app.use('/api/delivery-zones', deliveryZonesRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/reservations', reservationsRoutes);
 app.use('/api/admin/reports', reportsRoutes);
+app.use('/api/admin/threads', threadsRoutes);
 app.use('/api/threads', threadsRoutes);
 
 // ─── Invitations Social Preview (Priority) ────────────────────────────────────

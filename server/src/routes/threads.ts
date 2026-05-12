@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import axios from 'axios';
 import { config } from '../config.js';
 import { supabase } from '../db/supabase.js';
+import { authMiddleware } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -69,8 +70,8 @@ router.get('/callback', async (req: Request, res: Response) => {
     }
 });
 
-// 3. Sync Posts
-router.get('/sync', async (req: Request, res: Response) => {
+// 3. Sync Posts (Admin only)
+router.get('/sync', authMiddleware, async (req: Request, res: Response) => {
     try {
         // A. Get token from DB
         const { data: integration, error: dbError } = await supabase
