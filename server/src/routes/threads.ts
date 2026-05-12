@@ -111,7 +111,6 @@ router.get('/sync', async (req: Request, res: Response) => {
         const posts = threadsResponse.data.data;
         let syncedCount = 0;
         let skippedCount = 0;
-        let lastError = null;
 
         // D. Save to tablon_posts
         for (const post of posts) {
@@ -159,7 +158,6 @@ router.get('/sync', async (req: Request, res: Response) => {
 
             if (insertError) {
                 console.error(`Error inserting post ${post.id}:`, insertError);
-                lastError = insertError;
                 continue;
             }
             syncedCount++;
@@ -169,18 +167,6 @@ router.get('/sync', async (req: Request, res: Response) => {
             message: `Successfully synced ${syncedCount} new posts from Threads`,
             skipped: skippedCount,
             total_fetched: posts.length,
-            debug: {
-                adminId: admin.id,
-                categoryId: category.id,
-                lastError,
-                firstPost: posts[0]
-                    ? {
-                          id: posts[0].id,
-                          hasText: !!posts[0].text,
-                          hasMedia: !!posts[0].media_url,
-                      }
-                    : null,
-            },
         });
     } catch (error: any) {
         console.error('Threads Sync Error:', error.response?.data || error.message);
