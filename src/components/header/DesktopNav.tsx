@@ -46,9 +46,8 @@ export default function DesktopNav({ isScrolled, isTransparentHeaderPage }: Desk
                             key={link.label || idx}
                             onClick={link.onClick}
                             type="button"
-                            className={`${commonStyles} flex items-center gap-2`}
+                            className={`${commonStyles} flex items-center`}
                         >
-                            {link.icon && <link.icon size={16} strokeWidth={2} />}
                             {link.label}
                         </button>
                     );
@@ -58,13 +57,8 @@ export default function DesktopNav({ isScrolled, isTransparentHeaderPage }: Desk
                     <Link
                         key={link.to || idx}
                         to={link.to!}
-                        className={`${commonStyles} flex items-center gap-2`}
+                        className={`${commonStyles} flex items-center`}
                     >
-                        {link.icon && (
-                            <span className="relative z-10 flex items-center justify-center translate-y-[-1px]">
-                                <link.icon size={16} strokeWidth={2} />
-                            </span>
-                        )}
                         <span className="relative z-10">{link.label}</span>
                         {isActive && (
                             <motion.div
