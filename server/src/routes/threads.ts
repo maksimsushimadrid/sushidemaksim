@@ -90,10 +90,10 @@ router.post('/sync', authMiddleware, async (req: Request, res: Response) => {
             return res.status(500).json({
                 error: 'Missing API credentials',
                 details: dbError
-                    ? `Database error: ${dbError.message}`
+                    ? `DB Error: ${dbError.message}`
                     : !integration
-                      ? 'No integration record found for "threads" in Supabase.'
-                      : 'Access token is empty in the integration record.',
+                      ? `No record for "threads" in integrations table. Total data returned: ${JSON.stringify(integration)}`
+                      : `Token field is empty. Integration keys: ${Object.keys(integration).join(', ')}`,
             });
         }
 
