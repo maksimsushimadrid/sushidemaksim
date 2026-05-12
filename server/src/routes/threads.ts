@@ -106,13 +106,23 @@ router.post('/sync', authMiddleware, async (req: Request, res: Response) => {
         }
 
         // B. Fetch default admin and ensure 'Threads' category exists
-        const { data: admin } = await supabase
+        console.log('DEBUG: Fetching admin user...');
+        const { data: admin, error: adminError } = await supabase
             .from('users')
             .select('id')
             .eq('role', 'admin')
             .limit(1)
             .single();
 
+        if (adminError || !admin) {
+            console.error('DEBUG: Admin user not found:', adminError);
+            return res.status(500).json({
+                error: 'Configuration Error',
+                details: 'No admin user found in database. Please create an admin user first.',
+            });
+        }
+
+        console.log('DEBUG: Fetching/Creating Threads category...');
         let { data: category } = await supabase
             .from('tablon_categories')
             .select('id')
