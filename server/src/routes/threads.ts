@@ -85,7 +85,7 @@ router.get('/sync', async (req: Request, res: Response) => {
                 .json({ error: 'Threads integration not found. Please authenticate first.' });
         }
 
-        // B. Fetch default admin and category
+        // B. Fetch default admin and ensure 'Threads' category exists
         const { data: admin } = await supabase
             .from('users')
             .select('id')
@@ -93,11 +93,32 @@ router.get('/sync', async (req: Request, res: Response) => {
             .limit(1)
             .single();
 
-        const { data: category } = await supabase
+        let { data: category } = await supabase
             .from('tablon_categories')
             .select('id')
-            .limit(1)
-            .single();
+            .ilike('name', 'Threads')
+            .maybeSingle();
+
+        if (!category) {
+            // Create the Threads category if it doesn't exist
+            const { data: newCat, error: catError } = await supabase
+                .from('tablon_categories')
+                .insert({ name: 'Threads', emoji: '🧵', is_approved: true })
+                .select('id')
+                .single();
+
+            if (catError) {
+                // Fallback to any category if creation fails
+                const { data: fallbackCat } = await supabase
+                    .from('tablon_categories')
+                    .select('id')
+                    .limit(1)
+                    .single();
+                category = fallbackCat;
+            } else {
+                category = newCat;
+            }
+        }
 
         if (!admin || !category) {
             return res.status(500).json({ error: 'No admin or category found in DB' });
@@ -116,13 +137,11 @@ router.get('/sync', async (req: Request, res: Response) => {
         for (const post of posts) {
             if (!post.text && !post.media_url) continue;
 
-            const threadTag = `threads:${post.id}`;
-
-            // Check for duplicates
+            // Check for duplicates using the message content (since we can't add external_id column easily)
             const { data: existing } = await supabase
                 .from('tablon_posts')
                 .select('id')
-                .contains('tags', [threadTag])
+                .eq('message', post.text || '')
                 .maybeSingle();
 
             if (existing) {
@@ -146,10 +165,10 @@ router.get('/sync', async (req: Request, res: Response) => {
                 user_id: admin.id,
                 category_id: category.id,
                 title: title,
-                slug: uniqueSlug, // Added missing required field
+                slug: uniqueSlug,
                 message: post.text || '',
                 images: post.media_url ? [post.media_url] : [],
-                tags: [threadTag, 'threads'],
+                tags: ['threads'], // Clean tag
                 whatsapp_phone: '',
                 is_approved: false,
                 moderation_status: 'pending',
