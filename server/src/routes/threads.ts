@@ -83,10 +83,17 @@ router.post('/sync', authMiddleware, async (req: Request, res: Response) => {
             .maybeSingle();
 
         if (dbError || !integration || !integration.access_token) {
-            console.error('DEBUG: Missing Threads credentials in DB');
+            console.error('DEBUG: Missing Threads credentials in DB', {
+                dbError,
+                hasIntegration: !!integration,
+            });
             return res.status(500).json({
                 error: 'Missing API credentials',
-                details: 'Threads access token not found in database. Please re-authenticate.',
+                details: dbError
+                    ? `Database error: ${dbError.message}`
+                    : !integration
+                      ? 'No integration record found for "threads" in Supabase.'
+                      : 'Access token is empty in the integration record.',
             });
         }
 
