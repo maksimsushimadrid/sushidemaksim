@@ -228,7 +228,7 @@ export default function UserActions({
                     </AnimatePresence>
                 </div>
             ) : (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col items-center gap-1">
                     <button
                         onClick={() => {
                             setLoginModalMode('login');
@@ -243,9 +243,9 @@ export default function UserActions({
                             setLoginModalMode('register');
                             setIsLoginModalOpen(true);
                         }}
-                        className="bg-white text-gray-900 border-2 border-gray-900 px-5 py-2.5 rounded-xl font-black text-[13px] cursor-pointer shadow-sm active:scale-95 transition-all hover:bg-gray-50"
+                        className="bg-transparent border-none text-gray-400 text-[10px] font-bold cursor-pointer hover:text-orange-600 transition-colors p-0"
                     >
-                        REGISTRO
+                        Registrarse
                     </button>
                 </div>
             )}
