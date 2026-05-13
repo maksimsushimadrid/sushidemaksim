@@ -101,6 +101,27 @@ export const useSyncThreads = () => {
         mutationFn: () => api.post('/admin/threads/sync', {}),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: TABLON_KEYS.all });
+            queryClient.invalidateQueries({ queryKey: ['threads-status'] });
+        },
+    });
+};
+
+/** Get Threads connection status (admin only) */
+export const useThreadsStatus = () => {
+    return useQuery({
+        queryKey: ['threads-status'],
+        queryFn: () => api.get('/admin/threads/status'),
+        staleTime: 5 * 60 * 1000,
+    });
+};
+
+/** Disconnect Threads (admin only) */
+export const useDisconnectThreads = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: () => api.post('/admin/threads/disconnect', {}),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['threads-status'] });
         },
     });
 };

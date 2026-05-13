@@ -46,7 +46,6 @@ import {
 } from '../utils/helpers.js';
 import { processImage } from '../utils/imageProcessor.js';
 import { invalidateMenuCache } from './menu.js';
-import { syncThreadsPosts } from '../services/threads.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1920,21 +1919,6 @@ router.post(
         }
 
         res.json({ code: data.code });
-    })
-);
-
-// ─── THREADS SYNC ────────────────────────────────────────────────────────────
-
-router.post(
-    '/threads/sync',
-    authMiddleware,
-    adminMiddleware,
-    asyncHandler(async (req: Request, res: Response) => {
-        const result = await syncThreadsPosts();
-        if (!result.success) {
-            return res.status(500).json({ error: result.message || 'Failed to sync threads' });
-        }
-        res.json({ message: 'Threads sync complete', stats: result });
     })
 );
 

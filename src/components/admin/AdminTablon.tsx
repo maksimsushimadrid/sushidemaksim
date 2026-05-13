@@ -5,6 +5,8 @@ import {
     useModerateTablonPost,
     useApproveCategory,
     useSyncThreads,
+    useThreadsStatus,
+    useDisconnectThreads,
 } from '../../hooks/queries/useTablon';
 import { ConfirmModal } from '../common/ConfirmModal';
 import { useQuery } from '@tanstack/react-query';
@@ -35,6 +37,9 @@ const t: Record<AdminLanguage, any> = {
         tags: 'Теги',
         whatsapp: 'WhatsApp',
         syncThreads: 'Синхронизация Threads',
+        connectThreads: 'Подключить Threads',
+        disconnectThreads: 'Отключить Threads',
+        confirmDisconnect: 'Вы уверены, что хотите отключить Threads?',
     },
     es: {
         title: 'Moderación Tablón',
@@ -53,6 +58,9 @@ const t: Record<AdminLanguage, any> = {
         tags: 'Etiquetas',
         whatsapp: 'WhatsApp',
         syncThreads: 'Sincronizar Threads',
+        connectThreads: 'Conectar Threads',
+        disconnectThreads: 'Desconectar Threads',
+        confirmDisconnect: '¿Estás seguro de que deseas desconectar Threads?',
     },
 };
 
@@ -69,6 +77,9 @@ export default function AdminTablon({ language }: AdminTablonProps) {
     const moderatePost = useModerateTablonPost();
     const approveCategory = useApproveCategory();
     const syncThreadsMutation = useSyncThreads();
+    const { data: threadsStatus } = useThreadsStatus();
+    const disconnectThreadsMutation = useDisconnectThreads();
+    const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
 
     // Fetch unapproved categories
     const { data: suggestedData } = useQuery({
@@ -80,12 +91,34 @@ export default function AdminTablon({ language }: AdminTablonProps) {
     const handleSyncThreads = async () => {
         try {
             const res = await syncThreadsMutation.mutateAsync();
+            const insertedCount = res.stats?.insertedCount || 0;
+            const skippedCount = res.stats?.skippedCount || 0;
             success(
-                `Threads sync completado: ${res.stats.insertedCount} новых, ${res.stats.skippedCount} пропущено.`
+                language === 'ru'
+                    ? `Синхронизация Threads завершена: ${insertedCount} новых, ${skippedCount} пропущено.`
+                    : `Sincronización de Threads completada: ${insertedCount} nuevos, ${skippedCount} omitidos.`
             );
         } catch (err: any) {
             console.error('Threads sync failed:', err);
             error('Error al sincronizar Threads. Revisa los credenciales.');
+        }
+    };
+
+    const handleConnectThreads = () => {
+        const adminUrl =
+            window.location.hostname === 'localhost'
+                ? 'http://localhost:3001'
+                : window.location.origin;
+        window.open(`${adminUrl}/api/threads/auth`, '_blank');
+    };
+
+    const handleDisconnectThreads = async () => {
+        try {
+            await disconnectThreadsMutation.mutateAsync();
+            success(language === 'ru' ? 'Threads отключен' : 'Threads desconectado');
+            setShowDisconnectConfirm(false);
+        } catch (err) {
+            error('Error al desconectar Threads');
         }
     };
 
@@ -160,17 +193,44 @@ export default function AdminTablon({ language }: AdminTablonProps) {
                     ))}
                 </div>
 
-                <button
-                    onClick={handleSyncThreads}
-                    disabled={syncThreadsMutation.isPending}
-                    className="flex items-center gap-2 px-4 py-2.5 bg-black text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-800 disabled:opacity-50 transition-all shadow-sm active:scale-95"
-                >
-                    <RefreshCw
-                        size={14}
-                        className={syncThreadsMutation.isPending ? 'animate-spin' : ''}
-                    />
-                    {syncThreadsMutation.isPending ? '⌛ ...' : labels.syncThreads}
-                </button>
+                <div className="flex items-center gap-2">
+                    {threadsStatus?.connected ? (
+                        <>
+                            <div className="flex flex-col items-end mr-2">
+                                <span className="text-[10px] text-gray-400 uppercase font-bold tracking-tighter">
+                                    Connected as
+                                </span>
+                                <span className="text-xs font-black text-orange-600 tracking-tight">
+                                    @{threadsStatus?.username || 'unknown'}
+                                </span>
+                            </div>
+                            <button
+                                onClick={() => setShowDisconnectConfirm(true)}
+                                className="px-4 py-2.5 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-100 transition-all active:scale-95 border border-red-100/50"
+                            >
+                                {labels.disconnectThreads}
+                            </button>
+                            <button
+                                onClick={handleSyncThreads}
+                                disabled={syncThreadsMutation.isPending}
+                                className="flex items-center gap-2 px-4 py-2.5 bg-black text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-gray-800 disabled:opacity-50 transition-all shadow-sm active:scale-95"
+                            >
+                                <RefreshCw
+                                    size={14}
+                                    className={syncThreadsMutation.isPending ? 'animate-spin' : ''}
+                                />
+                                {syncThreadsMutation.isPending ? '⌛ ...' : labels.syncThreads}
+                            </button>
+                        </>
+                    ) : (
+                        <button
+                            onClick={handleConnectThreads}
+                            className="px-4 py-2.5 bg-orange-600 text-white rounded-xl text-xs font-black uppercase tracking-widest hover:bg-orange-700 transition-all shadow-sm active:scale-95"
+                        >
+                            🔗 {labels.connectThreads}
+                        </button>
+                    )}
+                </div>
             </div>
 
             {/* Content Area */}
@@ -408,6 +468,17 @@ export default function AdminTablon({ language }: AdminTablonProps) {
                 isDanger={true}
                 onConfirm={confirmRejectPost}
                 onCancel={() => setPostToReject(null)}
+            />
+
+            <ConfirmModal
+                isOpen={showDisconnectConfirm}
+                title={language === 'ru' ? 'Отключить Threads?' : '¿Desconectar Threads?'}
+                message={labels.confirmDisconnect}
+                confirmText={language === 'ru' ? 'Отключить' : 'Desconectar'}
+                cancelText={language === 'ru' ? 'Отмена' : 'Cancelar'}
+                isDanger={true}
+                onConfirm={handleDisconnectThreads}
+                onCancel={() => setShowDisconnectConfirm(false)}
             />
         </div>
     );

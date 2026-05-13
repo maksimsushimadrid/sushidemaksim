@@ -3,6 +3,8 @@ import axios from 'axios';
 import { config } from '../config.js';
 import { supabase } from '../db/supabase.js';
 import { authMiddleware } from '../middleware/auth.js';
+import { adminMiddleware } from '../middleware/admin.js';
+import { asyncHandler } from '../middleware/asyncHandler.js';
 
 const router = Router();
 
@@ -50,8 +52,14 @@ router.get('/callback', async (req: Request, res: Response) => {
         const longLivedToken = longLivedResponse.data.access_token;
         const expiresIn = longLivedResponse.data.expires_in;
 
-        // C. Save to Supabase
-        console.log('DEBUG: Upserting Threads token into DB...');
+        // C. Fetch user profile to get username
+        const userProfileResponse = await axios.get(
+            `https://graph.threads.net/v1.0/me?fields=id,username,name&access_token=${longLivedToken}`
+        );
+        const username = userProfileResponse.data.username;
+
+        // D. Save to Supabase
+        console.log(`DEBUG: Upserting Threads token for @${username} into DB...`);
         const { error: upsertError } = await supabase.from('integrations').upsert(
             {
                 service: 'threads',
@@ -75,9 +83,61 @@ router.get('/callback', async (req: Request, res: Response) => {
     }
 });
 
+// 2.1 Get Status (Admin only)
+router.get(
+    '/status',
+    authMiddleware,
+    adminMiddleware,
+    asyncHandler(async (req: Request, res: Response) => {
+        const { data: integration, error } = await supabase
+            .from('integrations')
+            .select('service, updated_at, expires_at, access_token')
+            .eq('service', 'threads')
+            .maybeSingle();
+
+        if (error) throw error;
+
+        let username = null;
+        if (integration?.access_token) {
+            try {
+                const userProfileResponse = await axios.get(
+                    `https://graph.threads.net/v1.0/me?fields=id,username&access_token=${integration.access_token}`
+                );
+                username = userProfileResponse.data.username;
+            } catch (e) {
+                console.warn('Failed to fetch Threads username:', e);
+            }
+        }
+
+        res.json({
+            connected: !!integration,
+            username: username,
+            last_sync: integration?.updated_at || null,
+            expires_at: integration?.expires_at || null,
+        });
+    })
+);
+
+// 2.2 Disconnect (Admin only)
+router.post(
+    '/disconnect',
+    authMiddleware,
+    adminMiddleware,
+    asyncHandler(async (req: Request, res: Response) => {
+        const { error } = await supabase.from('integrations').delete().eq('service', 'threads');
+
+        if (error) throw error;
+
+        res.json({ message: 'Threads disconnected successfully' });
+    })
+);
+
 // 3. Sync Posts (Admin only)
-router.post('/sync', authMiddleware, async (req: Request, res: Response) => {
-    try {
+router.post(
+    '/sync',
+    authMiddleware,
+    adminMiddleware,
+    asyncHandler(async (req: Request, res: Response) => {
         console.log('DEBUG: Starting Threads sync...');
         const isServiceRole = !!config.supabase.serviceRoleKey;
         console.log('DEBUG: Using Service Role Key:', isServiceRole);
@@ -167,11 +227,11 @@ router.post('/sync', authMiddleware, async (req: Request, res: Response) => {
         for (const post of posts) {
             if (!post.text && !post.media_url) continue;
 
-            // Check for duplicates using the message content (since we can't add external_id column easily)
+            // Check for duplicates using external_id
             const { data: existing } = await supabase
                 .from('tablon_posts')
                 .select('id')
-                .eq('message', post.text || '')
+                .eq('external_id', post.id)
                 .maybeSingle();
 
             if (existing) {
@@ -202,6 +262,7 @@ router.post('/sync', authMiddleware, async (req: Request, res: Response) => {
                 whatsapp_phone: '',
                 is_approved: false,
                 moderation_status: 'pending',
+                external_id: post.id,
                 created_at: post.timestamp,
             });
 
@@ -214,16 +275,13 @@ router.post('/sync', authMiddleware, async (req: Request, res: Response) => {
 
         res.json({
             message: `Successfully synced ${syncedCount} new posts from Threads`,
-            skipped: skippedCount,
-            total_fetched: posts.length,
+            stats: {
+                insertedCount: syncedCount,
+                skippedCount: skippedCount,
+                totalFetched: posts.length,
+            },
         });
-    } catch (error: any) {
-        console.error('Threads Sync Error:', error.response?.data || error.message);
-        res.status(500).json({
-            error: 'Failed to sync posts',
-            details: error.response?.data || error.message,
-        });
-    }
-});
+    })
+);
 
 export default router;
