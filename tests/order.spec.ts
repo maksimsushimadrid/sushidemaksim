@@ -111,13 +111,15 @@ test.describe('Order Checkout Flow', () => {
         const addButton = page.getByTestId('add-to-cart-button').first();
         await addButton.click();
 
+        // Wait for cart count to update
+        await expect(page.getByTestId('cart-count')).toHaveText('1');
+
         // Go to cart
         await page.goto('/cart');
         await expect(page.getByText(/Resumen/i)).toBeVisible();
 
         // Select Pickup
-        const pickupBtn = page.getByRole('button', { name: /Recogida/i });
-        await pickupBtn.click({ force: true });
+        await page.getByTestId('delivery-type-pickup').click({ force: true });
         await page.waitForTimeout(300);
 
         // Fill user info
@@ -125,8 +127,7 @@ test.describe('Order Checkout Flow', () => {
         await page.getByTestId('phone-input').fill('600123456');
 
         // Select payment method
-        const cashBtn = page.getByRole('button', { name: /Efectivo/i });
-        await cashBtn.click({ force: true });
+        await page.getByTestId('payment-method-cash').click({ force: true });
         await page.waitForTimeout(300);
 
         // Place order

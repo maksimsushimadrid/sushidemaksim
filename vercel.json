@@ -12,6 +12,17 @@
             "destination": "https://www.sushidemaksim.com/$1",
             "permanent": true
         },
+        {
+            "source": "/(.*)",
+            "has": [
+                {
+                    "type": "host",
+                    "value": "sushidemaksim.com"
+                }
+            ],
+            "destination": "https://www.sushidemaksim.com/$1",
+            "permanent": true
+        },
 
         {
             "source": "/blog/:slug",

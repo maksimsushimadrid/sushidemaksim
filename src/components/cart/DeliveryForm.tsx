@@ -166,6 +166,7 @@ export default function DeliveryForm({
             <div className="flex bg-gray-100/50 p-1.5 rounded-[22px] mb-6 border border-gray-100 relative">
                 <button
                     type="button"
+                    data-testid="delivery-type-delivery"
                     disabled={isPickupOnly && (!isScheduled || scheduledDate === todayStr)}
                     onClick={() => {
                         triggerHaptic();
@@ -193,6 +194,7 @@ export default function DeliveryForm({
                 </button>
                 <button
                     type="button"
+                    data-testid="delivery-type-pickup"
                     onClick={() => {
                         triggerHaptic();
                         setValue('deliveryType', 'pickup');
@@ -215,6 +217,7 @@ export default function DeliveryForm({
                 </button>
                 <button
                     type="button"
+                    data-testid="delivery-type-reservation"
                     onClick={() => {
                         triggerHaptic();
                         setValue('deliveryType', 'reservation');

@@ -97,6 +97,7 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
                                         stiffness: 800,
                                         damping: 12,
                                     }}
+                                    data-testid="cart-count"
                                     className="absolute -top-2 -right-2 bg-orange-600 text-white text-[13px] font-black rounded-full min-w-[24px] h-[24px] flex items-center justify-center px-1 shadow-2xl border-2 border-white z-20"
                                 >
                                     {itemCount}
