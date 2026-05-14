@@ -81,7 +81,7 @@ export const updateProfileSchema = z.object({
             .regex(phoneRegex, 'Formato de teléfono inválido')
             .optional()
             .or(z.literal('')),
-        avatar: z.string().url('URL de avatar inválida').optional().or(z.literal('')),
+        avatar: z.string().max(2048, 'El avatar es demasiado largo').optional().or(z.literal('')),
         birthDate: z.string().optional().nullable(),
     }),
 });
