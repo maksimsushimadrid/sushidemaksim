@@ -322,8 +322,10 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
     const [reportsLoading, setReportsLoading] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [selectedReport, setSelectedReport] = useState<any>(null);
+    const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
+        setIsMounted(true);
         fetchReports();
     }, []);
 
@@ -332,8 +334,12 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
             setReportsLoading(true);
             const { data } = await axios.get('/api/admin/reports', { withCredentials: true });
             setReports(data || []);
-        } catch (err) {
-            console.error('❌ Error fetching reports:', err);
+        } catch (err: any) {
+            if (err.response?.status === 401) {
+                console.warn('[AdminAnalytics] Session expired. Please re-login.');
+            } else {
+                console.error('❌ Error fetching reports:', err);
+            }
         } finally {
             setReportsLoading(false);
         }
@@ -469,62 +475,64 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         {t.devices.title}
                     </h3>
                     <div className="h-56">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={[
-                                        {
-                                            name: t.devices.mobile,
-                                            value:
-                                                stats?.analytics?.devices?.mobile ||
-                                                stats?.analytics?.devices?.Mobile ||
-                                                0,
-                                        },
-                                        {
-                                            name: t.devices.desktop,
-                                            value:
-                                                stats?.analytics?.devices?.desktop ||
-                                                stats?.analytics?.devices?.Desktop ||
-                                                stats?.analytics?.devices?.Unknown ||
-                                                0,
-                                        },
-                                        {
-                                            name: t.devices.tablet,
-                                            value:
-                                                stats?.analytics?.devices?.tablet ||
-                                                stats?.analytics?.devices?.Tablet ||
-                                                0,
-                                        },
-                                    ]}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={55}
-                                    outerRadius={80}
-                                    paddingAngle={8}
-                                    dataKey="value"
-                                >
-                                    <Cell fill="#3B82F6" stroke="none" />
-                                    <Cell fill="#10B981" stroke="none" />
-                                    <Cell fill="#F59E0B" stroke="none" />
-                                </Pie>
-                                <Tooltip
-                                    contentStyle={{
-                                        borderRadius: '16px',
-                                        border: 'none',
-                                        boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-                                        fontWeight: 'bold',
-                                    }}
-                                />
-                                <Legend
-                                    wrapperStyle={{
-                                        fontSize: '9px',
-                                        fontWeight: 'black',
-                                        textTransform: 'uppercase',
-                                        paddingTop: '10px',
-                                    }}
-                                />
-                            </PieChart>
-                        </ResponsiveContainer>
+                        {isMounted && (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={[
+                                            {
+                                                name: t.devices.mobile,
+                                                value:
+                                                    stats?.analytics?.devices?.mobile ||
+                                                    stats?.analytics?.devices?.Mobile ||
+                                                    0,
+                                            },
+                                            {
+                                                name: t.devices.desktop,
+                                                value:
+                                                    stats?.analytics?.devices?.desktop ||
+                                                    stats?.analytics?.devices?.Desktop ||
+                                                    stats?.analytics?.devices?.Unknown ||
+                                                    0,
+                                            },
+                                            {
+                                                name: t.devices.tablet,
+                                                value:
+                                                    stats?.analytics?.devices?.tablet ||
+                                                    stats?.analytics?.devices?.Tablet ||
+                                                    0,
+                                            },
+                                        ]}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={55}
+                                        outerRadius={80}
+                                        paddingAngle={8}
+                                        dataKey="value"
+                                    >
+                                        <Cell fill="#3B82F6" stroke="none" />
+                                        <Cell fill="#10B981" stroke="none" />
+                                        <Cell fill="#F59E0B" stroke="none" />
+                                    </Pie>
+                                    <Tooltip
+                                        contentStyle={{
+                                            borderRadius: '16px',
+                                            border: 'none',
+                                            boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                                            fontWeight: 'bold',
+                                        }}
+                                    />
+                                    <Legend
+                                        wrapperStyle={{
+                                            fontSize: '9px',
+                                            fontWeight: 'black',
+                                            textTransform: 'uppercase',
+                                            paddingTop: '10px',
+                                        }}
+                                    />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                     <div className="mt-6 border-t border-gray-100 pt-4 flex items-start gap-2.5">
                         <span className="text-sm mt-px">💡</span>
@@ -543,47 +551,49 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         {t.newVsRecurring.title}
                     </h3>
                     <div className="h-56">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={[
-                                        {
-                                            name: t.newVsRecurring.new,
-                                            value: stats?.retention?.new || 0,
-                                        },
-                                        {
-                                            name: t.newVsRecurring.recur,
-                                            value: stats?.retention?.returning || 0,
-                                        },
-                                    ]}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={55}
-                                    outerRadius={80}
-                                    paddingAngle={8}
-                                    dataKey="value"
-                                >
-                                    <Cell fill="#3B82F6" stroke="none" />
-                                    <Cell fill="#8B5CF6" stroke="none" />
-                                </Pie>
-                                <Tooltip
-                                    contentStyle={{
-                                        borderRadius: '16px',
-                                        border: 'none',
-                                        boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-                                        fontWeight: 'bold',
-                                    }}
-                                />
-                                <Legend
-                                    wrapperStyle={{
-                                        fontSize: '9px',
-                                        fontWeight: 'black',
-                                        textTransform: 'uppercase',
-                                        paddingTop: '10px',
-                                    }}
-                                />
-                            </PieChart>
-                        </ResponsiveContainer>
+                        {isMounted && (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={[
+                                            {
+                                                name: t.newVsRecurring.new,
+                                                value: stats?.retention?.new || 0,
+                                            },
+                                            {
+                                                name: t.newVsRecurring.recur,
+                                                value: stats?.retention?.returning || 0,
+                                            },
+                                        ]}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={55}
+                                        outerRadius={80}
+                                        paddingAngle={8}
+                                        dataKey="value"
+                                    >
+                                        <Cell fill="#3B82F6" stroke="none" />
+                                        <Cell fill="#8B5CF6" stroke="none" />
+                                    </Pie>
+                                    <Tooltip
+                                        contentStyle={{
+                                            borderRadius: '16px',
+                                            border: 'none',
+                                            boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                                            fontWeight: 'bold',
+                                        }}
+                                    />
+                                    <Legend
+                                        wrapperStyle={{
+                                            fontSize: '9px',
+                                            fontWeight: 'black',
+                                            textTransform: 'uppercase',
+                                            paddingTop: '10px',
+                                        }}
+                                    />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                     <div className="mt-6 border-t border-gray-100 pt-4 flex items-start gap-2.5">
                         <span className="text-sm mt-px">💡</span>
@@ -602,57 +612,59 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         {t.categoryPerformance.title}
                     </h3>
                     <div className="h-56">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={stats?.categoryStats}>
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    vertical={false}
-                                    stroke="#f5f5f5"
-                                />
-                                <XAxis
-                                    dataKey="name"
-                                    fontSize={8}
-                                    fontWeight="bold"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tickFormatter={str =>
-                                        str.length > 10 ? str.substring(0, 8) + '..' : str
-                                    }
-                                />
-                                <YAxis
-                                    yAxisId="left"
-                                    fontSize={8}
-                                    fontWeight="bold"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tickFormatter={val => `${val}€`}
-                                />
-                                <Tooltip
-                                    contentStyle={{
-                                        borderRadius: '16px',
-                                        border: 'none',
-                                        boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
-                                        fontWeight: 'bold',
-                                    }}
-                                />
-                                <Bar
-                                    yAxisId="left"
-                                    name={t.categoryPerformance.sales}
-                                    dataKey="revenue"
-                                    fill="#3B82F6"
-                                    radius={[6, 6, 0, 0]}
-                                    barSize={16}
-                                />
-                                <Bar
-                                    yAxisId="left"
-                                    name={t.categoryPerformance.ticket}
-                                    dataKey="avgPrice"
-                                    fill="#F59E0B"
-                                    radius={[6, 6, 0, 0]}
-                                    barSize={16}
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
+                        {isMounted && (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart data={stats?.categoryStats}>
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                        vertical={false}
+                                        stroke="#f5f5f5"
+                                    />
+                                    <XAxis
+                                        dataKey="name"
+                                        fontSize={8}
+                                        fontWeight="bold"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tickFormatter={str =>
+                                            str.length > 10 ? str.substring(0, 8) + '..' : str
+                                        }
+                                    />
+                                    <YAxis
+                                        yAxisId="left"
+                                        fontSize={8}
+                                        fontWeight="bold"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tickFormatter={val => `${val}€`}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{
+                                            borderRadius: '16px',
+                                            border: 'none',
+                                            boxShadow: '0 10px 30px rgba(0,0,0,0.1)',
+                                            fontWeight: 'bold',
+                                        }}
+                                    />
+                                    <Bar
+                                        yAxisId="left"
+                                        name={t.categoryPerformance.sales}
+                                        dataKey="revenue"
+                                        fill="#3B82F6"
+                                        radius={[6, 6, 0, 0]}
+                                        barSize={16}
+                                    />
+                                    <Bar
+                                        yAxisId="left"
+                                        name={t.categoryPerformance.ticket}
+                                        dataKey="avgPrice"
+                                        fill="#F59E0B"
+                                        radius={[6, 6, 0, 0]}
+                                        barSize={16}
+                                    />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                     <div className="mt-6 border-t border-gray-100 pt-4 flex items-start gap-2.5">
                         <span className="text-sm mt-px">💡</span>
@@ -673,55 +685,71 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         {t.salesGrowth.title}
                     </h3>
                     <div className="h-80">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={stats?.growth}>
-                                <defs>
-                                    <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#ef4444" stopOpacity={0.15} />
-                                        <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
-                                    </linearGradient>
-                                </defs>
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    vertical={false}
-                                    stroke="#f5f5f5"
-                                />
-                                <XAxis
-                                    dataKey="date"
-                                    fontSize={10}
-                                    fontWeight="black"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tickFormatter={str =>
-                                        str && typeof str === 'string' ? str.split('-')[2] : ''
-                                    }
-                                />
-                                <YAxis
-                                    fontSize={10}
-                                    fontWeight="black"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tickFormatter={val => `${val}€`}
-                                />
-                                <Tooltip
-                                    contentStyle={{
-                                        borderRadius: '24px',
-                                        border: 'none',
-                                        boxShadow: '0 15px 40px rgba(0,0,0,0.12)',
-                                        fontWeight: 'black',
-                                        padding: '16px',
-                                    }}
-                                />
-                                <Area
-                                    type="monotone"
-                                    dataKey="revenue"
-                                    stroke="#ef4444"
-                                    strokeWidth={5}
-                                    fillOpacity={1}
-                                    fill="url(#colorRevenue)"
-                                />
-                            </AreaChart>
-                        </ResponsiveContainer>
+                        {isMounted && (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <AreaChart data={stats?.growth}>
+                                    <defs>
+                                        <linearGradient
+                                            id="colorRevenue"
+                                            x1="0"
+                                            y1="0"
+                                            x2="0"
+                                            y2="1"
+                                        >
+                                            <stop
+                                                offset="5%"
+                                                stopColor="#ef4444"
+                                                stopOpacity={0.15}
+                                            />
+                                            <stop
+                                                offset="95%"
+                                                stopColor="#ef4444"
+                                                stopOpacity={0}
+                                            />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                        vertical={false}
+                                        stroke="#f5f5f5"
+                                    />
+                                    <XAxis
+                                        dataKey="date"
+                                        fontSize={10}
+                                        fontWeight="black"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tickFormatter={str =>
+                                            str && typeof str === 'string' ? str.split('-')[2] : ''
+                                        }
+                                    />
+                                    <YAxis
+                                        fontSize={10}
+                                        fontWeight="black"
+                                        axisLine={false}
+                                        tickLine={false}
+                                        tickFormatter={val => `${val}€`}
+                                    />
+                                    <Tooltip
+                                        contentStyle={{
+                                            borderRadius: '24px',
+                                            border: 'none',
+                                            boxShadow: '0 15px 40px rgba(0,0,0,0.12)',
+                                            fontWeight: 'black',
+                                            padding: '16px',
+                                        }}
+                                    />
+                                    <Area
+                                        type="monotone"
+                                        dataKey="revenue"
+                                        stroke="#ef4444"
+                                        strokeWidth={5}
+                                        fillOpacity={1}
+                                        fill="url(#colorRevenue)"
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                     <div className="mt-6 bg-gray-50 p-5 rounded-2xl border border-dashed border-gray-200 flex items-start gap-2.5">
                         <span className="text-sm mt-px">💡</span>
@@ -740,49 +768,51 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         {t.activityPeaks.title}
                     </h3>
                     <div className="h-80">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart
-                                data={(stats?.heatmap?.hourly || []).map(
-                                    (v: number, i: number) => ({ hour: `${i}h`, pedidos: v })
-                                )}
-                            >
-                                <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    vertical={false}
-                                    stroke="#f5f5f5"
-                                />
-                                <XAxis
-                                    dataKey="hour"
-                                    fontSize={10}
-                                    fontWeight="black"
-                                    axisLine={false}
-                                    tickLine={false}
-                                />
-                                <YAxis
-                                    fontSize={10}
-                                    fontWeight="black"
-                                    axisLine={false}
-                                    tickLine={false}
-                                />
-                                <Tooltip
-                                    cursor={{ fill: 'rgba(59, 130, 246, 0.05)' }}
-                                    contentStyle={{
-                                        borderRadius: '24px',
-                                        border: 'none',
-                                        boxShadow: '0 15px 40px rgba(0,0,0,0.12)',
-                                        fontWeight: 'black',
-                                        padding: '16px',
-                                    }}
-                                />
-                                <Bar
-                                    dataKey="pedidos"
-                                    name={t.activityPeaks.orders}
-                                    fill="#3B82F6"
-                                    radius={[8, 8, 0, 0]}
-                                    barSize={20}
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
+                        {isMounted && (
+                            <ResponsiveContainer width="100%" height="100%">
+                                <BarChart
+                                    data={(stats?.heatmap?.hourly || []).map(
+                                        (v: number, i: number) => ({ hour: `${i}h`, pedidos: v })
+                                    )}
+                                >
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                        vertical={false}
+                                        stroke="#f5f5f5"
+                                    />
+                                    <XAxis
+                                        dataKey="hour"
+                                        fontSize={10}
+                                        fontWeight="black"
+                                        axisLine={false}
+                                        tickLine={false}
+                                    />
+                                    <YAxis
+                                        fontSize={10}
+                                        fontWeight="black"
+                                        axisLine={false}
+                                        tickLine={false}
+                                    />
+                                    <Tooltip
+                                        cursor={{ fill: 'rgba(59, 130, 246, 0.05)' }}
+                                        contentStyle={{
+                                            borderRadius: '24px',
+                                            border: 'none',
+                                            boxShadow: '0 15px 40px rgba(0,0,0,0.12)',
+                                            fontWeight: 'black',
+                                            padding: '16px',
+                                        }}
+                                    />
+                                    <Bar
+                                        dataKey="pedidos"
+                                        name={t.activityPeaks.orders}
+                                        fill="#3B82F6"
+                                        radius={[8, 8, 0, 0]}
+                                        barSize={20}
+                                    />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        )}
                     </div>
                     <div className="mt-6 bg-gray-50 p-5 rounded-2xl border border-dashed border-gray-200 flex items-start gap-2.5">
                         <span className="text-sm mt-px">💡</span>
