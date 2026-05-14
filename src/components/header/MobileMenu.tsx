@@ -163,8 +163,11 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                                 <p className="font-black text-gray-900 text-[14px] leading-none mb-1 truncate">
                                                     {user.name}
                                                 </p>
-                                                <p className="text-[12px] text-gray-400 font-medium leading-none truncate">
+                                                <p className="text-[12px] text-gray-400 font-medium leading-none mb-1 truncate">
                                                     {user.email}
+                                                </p>
+                                                <p className="text-[10px] text-orange-600 font-black uppercase tracking-widest leading-none mt-1.5">
+                                                    Ver perfil
                                                 </p>
                                             </div>
                                             <div className="flex items-center gap-2 shrink-0">
