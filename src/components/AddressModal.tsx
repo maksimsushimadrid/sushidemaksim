@@ -7,7 +7,6 @@ import 'leaflet/dist/leaflet.css';
 import { api } from '../utils/api';
 import { RESTAURANT_LOCATION, detectZone } from '../utils/delivery';
 import { SearchSkeleton, MapPlaceholderSkeleton } from './skeletons/SearchSkeleton';
-import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 
 // Fix Leaflet marker icons
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -238,9 +237,6 @@ export default function AddressModal({
     const searchInputRef = useRef<HTMLInputElement>(null);
     const houseInputRef = useRef<HTMLInputElement>(null);
     const apartmentInputRef = useRef<HTMLInputElement>(null);
-
-    // Lock body scroll when modal is open
-    useBodyScrollLock(isOpen);
 
     // Sync internal state with props when modal OPENS
     useEffect(() => {
