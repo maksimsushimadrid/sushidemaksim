@@ -6,7 +6,6 @@ import {
     Store,
     CreditCard,
     Wallet,
-    Smartphone,
     Users,
     Minus,
     Plus,
@@ -158,7 +157,10 @@ export default function DeliveryForm({
     return (
         <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] px-3 py-5 md:p-6 mx-0 md:mx-0 rounded-[28px]">
             <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
-                <MapPin size={18} strokeWidth={1.5} className="text-orange-600" /> Datos de entrega
+                <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-black">
+                    2
+                </span>
+                Entrega
             </h2>
 
             <div className="flex bg-gray-100/50 p-1.5 rounded-[22px] mb-6 border border-gray-100 relative">
@@ -514,7 +516,7 @@ export default function DeliveryForm({
                                                             Guardar dirección
                                                         </p>
                                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">
-                                                            Para tus futuros pedidos 🍣
+                                                            Para tus futuros pedidos
                                                         </p>
                                                     </div>
                                                 </label>
@@ -532,7 +534,9 @@ export default function DeliveryForm({
 
             <div className="mt-8 pt-6 border-t border-gray-100">
                 <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
-                    <CreditCard size={18} strokeWidth={1.5} className="text-orange-600" /> Método de
+                    <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-black">
+                        3
+                    </span>
                     Pago
                 </h2>
                 <div className="grid grid-cols-2 gap-3">
@@ -584,8 +588,10 @@ export default function DeliveryForm({
 
             <div className="mt-8 pt-6 border-t border-gray-100">
                 <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
-                    <Smartphone size={18} strokeWidth={1.5} className="text-orange-600" /> Datos de
-                    contacto
+                    <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-black">
+                        4
+                    </span>
+                    Contacto
                 </h2>
                 {!isAuthenticated && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -601,6 +607,12 @@ export default function DeliveryForm({
                                     (refs.customerName as any).current = e;
                                 }}
                                 onFocus={trackFormFocus}
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        refs.guestEmail.current?.focus();
+                                    }
+                                }}
                                 placeholder="Ej: Juan Pérez"
                                 className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-400 focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition bg-gray-50 focus:bg-white"
                             />
@@ -618,6 +630,12 @@ export default function DeliveryForm({
                                     (refs.guestEmail as any).current = e;
                                 }}
                                 onFocus={trackFormFocus}
+                                onKeyDown={e => {
+                                    if (e.key === 'Enter') {
+                                        e.preventDefault();
+                                        refs.phone.current?.focus();
+                                    }
+                                }}
                                 placeholder="tu@email.com"
                                 className="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm outline-none focus:border-orange-400 focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition bg-gray-50 focus:bg-white"
                             />

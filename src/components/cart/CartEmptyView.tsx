@@ -130,8 +130,8 @@ export default function CartEmptyView({
                                                       </div>
                                                   }
                                               />
-                                              <div className="absolute top-3 right-3 text-orange-600 text-[8px] font-black uppercase tracking-widest drop-shadow-md">
-                                                  Best Seller
+                                              <div className="absolute top-3 right-3 bg-white/95 backdrop-blur-md px-2 py-1.5 rounded-full text-orange-600 text-[8px] font-black uppercase tracking-widest shadow-sm border border-orange-100/50">
+                                                  Más Vendido
                                               </div>
                                           </div>
                                           <div className="p-4 md:p-6 flex flex-col flex-1">

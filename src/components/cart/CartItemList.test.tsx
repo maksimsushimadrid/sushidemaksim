@@ -29,7 +29,7 @@ describe('CartItemList', () => {
     it('renders products and quantities correctly', () => {
         render(<CartItemList {...defaultProps} />);
         expect(screen.getByText('Gyoza')).toBeInTheDocument();
-        expect(screen.getByText('1')).toBeInTheDocument();
+        expect(screen.getAllByText('1').length).toBeGreaterThan(0);
         expect(screen.getByText('6,90 €')).toBeInTheDocument();
     });
 

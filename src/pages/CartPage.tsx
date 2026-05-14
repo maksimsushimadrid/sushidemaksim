@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { ArrowRight } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
@@ -139,6 +140,9 @@ export default function CartPage() {
                   ? (selectedZone.cost ?? 0)
                   : (siteSettings?.deliveryFee ?? 3.5)
             : 0;
+
+    const finalTotal = cartSubtotal - discountAmount + deliveryCost;
+    const isMinOrderMet = cartSubtotal >= MIN_ORDER;
 
     // Sync form changes back to deliveryDetails in useCart for persistence
     const watchedFields = watch();
@@ -936,6 +940,46 @@ export default function CartPage() {
                         </div>
                     </FormProvider>
                 </main>
+            )}
+
+            {/* Mobile Sticky Bottom Bar */}
+            {items.length > 0 && (
+                <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[0_-10px_40px_rgba(0,0,0,0.08)] z-[100] transform transition-transform duration-300">
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="flex flex-col">
+                            <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
+                                Total
+                            </span>
+                            <span className="text-2xl font-black text-gray-900 leading-none">
+                                {finalTotal.toFixed(2).replace('.', ',')}{' '}
+                                <span className="text-orange-600">€</span>
+                            </span>
+                        </div>
+                        <button
+                            onClick={() => {
+                                (
+                                    handleSubmit(onSubmit as any, errs => {
+                                        const firstError = Object.values(errs)[0];
+                                        if (firstError?.message) {
+                                            showError(firstError.message as string);
+                                        }
+                                    }) as any
+                                )();
+                            }}
+                            disabled={
+                                isOrdering ||
+                                !isMinOrderMet ||
+                                (deliveryType === 'delivery' &&
+                                    (!deliveryDetails.address || !deliveryDetails.selectedZone)) ||
+                                !deliveryDetails.paymentMethod
+                            }
+                            className={`flex-1 max-w-[200px] px-6 py-3.5 rounded-xl font-black border-none cursor-pointer transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wide ${isMinOrderMet ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/30' : 'bg-gray-200 text-gray-400'}`}
+                        >
+                            {isOrdering ? 'Procesando...' : 'Pagar'}
+                            {!isOrdering && <ArrowRight size={18} />}
+                        </button>
+                    </div>
+                </div>
             )}
 
             <AddressModal

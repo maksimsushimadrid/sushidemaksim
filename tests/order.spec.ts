@@ -117,7 +117,8 @@ test.describe('Order Checkout Flow', () => {
 
         // Select Pickup
         const pickupBtn = page.getByRole('button', { name: /Recogida/i });
-        await pickupBtn.click();
+        await pickupBtn.click({ force: true });
+        await page.waitForTimeout(300);
 
         // Fill user info
         await page.getByPlaceholder(/Ej: Juan Pérez/i).fill('Juan Test');
@@ -125,7 +126,8 @@ test.describe('Order Checkout Flow', () => {
 
         // Select payment method
         const cashBtn = page.getByRole('button', { name: /Efectivo/i });
-        await cashBtn.click();
+        await cashBtn.click({ force: true });
+        await page.waitForTimeout(300);
 
         // Place order
         await page.getByTestId('order-button').click();

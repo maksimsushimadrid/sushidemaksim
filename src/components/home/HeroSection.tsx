@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 const REVIEWS = [
     {
@@ -51,6 +51,30 @@ export function HeroSection() {
         };
     }, []);
 
+    const [shouldPlayVideo, setShouldPlayVideo] = useState(true);
+
+    useEffect(() => {
+        const checkPerformancePrefs = () => {
+            const prefersReducedMotion = window.matchMedia(
+                '(prefers-reduced-motion: reduce)'
+            ).matches;
+            let isSlowConnection = false;
+            let isDataSaver = false;
+
+            if ('connection' in navigator) {
+                const conn = (navigator as any).connection;
+                isSlowConnection = ['slow-2g', '2g', '3g'].includes(conn.effectiveType);
+                isDataSaver = conn.saveData;
+            }
+
+            if (prefersReducedMotion || isSlowConnection || isDataSaver) {
+                setShouldPlayVideo(false);
+            }
+        };
+
+        checkPerformancePrefs();
+    }, []);
+
     return (
         <section className="relative h-screen w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black">
             {/* Visual context for SEO */}
@@ -68,21 +92,27 @@ export function HeroSection() {
                             'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.75) 100%)',
                     }}
                 />
-                <video
-                    ref={useCallback((_el: HTMLVideoElement | null) => {
-                        // Play at normal speed for maximum smoothness
-                    }, [])}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                    poster="/hero-poster.jpg"
-                    className="absolute inset-0 w-full h-full object-cover"
-                >
-                    <source src="/hero-video.webm" type="video/webm" />
-                    <source src="/hero-video.mp4" type="video/mp4" />
-                </video>
+                {shouldPlayVideo ? (
+                    <video
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="auto"
+                        poster="/hero-poster.jpg"
+                        className="absolute inset-0 w-full h-full object-cover"
+                    >
+                        <source src="/hero-video.webm" type="video/webm" />
+                        <source src="/hero-video.mp4" type="video/mp4" />
+                    </video>
+                ) : (
+                    <img
+                        src="/hero-poster.jpg"
+                        alt="Sushi background"
+                        className="absolute inset-0 w-full h-full object-cover"
+                        loading="eager"
+                    />
+                )}
             </div>
 
             <div className="relative z-20 flex flex-col items-center max-w-4xl mx-auto">

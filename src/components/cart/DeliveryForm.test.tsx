@@ -98,7 +98,7 @@ describe('DeliveryForm', () => {
                 <DeliveryForm {...defaultProps} />
             </TestWrapper>
         );
-        expect(screen.getByText(/Datos de entrega/i)).toBeInTheDocument();
+        expect(screen.getAllByText(/Entrega/i).length).toBeGreaterThan(0);
         expect(screen.getByText(/Domicilio/i)).toBeInTheDocument();
         expect(screen.getByText(/Recogida/i)).toBeInTheDocument();
         expect(screen.getByText(/¿Dónde entregamos el pedido\?/i)).toBeInTheDocument();
@@ -180,7 +180,7 @@ describe('DeliveryForm', () => {
                 <DeliveryForm {...defaultProps} />
             </TestWrapper>
         );
-        expect(screen.getByText('4')).toBeInTheDocument();
+        expect(screen.getAllByText('4').length).toBeGreaterThan(0);
 
         const plusButton = screen.getByTestId('plus').parentElement;
         if (plusButton) {

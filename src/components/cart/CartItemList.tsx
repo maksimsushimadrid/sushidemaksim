@@ -31,9 +31,14 @@ export default function CartItemList({
     return (
         <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 mb-6 overflow-hidden">
             <div className="flex items-center justify-between p-4 pb-2 border-b border-gray-50 bg-gray-50/30">
-                <h2 className="text-sm font-black m-0 uppercase tracking-widest text-gray-400">
-                    Productos ({items.length})
-                </h2>
+                <div className="flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-black">
+                        1
+                    </span>
+                    <h2 className="text-sm font-black m-0 uppercase tracking-widest text-gray-900">
+                        Tu Pedido ({items.length})
+                    </h2>
+                </div>
                 <button
                     onClick={clearCart}
                     className="text-[10px] font-black uppercase tracking-widest text-red-500 hover:text-red-600 transition-colors border-none bg-transparent cursor-pointer flex items-center gap-1.5"
@@ -104,7 +109,7 @@ export default function CartItemList({
                                 )}
                             </div>
                             <div className="flex items-center justify-between gap-4">
-                                <div className="flex items-center bg-gray-50 rounded-lg p-0.5 border border-gray-100">
+                                <div className="flex items-center bg-gray-50 rounded-lg p-1 border border-gray-100">
                                     <button
                                         onClick={() => {
                                             triggerHaptic();
@@ -112,12 +117,12 @@ export default function CartItemList({
                                                 ? updateQuantity(item.id, item.quantity - 1)
                                                 : removeItem(item.id);
                                         }}
-                                        className="w-7 h-7 md:w-6 md:h-6 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30 disabled:cursor-not-allowed"
+                                        className="w-11 h-11 md:w-8 md:h-8 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30 disabled:cursor-not-allowed"
                                         disabled={item.isGift}
                                     >
-                                        <Minus size={12} strokeWidth={2.5} />
+                                        <Minus size={14} strokeWidth={2.5} />
                                     </button>
-                                    <span className="w-7 md:w-7 text-center font-black text-gray-900 text-xs">
+                                    <span className="w-8 md:w-8 text-center font-black text-gray-900 text-sm md:text-xs">
                                         {item.quantity}
                                     </span>
                                     <button
@@ -125,10 +130,10 @@ export default function CartItemList({
                                             triggerHaptic();
                                             updateQuantity(item.id, item.quantity + 1);
                                         }}
-                                        className="w-7 h-7 md:w-6 md:h-6 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30 disabled:cursor-not-allowed"
+                                        className="w-11 h-11 md:w-8 md:h-8 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30 disabled:cursor-not-allowed"
                                         disabled={item.isGift}
                                     >
-                                        <Plus size={12} strokeWidth={2.5} />
+                                        <Plus size={14} strokeWidth={2.5} />
                                     </button>
                                 </div>
                                 <div className="flex items-center gap-3">
@@ -142,7 +147,7 @@ export default function CartItemList({
                                             </span>
                                         </div>
                                     ) : (
-                                        <span className="text-[15px] md:text-base font-black text-gray-900">
+                                        <span className="text-[15px] md:text-base font-black text-gray-900 whitespace-nowrap">
                                             {(item.price * item.quantity)
                                                 .toFixed(2)
                                                 .replace('.', ',')}{' '}
@@ -154,10 +159,10 @@ export default function CartItemList({
                                             triggerHaptic(40); // HEAVY
                                             removeItem(item.id);
                                         }}
-                                        className="text-gray-300 hover:text-orange-400 cursor-pointer p-0 transition-colors flex items-center justify-center border-none bg-transparent"
+                                        className="text-gray-300 hover:text-orange-400 cursor-pointer w-11 h-11 md:w-8 md:h-8 transition-colors flex items-center justify-center border-none bg-transparent"
                                         aria-label="Eliminar"
                                     >
-                                        <X size={16} strokeWidth={2.5} />
+                                        <X size={18} strokeWidth={2.5} />
                                     </button>
                                 </div>
                             </div>
@@ -184,18 +189,18 @@ export default function CartItemList({
                             </p>
                         </div>
 
-                        <div className="flex items-center bg-white rounded-lg p-0.5 border border-gray-200 shadow-sm">
+                        <div className="flex items-center bg-white rounded-lg p-1 border border-gray-200 shadow-sm">
                             <button
                                 onClick={() => {
                                     triggerHaptic();
                                     updateChopsticks(Math.max(0, chopsticksCount - 1));
                                 }}
-                                className="w-8 h-8 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30"
+                                className="w-11 h-11 md:w-8 md:h-8 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30"
                                 disabled={chopsticksCount <= 0}
                             >
-                                <Minus size={14} strokeWidth={2.5} />
+                                <Minus size={16} strokeWidth={2.5} />
                             </button>
-                            <span className="w-8 text-center font-black text-gray-900 text-[14px]">
+                            <span className="w-10 text-center font-black text-gray-900 text-base md:text-[14px]">
                                 {chopsticksCount}
                             </span>
                             <button
@@ -203,10 +208,10 @@ export default function CartItemList({
                                     triggerHaptic();
                                     updateChopsticks(Math.min(10, chopsticksCount + 1));
                                 }}
-                                className="w-8 h-8 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30"
+                                className="w-11 h-11 md:w-8 md:h-8 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30"
                                 disabled={chopsticksCount >= 10}
                             >
-                                <Plus size={14} strokeWidth={2.5} />
+                                <Plus size={16} strokeWidth={2.5} />
                             </button>
                         </div>
                     </div>
