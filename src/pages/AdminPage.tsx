@@ -635,7 +635,15 @@ export default function AdminPage() {
     }
 
     return (
-        <div className="min-h-screen metallic-brushed flex flex-col md:flex-row">
+        <div
+            className="min-h-screen flex flex-col md:flex-row relative"
+            style={{
+                backgroundImage: `linear-gradient(rgba(251, 247, 240, 0.85), rgba(251, 247, 240, 0.85)), url('/admin-bg.webp')`,
+                backgroundSize: '400px', // Set as pattern
+                backgroundRepeat: 'repeat',
+                backgroundAttachment: 'fixed',
+            }}
+        >
             <SEO
                 title="Panel de Administración"
                 description="Gestión interna de Sushi de Maksim"
