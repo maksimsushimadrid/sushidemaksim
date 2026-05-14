@@ -11,6 +11,7 @@ import FloatingCart from './components/FloatingCart';
 import SmoothScroll from './components/SmoothScroll';
 import RegistrationPrompt from './components/RegistrationPrompt';
 import ErrorBoundary from './components/ErrorBoundary';
+import ReloadPrompt from './components/ReloadPrompt';
 import { ToastProvider } from './context/ToastContext';
 import Schema from './components/SEO/Schema';
 import { Analytics } from '@vercel/analytics/react';
@@ -192,6 +193,7 @@ function App() {
                             <SmoothScroll />
                             {!isAdminRoute && !isWaiterRoute && !isTableRoute && <CookieConsent />}
                             {!isTableRoute && <RegistrationPrompt />}
+                            <ReloadPrompt />
                             <FloatingCart />
 
                             {!isAdminRoute && !isWaiterRoute && <Header />}

@@ -1,10 +1,23 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import fs from 'fs';
+
+const appVersion = Date.now().toString();
 
 export default defineConfig({
+    define: {
+        __APP_VERSION__: JSON.stringify(appVersion),
+    },
     plugins: [
         react(),
+        {
+            name: 'generate-version-json',
+            writeBundle() {
+                fs.writeFileSync('dist/version.json', JSON.stringify({ version: appVersion }));
+                console.log(`[VersionGen] Version ${appVersion} written to dist/version.json`);
+            },
+        },
         VitePWA({
             registerType: 'autoUpdate',
             includeAssets: [

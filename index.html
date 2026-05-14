@@ -5,6 +5,14 @@
             // --- IMMEDIATE THEME SETUP ---
             // Fix white flash on refresh by setting background color immediately
             (function () {
+                // --- CANONICAL REDIRECT ---
+                const host = window.location.hostname;
+                const isProduction = host !== 'localhost' && !host.includes('vercel.app');
+                if (isProduction && host === 'sushidemaksim.com') {
+                    window.location.replace('https://www.sushidemaksim.com' + window.location.pathname + window.location.search + window.location.hash);
+                    return;
+                }
+
                 const isTable = window.location.pathname.startsWith('/table');
                 const isDark = isTable;
                 const bgColor = isDark ? '#0d0d0d' : '#fbf7f0';
