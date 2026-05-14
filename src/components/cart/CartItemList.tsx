@@ -74,7 +74,7 @@ export default function CartItemList({
                         </div>
 
                         <div className="flex-1 min-w-0">
-                            <div className="mb-2">
+                            <div className="mb-2 pr-8">
                                 <h3 className="font-bold text-gray-900 leading-tight text-[13px] md:text-sm truncate mb-0.5">
                                     {item.name}
                                 </h3>
@@ -108,7 +108,7 @@ export default function CartItemList({
                                     </div>
                                 )}
                             </div>
-                            <div className="flex items-center justify-between gap-4">
+                            <div className="flex items-center justify-between gap-1 md:gap-4 mt-1">
                                 <div className="flex items-center bg-gray-50 rounded-lg p-1 border border-gray-100">
                                     <button
                                         onClick={() => {
@@ -136,7 +136,7 @@ export default function CartItemList({
                                         <Plus size={14} strokeWidth={2.5} />
                                     </button>
                                 </div>
-                                <div className="flex items-center gap-3">
+                                <div className="flex items-center">
                                     {item.isGift ? (
                                         <div className="flex flex-col items-end">
                                             <span className="text-[10px] font-black text-orange-500 uppercase tracking-tight leading-none mb-1">
@@ -154,19 +154,21 @@ export default function CartItemList({
                                             €
                                         </span>
                                     )}
-                                    <button
-                                        onClick={() => {
-                                            triggerHaptic(40); // HEAVY
-                                            removeItem(item.id);
-                                        }}
-                                        className="text-gray-300 hover:text-orange-400 cursor-pointer w-11 h-11 md:w-8 md:h-8 transition-colors flex items-center justify-center border-none bg-transparent"
-                                        aria-label="Eliminar"
-                                    >
-                                        <X size={18} strokeWidth={2.5} />
-                                    </button>
                                 </div>
                             </div>
                         </div>
+
+                        {/* Absolute Remove Button */}
+                        <button
+                            onClick={() => {
+                                triggerHaptic(40); // HEAVY
+                                removeItem(item.id);
+                            }}
+                            className="absolute top-1.5 right-1.5 text-gray-300 hover:text-orange-500 cursor-pointer w-10 h-10 transition-colors flex items-center justify-center border-none bg-transparent z-10"
+                            aria-label="Eliminar"
+                        >
+                            <X size={16} strokeWidth={2.5} />
+                        </button>
                     </div>
                 ))}
             </div>

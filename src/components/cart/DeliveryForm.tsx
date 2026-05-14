@@ -184,7 +184,7 @@ export default function DeliveryForm({
                     {deliveryType === 'delivery' && (
                         <motion.div
                             layoutId="activeTab"
-                            className="absolute inset-0 bg-white shadow-md shadow-orange-100 border border-orange-50 rounded-xl z-[-1]"
+                            className="absolute inset-0 bg-white shadow-md shadow-gray-200/50 border border-gray-100 rounded-xl z-[-1]"
                             transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                         />
                     )}
@@ -206,7 +206,7 @@ export default function DeliveryForm({
                     {deliveryType === 'pickup' && (
                         <motion.div
                             layoutId="activeTab"
-                            className="absolute inset-0 bg-white shadow-md shadow-orange-100 border border-orange-50 rounded-xl z-[-1]"
+                            className="absolute inset-0 bg-white shadow-md shadow-gray-200/50 border border-gray-100 rounded-xl z-[-1]"
                             transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                         />
                     )}
@@ -229,7 +229,7 @@ export default function DeliveryForm({
                     {deliveryType === 'reservation' && (
                         <motion.div
                             layoutId="activeTab"
-                            className="absolute inset-0 bg-white shadow-md shadow-orange-100 border border-orange-50 rounded-xl z-[-1]"
+                            className="absolute inset-0 bg-white shadow-md shadow-gray-200/50 border border-gray-100 rounded-xl z-[-1]"
                             transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
                         />
                     )}

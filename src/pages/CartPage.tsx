@@ -843,9 +843,11 @@ export default function CartPage() {
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <p className="mt-3 text-[11px] bg-orange-100/50 px-2 py-1.5 rounded-lg text-orange-900 font-bold inline-block">
-                                                    🚀 Aceptamos pedidos programados
-                                                </p>
+                                                <div className="mt-4 text-center">
+                                                    <p className="text-[13px] bg-orange-100/50 px-4 py-2 rounded-xl text-orange-900 font-bold inline-block m-0">
+                                                        🚀 Aceptamos pedidos programados
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
