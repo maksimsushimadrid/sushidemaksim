@@ -20,7 +20,7 @@ export const CATEGORIES = [
         name: 'Rollos Clasicos',
         icon: Fish,
         description:
-            'La esencia del sushi tradicional: Makis, Uramakis y Rolls clásicos para los paladares más puristas.',
+            'La esencia del sushi tradicional: Makis y Rollos clásicos para los paladares más puristas.',
     },
     {
         id: 'rollos-fritos',
@@ -33,15 +33,14 @@ export const CATEGORIES = [
         id: 'sopas',
         name: 'Sopas',
         icon: Soup,
-        description:
-            'Sopas tradicionales japonesas para reconfortar el cuerpo: Miso y otras especialidades calientes.',
+        description: 'Sopas tradicionales japonesas para reconfortar el cuerpo',
     },
     {
         id: 'menus',
         name: 'Set',
         icon: Gift,
         description:
-            'Nuestras mejores combinaciones y botes de sushi ideales para compartir con amigos o en pareja.',
+            'Nuestras mejores combinaciones y sets variados de sushi ideales para compartir con amigos o en pareja.',
     },
     {
         id: 'extras',
