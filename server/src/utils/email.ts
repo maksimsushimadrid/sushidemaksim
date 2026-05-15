@@ -301,8 +301,9 @@ export async function sendOrderReceiptEmail(
                   ? 'Efectivo'
                   : paymentMethod;
 
-        const statusMessage = `¡Hola! Hemos recibido tu pedido и ya lo estamos preparando. Te lo entregaremos en unos 30 - 60 minutos.\n\n`;
-        waMessage = `${statusMessage}Tu pedido #${String(orderData.orderId).padStart(5, '0')} está confirmado${scheduledText}\n\n${itemsListText}${deliveryFeeText}\n\n*Total: ${orderData.total.toFixed(2)}€*\n*Método de pago: ${paymentMethodLabel}*`;
+        const statusMessage = `¡Hola! Hemos recibido tu pedido. Te lo entregaremos en  30 - 60 minutos.\n\n`;
+        const addressLine = deliveryType === 'DOMICILIO' ? `\nDirección: ${orderData.deliveryAddress}` : '';
+        waMessage = `${statusMessage}Tu pedido #${String(orderData.orderId).padStart(5, '0')} está confirmado${scheduledText}\n\n${itemsListText}${deliveryFeeText}\n\nTotal: ${orderData.total.toFixed(2)}€\nMétodo de pago: ${paymentMethodLabel}${addressLine}`;
         const cleanPhone = orderData.phoneNumber.replace(/\D/g, '');
         // wa.me doesn't like '+' prefix usually, digits only is safest
         waUrl = `https://wa.me/${cleanPhone}/?text=${encodeURIComponent(waMessage)}`;
@@ -354,7 +355,9 @@ export async function sendOrderReceiptEmail(
     <div style="padding: 16px 20px;">
       <h2 style="color: #111827; margin: 0 0 4px; font-size: 20px; font-weight: 800;">${greeting}</h2>
       <p style="color: #4b5563; font-size: 14px; line-height: 1.5; margin: 0 0 16px;">
-        El pedido <strong>#${String(orderData.orderId).padStart(5, '0')}</strong> ha sido recibido con éxito.
+        ¡Hola! Hemos recibido tu pedido. Te lo entregaremos en <strong>${orderData.estimatedDeliveryTime || '30 - 60 minutos'}</strong>.
+        <br><br>
+        Tu pedido <strong>#${String(orderData.orderId).padStart(5, '0')}</strong> está confirmado.
       </p>
 
       ${

@@ -117,9 +117,13 @@ test.describe('Guest Checkout - Address Selection', () => {
         // Add item to cart
         await page.getByTestId('add-to-cart-button').first().click();
 
+        // Wait for cart count to update
+        await expect(page.getByTestId('cart-count')).toHaveText('1');
+
         // Go to cart
         await page.goto('/cart');
-        await expect(page.getByText(/Resumen/i)).toBeVisible();
+        await page.waitForLoadState('networkidle');
+        await expect(page.getByTestId('cart-summary')).toBeVisible({ timeout: 15000 });
 
         // Open address modal
         await page.getByTestId('address-input').click({ force: true });

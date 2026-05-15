@@ -233,24 +233,24 @@ export default function PromoPage() {
                     return (
                         <div
                             key={banner.id}
-                            className={`rounded-[3rem] p-8 md:p-16 mb-12 md:mb-20 relative overflow-hidden shadow-2xl flex flex-col lg:flex-row items-center gap-8 lg:gap-20 group isolate bg-gradient-to-br ${banner.bg || 'from-orange-500 to-amber-500'}`}
+                            className={`rounded-[3rem] p-8 md:p-16 mb-12 md:mb-20 relative overflow-hidden shadow-2xl flex flex-col lg:flex-row items-center gap-8 lg:gap-20 group isolate bg-orange-500 shadow-orange-500/20`}
                         >
                             {/* Text Content */}
-                            <div className="flex-1 text-white relative z-10 text-center lg:text-left">
+                            <div className="flex-1 relative z-10 w-full text-center lg:text-left">
                                 {banner.subtitle && (
-                                    <div className="inline-block bg-white/20 backdrop-blur-xl px-6 py-2 rounded-full text-[10px] md:text-xs font-black mb-6 border border-white/20 uppercase tracking-[0.2em] text-white shadow-sm">
+                                    <div className="inline-block bg-white/20 backdrop-blur-md px-6 py-2 rounded-full text-[10px] md:text-xs font-black mb-6 border border-white/30 uppercase tracking-[0.2em] text-white shadow-sm">
                                         {banner.subtitle}
                                     </div>
                                 )}
-                                <h2 className="text-4xl md:text-7xl font-black mb-6 tracking-tighter leading-[0.9] drop-shadow-2xl">
+                                <h2 className="text-4xl md:text-7xl font-black mb-6 tracking-tighter leading-[0.9] text-white drop-shadow-2xl">
                                     {banner.title}
                                 </h2>
-                                <p className="text-lg md:text-2xl font-medium mb-12 opacity-90 leading-relaxed max-w-xl mx-auto lg:mx-0 drop-shadow-md">
+                                <p className="text-lg md:text-2xl font-medium mb-12 text-white/90 leading-relaxed max-w-xl mx-auto lg:mx-0 drop-shadow-md">
                                     {banner.description}
                                 </p>
                                 <Link
                                     to={banner.cta_link || '/menu'}
-                                    className="inline-flex items-center justify-center gap-3 bg-white text-gray-900 px-12 py-5 rounded-[2rem] font-black text-sm uppercase transition-all active:scale-95 shadow-2xl hover:bg-black hover:text-white w-full sm:w-auto tracking-widest"
+                                    className="inline-flex items-center justify-center gap-3 bg-gray-900 text-white px-10 py-4 md:px-12 md:py-5 rounded-[2rem] font-black text-sm uppercase transition-all active:scale-95 shadow-xl hover:bg-black hover:shadow-black/20 w-full sm:w-auto tracking-widest"
                                 >
                                     {banner.cta_text || 'PEDIR AHORA'}{' '}
                                     <ArrowRight size={22} strokeWidth={3} />
@@ -317,28 +317,29 @@ export default function PromoPage() {
                             </div>
 
                             {/* Background Decorations */}
-                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-[0.05] pointer-events-none"></div>
-                            <div className="absolute -top-32 -right-32 w-96 h-96 bg-white/10 blur-[120px] rounded-full pointer-events-none animate-pulse"></div>
-                            <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-black/10 blur-[120px] rounded-full pointer-events-none animate-pulse"></div>
+                            <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-[0.02] pointer-events-none"></div>
+                            <div className="absolute -top-32 -right-32 w-96 h-96 bg-orange-200/20 blur-[120px] rounded-full pointer-events-none animate-pulse"></div>
+                            <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-orange-200/20 blur-[120px] rounded-full pointer-events-none animate-pulse"></div>
                         </div>
                     );
                 })}
 
                 {/* Fallback Loyalty Section if no banners */}
                 {banners.length === 0 && (
-                    <div className="bg-orange-600 rounded-[3rem] px-5 py-10 md:p-12 text-center text-white mb-20 relative overflow-hidden shadow-[0_20px_50px_rgba(242,101,34,0.3)]">
+                    <div className="bg-orange-500 rounded-[3rem] px-5 py-10 md:p-12 text-center text-white mb-20 relative overflow-hidden shadow-2xl shadow-orange-500/20">
                         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
                         <div className="relative z-10 max-w-3xl mx-auto">
-                            <h2 className="text-2xl md:text-5xl font-black mb-4 tracking-tight leading-tight">
+                            <h2 className="text-2xl md:text-5xl font-black mb-4 tracking-tight leading-tight text-white">
                                 ¡Premio a tu lealtad!
                             </h2>
-                            <p className="text-base md:text-2xl font-medium mb-8 opacity-90 text-orange-100">
-                                ¡Tras completar 4 pedidos recibirás un 5% de descuento para tu 5º
+                            <p className="text-base md:text-2xl font-medium mb-8 text-white/90">
+                                ¡Tras completar 4 pedidos recibirás un{' '}
+                                <span className="text-gray-900">5%</span> de descuento para tu 5º
                                 pedido!
                             </p>
                             <Link
                                 to={user ? '/menu' : '/profile'}
-                                className="inline-flex items-center gap-2 bg-white text-orange-600 px-10 py-5 rounded-2xl font-black text-sm uppercase transition-all active:scale-90 shadow-xl hover:shadow-2xl"
+                                className="inline-flex items-center gap-2 bg-gray-900 text-white px-10 py-5 rounded-2xl font-black text-sm uppercase transition-all active:scale-90 shadow-xl hover:bg-black"
                             >
                                 {user ? 'HACER UN PEDIDO' : 'REGISTRARSE'}{' '}
                                 <ArrowRight size={20} strokeWidth={1.5} />

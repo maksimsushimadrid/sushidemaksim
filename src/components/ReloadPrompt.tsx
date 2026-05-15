@@ -69,9 +69,9 @@ export default function ReloadPrompt() {
                     initial={{ y: 50, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 50, opacity: 0 }}
-                    className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] w-[calc(100%-2rem)] max-w-sm"
+                    className="fixed bottom-6 left-0 right-0 px-4 md:left-6 md:right-auto md:px-0 z-toast pointer-events-none"
                 >
-                    <div className="bg-white border border-orange-100 shadow-2xl shadow-orange-900/10 rounded-2xl p-4 flex items-center gap-4">
+                    <div className="bg-white border border-orange-100 shadow-2xl shadow-orange-900/10 rounded-2xl p-3 md:p-4 flex items-center gap-3 md:gap-4 max-w-sm mx-auto md:mx-0 pointer-events-auto">
                         <div className="flex-shrink-0 w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
                             <RefreshCcw className="w-6 h-6 text-orange-600 animate-spin-slow" />
                         </div>

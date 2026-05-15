@@ -9,7 +9,7 @@ describe('Order Schema Validation', () => {
                     deliveryType: 'delivery',
                     address: 'Calle Mayor 123',
                     house: '2B',
-                    phone: '600123456',
+                    phone: '+34600123456',
                     customerName: 'Test User',
                     paymentMethod: 'card',
                     guestsCount: 2,
@@ -25,7 +25,7 @@ describe('Order Schema Validation', () => {
             const invalidOrder = {
                 body: {
                     deliveryType: 'delivery',
-                    phone: '600123456',
+                    phone: '+34600123456',
                     customerName: 'Test User',
                     isScheduled: false,
                 },
@@ -44,7 +44,7 @@ describe('Order Schema Validation', () => {
                 body: {
                     deliveryType: 'delivery',
                     address: 'Calle Falsa 123',
-                    phone: '600123456',
+                    phone: '+34600123456',
                     customerName: 'Test User',
                     isScheduled: false,
                 },
@@ -60,7 +60,7 @@ describe('Order Schema Validation', () => {
             const validPickup = {
                 body: {
                     deliveryType: 'pickup',
-                    phone: '600123456',
+                    phone: '+34600123456',
                     customerName: 'Test User',
                     paymentMethod: 'cash',
                     isScheduled: false,
@@ -86,7 +86,7 @@ describe('Order Schema Validation', () => {
             const invalidScheduled = {
                 body: {
                     deliveryType: 'pickup',
-                    phone: '600123456',
+                    phone: '+34600123456',
                     customerName: 'Test User',
                     isScheduled: true,
                 },
@@ -108,7 +108,7 @@ describe('Order Schema Validation', () => {
                     deliveryType: 'delivery',
                     address: 'Calle Amigo 456',
                     house: '1A',
-                    phone: '611222333',
+                    phone: '+34611222333',
                     senderName: 'Your Friend',
                 },
             };

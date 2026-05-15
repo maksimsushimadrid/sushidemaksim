@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Order Checkout Flow', () => {
     test.beforeEach(async ({ page }) => {
-        // Mock date to a Saturday night (Open)
+        // Mock date to a Saturday night (Open) + dismiss cookie banner
         await page.addInitScript(() => {
             // Saturday, March 21, 2026 at 21:00:00
             const mockDate = new Date('2026-03-21T21:00:00').getTime();
@@ -17,6 +17,9 @@ test.describe('Order Checkout Flow', () => {
                     }
                 }
             } as any;
+
+            // Dismiss cookie consent banner to prevent overlay blocking
+            window.localStorage.setItem('cookieConsent', 'accepted');
         });
 
         // Mock menu API
@@ -44,6 +47,19 @@ test.describe('Order Checkout Flow', () => {
                             image: '',
                         },
                     ],
+                }),
+            })
+        );
+        // Mock settings API
+        await page.route('**/api/settings', route =>
+            route.fulfill({
+                status: 200,
+                body: JSON.stringify({
+                    minOrder: 0,
+                    isStoreClosed: false,
+                    isTodayClosed: false,
+                    isPickupOnly: false,
+                    freeDeliveryThreshold: 60,
                 }),
             })
         );
@@ -116,7 +132,8 @@ test.describe('Order Checkout Flow', () => {
 
         // Go to cart
         await page.goto('/cart');
-        await expect(page.getByText(/Resumen/i)).toBeVisible();
+        await page.waitForLoadState('networkidle');
+        await expect(page.getByTestId('cart-summary')).toBeVisible({ timeout: 15000 });
 
         // Select Pickup
         await page.getByTestId('delivery-type-pickup').click({ force: true });
@@ -125,13 +142,17 @@ test.describe('Order Checkout Flow', () => {
         // Fill user info
         await page.getByPlaceholder(/Ej: Juan Pérez/i).fill('Juan Test');
         await page.getByTestId('phone-input').fill('600123456');
+        await page.keyboard.press('Tab');
 
-        // Select payment method
-        await page.getByTestId('payment-method-cash').click({ force: true });
-        await page.waitForTimeout(300);
+        // Select payment method — scroll into view first to ensure React handler fires
+        const cashBtn = page.getByTestId('payment-method-cash');
+        await cashBtn.scrollIntoViewIfNeeded();
+        await cashBtn.click();
 
-        // Place order
-        await page.getByTestId('order-button').click();
+        // Verify payment was selected by checking the order button becomes enabled
+        const orderBtn = page.getByTestId('order-button');
+        await expect(orderBtn).toBeEnabled({ timeout: 10000 });
+        await orderBtn.click();
 
         // Success check
         await expect(page.getByTestId('success-title')).toBeVisible({
@@ -148,9 +169,13 @@ test.describe('Order Checkout Flow', () => {
         const addButton = page.getByTestId('add-to-cart-button').first();
         await addButton.click();
 
+        // Wait for cart count to update
+        await expect(page.getByTestId('cart-count')).toHaveText('1');
+
         // Go to cart
         await page.goto('/cart');
-        await expect(page.getByText(/Resumen/i)).toBeVisible();
+        await page.waitForLoadState('networkidle');
+        await expect(page.getByTestId('cart-summary')).toBeVisible({ timeout: 15000 });
 
         // Select Domicilio (should be selected by default, but let's be sure)
         const domicileBtn = page.getByRole('button', { name: /Domicilio/i });

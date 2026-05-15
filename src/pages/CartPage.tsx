@@ -936,6 +936,7 @@ export default function CartPage() {
                                         isApplyingPromo={isApplyingPromo}
                                         setPromoCode={setPromoCode}
                                         minOrder={MIN_ORDER}
+                                        deliveryDetails={watchedFields as any}
                                     />
                                 </div>
                             </div>
@@ -971,9 +972,9 @@ export default function CartPage() {
                             disabled={
                                 isOrdering ||
                                 !isMinOrderMet ||
-                                (deliveryType === 'delivery' &&
-                                    (!deliveryDetails.address || !deliveryDetails.selectedZone)) ||
-                                !deliveryDetails.paymentMethod
+                                (watchedFields.deliveryType === 'delivery' &&
+                                    (!watchedFields.address || !watchedFields.selectedZone)) ||
+                                !watchedFields.paymentMethod
                             }
                             className={`flex-1 max-w-[200px] px-6 py-3.5 rounded-xl font-black border-none cursor-pointer transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wide ${isMinOrderMet ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/30' : 'bg-gray-200 text-gray-400'}`}
                         >

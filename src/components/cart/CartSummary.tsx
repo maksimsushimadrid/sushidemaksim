@@ -19,6 +19,13 @@ interface CartSummaryProps {
     setPromoCode: (code: string) => void;
     minOrder?: number;
     freeDeliveryThreshold?: number;
+    deliveryDetails?: {
+        deliveryType: 'delivery' | 'pickup' | 'reservation';
+        address?: string;
+        house?: string;
+        selectedZone?: any;
+        paymentMethod?: 'cash' | 'card' | 'bizum';
+    };
 }
 
 export default function CartSummary({
@@ -37,9 +44,11 @@ export default function CartSummary({
     setPromoCode,
     minOrder = 0,
     freeDeliveryThreshold = 60,
+    deliveryDetails: propDeliveryDetails,
 }: CartSummaryProps) {
-    const { items, deliveryDetails } = useCart();
-    const { deliveryType, address, house, selectedZone, paymentMethod } = deliveryDetails;
+    const { items, deliveryDetails: contextDeliveryDetails } = useCart();
+    const details = propDeliveryDetails || contextDeliveryDetails;
+    const { deliveryType, address, house, selectedZone, paymentMethod } = details;
     const isMinOrderMet = total >= minOrder;
     const finalTotal = total - (promoDiscount ? (total * promoDiscount) / 100 : 0) + deliveryCost;
 
@@ -53,7 +62,10 @@ export default function CartSummary({
         isOrdering || items.length === 0 || !isMinOrderMet || isAddressMissing || isPaymentMissing;
 
     return (
-        <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 sticky top-24 rounded-t-[32px] border-b md:border-none border-gray-50 h-fit">
+        <div
+            data-testid="cart-summary"
+            className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 sticky top-24 rounded-t-[32px] border-b md:border-none border-gray-50 h-fit"
+        >
             <h2 className="text-lg font-black mb-4 uppercase tracking-tight">Resumen</h2>
 
             {deliveryType === 'delivery' && (

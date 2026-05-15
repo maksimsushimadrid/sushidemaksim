@@ -17,7 +17,7 @@ export const TABLE_IMAGE_OVERRIDES: Record<string, string> = {
     '23': '/sushidemaksim_black_style_photos/Canada_sushidemaksim_black.webp',
     '24': '/sushidemaksim_black_style_photos/California_sushidemaksim_black.webp',
     '25': '/sushidemaksim_black_style_photos/Chamartin_sushi_de_maksim_sushidemaksim_black.webp',
-    '26': '/sushidemaksim_black_style_photos/Philadelphia_sushidemaksim_black.webp',
+    '26': '/sushidemaksim_black_style_photos/philadelphia_sushidemaksim_black.webp',
     '27': '/sushidemaksim_black_style_photos/Chamberi_sushidemaksim_black.webp',
     '28': '/sushidemaksim_black_style_photos/Manzanares_sushidemaksim_black.webp',
     '29': '/sushidemaksim_black_style_photos/Getafe_sushi_de_maksim_black.webp',

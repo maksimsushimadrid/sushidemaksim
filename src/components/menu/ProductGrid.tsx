@@ -93,9 +93,6 @@ export default function ProductGrid({
                                         )}
                                     </div>
                                     <div className="flex flex-col">
-                                        <span className="text-[10px] md:text-xs font-black text-orange-600 uppercase tracking-[0.3em] mb-1">
-                                            Nuestro Menú
-                                        </span>
                                         <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter italic leading-none">
                                             {cat.name ||
                                                 (Array.isArray(CATEGORIES)

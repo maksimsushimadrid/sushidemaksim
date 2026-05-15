@@ -399,6 +399,50 @@ router.post(
                 // Non-critical: we still have the orderId
             }
 
+            // [HOTFIX]: create_order_v3 RPC might not insert selected_option.
+            // We manually patch the order_items in the DB to ensure options (like drinks) are saved.
+            if (fullOrder && fullOrder.order_items) {
+                const itemsToUpdate = fullOrder.order_items.filter((oi: any) => oi.menu_item_id);
+                for (const dbItem of itemsToUpdate) {
+                    const matchedCartItem = cartItems.find(
+                        (c: any) =>
+                            c.menu_item_id === dbItem.menu_item_id &&
+                            !!c.is_gift === !!dbItem.is_gift &&
+                            c.quantity === dbItem.quantity &&
+                            c.selected_option
+                    );
+
+                    if (matchedCartItem && matchedCartItem.selected_option) {
+                        try {
+                            await supabase
+                                .from('order_items')
+                                .update({ selected_option: matchedCartItem.selected_option })
+                                .eq('id', dbItem.id);
+
+                            // Update the memory object so emails and frontend get it immediately
+                            dbItem.selected_option = matchedCartItem.selected_option;
+
+                            // Update itemsForReceipt as well
+                            const receiptItem = itemsForReceipt.find(
+                                (ri: any) =>
+                                    ri.name === matchedCartItem.menu_items.name &&
+                                    ri.quantity === matchedCartItem.quantity
+                            );
+                            if (receiptItem) {
+                                (receiptItem as any).selected_option =
+                                    matchedCartItem.selected_option;
+                            }
+                        } catch (patchErr) {
+                            console.error(
+                                '❌ Failed to patch selected_option for item:',
+                                dbItem.id,
+                                patchErr
+                            );
+                        }
+                    }
+                }
+            }
+
             // 6. Send Receipts
             // Admin always gets a copy
             try {
@@ -812,6 +856,39 @@ router.post(
         }
 
         try {
+            // [HOTFIX]: create_order_v3 RPC might not insert selected_option.
+            const { data: inviteOrder } = await supabase
+                .from('orders')
+                .select('id, order_items(*)')
+                .eq('id', orderId)
+                .single();
+
+            if (inviteOrder && inviteOrder.order_items) {
+                const itemsToUpdate = inviteOrder.order_items.filter((oi: any) => oi.menu_item_id);
+                for (const dbItem of itemsToUpdate) {
+                    const matchedCartItem = cartItems.find(
+                        (c: any) =>
+                            c.menu_item_id === dbItem.menu_item_id &&
+                            c.quantity === dbItem.quantity &&
+                            c.selected_option
+                    );
+
+                    if (matchedCartItem && matchedCartItem.selected_option) {
+                        try {
+                            await supabase
+                                .from('order_items')
+                                .update({ selected_option: matchedCartItem.selected_option })
+                                .eq('id', dbItem.id);
+                        } catch (patchErr) {
+                            console.error(
+                                '❌ Failed to patch selected_option for invite item:',
+                                dbItem.id,
+                                patchErr
+                            );
+                        }
+                    }
+                }
+            }
             const fUrl = config.frontendUrl || 'https://www.sushidemaksim.com';
             const shareBase = fUrl.replace(/\/$/, '');
             const apiBase =

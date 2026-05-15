@@ -8,7 +8,6 @@ import { useCart } from '../hooks/useCart';
 import { usePopularItems, useCategories, MenuItem } from '../hooks/queries/useMenu';
 import ShareModal from '../components/menu/ShareModal';
 import { getOptimizedImageUrl } from '../utils/images';
-import ReservationModal from '../components/reservations/ReservationModal';
 import { useSettings } from '../hooks/queries/useSettings';
 import { api } from '../utils/api';
 import { SITE_URL } from '../constants/config';
@@ -19,7 +18,6 @@ import { Marquee } from '../components/home/Marquee';
 import { PressSection } from '../components/home/PressSection';
 import { CategoriesGrid } from '../components/home/CategoriesGrid';
 import { PromosSection } from '../components/home/PromosSection';
-import { ReservationSection } from '../components/home/ReservationSection';
 import { PopularItems } from '../components/home/PopularItems';
 import { AboutSection } from '../components/home/AboutSection';
 
@@ -28,7 +26,6 @@ export default function HomePage() {
 
     const [sharingItem, setSharingItem] = useState<MenuItem | null>(null);
     const [copying, setCopying] = useState(false);
-    const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
 
     // Use TanStack Query — fetch only popular items instead of entire catalog
     const { data: popularItems = [], isLoading: itemsLoading } = usePopularItems(8);
@@ -256,7 +253,6 @@ export default function HomePage() {
                 isLoading={catsLoading}
             />
             <PromosSection activePromos={activePromos} />
-            <ReservationSection onOpenModal={() => setIsReservationModalOpen(true)} />
 
             <PopularItems
                 popularItems={popularItems}
@@ -278,10 +274,6 @@ export default function HomePage() {
                     copying={copying}
                 />
             )}
-            <ReservationModal
-                isOpen={isReservationModalOpen}
-                onClose={() => setIsReservationModalOpen(false)}
-            />
         </div>
     );
 }

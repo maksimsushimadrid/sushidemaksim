@@ -46,6 +46,9 @@ export default {
                 loading: '30000',
                 max: '99999',
             },
+            animation: {
+                'spin-slow': 'spin 3s linear infinite',
+            },
         },
     },
     plugins: [],

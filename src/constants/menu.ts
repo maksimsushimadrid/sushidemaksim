@@ -38,7 +38,7 @@ export const CATEGORIES = [
     },
     {
         id: 'menus',
-        name: 'Menús',
+        name: 'Set',
         icon: Gift,
         description:
             'Nuestras mejores combinaciones y botes de sushi ideales para compartir con amigos o en pareja.',
