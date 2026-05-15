@@ -6,14 +6,14 @@ export const CATEGORIES = [
         name: 'Entrantes',
         icon: Waves,
         description:
-            'Nuestros entrantes japoneses más populares: gyozas crujientes, edamame al punto de sal y ensaladas frescas ideales para comenzar.',
+            'Nuestros entrantes japoneses más populares: gyozas, nigiri y rollitos de primera ideales para comenzar.',
     },
     {
         id: 'rollos-grandes',
         name: 'Rollos Grandes',
         icon: Fish,
         description:
-            'Famosos Rolls XL elaborados con arroz premium y pescado de la más alta calidad: Atún Balfegó y Salmón Noruego.',
+            'Famosos Rollos grandes elaborados con arroz premium y pescado de la más alta calidad',
     },
     {
         id: 'rollos-clasicos',
