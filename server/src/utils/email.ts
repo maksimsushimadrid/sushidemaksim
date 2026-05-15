@@ -302,7 +302,8 @@ export async function sendOrderReceiptEmail(
                   : paymentMethod;
 
         const statusMessage = `¡Hola! Hemos recibido tu pedido. Te lo entregaremos en  30 - 60 minutos.\n\n`;
-        const addressLine = deliveryType === 'DOMICILIO' ? `\nDirección: ${orderData.deliveryAddress}` : '';
+        const addressLine =
+            deliveryType === 'DOMICILIO' ? `\nDirección: ${orderData.deliveryAddress}` : '';
         waMessage = `${statusMessage}Tu pedido #${String(orderData.orderId).padStart(5, '0')} está confirmado${scheduledText}\n\n${itemsListText}${deliveryFeeText}\n\nTotal: ${orderData.total.toFixed(2)}€\nMétodo de pago: ${paymentMethodLabel}${addressLine}`;
         const cleanPhone = orderData.phoneNumber.replace(/\D/g, '');
         // wa.me doesn't like '+' prefix usually, digits only is safest
