@@ -53,17 +53,111 @@ export default function UserActions({
               .slice(0, 2)
         : '';
 
-    if (isTable && !isAuthenticated) {
+    if (isTable) {
+        if (showSkeleton) {
+            return (
+                <div className="w-24 h-9 bg-white/5 animate-pulse rounded-xl border border-white/10" />
+            );
+        }
+
+        if (!isAuthenticated) {
+            return (
+                <button
+                    onClick={() => {
+                        setLoginModalMode('register');
+                        setIsLoginModalOpen(true);
+                    }}
+                    className="bg-white text-black px-4 py-2 md:px-6 md:py-2.5 rounded-xl font-black text-[12px] md:text-[13px] cursor-pointer active:scale-95 transition-all hover:bg-orange-600 hover:text-white uppercase tracking-tighter border border-white/20 whitespace-nowrap shadow-[0_0_20px_rgba(255,255,255,0.05)]"
+                >
+                    {t('join_club')}
+                </button>
+            );
+        }
+
+        // For authenticated users on /table, show a compact profile trigger
         return (
-            <button
-                onClick={() => {
-                    setLoginModalMode('register');
-                    setIsLoginModalOpen(true);
-                }}
-                className="bg-white text-black px-4 py-2 md:px-6 md:py-2.5 rounded-xl font-black text-[12px] md:text-[13px] cursor-pointer active:scale-95 transition-all hover:bg-orange-600 hover:text-white uppercase tracking-tighter border border-white/20 whitespace-nowrap shadow-[0_0_20px_rgba(255,255,255,0.05)]"
-            >
-                {t('join_club')}
-            </button>
+            <div ref={userMenuRef} className="relative">
+                <button
+                    onClick={() => setShowUserMenu(!showUserMenu)}
+                    className={cn(
+                        'flex items-center gap-2 bg-white/5 border border-white/10 p-1 pr-3 rounded-2xl cursor-pointer transition-all duration-200',
+                        showUserMenu && 'bg-white/10 border-white/20'
+                    )}
+                >
+                    <div
+                        className={`w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-black text-white shadow-sm overflow-hidden shrink-0 border border-white/10
+                            ${user?.avatar?.startsWith('http') ? 'bg-white' : user?.avatar ? 'bg-white/10 text-[14px]' : 'bg-orange-600'}`}
+                    >
+                        {user?.avatar ? (
+                            user.avatar.startsWith('http') ? (
+                                <SafeImage
+                                    src={user.avatar}
+                                    getOptimizedUrl={getSharpAvatar}
+                                    alt={user.name}
+                                    className="w-full h-full object-cover"
+                                    fallbackContent={
+                                        <span className="select-none text-[12px] text-white">
+                                            {initials}
+                                        </span>
+                                    }
+                                />
+                            ) : (
+                                <span className="select-none">{user.avatar}</span>
+                            )
+                        ) : (
+                            <span className="select-none">{initials}</span>
+                        )}
+                    </div>
+                    <span className="text-[11px] font-black text-white uppercase tracking-tight">
+                        {user?.name.split(' ')[0]}
+                    </span>
+                    <ChevronDown
+                        size={12}
+                        className={cn(
+                            'text-gray-500 transition-transform duration-300',
+                            showUserMenu && 'rotate-180'
+                        )}
+                    />
+                </button>
+
+                <AnimatePresence>
+                    {showUserMenu && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                            className="absolute top-[calc(100%+12px)] left-0 bg-[#0d0d0d] rounded-2xl shadow-2xl p-1.5 w-[220px] z-[100] border border-white/10"
+                        >
+                            <Link
+                                to="/profile"
+                                onClick={() => setShowUserMenu(false)}
+                                className="flex items-center gap-2.5 px-3 py-3 rounded-xl no-underline text-white text-[13px] font-bold hover:bg-white/5 transition-colors"
+                            >
+                                <UserIcon size={16} className="text-gray-500" /> Mi Perfil
+                            </Link>
+                            <Link
+                                to="/profile?tab=orders"
+                                onClick={() => setShowUserMenu(false)}
+                                className="flex items-center gap-2.5 px-3 py-3 rounded-xl no-underline text-white text-[13px] font-bold hover:bg-white/5 transition-colors"
+                            >
+                                <Package size={16} className="text-gray-500" /> Mis Pedidos
+                            </Link>
+
+                            <div className="h-px bg-white/5 my-1" />
+
+                            <button
+                                onClick={() => {
+                                    setShowUserMenu(false);
+                                    logout();
+                                }}
+                                className="flex items-center gap-2.5 px-3 py-3 rounded-xl w-full border-none cursor-pointer text-orange-500 text-[13px] font-bold bg-transparent hover:bg-orange-500/10 transition-colors text-left"
+                            >
+                                <LogOut size={16} /> Cerrar sesión
+                            </button>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
         );
     }
 
