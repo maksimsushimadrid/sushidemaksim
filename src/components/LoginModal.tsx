@@ -163,6 +163,7 @@ const LoginForm = memo(
                         <button
                             type="button"
                             onClick={onSwitchRegister}
+                            data-testid="switch-to-register"
                             className="text-orange-600 font-black hover:underline bg-transparent border-none p-0 cursor-pointer"
                         >
                             Regístrate
@@ -990,6 +991,8 @@ export default function LoginModal({
                             stiffness: 300,
                         }}
                         className="relative max-w-sm w-full bg-white rounded-[32px] shadow-2xl overflow-hidden border border-white/20 flex flex-col max-h-[92vh]"
+                        role="dialog"
+                        aria-modal="true"
                     >
                         {/* Close Button */}
                         <button

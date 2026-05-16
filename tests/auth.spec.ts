@@ -42,7 +42,7 @@ test.describe('Authentication Flow', () => {
             .getByRole('button', { name: /ACCEDER/i })
             .first()
             .click();
-        await page.getByRole('button', { name: /Regístrate/i }).click();
+        await page.getByTestId('switch-to-register').click();
         await page.getByPlaceholder(/Nombre completo/i).fill('Pavel Tester');
         await page.getByPlaceholder(/600 000 000/i).fill('600111222');
         await page.getByPlaceholder(/tu@email.com/i).fill(`test-${Date.now()}@test.com`);

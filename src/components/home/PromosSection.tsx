@@ -79,6 +79,7 @@ export function PromosSection({ activePromos }: PromosSectionProps) {
                                     {isWelcomeOffer && !isAuthenticated ? (
                                         <button
                                             onClick={openRegister}
+                                            data-testid="banner-register-button"
                                             className="px-10 py-5 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-orange-600 transition-all shadow-xl shrink-0 uppercase"
                                         >
                                             REGÍSTRATE
@@ -139,6 +140,7 @@ export function PromosSection({ activePromos }: PromosSectionProps) {
                         {!isAuthenticated ? (
                             <button
                                 onClick={openRegister}
+                                data-testid="banner-register-button-fallback"
                                 className="px-10 py-5 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-orange-600 transition-all shadow-xl uppercase"
                             >
                                 REGÍSTRATE
