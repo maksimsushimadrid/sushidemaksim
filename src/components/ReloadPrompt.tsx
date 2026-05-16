@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RefreshCcw, X } from 'lucide-react';
+import { RefreshCcw } from 'lucide-react';
 
 export default function ReloadPrompt() {
     const {
@@ -96,12 +96,6 @@ export default function ReloadPrompt() {
                                     Actualizar
                                 </button>
                             )}
-                            <button
-                                onClick={() => close()}
-                                className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors"
-                            >
-                                <X className="w-4 h-4" />
-                            </button>
                         </div>
                     </div>
                 </motion.div>
