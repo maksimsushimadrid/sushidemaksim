@@ -17,5 +17,6 @@
         "noFallthroughCasesInSwitch": true
     },
     "include": ["src", "api", "server/src"],
+    "exclude": ["server/src/scripts/delete_order.ts"],
     "references": [{ "path": "./tsconfig.node.json" }]
 }
