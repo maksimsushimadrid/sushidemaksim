@@ -714,39 +714,75 @@ export async function sendNewsletterWelcomeEmail(
     const html = `
 <!DOCTYPE html>
 <html lang="es">
-<head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#f9fafb;font-family:Arial,sans-serif;">
-  <div style="max-width:500px;margin:40px auto;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.1);">
-    <div style="background-color: #000000; padding: 24px 20px; text-align: center;">
-      <h1 style="color:#fff;margin:0;font-size:24px;">Sushi de Maksim</h1>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <div style="max-width:600px;margin:20px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);border:1px solid #e2e8f0;">
+    
+    <!-- Hero Header -->
+    <div style="background-color: #000000; padding: 40px 20px; text-align: center;">
+      <h1 style="color:#fff;margin:0;font-size:32px;font-weight:900;text-transform:uppercase;letter-spacing:4px;display:inline-block;border:4px solid #fff;padding:10px 20px;">MAKSIM.</h1>
+      <p style="color: #6b7280; margin: 10px 0 0; font-size: 12px; letter-spacing: 3px; text-transform: uppercase;">Club de Suscriptores</p>
     </div>
-    <div style="background:linear-gradient(135deg,#000000,#333333);padding:24px;text-align:center;position:relative;">
-      <h1 style="color:#fff;margin:0;font-size:28px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">¡Ya eres del Club!</h1>
-      <p style="color:rgba(255,255,255,0.9);margin:8px 0 0;font-size:16px;font-style:italic;">Bienvenido a la familia Sushi de Maksim</p>
-    </div>
-    <div style="padding:24px;text-align:center;">
-      <p style="color:#374151;font-size:18px;margin:0 0 16px;font-weight:bold;">¡Hola!</p>
-      <p style="color:#6B7280;font-size:16px;line-height:1.6;margin:0 0 32px;">
-        Gracias por suscribirte. Como prometimos, aquí tienes un regalo especial para que disfrutes de tu próximo pedido con nosotros:
+
+    <!-- Main Content -->
+    <div style="padding: 32px 24px; text-align: center;">
+      <h2 style="color: #111827; margin: 0 0 16px; font-size: 28px; font-weight: 800; line-height: 1.2;">¡Bienvenido a la Familia!</h2>
+      <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 32px;">
+        Gracias por suscribirte a nuestra newsletter. A partir de ahora, serás el primero en enterarte de nuestras novedades, eventos exclusivos y promociones secretas.
       </p>
-      
-      <div style="background:#FFF7ED;border:2px dashed #ffedd5;border-radius:20px;padding:32px;margin-bottom:32px;position:relative;">
-        <p style="color:#c2410c;font-size:14px;font-weight:900;text-transform:uppercase;letter-spacing:2px;margin:0 0 12px;">Tu Código Promocional</p>
-        <div style="font-size:36px;font-weight:900;color:#ea580c;letter-spacing:5px;">${promoCode}</div>
-        <p style="color:#9a3412;font-size:20px;font-weight:bold;margin:12px 0 0;">-${discountPercent}% EN TU PRÓXIMO PEDIDO</p>
+
+      <!-- Welcome Gift -->
+      <div style="background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border-radius: 24px; padding: 40px 20px; margin-bottom: 40px; border: 1px solid #fed7aa;">
+        <p style="color: #c2410c; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 12px;">Tu Regalo de Bienvenida</p>
+        <div style="font-size: 48px; font-weight: 900; color: #ea580c; letter-spacing: 6px; margin-bottom: 12px;">${promoCode}</div>
+        <p style="color: #9a3412; font-size: 22px; font-weight: 900; margin: 0 0 16px;">-${discountPercent}% EN TU PRÓXIMO PEDIDO</p>
+        <p style="color: #9a3412; font-size: 14px; font-weight: bold; margin: 0;">
+          * Válido por 7 días en pedidos superiores a 20€
+        </p>
       </div>
 
-      <p style="color:#374151;font-size:15px;margin:0 0 32px;">
-        *Válido durante los próximos 7 días. Solo tienes que introducir el código al finalizar tu compra en la web.
-      </p>
+      <!-- More Perks Section -->
+      <div style="text-align: left; background-color: #f9fafb; border-radius: 20px; padding: 24px; margin-bottom: 32px; border: 1px solid #f1f5f9;">
+        <h3 style="color: #111827; margin: 0 0 20px; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; text-align: center;">Ventajas por ser del Club Maksim</h3>
+        
+        <!-- Perk 1 -->
+        <div style="display: flex; align-items: flex-start; margin-bottom: 20px; gap: 16px;">
+          <div style="background-color: #ea580c; color: white; width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; flex-shrink: 0;">1</div>
+          <div>
+            <p style="color: #111827; font-size: 15px; font-weight: 800; margin: 0 0 4px;">-10% de Descuento Extra</p>
+            <p style="color: #6b7280; font-size: 13px; line-height: 1.4; margin: 0;">Regístrate en nuestra web и obtén un 10% de descuento automático en tu primer pedido con tu cuenta.</p>
+          </div>
+        </div>
 
-      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#ea580c;color:#ffffff;padding:16px 40px;border-radius:16px;text-decoration:none;font-weight:900;font-size:15px;box-shadow:0 8px 20px rgba(234,88,12,0.2);">¡PEDIR AHORA!</a>
+        <!-- Perk 2 -->
+        <div style="display: flex; align-items: flex-start; gap: 16px;">
+          <div style="background-color: #000; color: white; width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; flex-shrink: 0;">2</div>
+          <div>
+            <p style="color: #111827; font-size: 15px; font-weight: 800; margin: 0 0 4px;">Regalo de Cumpleaños</p>
+            <p style="color: #6b7280; font-size: 13px; line-height: 1.4; margin: 0;">¡Completa tu fecha de nacimiento en tu perfil и recibe un regalo exclusivo cada año!</p>
+          </div>
+        </div>
+      </div>
+
+      <a href="${config.frontendUrl}/menu" style="display:inline-block;background:#ea580c;color:#ffffff;padding:20px 48px;border-radius:20px;text-decoration:none;font-weight:900;font-size:16px;box-shadow:0 10px 25px rgba(234,88,12,0.3);margin-bottom:24px;">¡HACER MI PEDIDO AHORA!</a>
     </div>
     
-    <div style="background:#f9fafb;padding:24px;text-align:center;border-top:1px solid #f1f5f9;">
-      <p style="color:#9CA3AF;font-size:12px;margin:0;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
-      <p style="color:#6b7280;font-size:10px;margin:12px 0 0;">Recibiste este email porque te suscribiste a nuestra newsletter en https://www.sushidemaksim.com</p>
+    <!-- Footer -->
+    <div style="background-color: #f9fafb; padding: 32px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
+      <p style="color: #9ca3af; font-size: 13px; margin: 0 0 16px;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+      <div style="margin-bottom: 20px;">
+        <a href="https://instagram.com/sushidemaksim" style="text-decoration: none; margin: 0 10px; color: #6b7280; font-weight: bold; font-size: 12px;">INSTAGRAM</a>
+        <a href="https://sushidemaksim.com" style="text-decoration: none; margin: 0 10px; color: #6b7280; font-weight: bold; font-size: 12px;">WEB SITE</a>
+      </div>
+      <p style="color: #9ca3af; font-size: 11px; line-height: 1.4; margin: 0;">
+        Recibiste este email porque te suscribiste a nuestra newsletter en sushidemaksim.com.<br>
+        Si ya no quieres recibir estos correos, puedes <a href="#" style="color: #9ca3af;">darte de baja aquí</a>.
+      </p>
     </div>
+
   </div>
 </body>
 </html>`;

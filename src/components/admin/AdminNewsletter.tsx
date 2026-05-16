@@ -67,7 +67,10 @@ export default function AdminNewsletter({ language = 'es' }: AdminNewsletterProp
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.setAttribute('href', url);
-        link.setAttribute('download', `subscriptores_newsletter_${new Date().toISOString().split('T')[0]}.csv`);
+        link.setAttribute(
+            'download',
+            `subscriptores_newsletter_${new Date().toISOString().split('T')[0]}.csv`
+        );
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
@@ -176,7 +179,11 @@ export default function AdminNewsletter({ language = 'es' }: AdminNewsletterProp
                                 <tr>
                                     <td colSpan={2} className="px-8 py-20 text-center">
                                         <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
-                                            <Mail className="text-gray-200" size={40} strokeWidth={1} />
+                                            <Mail
+                                                className="text-gray-200"
+                                                size={40}
+                                                strokeWidth={1}
+                                            />
                                         </div>
                                         <p className="text-gray-400 font-bold uppercase text-[11px] tracking-widest">
                                             {t.noSubscribers}
