@@ -753,7 +753,7 @@ export async function sendNewsletterWelcomeEmail(
           <div style="background-color: #ea580c; color: white; width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; flex-shrink: 0;">1</div>
           <div>
             <p style="color: #111827; font-size: 15px; font-weight: 800; margin: 0 0 4px;">-10% de Descuento Extra</p>
-            <p style="color: #6b7280; font-size: 13px; line-height: 1.4; margin: 0;">Regístrate en nuestra web и obtén un 10% de descuento automático en tu primer pedido con tu cuenta.</p>
+            <p style="color: #6b7280; font-size: 13px; line-height: 1.4; margin: 0;">Regístrate en nuestra web y obtén un 10% de descuento automático en tu primer pedido con tu cuenta.</p>
           </div>
         </div>
 
@@ -762,7 +762,7 @@ export async function sendNewsletterWelcomeEmail(
           <div style="background-color: #000; color: white; width: 32px; height: 32px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; flex-shrink: 0;">2</div>
           <div>
             <p style="color: #111827; font-size: 15px; font-weight: 800; margin: 0 0 4px;">Regalo de Cumpleaños</p>
-            <p style="color: #6b7280; font-size: 13px; line-height: 1.4; margin: 0;">¡Completa tu fecha de nacimiento en tu perfil и recibe un regalo exclusivo cada año!</p>
+            <p style="color: #6b7280; font-size: 13px; line-height: 1.4; margin: 0;">¡Completa tu fecha de nacimiento en tu perfil y recibe un regalo exclusivo cada año!</p>
           </div>
         </div>
       </div>
