@@ -42,6 +42,7 @@ export const envSchema = z
 
         // Frontend
         FRONTEND_URL: z.string().url().optional(),
+        VITE_FRONTEND_URL: z.string().url().optional(),
 
         // Threads API
         THREADS_APP_ID: z.string().optional(),

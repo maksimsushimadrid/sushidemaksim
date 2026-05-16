@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAuth } from '../../hooks/useAuth';
 import SafeImage from '../common/SafeImage';
 import { getOptimizedImageUrl } from '../../utils/images';
 
@@ -20,57 +21,80 @@ interface PromosSectionProps {
 }
 
 export function PromosSection({ activePromos }: PromosSectionProps) {
+    const { isAuthenticated } = useAuth();
+
+    const openRegister = (e: React.MouseEvent) => {
+        e.preventDefault();
+        const event = new CustomEvent('custom:openLogin', { detail: { mode: 'register' } });
+        window.dispatchEvent(event);
+    };
+
     if (activePromos.length > 0) {
         return (
             <section className="px-4 py-6 md:py-12">
                 <div className="max-w-7xl mx-auto space-y-6">
-                    {activePromos.slice(0, 2).map((promo: any, idx: number) => (
-                        <motion.div
-                            key={promo.id}
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: idx * 0.15 }}
-                            className="relative overflow-hidden rounded-[2.5rem] bg-orange-500 p-8 md:p-12 shadow-xl shadow-orange-500/20"
-                        >
-                            {promo.image_url && (
-                                <div className="absolute inset-0 z-0">
-                                    <SafeImage
-                                        src={promo.image_url}
-                                        alt={promo.title}
-                                        className="w-full h-full object-cover opacity-10"
-                                        loading="lazy"
-                                        getOptimizedUrl={(url: string) =>
-                                            getOptimizedImageUrl(url, 1080)
-                                        }
-                                    />
-                                </div>
-                            )}
-                            <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-orange-600/10 to-transparent pointer-events-none" />
-                            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                                <div className="text-center md:text-left">
-                                    {promo.subtitle && (
-                                        <span className="inline-block bg-white/20 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase mb-4 tracking-widest border border-white/30 backdrop-blur-md">
-                                            {promo.subtitle || promo.title}
-                                        </span>
+                    {activePromos.slice(0, 2).map((promo: any, idx: number) => {
+                        const isWelcomeOffer =
+                            promo.subtitle?.toLowerCase().includes('bienvenida') ||
+                            promo.title?.toLowerCase().includes('bienvenida');
+
+                        return (
+                            <motion.div
+                                key={promo.id}
+                                initial={{ opacity: 0, scale: 0.95 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: idx * 0.15 }}
+                                className="relative overflow-hidden rounded-[2.5rem] bg-orange-500 p-8 md:p-12 shadow-xl shadow-orange-500/20"
+                            >
+                                {promo.image_url && (
+                                    <div className="absolute inset-0 z-0">
+                                        <SafeImage
+                                            src={promo.image_url}
+                                            alt={promo.title}
+                                            className="w-full h-full object-cover opacity-10"
+                                            loading="lazy"
+                                            getOptimizedUrl={(url: string) =>
+                                                getOptimizedImageUrl(url, 1080)
+                                            }
+                                        />
+                                    </div>
+                                )}
+                                <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-orange-600/10 to-transparent pointer-events-none" />
+                                <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+                                    <div className="text-center md:text-left">
+                                        {promo.subtitle && (
+                                            <span className="inline-block bg-white/20 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase mb-4 tracking-widest border border-white/30 backdrop-blur-md">
+                                                {promo.subtitle || promo.title}
+                                            </span>
+                                        )}
+                                        <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter mb-4">
+                                            <span className="text-gray-900">{promo.discount}</span>{' '}
+                                            {!promo.subtitle ? promo.title : ''}
+                                        </h2>
+                                        <p className="text-white/90 font-medium max-w-md opacity-90">
+                                            {promo.description}
+                                        </p>
+                                    </div>
+                                    {isWelcomeOffer && !isAuthenticated ? (
+                                        <button
+                                            onClick={openRegister}
+                                            className="px-10 py-5 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-orange-600 transition-all shadow-xl shrink-0 uppercase"
+                                        >
+                                            REGÍSTRATE
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            to={promo.cta_link || '/menu'}
+                                            className="px-10 py-5 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-orange-600 transition-all shadow-xl shrink-0 uppercase"
+                                        >
+                                            {promo.cta_text || 'VER MENÚ'}
+                                        </Link>
                                     )}
-                                    <h2 className="text-3xl md:text-5xl font-black text-white tracking-tighter mb-4">
-                                        <span className="text-gray-900">{promo.discount}</span>{' '}
-                                        {!promo.subtitle ? promo.title : ''}
-                                    </h2>
-                                    <p className="text-white/90 font-medium max-w-md opacity-90">
-                                        {promo.description}
-                                    </p>
                                 </div>
-                                <Link
-                                    to={promo.cta_link || '/promos'}
-                                    className="px-10 py-5 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-orange-600 transition-all shadow-xl shrink-0"
-                                >
-                                    {promo.cta_text || 'VER OFERTA'}
-                                </Link>
-                            </div>
-                        </motion.div>
-                    ))}
+                            </motion.div>
+                        );
+                    })}
                     {activePromos.length > 2 && (
                         <div className="text-center">
                             <Link
@@ -112,12 +136,21 @@ export function PromosSection({ activePromos }: PromosSectionProps) {
                                 primer pedido por un importe superior a 20€.
                             </p>
                         </div>
-                        <Link
-                            to="/menu"
-                            className="px-10 py-5 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-orange-600 transition-all shadow-xl"
-                        >
-                            ORDENAR AHORA
-                        </Link>
+                        {!isAuthenticated ? (
+                            <button
+                                onClick={openRegister}
+                                className="px-10 py-5 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-orange-600 transition-all shadow-xl uppercase"
+                            >
+                                REGÍSTRATE
+                            </button>
+                        ) : (
+                            <Link
+                                to="/menu"
+                                className="px-10 py-5 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-orange-600 transition-all shadow-xl uppercase"
+                            >
+                                VER MENÚ
+                            </Link>
+                        )}
                     </div>
                 </motion.div>
             </div>

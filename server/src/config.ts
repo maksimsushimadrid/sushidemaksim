@@ -56,6 +56,7 @@ export const config = {
     },
     frontendUrl:
         env.FRONTEND_URL ||
+        env.VITE_FRONTEND_URL ||
         (nodeEnv === 'production' ? 'https://www.sushidemaksim.com' : 'http://localhost:5173'),
     threads: {
         appId: env.THREADS_APP_ID,
