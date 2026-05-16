@@ -134,7 +134,7 @@ export default function WaiterOrderPage() {
                     </div>
 
                     <button
-                        onClick={logout}
+                        onClick={() => logout()}
                         className="p-2 text-gray-400 hover:text-orange-600 transition-colors"
                         title="Cerrar Sesión"
                     >
