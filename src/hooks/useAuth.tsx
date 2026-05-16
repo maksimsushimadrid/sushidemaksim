@@ -122,16 +122,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         []
     );
 
-    const logout = useCallback((redirectPath?: string) => {
-        localStorage.removeItem('sushi_token');
-        queryClient.setQueryData(USER_QUERY_KEY, null);
-        queryClient.invalidateQueries();
+    const logout = useCallback(
+        (redirectPath?: string) => {
+            localStorage.removeItem('sushi_token');
+            queryClient.setQueryData(USER_QUERY_KEY, null);
+            queryClient.invalidateQueries();
 
-        // If on /table, stay on /table after logout
-        const currentPath = window.location.pathname;
-        const targetPath = redirectPath || (currentPath === '/table' ? '/table' : '/');
-        window.location.href = targetPath;
-    }, [queryClient]);
+            // If on /table, stay on /table after logout
+            const currentPath = window.location.pathname;
+            const targetPath = redirectPath || (currentPath === '/table' ? '/table' : '/');
+            window.location.href = targetPath;
+        },
+        [queryClient]
+    );
 
     // Heartbeat
     useEffect(() => {

@@ -82,7 +82,7 @@ describe('useAuth hook', () => {
 
     it('should logout and clear state', async () => {
         // Mock window.location.href
-        const locationMock = { assign: vi.fn() };
+        const locationMock = { href: '', pathname: '/' };
         vi.stubGlobal('location', locationMock);
 
         const { result } = renderHook(() => useAuth(), { wrapper });
