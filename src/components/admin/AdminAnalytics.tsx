@@ -476,7 +476,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     </h3>
                     <div className="h-56">
                         {isMounted && (
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" debounce={1}>
                                 <PieChart>
                                     <Pie
                                         data={[
@@ -552,7 +552,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     </h3>
                     <div className="h-56">
                         {isMounted && (
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" debounce={1}>
                                 <PieChart>
                                     <Pie
                                         data={[
@@ -613,7 +613,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     </h3>
                     <div className="h-56">
                         {isMounted && (
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" debounce={1}>
                                 <BarChart data={stats?.categoryStats}>
                                     <CartesianGrid
                                         strokeDasharray="3 3"
@@ -686,7 +686,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     </h3>
                     <div className="h-80">
                         {isMounted && (
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" debounce={1}>
                                 <AreaChart data={stats?.growth}>
                                     <defs>
                                         <linearGradient
@@ -769,7 +769,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     </h3>
                     <div className="h-80">
                         {isMounted && (
-                            <ResponsiveContainer width="100%" height="100%">
+                            <ResponsiveContainer width="100%" height="100%" debounce={1}>
                                 <BarChart
                                     data={(stats?.heatmap?.hourly || []).map(
                                         (v: number, i: number) => ({ hour: `${i}h`, pedidos: v })

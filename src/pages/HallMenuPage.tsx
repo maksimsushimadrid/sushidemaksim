@@ -15,6 +15,7 @@ import { SushiItem } from '../types';
 import SEO from '../components/SEO';
 import { SITE_URL } from '../constants/config';
 import { TableMenuSkeleton } from '../components/skeletons/TableMenuSkeleton';
+import Newsletter from '../components/Newsletter';
 import { UAParser } from 'ua-parser-js';
 
 export default function TableMenuPage() {
@@ -298,7 +299,7 @@ export default function TableMenuPage() {
             />
 
             <TableCartDrawer isOpen={isCartDrawerOpen} onClose={() => setIsCartDrawerOpen(false)} />
-
+            <Newsletter />
             <TableFooter />
         </div>
     );
