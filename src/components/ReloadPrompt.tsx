@@ -85,8 +85,16 @@ export default function ReloadPrompt() {
                         <div className="flex flex-col gap-1">
                             {needRefresh && (
                                 <button
-                                    onClick={() => updateServiceWorker(true)}
-                                    className="px-3 py-1.5 bg-orange-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-orange-700 transition-colors active:scale-95"
+                                    onClick={() => {
+                                        // 1. Trigger service worker update
+                                        updateServiceWorker(true);
+                                        // 2. Force hard reload as fallback to ensure the new version is loaded
+                                        // especially if the update was detected manually via version.json
+                                        setTimeout(() => {
+                                            window.location.reload();
+                                        }, 500);
+                                    }}
+                                    className="px-3 py-1.5 bg-orange-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-orange-700 transition-colors active:scale-95 shadow-lg shadow-orange-600/20"
                                 >
                                     Actualizar
                                 </button>
