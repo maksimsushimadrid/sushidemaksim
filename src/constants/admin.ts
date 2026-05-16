@@ -14,6 +14,7 @@ export const ADMIN_TRANSLATIONS = {
             settings: 'Настройки контактов',
             reservations: 'Бронирование столов',
             delivery: 'Зоны доставки',
+            newsletter: 'Подписчики рассылки',
         },
         ui: {
             backToShop: 'В ресторан',
@@ -46,6 +47,8 @@ export const ADMIN_TRANSLATIONS = {
                 'Нарисуйте свои зоны доставки на карте. Вы можете определить разные цены и минимальные суммы заказа.',
             reservations:
                 'Управляйте бронированием столиков. Просматривайте входящие запросы и подтверждайте их.',
+            newsletter:
+                'Здесь вы можете увидеть всех пользователей, которые подписались на вашу рассылку в футере сайта.',
         },
     },
     es: {
@@ -61,6 +64,7 @@ export const ADMIN_TRANSLATIONS = {
             settings: 'Ajustes de Contacto',
             reservations: 'Reservas de Mesas',
             delivery: 'Zonas de Entrega',
+            newsletter: 'Suscriptores Newsletter',
         },
         ui: {
             backToShop: 'Al restaurante',
@@ -93,6 +97,8 @@ export const ADMIN_TRANSLATIONS = {
                 'Dibuja tus zonas de entrega en el mapa. Puedes definir diferentes precios y pedidos mínimos para cada zona.',
             reservations:
                 'Gestiona las reservas de mesa. Revisa las solicitudes entrantes y confírmalas.',
+            newsletter:
+                'Aquí puedes ver a todos los usuarios que se han suscrito a tu boletín de noticias en el pie de página del sitio.',
         },
     },
 } as const;

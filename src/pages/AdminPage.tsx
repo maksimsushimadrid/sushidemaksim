@@ -32,6 +32,7 @@ const AdminDashboard = lazy(() => import('../components/admin/AdminDashboard'));
 const AdminAnalytics = lazy(() => import('../components/admin/AdminAnalytics'));
 const AdminDeliveryZones = lazy(() => import('../components/admin/AdminDeliveryZones'));
 const AdminReservations = lazy(() => import('../components/admin/AdminReservations'));
+const AdminNewsletter = lazy(() => import('../components/admin/AdminNewsletter'));
 import { useTablonPending } from '../hooks/queries/useTablon';
 import { AdminSkeleton, AdminContentSkeleton } from '../components/skeletons/AdminSkeleton';
 import { supabase } from '../utils/supabase';
@@ -51,7 +52,8 @@ type TabId =
     | 'analytics'
     | 'abandoned'
     | 'delivery'
-    | 'reservations';
+    | 'reservations'
+    | 'newsletter';
 export default function AdminPage() {
     const { user, isAuthenticated, isLoading } = useAuth();
     const navigate = useNavigate();
@@ -567,6 +569,7 @@ export default function AdminPage() {
                 badge: pendingResData?.total > 0 ? pendingResData.total : null,
             },
             { id: 'delivery', label: t.nav.delivery, icon: MapIcon },
+            { id: 'newsletter', label: t.nav.newsletter, icon: Bell },
         ],
         [
             pendingCount,
@@ -906,6 +909,7 @@ export default function AdminPage() {
                         {activeTab === 'promos' && <AdminPromos language={language} />}
                         {activeTab === 'tablon' && <AdminTablon language={language} />}
                         {activeTab === 'reservations' && <AdminReservations language={language} />}
+                        {activeTab === 'newsletter' && <AdminNewsletter language={language} />}
                     </Suspense>
 
                     {/* Developer Footer */}

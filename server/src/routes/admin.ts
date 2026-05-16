@@ -79,6 +79,20 @@ router.get(
     })
 );
 
+// GET /api/admin/newsletter/subscribers
+router.get(
+    '/newsletter/subscribers',
+    asyncHandler(async (req: Request, res: Response) => {
+        const { data, error } = await supabase
+            .from('newsletter_subscribers')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+        res.json({ subscribers: data || [] });
+    })
+);
+
 // POST /api/admin/menu/upload-image (to Supabase Storage)
 router.post(
     '/menu/upload-image',
