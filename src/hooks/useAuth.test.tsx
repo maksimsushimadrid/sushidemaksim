@@ -82,7 +82,7 @@ describe('useAuth hook', () => {
 
     it('should logout and clear state', async () => {
         // Mock window.location.href
-        const locationMock = { href: '', pathname: '/' };
+        const locationMock = { href: '', pathname: '/', assign: vi.fn() };
         vi.stubGlobal('location', locationMock);
 
         const { result } = renderHook(() => useAuth(), { wrapper });
@@ -93,6 +93,23 @@ describe('useAuth hook', () => {
 
         expect(result.current.user).toBeNull();
         expect(localStorage.getItem('sushi_token')).toBeNull();
+        expect(window.location.href).toBe('/');
+
+        vi.unstubAllGlobals();
+    });
+
+    it('should stay on /table after logout if currently on /table', async () => {
+        // Mock window.location
+        const locationMock = { href: '', pathname: '/table', assign: vi.fn() };
+        vi.stubGlobal('location', locationMock);
+
+        const { result } = renderHook(() => useAuth(), { wrapper });
+
+        act(() => {
+            result.current.logout();
+        });
+
+        expect(window.location.href).toBe('/table');
 
         vi.unstubAllGlobals();
     });
