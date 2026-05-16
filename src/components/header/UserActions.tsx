@@ -14,6 +14,7 @@ import { useAuth } from '../../hooks/useAuth';
 import SafeImage from '../common/SafeImage';
 import { getSharpAvatar } from '../../utils/avatar';
 import { useTableI18n } from '../../utils/tableI18n';
+import { cn } from '../../utils/cn';
 
 interface UserActionsProps {
     isTable: boolean;
