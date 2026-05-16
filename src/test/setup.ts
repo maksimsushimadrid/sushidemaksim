@@ -85,3 +85,21 @@ Object.defineProperty(window, 'localStorage', {
     value: localStorageMock,
     writable: true,
 });
+
+// Mock window.location for JSDOM stability
+const locationMock = {
+    href: 'http://localhost:5173/',
+    pathname: '/',
+    search: '',
+    hash: '',
+    origin: 'http://localhost:5173',
+    assign: vi.fn(),
+    replace: vi.fn(),
+    reload: vi.fn(),
+};
+
+Object.defineProperty(window, 'location', {
+    value: locationMock,
+    writable: true,
+    configurable: true,
+});
