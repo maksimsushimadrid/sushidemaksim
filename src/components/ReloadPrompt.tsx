@@ -5,7 +5,7 @@ import { RefreshCcw } from 'lucide-react';
 
 export default function ReloadPrompt() {
     const {
-        offlineReady: [offlineReady, setOfflineReady],
+        offlineReady: [offlineReady],
         needRefresh: [needRefresh, setNeedRefresh],
         updateServiceWorker,
     } = useRegisterSW({
@@ -56,11 +56,6 @@ export default function ReloadPrompt() {
             clearInterval(interval);
         };
     }, [setNeedRefresh]);
-
-    const close = () => {
-        setOfflineReady(false);
-        setNeedRefresh(false);
-    };
 
     return (
         <AnimatePresence>
