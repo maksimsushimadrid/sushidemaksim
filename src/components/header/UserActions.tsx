@@ -148,8 +148,7 @@ export default function UserActions({
 
                             <button
                                 onClick={() => {
-                                    setShowUserMenu(false);
-                                    logout();
+                                    logout(isTable ? '/table' : '/');
                                 }}
                                 className="flex items-center gap-2.5 px-3 py-3 rounded-xl w-full border-none cursor-pointer text-orange-500 text-[13px] font-bold bg-transparent hover:bg-orange-500/10 transition-colors text-left"
                             >
@@ -311,8 +310,7 @@ export default function UserActions({
 
                                 <button
                                     onClick={() => {
-                                        setShowUserMenu(false);
-                                        logout();
+                                        logout(isTable ? '/table' : '/');
                                     }}
                                     className="flex items-center gap-2.5 px-2.5 py-2.5 rounded-xl w-full border-none cursor-pointer text-orange-600 text-[13px] font-bold bg-transparent hover:bg-orange-50 transition-colors duration-150 text-left"
                                 >

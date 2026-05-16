@@ -169,7 +169,6 @@ export default function ProfilePage() {
             navigator.vibrate([10, 30, 10]);
         }
         logout();
-        navigate('/');
     };
 
     const initials = user.name

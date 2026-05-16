@@ -33,7 +33,7 @@ interface AuthContextType {
         password: string,
         redirectTo?: string
     ) => Promise<{ success: boolean; error?: string }>;
-    logout: () => void;
+    logout: (redirectPath?: string) => void;
     updateProfile: (
         data: Partial<Pick<User, 'name' | 'email' | 'phone' | 'avatar' | 'birthDate'>>
     ) => Promise<void>;
@@ -122,11 +122,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         []
     );
 
-    const logout = useCallback(() => {
+    const logout = useCallback((redirectPath?: string) => {
         localStorage.removeItem('sushi_token');
         queryClient.setQueryData(USER_QUERY_KEY, null);
         queryClient.invalidateQueries();
-        window.location.href = '/';
+
+        // If on /table, stay on /table after logout
+        const currentPath = window.location.pathname;
+        const targetPath = redirectPath || (currentPath === '/table' ? '/table' : '/');
+        window.location.href = targetPath;
     }, [queryClient]);
 
     // Heartbeat
