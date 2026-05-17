@@ -218,7 +218,7 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                         >
                                             INICIAR SESIÓN
                                         </button>
-                                        <p className="text-center text-[12px] font-medium text-gray-500 my-0.5">
+                                        <p className="text-center text-[12px] font-medium text-gray-500 my-2.5">
                                             ¿No tienes cuenta?{' '}
                                             <button
                                                 onClick={() => {
