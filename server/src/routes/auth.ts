@@ -616,6 +616,12 @@ router.post(
                 user = updatedUser;
             } else {
                 // 3. Create new user
+                // Generate a random placeholder password hash for OAuth-only users
+                // (they authenticate via Google, never via password)
+                const placeholderHash = await bcrypt.hash(
+                    `oauth_${googleId}_${Date.now()}`,
+                    config.bcryptRounds
+                );
                 const { data: newUser, error: createError } = await supabase
                     .from('users')
                     .insert({
@@ -625,6 +631,7 @@ router.post(
                         avatar_url: avatarUrl,
                         is_verified: true,
                         role: 'user',
+                        password_hash: placeholderHash,
                     })
                     .select('*')
                     .single();
