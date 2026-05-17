@@ -658,7 +658,12 @@ export default function CartPage() {
             }
             if (noCall) notesArray.push('[SIN CONFIRMACIÓN LLAMADA]');
             if (noBuzzer) notesArray.push('[NO LLAMAR TIMBRE]');
-            if (data.chopsticksCount > 0) notesArray.push(`[PALILLOS: ${data.chopsticksCount}]`);
+            const actualChopsticks =
+                data.chopsticksCount ??
+                methods.getValues('chopsticksCount') ??
+                deliveryDetails.chopsticksCount ??
+                0;
+            if (actualChopsticks > 0) notesArray.push(`[PALILLOS: ${actualChopsticks}]`);
 
             // Add beverage options to notes
             items.forEach(item => {
@@ -684,8 +689,12 @@ export default function CartPage() {
                     : finalCustomerName || customerNameVal,
                 guestEmail: isAuthenticated ? user?.email || '' : finalGuestEmail || guestEmailVal,
                 paymentMethod,
-                guestsCount: data.guestsCount,
-                chopsticksCount: data.chopsticksCount,
+                guestsCount:
+                    data.guestsCount ??
+                    methods.getValues('guestsCount') ??
+                    deliveryDetails.guestsCount ??
+                    2,
+                chopsticksCount: actualChopsticks,
                 isScheduled: data.isScheduled,
                 scheduledDate: data.scheduledDate,
                 scheduledTime: data.scheduledTime,
