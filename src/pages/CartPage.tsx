@@ -662,8 +662,8 @@ export default function CartPage() {
                 data.chopsticksCount ??
                 methods.getValues('chopsticksCount') ??
                 deliveryDetails.chopsticksCount ??
-                0;
-            if (actualChopsticks > 0) notesArray.push(`[PALILLOS: ${actualChopsticks}]`);
+                1;
+            if (actualChopsticks > 0) notesArray.push(`[PERSONAS: ${actualChopsticks}]`);
 
             // Add beverage options to notes
             items.forEach(item => {

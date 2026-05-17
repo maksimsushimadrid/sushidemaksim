@@ -1,4 +1,4 @@
-import { Trash2, Minus, Plus, X } from 'lucide-react';
+import { Trash2, Minus, Plus, X, Users } from 'lucide-react';
 import { getOptimizedImageUrl } from '../../utils/images';
 import SafeImage from '../common/SafeImage';
 import { CartItem } from '../../types';
@@ -185,9 +185,12 @@ export default function CartItemList({
 
                     {/* Chopsticks Question */}
                     <div className="flex items-center justify-between gap-4 py-1">
-                        <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                            <div className="p-2 bg-orange-50 rounded-xl text-orange-600">
+                                <Users size={16} strokeWidth={2.5} />
+                            </div>
                             <p className="text-[10px] sm:text-[13px] font-black text-gray-900 m-0 uppercase tracking-wide sm:tracking-widest whitespace-nowrap">
-                                ¿Cuántos palillos le pongo?
+                                Número de personas
                             </p>
                         </div>
 
@@ -195,10 +198,10 @@ export default function CartItemList({
                             <button
                                 onClick={() => {
                                     triggerHaptic();
-                                    updateChopsticks(Math.max(0, chopsticksCount - 1));
+                                    updateChopsticks(Math.max(1, chopsticksCount - 1));
                                 }}
                                 className="w-11 h-11 md:w-8 md:h-8 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30"
-                                disabled={chopsticksCount <= 0}
+                                disabled={chopsticksCount <= 1}
                             >
                                 <Minus size={16} strokeWidth={2.5} />
                             </button>

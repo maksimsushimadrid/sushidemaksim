@@ -95,7 +95,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 customNote: '',
                 saveAddress: true,
                 guestsCount: 2,
-                chopsticksCount: 0,
+                chopsticksCount: 1,
             };
 
         const saved = localStorage.getItem('delivery_details');
@@ -118,7 +118,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             customNote: '',
             saveAddress: true,
             guestsCount: 2,
-            chopsticksCount: 0,
+            chopsticksCount: 1,
         };
 
         if (saved) {
@@ -183,7 +183,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             customNote: '',
             saveAddress: true,
             guestsCount: 2,
-            chopsticksCount: 0,
+            chopsticksCount: 1,
         });
     }, []);
 

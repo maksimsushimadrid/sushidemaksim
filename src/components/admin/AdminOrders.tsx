@@ -623,6 +623,7 @@ export default function AdminOrders({
                                     let noCall = false;
                                     let noBuzzer = false;
                                     let chopsticksCount = '';
+                                    let personasCount = '';
                                     let actualNote = '';
 
                                     // NEW: Strongly prefer DB field for scheduled time
@@ -714,6 +715,12 @@ export default function AdminOrders({
                                             chopsticksCount = part
                                                 .replace('[PALILLOS: ', '')
                                                 .replace('[PALILLOS:', '')
+                                                .replace(']', '')
+                                                .trim();
+                                        } else if (part.includes('[PERSONAS:')) {
+                                            personasCount = part
+                                                .replace('[PERSONAS: ', '')
+                                                .replace('[PERSONAS:', '')
                                                 .replace(']', '')
                                                 .trim();
                                         } else {
@@ -927,7 +934,25 @@ export default function AdminOrders({
                                                                 <span className="text-[14px]">
                                                                     🥢
                                                                 </span>
-                                                                {chopsticksCount}
+                                                                {chopsticksCount}{' '}
+                                                                {language === 'ru'
+                                                                    ? 'палочек'
+                                                                    : chopsticksCount === '1'
+                                                                      ? 'palillo'
+                                                                      : 'palillos'}
+                                                            </div>
+                                                        )}
+                                                        {personasCount && (
+                                                            <div className="px-3 py-1.5 rounded-xl bg-orange-50 text-orange-600 border border-orange-200 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm">
+                                                                <span className="text-[14px]">
+                                                                    👥
+                                                                </span>
+                                                                {personasCount}{' '}
+                                                                {language === 'ru'
+                                                                    ? 'чел.'
+                                                                    : personasCount === '1'
+                                                                      ? 'persona'
+                                                                      : 'personas'}
                                                             </div>
                                                         )}
                                                         {noCall && (

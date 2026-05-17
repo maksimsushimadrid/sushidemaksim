@@ -41,7 +41,7 @@ export const checkoutSchema = z
                 message: 'Selecciona un método de pago',
             }),
         guestsCount: z.number().min(1).max(50),
-        chopsticksCount: z.number().min(0).max(50),
+        chopsticksCount: z.number().min(1, 'El número de personas debe ser al menos 1').max(50),
 
         // Scheduling
         isScheduled: z.boolean(),

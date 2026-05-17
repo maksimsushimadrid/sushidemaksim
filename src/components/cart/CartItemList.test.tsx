@@ -22,7 +22,7 @@ describe('CartItemList', () => {
         removeItem: vi.fn(),
         clearCart: vi.fn(),
         getCategoryEmoji: vi.fn(() => '🍣'),
-        chopsticksCount: 0,
+        chopsticksCount: 1,
         updateChopsticks: vi.fn(),
     };
 
@@ -40,10 +40,10 @@ describe('CartItemList', () => {
         ).toBeInTheDocument();
     });
 
-    it('renders the chopsticks question and count', () => {
+    it('renders the guests/persons question and count', () => {
         render(<CartItemList {...defaultProps} />);
-        expect(screen.getByText(/¿Cuántos palillos le pongo\?/i)).toBeInTheDocument();
-        expect(screen.getByText('0')).toBeInTheDocument();
+        expect(screen.getByText(/Número de personas/i)).toBeInTheDocument();
+        expect(screen.getByText('1', { selector: 'span.w-10' })).toBeInTheDocument();
     });
 
     it('calls updateChopsticks when clicking buttons', () => {
@@ -61,8 +61,8 @@ describe('CartItemList', () => {
         expect(defaultProps.updateChopsticks).toHaveBeenCalledWith(1);
     });
 
-    it('disables minus button when count is 0', () => {
-        render(<CartItemList {...defaultProps} chopsticksCount={0} />);
+    it('disables minus button when count is 1', () => {
+        render(<CartItemList {...defaultProps} chopsticksCount={1} />);
         const buttons = screen.getAllByRole('button');
         const minusChopsticks = buttons[4];
         expect(minusChopsticks).toBeDisabled();

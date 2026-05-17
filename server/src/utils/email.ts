@@ -199,6 +199,7 @@ export async function sendOrderReceiptEmail(
     let customerNote = '';
     let promoString = '';
     let chopsticksCount = '';
+    let personasCount = '';
 
     // NEW: Robustly extract scheduled time from the DB column natively
     if (
@@ -266,6 +267,12 @@ export async function sendOrderReceiptEmail(
             chopsticksCount = part
                 .replace('[PALILLOS: ', '')
                 .replace('[PALILLOS:', '')
+                .replace(']', '')
+                .trim();
+        } else if (part.includes('[PERSONAS:')) {
+            personasCount = part
+                .replace('[PERSONAS: ', '')
+                .replace('[PERSONAS:', '')
                 .replace(']', '')
                 .trim();
         } else {
@@ -460,15 +467,16 @@ export async function sendOrderReceiptEmail(
         </table>
 
         ${
-            scheduledTime || noCall || noBuzzer || customerNote || chopsticksCount
+            scheduledTime || noCall || noBuzzer || customerNote || chopsticksCount || personasCount
                 ? `
         <h4 style="color: #9ca3af; margin: 12px 0 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Instrucciones Especiales</h4>
         <div style="background-color: #FFF7ED; border-radius: 12px; padding: 12px; border: 1px solid #ffedd5;">
           ${scheduledTime ? `<div style="color: #111827; font-size: 13px; font-weight: 700; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #ffedd5;">Entrega programada: <span style="color: #ea580c;">${scheduledTime}</span></div>` : ''}
           ${chopsticksCount ? `<div style="color: #111827; font-size: 13px; font-weight: 700; margin-bottom: 4px;">🥢 Palillos: <span style="color: #ea580c;">${chopsticksCount}</span></div>` : ''}
+          ${personasCount ? `<div style="color: #111827; font-size: 13px; font-weight: 700; margin-bottom: 4px;">👥 Personas: <span style="color: #ea580c;">${personasCount}</span></div>` : ''}
           ${noCall ? '<div style="color: #c2410c; font-size: 13px; font-weight: 700; margin-bottom: 4px;">No llamar para confirmar pedido</div>' : ''}
           ${noBuzzer ? '<div style="color: #c2410c; font-size: 13px; font-weight: 700; margin-bottom: 4px;">No llamar al timbre (llamar al móvil)</div>' : ''}
-          ${customerNote ? `<div style="color: #4b5563; font-size: 13px; line-height: 1.4; margin-top: ${noCall || noBuzzer || chopsticksCount ? '8px' : '0'}; border-top: ${noCall || noBuzzer || chopsticksCount ? '1px solid #ffedd5' : 'none'}; padding-top: ${noCall || noBuzzer || chopsticksCount ? '8px' : '0'};"><strong>Mensaje:</strong> ${customerNote}</div>` : ''}
+          ${customerNote ? `<div style="color: #4b5563; font-size: 13px; line-height: 1.4; margin-top: ${noCall || noBuzzer || chopsticksCount || personasCount ? '8px' : '0'}; border-top: ${noCall || noBuzzer || chopsticksCount || personasCount ? '1px solid #ffedd5' : 'none'}; padding-top: ${noCall || noBuzzer || chopsticksCount || personasCount ? '8px' : '0'};"><strong>Mensaje:</strong> ${customerNote}</div>` : ''}
         </div>
         `
                 : ''
