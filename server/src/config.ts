@@ -62,4 +62,5 @@ export const config = {
         appId: env.THREADS_APP_ID,
         appSecret: env.THREADS_APP_SECRET,
     },
+    googleClientId: env.GOOGLE_CLIENT_ID,
 };

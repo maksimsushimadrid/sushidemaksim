@@ -65,6 +65,12 @@ export const resetPasswordSchema = z.object({
     }),
 });
 
+export const googleAuthSchema = z.object({
+    body: z.object({
+        access_token: z.string().min(1, 'Token de Google obligatorio'),
+    }),
+});
+
 /**
  * --- USER SCHEMAS ---
  */

@@ -19,6 +19,12 @@ vi.mock('../context/ToastContext', () => ({
     ToastProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
+// Mock Google OAuth globally
+vi.mock('@react-oauth/google', () => ({
+    useGoogleLogin: () => vi.fn(),
+    GoogleOAuthProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 // Cleanup after each test case (e.g. clearing jsdom)
 afterEach(() => {
     cleanup();

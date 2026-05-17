@@ -49,6 +49,7 @@ interface AuthContextType {
         code: string,
         newPassword: string
     ) => Promise<{ success: boolean; error?: string }>;
+    loginWithGoogle: (access_token: string) => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -232,7 +233,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             };
         }
     }, []);
-
+    const loginWithGoogle = useCallback(
+        async (access_token: string) => {
+            try {
+                const data = await api.post('/auth/google', { access_token });
+                localStorage.setItem('sushi_token', data.token);
+                await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
+                await queryClient.refetchQueries({ queryKey: USER_QUERY_KEY });
+                return { success: true };
+            } catch (error: unknown) {
+                return {
+                    success: false,
+                    error: error instanceof Error ? error.message : 'Error al entrar con Google',
+                };
+            }
+        },
+        [queryClient]
+    );
     const value = useMemo(
         () => ({
             user: user || null,
@@ -250,6 +267,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             addOrder,
             forgotPassword,
             resetPassword,
+            loginWithGoogle,
         }),
         [
             user,
@@ -267,6 +285,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             addOrder,
             forgotPassword,
             resetPassword,
+            loginWithGoogle,
         ]
     );
 

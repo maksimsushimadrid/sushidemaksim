@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CartProvider } from './hooks/useCart';
 import { AuthProvider } from './hooks/useAuth';
@@ -178,218 +179,224 @@ function App() {
 
     return (
         <ErrorBoundary>
-            <ToastProvider>
-                <AuthProvider>
-                    <CartProvider>
-                        <Schema />
-                        <PageTracker />
-                        <div
-                            className={`min-h-[100svh] flex flex-col transition-colors duration-500 ${
-                                isTableRoute || isTablonRoute ? 'bg-[#0d0d0d]' : 'bg-[#FBF7F0]'
-                            }`}
-                        >
-                            <Analytics />
-                            <SpeedInsights />
-                            <SmoothScroll />
-                            {!isAdminRoute && !isWaiterRoute && !isTableRoute && <CookieConsent />}
-                            {!isTableRoute && <RegistrationPrompt />}
-                            <ReloadPrompt />
-                            <FloatingCart />
+            <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''}>
+                <ToastProvider>
+                    <AuthProvider>
+                        <CartProvider>
+                            <Schema />
+                            <PageTracker />
+                            <div
+                                className={`min-h-[100svh] flex flex-col transition-colors duration-500 ${
+                                    isTableRoute || isTablonRoute ? 'bg-[#0d0d0d]' : 'bg-[#FBF7F0]'
+                                }`}
+                            >
+                                <Analytics />
+                                <SpeedInsights />
+                                <SmoothScroll />
+                                {!isAdminRoute && !isWaiterRoute && !isTableRoute && (
+                                    <CookieConsent />
+                                )}
+                                {!isTableRoute && <RegistrationPrompt />}
+                                <ReloadPrompt />
+                                <FloatingCart />
 
-                            {!isAdminRoute && !isWaiterRoute && <Header />}
-                            <main className="flex-1 grid grid-cols-1 grid-rows-1 relative w-full overflow-x-clip">
-                                <AnimatePresence initial={false}>
-                                    <Routes location={location} key={location.pathname}>
-                                        <Route
-                                            path="/reservar"
-                                            element={
-                                                <PageWrapper skeleton={<GenericSkeleton />}>
-                                                    <ReservationPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/"
-                                            element={
-                                                <PageWrapper
-                                                    skeleton={<HomeSkeleton />}
-                                                    isHome={true}
-                                                >
-                                                    <HomePage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/menu"
-                                            element={
-                                                <PageWrapper skeleton={<MenuSkeleton />}>
-                                                    <MenuPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/cart"
-                                            element={
-                                                <PageWrapper skeleton={<CartSkeleton />}>
-                                                    <CartPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/promo"
-                                            element={
-                                                <PageWrapper skeleton={<PromoSkeleton />}>
-                                                    <PromoPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/profile"
-                                            element={
-                                                <PageWrapper skeleton={<ProfileSkeleton />}>
-                                                    <ProfilePage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/admin/*"
-                                            element={
-                                                <Suspense fallback={<AdminSkeleton />}>
-                                                    <AdminPage />
-                                                </Suspense>
-                                            }
-                                        />
-                                        <Route
-                                            path="/contacts"
-                                            element={
-                                                <PageWrapper skeleton={<GenericSkeleton />}>
-                                                    <ContactsPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/contacto"
-                                            element={
-                                                <PageWrapper skeleton={<GenericSkeleton />}>
-                                                    <ContactsPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/tablon"
-                                            element={
-                                                <PageWrapper skeleton={<TablonSkeleton />}>
-                                                    <TablonPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/tablon/:id"
-                                            element={
-                                                <PageWrapper skeleton={<TablonSkeleton />}>
-                                                    <TablonPostPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        {/* Redirect old blog URLs to tablón */}
-                                        <Route
-                                            path="/blog"
-                                            element={
-                                                <PageWrapper skeleton={<TablonSkeleton />}>
-                                                    <TablonPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/pay-for-friend/:id"
-                                            element={
-                                                <PageWrapper skeleton={<GenericSkeleton />}>
-                                                    <PayForFriendPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/verify"
-                                            element={
-                                                <PageWrapper skeleton={<GenericSkeleton />}>
-                                                    <VerifyPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/verify-email-change"
-                                            element={
-                                                <PageWrapper skeleton={<GenericSkeleton />}>
-                                                    <VerifyEmailChangePage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/track/:id"
-                                            element={
-                                                <PageWrapper skeleton={<TrackSkeleton />}>
-                                                    <OrderTrackingPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/waiter"
-                                            element={
-                                                <PageWrapper skeleton={<GenericSkeleton />}>
-                                                    <WaiterOrderPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/table"
-                                            element={
-                                                <TableOrderProvider>
-                                                    <PageWrapper skeleton={<TableMenuSkeleton />}>
-                                                        <TableMenuPage />
+                                {!isAdminRoute && !isWaiterRoute && <Header />}
+                                <main className="flex-1 grid grid-cols-1 grid-rows-1 relative w-full overflow-x-clip">
+                                    <AnimatePresence initial={false}>
+                                        <Routes location={location} key={location.pathname}>
+                                            <Route
+                                                path="/reservar"
+                                                element={
+                                                    <PageWrapper skeleton={<GenericSkeleton />}>
+                                                        <ReservationPage />
                                                     </PageWrapper>
-                                                </TableOrderProvider>
-                                            }
-                                        />
-                                        <Route
-                                            path="/partners"
-                                            element={
-                                                <PageWrapper skeleton={<GenericSkeleton />}>
-                                                    <PartnersPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/refund-policy"
-                                            element={
-                                                <PageWrapper skeleton={<GenericSkeleton />}>
-                                                    <RefundPolicyPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="/privacy"
-                                            element={
-                                                <PageWrapper skeleton={<GenericSkeleton />}>
-                                                    <PrivacyPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                        <Route
-                                            path="*"
-                                            element={
-                                                <PageWrapper skeleton={<GenericSkeleton />}>
-                                                    <NotFoundPage />
-                                                </PageWrapper>
-                                            }
-                                        />
-                                    </Routes>
-                                </AnimatePresence>
-                            </main>
-                            {!isAdminRoute && !isWaiterRoute && !isTableRoute && <Footer />}
-                        </div>
-                    </CartProvider>
-                </AuthProvider>
-            </ToastProvider>
+                                                }
+                                            />
+                                            <Route
+                                                path="/"
+                                                element={
+                                                    <PageWrapper
+                                                        skeleton={<HomeSkeleton />}
+                                                        isHome={true}
+                                                    >
+                                                        <HomePage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/menu"
+                                                element={
+                                                    <PageWrapper skeleton={<MenuSkeleton />}>
+                                                        <MenuPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/cart"
+                                                element={
+                                                    <PageWrapper skeleton={<CartSkeleton />}>
+                                                        <CartPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/promo"
+                                                element={
+                                                    <PageWrapper skeleton={<PromoSkeleton />}>
+                                                        <PromoPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/profile"
+                                                element={
+                                                    <PageWrapper skeleton={<ProfileSkeleton />}>
+                                                        <ProfilePage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/admin/*"
+                                                element={
+                                                    <Suspense fallback={<AdminSkeleton />}>
+                                                        <AdminPage />
+                                                    </Suspense>
+                                                }
+                                            />
+                                            <Route
+                                                path="/contacts"
+                                                element={
+                                                    <PageWrapper skeleton={<GenericSkeleton />}>
+                                                        <ContactsPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/contacto"
+                                                element={
+                                                    <PageWrapper skeleton={<GenericSkeleton />}>
+                                                        <ContactsPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/tablon"
+                                                element={
+                                                    <PageWrapper skeleton={<TablonSkeleton />}>
+                                                        <TablonPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/tablon/:id"
+                                                element={
+                                                    <PageWrapper skeleton={<TablonSkeleton />}>
+                                                        <TablonPostPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            {/* Redirect old blog URLs to tablón */}
+                                            <Route
+                                                path="/blog"
+                                                element={
+                                                    <PageWrapper skeleton={<TablonSkeleton />}>
+                                                        <TablonPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/pay-for-friend/:id"
+                                                element={
+                                                    <PageWrapper skeleton={<GenericSkeleton />}>
+                                                        <PayForFriendPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/verify"
+                                                element={
+                                                    <PageWrapper skeleton={<GenericSkeleton />}>
+                                                        <VerifyPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/verify-email-change"
+                                                element={
+                                                    <PageWrapper skeleton={<GenericSkeleton />}>
+                                                        <VerifyEmailChangePage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/track/:id"
+                                                element={
+                                                    <PageWrapper skeleton={<TrackSkeleton />}>
+                                                        <OrderTrackingPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/waiter"
+                                                element={
+                                                    <PageWrapper skeleton={<GenericSkeleton />}>
+                                                        <WaiterOrderPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/table"
+                                                element={
+                                                    <TableOrderProvider>
+                                                        <PageWrapper
+                                                            skeleton={<TableMenuSkeleton />}
+                                                        >
+                                                            <TableMenuPage />
+                                                        </PageWrapper>
+                                                    </TableOrderProvider>
+                                                }
+                                            />
+                                            <Route
+                                                path="/partners"
+                                                element={
+                                                    <PageWrapper skeleton={<GenericSkeleton />}>
+                                                        <PartnersPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/refund-policy"
+                                                element={
+                                                    <PageWrapper skeleton={<GenericSkeleton />}>
+                                                        <RefundPolicyPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/privacy"
+                                                element={
+                                                    <PageWrapper skeleton={<GenericSkeleton />}>
+                                                        <PrivacyPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="*"
+                                                element={
+                                                    <PageWrapper skeleton={<GenericSkeleton />}>
+                                                        <NotFoundPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                        </Routes>
+                                    </AnimatePresence>
+                                </main>
+                                {!isAdminRoute && !isWaiterRoute && !isTableRoute && <Footer />}
+                            </div>
+                        </CartProvider>
+                    </AuthProvider>
+                </ToastProvider>
+            </GoogleOAuthProvider>
         </ErrorBoundary>
     );
 }

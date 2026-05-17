@@ -11,13 +11,14 @@ import {
     loginSchema,
     forgotPasswordSchema,
     resetPasswordSchema,
+    googleAuthSchema,
 } from '../schemas/user.schema.js';
+
 import { sendVerificationEmail } from '../utils/email.js';
 import { authLimiter, strictLimiter } from '../middleware/rateLimiters.js';
 import { formatUser } from '../utils/helpers.js';
 
 const router = Router();
-
 // POST /api/auth/register
 router.post(
     '/register',
@@ -547,7 +548,105 @@ router.post(
 
         console.log(`🔑 Password reset for user ${user.id}`);
 
-        res.json({ success: true, message: '¡Contraseña actualizada con éxito!' });
+        res.json({ success: true, message: 'Contraseña actualizada con éxito.' });
+    })
+);
+
+// POST /api/auth/google
+router.post(
+    '/google',
+    authLimiter,
+    validateResource(googleAuthSchema),
+    asyncHandler(async (req, res: Response) => {
+        const { access_token } = req.body;
+
+        let payload;
+        try {
+            const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: {
+                    Authorization: `Bearer ${access_token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch user info from Google');
+            }
+
+            payload = await response.json();
+        } catch (error) {
+            console.error('Google Auth Error:', error);
+            return res.status(401).json({ error: 'Token de Google inválido o expirado' });
+        }
+
+        if (!payload || !payload.email) {
+            return res.status(401).json({ error: 'No se pudo obtener el email de Google' });
+        }
+
+        const { sub: googleId, email, name, picture: avatarUrl } = payload;
+
+        // 1. Try to find user by google_id
+        let { data: user } = await supabase
+            .from('users')
+            .select('*')
+            .eq('google_id', googleId)
+            .single();
+
+        // 2. If not found by google_id, try finding by email
+        if (!user) {
+            const { data: existingUser } = await supabase
+                .from('users')
+                .select('*')
+                .ilike('email', email)
+                .single();
+
+            if (existingUser) {
+                // Link Google account to existing user
+                const { data: updatedUser, error: linkError } = await supabase
+                    .from('users')
+                    .update({
+                        google_id: googleId,
+                        avatar_url: avatarUrl || existingUser.avatar_url,
+                        is_verified: true, // OAuth emails are verified
+                    })
+                    .eq('id', existingUser.id)
+                    .select('*')
+                    .single();
+
+                if (linkError) throw linkError;
+                user = updatedUser;
+            } else {
+                // 3. Create new user
+                const { data: newUser, error: createError } = await supabase
+                    .from('users')
+                    .insert({
+                        email: email.toLowerCase(),
+                        name: name || email.split('@')[0],
+                        google_id: googleId,
+                        avatar_url: avatarUrl,
+                        is_verified: true,
+                        role: 'user',
+                    })
+                    .select('*')
+                    .single();
+
+                if (createError) throw createError;
+                user = newUser;
+            }
+        }
+
+        if (!user) {
+            return res.status(500).json({ error: 'Error al procesar el usuario' });
+        }
+
+        // Generate project JWT
+        const token = jwt.sign({ userId: user.id, role: user.role }, config.jwtSecret, {
+            expiresIn: config.jwtExpiresIn,
+        });
+
+        res.json({
+            token,
+            user: formatUser(user),
+        });
     })
 );
 

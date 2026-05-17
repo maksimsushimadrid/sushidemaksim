@@ -48,7 +48,6 @@ test.describe('Authentication Flow', () => {
         await page.getByPlaceholder(/tu@email.com/i).fill(`test-${Date.now()}@test.com`);
         await page.getByPlaceholder(/Crea una contraseña segura/i).fill('password123!');
         await page.getByRole('button', { name: /Crear cuenta/i }).click();
-        await page.waitForLoadState('networkidle');
         await expect(page.getByText(/VERIFICA TU EMAIL/i).first()).toBeVisible({
             timeout: 20000,
         });
@@ -94,7 +93,7 @@ test.describe('Authentication Flow', () => {
             .click();
         await page.getByPlaceholder(/tu@email.com/i).fill('pavel@test.com');
         await page.getByPlaceholder(/Tu contraseña/i).fill('password123');
-        await page.getByRole('button', { name: /Iniciar sesión/i }).click();
+        await page.getByTestId('login-submit-button').click();
 
         await expect(page.getByRole('banner')).toContainText('Pavel', { timeout: 20000 });
 
@@ -121,7 +120,7 @@ test.describe('Authentication Flow', () => {
             .click();
         await page.getByPlaceholder(/tu@email.com/i).fill('wrong@test.com');
         await page.getByPlaceholder(/Tu contraseña/i).fill('wrong');
-        await page.getByRole('button', { name: /Iniciar sesión/i }).click();
+        await page.getByTestId('login-submit-button').click();
 
         // Wait for the toast/error message
         await expect(page.getByText(/incorrect|inválid|incorrectas|error/i).first()).toBeVisible({

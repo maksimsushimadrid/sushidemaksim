@@ -47,6 +47,7 @@ export const envSchema = z
         // Threads API
         THREADS_APP_ID: z.string().optional(),
         THREADS_APP_SECRET: z.string().optional(),
+        GOOGLE_CLIENT_ID: z.string().optional(),
     })
     .refine(data => data.SUPABASE_KEY || data.SUPABASE_ANON_KEY, {
         message: 'Either SUPABASE_KEY or SUPABASE_ANON_KEY must be provided',

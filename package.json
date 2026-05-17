@@ -30,6 +30,7 @@
         "@hookform/resolvers": "^5.2.2",
         "@react-email/components": "^1.0.8",
         "@react-email/render": "^2.0.4",
+        "@react-oauth/google": "^0.13.5",
         "@supabase/supabase-js": "^2.98.0",
         "@tanstack/react-query": "^5.91.0",
         "@turf/turf": "^7.3.4",
