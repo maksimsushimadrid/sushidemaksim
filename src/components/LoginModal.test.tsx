@@ -116,7 +116,7 @@ describe('LoginModal - Authentication', () => {
             target: { value: 'password123' },
         });
 
-        fireEvent.submit(screen.getByText('Iniciar sesión').closest('form')!);
+        fireEvent.submit(screen.getByText('INICIAR SESIÓN').closest('form')!);
 
         await waitFor(() => {
             expect(mockLogin).toHaveBeenCalledWith('test@test.com', 'password123');
@@ -136,7 +136,7 @@ describe('LoginModal - Authentication', () => {
             target: { value: 'wrong' },
         });
 
-        fireEvent.submit(screen.getByText('Iniciar sesión').closest('form')!);
+        fireEvent.submit(screen.getByText('INICIAR SESIÓN').closest('form')!);
 
         await waitFor(() => {
             expect(mockError).toHaveBeenCalledWith('Credenciales inválidas');
@@ -156,7 +156,7 @@ describe('LoginModal - Registration', () => {
         expect(screen.getByPlaceholderText('Tu nombre completo')).toBeInTheDocument();
         expect(screen.getByPlaceholderText('600 000 000')).toBeInTheDocument();
         expect(screen.getByPlaceholderText('tu@email.com')).toBeInTheDocument();
-        expect(screen.getByText('Crear cuenta')).toBeInTheDocument();
+        expect(screen.getByText('CREAR CUENTA')).toBeInTheDocument();
     });
 
     it('submits the register form successfully', async () => {
@@ -237,7 +237,7 @@ describe('LoginModal - Password Recovery', () => {
         fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
             target: { value: 'test@example.com' },
         });
-        fireEvent.submit(screen.getByText('Enviar instrucciones').closest('form')!);
+        fireEvent.submit(screen.getByText('ENVIAR INSTRUCCIONES').closest('form')!);
 
         await waitFor(() => {
             expect(mockPost).toHaveBeenCalledWith('/auth/forgot-password', {
@@ -271,7 +271,7 @@ describe('LoginModal - Password Recovery', () => {
         fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
             target: { value: 'test@example.com' },
         });
-        fireEvent.submit(screen.getByText('Enviar instrucciones').closest('form')!);
+        fireEvent.submit(screen.getByText('ENVIAR INSTRUCCIONES').closest('form')!);
 
         await waitFor(() => {
             expect(screen.getByText('Verifica tu email')).toBeInTheDocument();
@@ -295,7 +295,7 @@ describe('LoginModal - Password Recovery', () => {
         });
 
         // 5. Submit Reset
-        fireEvent.submit(screen.getByText('Actualizar contraseña').closest('form')!);
+        fireEvent.submit(screen.getByText('ACTUALIZAR CONTRASEÑA').closest('form')!);
 
         await waitFor(() => {
             expect(mockPost).toHaveBeenCalledWith('/auth/reset-password', {
@@ -314,7 +314,7 @@ describe('LoginModal - Password Recovery', () => {
         fireEvent.change(screen.getByPlaceholderText('tu@email.com'), {
             target: { value: 'test@example.com' },
         });
-        fireEvent.submit(screen.getByText('Enviar instrucciones').closest('form')!);
+        fireEvent.submit(screen.getByText('ENVIAR INSTRUCCIONES').closest('form')!);
 
         await waitFor(() => {
             expect(screen.getByText('Verifica tu email')).toBeInTheDocument();
@@ -337,7 +337,7 @@ describe('LoginModal - Password Recovery', () => {
             target: { value: 'different' },
         });
 
-        fireEvent.submit(screen.getByText('Actualizar contraseña').closest('form')!);
+        fireEvent.submit(screen.getByText('ACTUALIZAR CONTRASEÑA').closest('form')!);
 
         expect(mockError).toHaveBeenCalledWith('Las contraseñas no coinciden');
     });
