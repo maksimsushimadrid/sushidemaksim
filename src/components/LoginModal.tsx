@@ -198,9 +198,9 @@ const LoginForm = memo(
                     type="submit"
                     disabled={isLoading}
                     data-testid="login-submit-button"
-                    className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-2 h-12"
+                    className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs uppercase tracking-wide hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-6 h-12"
                 >
-                    {isLoading ? 'Iniciando...' : 'Iniciar sesión'}
+                    {isLoading ? 'INICIANDO...' : 'INICIAR SESIÓN'}
                 </button>
 
                 <div className="flex items-center gap-3 py-2">
@@ -445,9 +445,9 @@ const RegisterForm = memo(
                         !/\d/.test(password) ||
                         !/[!@#$%^&*(),.?":{}|<>_+-]/.test(password)
                     }
-                    className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-2 h-12"
+                    className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs uppercase tracking-wide hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-6 h-12"
                 >
-                    {isLoading ? 'Creando...' : 'Crear cuenta'}
+                    {isLoading ? 'CREANDO...' : 'CREAR CUENTA'}
                 </button>
 
                 <div className="flex items-center gap-3 py-2">
@@ -549,9 +549,9 @@ const ForgotPasswordForm = memo(
                 <button
                     type="submit"
                     disabled={isLoading}
-                    className="w-full py-3.5 bg-gray-900 text-white rounded-2xl font-black text-xs hover:bg-black transition-all shadow-xl shadow-gray-100 flex items-center justify-center gap-2 mb-2 h-12"
+                    className="w-full py-3.5 bg-gray-900 text-white rounded-2xl font-black text-xs uppercase tracking-wide hover:bg-black transition-all shadow-xl shadow-gray-100 flex items-center justify-center gap-2 mt-6 mb-2 h-12"
                 >
-                    {isLoading ? 'Enviando...' : 'Enviar instrucciones'}
+                    {isLoading ? 'ENVIANDO...' : 'ENVIAR INSTRUCCIONES'}
                 </button>
 
                 <button
@@ -843,9 +843,9 @@ const ResetPasswordForm = memo(
                         !isPasswordValid ||
                         password !== confirmPassword
                     }
-                    className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-2 h-12"
+                    className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs uppercase tracking-wide hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-6 h-12"
                 >
-                    {isLoading ? 'Actualizando...' : 'Actualizar contraseña'}
+                    {isLoading ? 'ACTUALIZANDO...' : 'ACTUALIZAR CONTRASEÑA'}
                 </button>
             </form>
         );
