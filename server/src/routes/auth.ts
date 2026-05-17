@@ -14,7 +14,7 @@ import {
     googleAuthSchema,
 } from '../schemas/user.schema.js';
 
-import { sendVerificationEmail } from '../utils/email.js';
+import { sendVerificationEmail, sendGoogleWelcomeEmail } from '../utils/email.js';
 import { authLimiter, strictLimiter } from '../middleware/rateLimiters.js';
 import { formatUser } from '../utils/helpers.js';
 
@@ -638,6 +638,47 @@ router.post(
 
                 if (createError) throw createError;
                 user = newUser;
+
+                // Generate welcome promo code for Google OAuth new users
+                const { data: settingsData } = await supabase
+                    .from('site_settings')
+                    .select('key, value')
+                    .in('key', [
+                        'loyalty_registration_bonus_enabled',
+                        'loyalty_registration_bonus_percent',
+                    ]);
+
+                const settings: Record<string, string> = {};
+                settingsData?.forEach(s => (settings[s.key] = s.value));
+
+                const regEnabled = settings['loyalty_registration_bonus_enabled'] === 'true';
+                const regPercent =
+                    parseInt(settings['loyalty_registration_bonus_percent']) || 10;
+
+                if (regEnabled && newUser) {
+                    const promoSuffix = Math.random()
+                        .toString(36)
+                        .substring(2, 7)
+                        .toUpperCase();
+                    const promoCode = `NUEVO${regPercent}-${promoSuffix}`;
+
+                    await supabase.from('promo_codes').insert({
+                        code: promoCode,
+                        discount_percentage: regPercent,
+                        user_id: newUser.id,
+                        is_used: false,
+                    });
+
+                    // Fire-and-forget: send welcome email with promo code
+                    sendGoogleWelcomeEmail(
+                        newUser.email,
+                        newUser.name || email.split('@')[0],
+                        promoCode,
+                        regPercent
+                    ).catch(e =>
+                        console.error('❌ Failed to send Google welcome email:', e.message || e)
+                    );
+                }
             }
         }
 

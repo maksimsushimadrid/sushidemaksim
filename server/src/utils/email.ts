@@ -651,6 +651,76 @@ export async function sendVerificationEmail(
 }
 
 /**
+ * Send a welcome email with promo code to users who registered via Google OAuth.
+ * No verification link needed — Google emails are already verified.
+ */
+export async function sendGoogleWelcomeEmail(
+    to: string,
+    name: string,
+    promoCode: string,
+    percent: number = 10
+): Promise<void> {
+    const menuUrl = `${config.frontendUrl}/menu`;
+    const html = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f5;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;">
+  <div style="max-width:600px;margin:20px auto;background-color:#ffffff;border-radius:24px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,0.05);">
+    
+    <div style="background-color: #000000; padding: 32px 20px; text-align: center;">
+      <h1 style="color:#fff;margin:0;font-size:32px;font-weight:900;text-transform:uppercase;letter-spacing:4px;display:inline-block;border:4px solid #fff;padding:10px 20px;">MAKSIM.</h1>
+      <p style="color: #6b7280; margin: 10px 0 0; font-size: 12px; letter-spacing: 3px; text-transform: uppercase;">Sushi de Autor</p>
+    </div>
+
+    <!-- Content -->
+    <div style="padding: 24px 20px; text-align: center;">
+      <h2 style="color: #111827; margin: 0 0 16px; font-size: 28px; font-weight: 800; line-height: 1.2;">¡Bienvenido, ${name}!</h2>
+      <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 32px;">
+        Tu cuenta ha sido creada con éxito a través de Google. Como regalo de bienvenida, te dejamos un descuento exclusivo para tu primer pedido.
+      </p>
+
+      <!-- Welcome Gift Section -->
+      <div style="background: #FFF7ED; border: 2px dashed #ffedd5; border-radius: 20px; padding: 24px; margin-bottom: 32px;">
+        <p style="color: #c2410c; font-size: 13px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 8px;">TU REGALO (-${percent}%)</p>
+        <div style="color: #ea580c; font-size: 32px; font-weight: 900; margin-bottom: 8px;">${promoCode}</div>
+        <p style="color: #9a3412; font-size: 14px; font-weight: bold; margin: 0 0 4px;">
+          * Mínimo de pedido: <strong>20€</strong>
+        </p>
+        <p style="color: #9a3412; font-size: 14px; font-weight: bold; margin: 0;">
+          Válido solo durante <strong>7 días</strong>
+        </p>
+      </div>
+
+      <!-- CTA Button -->
+      <a href="${menuUrl}" style="display:inline-block;background:#ea580c;color:#ffffff;padding:18px 40px;border-radius:18px;text-decoration:none;font-weight:900;font-size:16px;box-shadow:0 8px 25px rgba(234,88,12,0.25);margin-bottom:32px;">
+        VER EL MENÚ
+      </a>
+    </div>
+
+    <!-- Footer -->
+    <div style="background-color: #f9fafb; padding: 24px 20px; text-align: center; border-top: 1px solid #f1f5f9;">
+      <p style="color: #9ca3af; font-size: 13px; margin: 0 0 12px;">© ${new Date().getFullYear()} Sushi de Maksim | Madrid</p>
+      <div style="color: #6b7280; font-size: 11px;">
+        Recibiste este correo porque te registraste en www.sushidemaksim.com
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>`;
+
+    await sendEmail({
+        to,
+        subject: '¡Bienvenido a Sushi de Maksim! Aquí tienes tu regalo 🍣',
+        html,
+    });
+}
+
+/**
  * Send an email change verification link to a user.
  */
 export async function sendEmailChangeVerificationEmail(
