@@ -34,7 +34,23 @@ export const GoogleAuthButton = ({
             console.warn('Google login error:', error);
         },
         onNonOAuthError: error => {
-            console.warn('Google popup error:', error);
+            console.warn('Google popup error (falling back to redirect):', error);
+            // Fallback: redirect to Google OAuth directly
+            const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+            if (clientId && clientId !== 'dummy-client-id') {
+                const redirectUri = window.location.origin;
+                const scope = 'openid email profile';
+                const state = btoa(JSON.stringify({ returnTo: window.location.pathname }));
+                const googleAuthUrl =
+                    `https://accounts.google.com/o/oauth2/v2/auth?` +
+                    `client_id=${clientId}` +
+                    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+                    `&response_type=token` +
+                    `&scope=${encodeURIComponent(scope)}` +
+                    `&state=${encodeURIComponent(state)}` +
+                    `&prompt=select_account`;
+                window.location.href = googleAuthUrl;
+            }
         },
     });
 
