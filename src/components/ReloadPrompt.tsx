@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RefreshCcw } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
 
 export default function ReloadPrompt() {
     const {
@@ -68,7 +68,7 @@ export default function ReloadPrompt() {
                 >
                     <div className="bg-white border border-orange-100 shadow-2xl shadow-orange-900/10 rounded-2xl p-3 md:p-4 flex items-center gap-3 md:gap-4 max-w-sm mx-auto md:mx-0 pointer-events-auto">
                         <div className="flex-shrink-0 w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center">
-                            <RefreshCcw className="w-6 h-6 text-orange-600 animate-spin-slow" />
+                            <RefreshCw className="w-6 h-6 text-orange-600 animate-spin-slow" />
                         </div>
 
                         <div className="flex-1 min-w-0">

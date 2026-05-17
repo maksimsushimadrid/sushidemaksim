@@ -1,13 +1,15 @@
 # Supabase Migrations & Permissions Guide
 
-Due to a security update by Supabase (May/October 2026), the `public` schema no longer provides implicit access to newly created tables via the Data API (PostgREST). 
+Due to a security update by Supabase (May/October 2026), the `public` schema no longer provides implicit access to newly created tables via the Data API (PostgREST).
 
 ## What This Means
-When you create a **new table** in Supabase, whether through the Dashboard UI or via raw SQL, it will be invisible to your React frontend (`supabase-js`), even if you configure Row Level Security (RLS). 
+
+When you create a **new table** in Supabase, whether through the Dashboard UI or via raw SQL, it will be invisible to your React frontend (`supabase-js`), even if you configure Row Level Security (RLS).
 
 You will receive an **`HTTP 42501 (Unauthorized)`** error when trying to fetch or insert data.
 
 ## The Solution
+
 Whenever you create a new table, you **MUST** explicitly grant permissions to the standard Supabase roles (`anon`, `authenticated`, and `service_role`).
 
 ### Example SQL Snippet
@@ -33,6 +35,7 @@ ALTER TABLE public.my_new_table ENABLE ROW LEVEL SECURITY;
 ```
 
 ## How to check existing tables
+
 You can go to your Supabase Dashboard -> **Security Advisor**. It will flag any tables that are missing required grants.
 
-*Note: Existing tables created before the cutoff date will retain their implicit grants, so your current application will continue to work without modifications.*
+_Note: Existing tables created before the cutoff date will retain their implicit grants, so your current application will continue to work without modifications._
