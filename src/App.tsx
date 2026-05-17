@@ -28,6 +28,7 @@ import { TrackSkeleton } from './components/skeletons/TrackSkeleton';
 import { TableMenuSkeleton } from './components/skeletons/TableMenuSkeleton';
 import { GenericSkeleton } from './components/skeletons/GenericSkeleton';
 import { usePageTracking } from './hooks/usePageTracking';
+import { useMagicLogin } from './hooks/useMagicLogin';
 import { safeReload } from './utils/reload';
 
 // Lazy-loaded pages with retry logic
@@ -131,6 +132,7 @@ const PageWrapper = ({
 
 function PageTracker() {
     usePageTracking();
+    useMagicLogin();
     return null;
 }
 

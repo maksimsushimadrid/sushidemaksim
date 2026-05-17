@@ -665,12 +665,20 @@ router.post(
                         is_used: false,
                     });
 
-                    // Fire-and-forget: send welcome email with promo code
+                    // Generate magic login token for the welcome email (expires in 7 days)
+                    const magicToken = jwt.sign(
+                        { userId: newUser.id, role: newUser.role || 'user' },
+                        config.jwtSecret,
+                        { expiresIn: '7d' }
+                    );
+
+                    // Fire-and-forget: send welcome email with promo code + magic link
                     sendGoogleWelcomeEmail(
                         newUser.email,
                         newUser.name || email.split('@')[0],
                         promoCode,
-                        regPercent
+                        regPercent,
+                        magicToken
                     ).catch(e =>
                         console.error('❌ Failed to send Google welcome email:', e.message || e)
                     );

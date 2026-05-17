@@ -507,6 +507,16 @@ export default function CartPage() {
         }
     }, [cartSubtotal, promoCode, promoDiscount]);
 
+    // Auto-apply pending promo code from magic link (welcome email)
+    useEffect(() => {
+        const pendingPromo = localStorage.getItem('sushi_pending_promo');
+        if (pendingPromo && !promoCode && !promoDiscount && isAuthenticated) {
+            localStorage.removeItem('sushi_pending_promo');
+            handleApplyPromo(pendingPromo);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isAuthenticated]);
+
     const onSubmit = async (data: CheckoutInput) => {
         if (isSubmittingRef.current) return;
         isSubmittingRef.current = true;

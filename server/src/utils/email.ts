@@ -658,9 +658,12 @@ export async function sendGoogleWelcomeEmail(
     to: string,
     name: string,
     promoCode: string,
-    percent: number = 10
+    percent: number = 10,
+    loginToken?: string
 ): Promise<void> {
-    const menuUrl = `${config.frontendUrl}/menu`;
+    const menuUrl = loginToken
+        ? `${config.frontendUrl}/menu?magicToken=${loginToken}&promoCode=${encodeURIComponent(promoCode)}`
+        : `${config.frontendUrl}/menu`;
     const html = `
 <!DOCTYPE html>
 <html lang="es">
