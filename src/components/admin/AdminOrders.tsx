@@ -622,6 +622,7 @@ export default function AdminOrders({
                                     let scheduled = '';
                                     let noCall = false;
                                     let noBuzzer = false;
+                                    let chopsticksCount = '';
                                     let actualNote = '';
 
                                     // NEW: Strongly prefer DB field for scheduled time
@@ -709,6 +710,12 @@ export default function AdminOrders({
                                             part.includes('[NO LLAMAR TIMBRE]')
                                         ) {
                                             noBuzzer = true;
+                                        } else if (part.includes('[PALILLOS:')) {
+                                            chopsticksCount = part
+                                                .replace('[PALILLOS: ', '')
+                                                .replace('[PALILLOS:', '')
+                                                .replace(']', '')
+                                                .trim();
                                         } else {
                                             actualNote += (actualNote ? ' | ' : '') + part;
                                         }
@@ -913,6 +920,14 @@ export default function AdminOrders({
                                                                         {scheduled}
                                                                     </span>
                                                                 </div>
+                                                            </div>
+                                                        )}
+                                                        {chopsticksCount && (
+                                                            <div className="px-3 py-1.5 rounded-xl bg-orange-50 text-orange-600 border border-orange-200 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm">
+                                                                <span className="text-[14px]">
+                                                                    🥢
+                                                                </span>
+                                                                {chopsticksCount}
                                                             </div>
                                                         )}
                                                         {noCall && (
