@@ -69,16 +69,16 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                         }}
                         data-lenis-prevent
                     >
-                        {/* Top bar: centered logo + close button */}
-                        <div className="relative flex items-center justify-center px-4 pt-12 pb-6 shrink-0">
+                        {/* Top bar: logo left + close button right */}
+                        <div className="flex items-center justify-between px-5 pt-12 pb-2 shrink-0">
                             <img
                                 src="/logo.svg"
                                 alt="Sushi de Maksim"
-                                className="h-11 w-auto object-contain brightness-0"
+                                className="h-10 w-auto object-contain brightness-0"
                             />
                             <button
                                 onClick={() => setShowMobileMenu(false)}
-                                className="absolute right-4 top-4 p-2 rounded-xl bg-white/60 text-gray-500 hover:bg-white hover:text-gray-900 transition-all z-20 border border-white/50 shadow-md cursor-pointer backdrop-blur-sm"
+                                className="p-2 rounded-xl bg-white/60 text-gray-500 hover:bg-white hover:text-gray-900 transition-all z-20 border border-white/50 shadow-md cursor-pointer backdrop-blur-sm shrink-0"
                             >
                                 <X size={20} strokeWidth={1.5} />
                             </button>
@@ -218,19 +218,22 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                         >
                                             INICIAR SESIÓN
                                         </button>
-                                        <button
-                                            onClick={() => {
-                                                setShowMobileMenu(false);
-                                                document.dispatchEvent(
-                                                    new CustomEvent('custom:openLogin', {
-                                                        detail: { mode: 'register' },
-                                                    })
-                                                );
-                                            }}
-                                            className="w-full bg-white text-gray-900 border border-gray-200 py-4 rounded-[20px] font-black text-[14px] cursor-pointer active:scale-[0.98] transition-transform shadow-sm flex items-center justify-center gap-2"
-                                        >
-                                            CREAR CUENTA
-                                        </button>
+                                        <p className="text-center text-[12px] font-medium text-gray-500 my-0.5">
+                                            ¿No tienes cuenta?{' '}
+                                            <button
+                                                onClick={() => {
+                                                    setShowMobileMenu(false);
+                                                    document.dispatchEvent(
+                                                        new CustomEvent('custom:openLogin', {
+                                                            detail: { mode: 'register' },
+                                                        })
+                                                    );
+                                                }}
+                                                className="text-orange-600 font-bold bg-transparent border-none p-0 cursor-pointer hover:underline"
+                                            >
+                                                Regístrate
+                                            </button>
+                                        </p>
                                         <div className="pt-2">
                                             <GoogleAuthButton onSuccess={handleGoogleLogin} />
                                         </div>
