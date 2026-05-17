@@ -60,3 +60,6 @@ server/tmp_*
 server/test_*
 server/backend.log
 server/server_debug.log
+
+# Vitest Coverage
+coverage/
