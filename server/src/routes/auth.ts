@@ -652,14 +652,10 @@ router.post(
                 settingsData?.forEach(s => (settings[s.key] = s.value));
 
                 const regEnabled = settings['loyalty_registration_bonus_enabled'] === 'true';
-                const regPercent =
-                    parseInt(settings['loyalty_registration_bonus_percent']) || 10;
+                const regPercent = parseInt(settings['loyalty_registration_bonus_percent']) || 10;
 
                 if (regEnabled && newUser) {
-                    const promoSuffix = Math.random()
-                        .toString(36)
-                        .substring(2, 7)
-                        .toUpperCase();
+                    const promoSuffix = Math.random().toString(36).substring(2, 7).toUpperCase();
                     const promoCode = `NUEVO${regPercent}-${promoSuffix}`;
 
                     await supabase.from('promo_codes').insert({
