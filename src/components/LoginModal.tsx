@@ -209,14 +209,6 @@ const LoginForm = memo(
                     {isLoading ? 'INICIANDO...' : 'INICIAR SESIÓN'}
                 </button>
 
-                <div className="flex items-center gap-3 py-2">
-                    <div className="h-[1px] flex-1 bg-gray-100"></div>
-                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">
-                        O
-                    </span>
-                    <div className="h-[1px] flex-1 bg-gray-100"></div>
-                </div>
-
                 <div className="flex justify-center w-full">
                     <GoogleAuthButton onSuccess={onGoogleSuccess} />
                 </div>
@@ -455,14 +447,6 @@ const RegisterForm = memo(
                 >
                     {isLoading ? 'CREANDO...' : 'CREAR CUENTA'}
                 </button>
-
-                <div className="flex items-center gap-3 py-2">
-                    <div className="h-[1px] flex-1 bg-gray-100"></div>
-                    <span className="text-[10px] font-black text-gray-300 uppercase tracking-widest">
-                        O
-                    </span>
-                    <div className="h-[1px] flex-1 bg-gray-100"></div>
-                </div>
 
                 <div className="flex justify-center w-full">
                     <GoogleAuthButton onSuccess={onGoogleSuccess} />
