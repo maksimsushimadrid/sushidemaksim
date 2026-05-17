@@ -30,6 +30,12 @@ export const GoogleAuthButton = ({
         onSuccess: tokenResponse => {
             onSuccess({ access_token: tokenResponse.access_token });
         },
+        onError: error => {
+            console.warn('Google login error:', error);
+        },
+        onNonOAuthError: error => {
+            console.warn('Google popup error:', error);
+        },
     });
 
     return (
