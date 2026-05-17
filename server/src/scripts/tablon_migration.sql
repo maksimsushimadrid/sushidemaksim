@@ -59,3 +59,16 @@ CREATE INDEX IF NOT EXISTS idx_tablon_categories_approved ON tablon_categories(i
 
 -- 6. GIN index for tag filtering
 CREATE INDEX IF NOT EXISTS idx_tablon_posts_tags ON tablon_posts USING GIN (tags);
+
+-- 7. Setup Data API Grants (Supabase requirement)
+GRANT SELECT ON public.tablon_categories TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.tablon_categories TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.tablon_categories TO service_role;
+
+GRANT SELECT ON public.tablon_posts TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.tablon_posts TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.tablon_posts TO service_role;
+
+GRANT SELECT ON public.tablon_comments TO anon;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.tablon_comments TO authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON public.tablon_comments TO service_role;
