@@ -70,15 +70,15 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                         data-lenis-prevent
                     >
                         {/* Top bar: centered logo + close button */}
-                        <div className="relative flex items-center justify-center px-4 pt-16 pb-8 shrink-0">
+                        <div className="relative flex items-center justify-center px-4 pt-12 pb-6 shrink-0">
                             <img
                                 src="/logo.svg"
                                 alt="Sushi de Maksim"
-                                className="h-16 w-auto object-contain brightness-0"
+                                className="h-11 w-auto object-contain brightness-0"
                             />
                             <button
                                 onClick={() => setShowMobileMenu(false)}
-                                className="absolute right-4 top-5 p-2 rounded-xl bg-white/60 text-gray-500 hover:bg-white hover:text-gray-900 transition-all z-20 border border-white/50 shadow-md cursor-pointer backdrop-blur-sm"
+                                className="absolute right-4 top-4 p-2 rounded-xl bg-white/60 text-gray-500 hover:bg-white hover:text-gray-900 transition-all z-20 border border-white/50 shadow-md cursor-pointer backdrop-blur-sm"
                             >
                                 <X size={20} strokeWidth={1.5} />
                             </button>
