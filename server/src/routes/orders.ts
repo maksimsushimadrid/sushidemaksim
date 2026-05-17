@@ -796,7 +796,8 @@ router.post(
             p_total: Number(finalTotal.toFixed(2)),
             p_delivery_address: deliveryAddress?.trim() || '',
             p_phone_number: phoneNumber?.trim() || '',
-            p_notes: `${notesToSave || ''}${senderName ? ` [De parte de: ${senderName}]` : ''}`.trim(),
+            p_notes:
+                `${notesToSave || ''}${senderName ? ` [De parte de: ${senderName}]` : ''}`.trim(),
             p_payment_method: 'EFECTIVO',
             p_promo_code: promoCode || null,
             p_estimated_delivery_time: serverEstimatedTime,
