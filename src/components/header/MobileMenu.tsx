@@ -86,14 +86,14 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
 
                         {/* Scrollable Content Area */}
                         <div
-                            className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar px-5 pt-2 pb-16 flex flex-col gap-6"
+                            className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar px-5 pt-2 pb-8 flex flex-col gap-4"
                             data-lenis-prevent
                         >
                             {/* Primary Reservation CTA */}
                             <Link
                                 to="/reservar"
                                 onClick={() => setShowMobileMenu(false)}
-                                className="w-full py-4 px-5 flex items-center justify-center rounded-3xl bg-orange-600 text-white no-underline transition-all active:scale-[0.98] shadow-lg shadow-orange-600/20 border border-orange-500"
+                                className="w-full py-3.5 px-5 flex items-center justify-center rounded-3xl bg-orange-600 text-white no-underline transition-all active:scale-[0.98] shadow-lg shadow-orange-600/20 border border-orange-500"
                             >
                                 <span className="font-black text-[15px] tracking-tight uppercase">
                                     Reservar Mesa
@@ -111,7 +111,7 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                             key={link.to || idx}
                                             to={link.to!}
                                             onClick={() => setShowMobileMenu(false)}
-                                            className={`flex items-center justify-center px-5 py-4 w-full transition-colors active:bg-gray-50/50
+                                            className={`flex items-center justify-center px-5 py-3.5 w-full transition-colors active:bg-gray-50/50
                                                 ${idx !== navLinks.length - 1 ? 'border-b border-gray-100/50' : ''}
                                                 ${isActive ? 'bg-orange-50/30' : 'hover:bg-white'}
                                             `}
@@ -204,7 +204,7 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="flex flex-col gap-3">
+                                    <div className="flex flex-col gap-2">
                                         <button
                                             onClick={() => {
                                                 setShowMobileMenu(false);
@@ -214,7 +214,7 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                                     })
                                                 );
                                             }}
-                                            className="w-full bg-gray-900 text-white border-none py-4 rounded-[20px] font-black text-[14px] cursor-pointer active:scale-[0.98] transition-transform shadow-lg shadow-gray-900/20 flex items-center justify-center gap-2"
+                                            className="w-full bg-gray-900 text-white border-none py-3.5 rounded-[20px] font-black text-[14px] cursor-pointer active:scale-[0.98] transition-transform shadow-lg shadow-gray-900/20 flex items-center justify-center gap-2"
                                         >
                                             INICIAR SESIÓN
                                         </button>
