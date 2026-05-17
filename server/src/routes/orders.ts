@@ -35,6 +35,7 @@ router.post(
             scheduledDate,
             scheduledTime,
             customNote = '',
+            notes = '',
             deliveryZoneId,
             promoCode,
             guestItems,
@@ -50,7 +51,7 @@ router.post(
         const phoneNumber = phone;
         const email = guestEmail;
 
-        let notesToSave = customNote?.trim() || '';
+        let notesToSave = notes?.trim() || customNote?.trim() || '';
         if (deliveryType === 'table') {
             notesToSave =
                 `[MESA: ${mesaNumber || req.body.tableNumber || '?'}] ${notesToSave}`.trim();
@@ -683,6 +684,7 @@ router.post(
             isScheduled = false,
             scheduledDate,
             scheduledTime,
+            notes = '',
         } = req.body;
 
         const deliveryAddress =
@@ -692,7 +694,7 @@ router.post(
                   ? 'RECOGIDA'
                   : `${address}, ${house}, ${apartment || ''}`;
         const phoneNumber = phone;
-        const notes = customNote;
+        const notesToSave = notes?.trim() || customNote?.trim() || '';
 
         const parser = new UAParser(req.headers['user-agent'] || '');
         const deviceType = parser.getDevice().type || 'desktop';
@@ -794,7 +796,7 @@ router.post(
             p_total: Number(finalTotal.toFixed(2)),
             p_delivery_address: deliveryAddress?.trim() || '',
             p_phone_number: phoneNumber?.trim() || '',
-            p_notes: `${notes || ''}${senderName ? ` [De parte de: ${senderName}]` : ''}`.trim(),
+            p_notes: `${notesToSave || ''}${senderName ? ` [De parte de: ${senderName}]` : ''}`.trim(),
             p_payment_method: 'EFECTIVO',
             p_promo_code: promoCode || null,
             p_estimated_delivery_time: serverEstimatedTime,
