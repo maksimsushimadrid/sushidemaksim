@@ -81,10 +81,10 @@ class AnalyticsTracker {
                             ...data.metadata,
                             is_test:
                                 typeof window !== 'undefined' &&
-                                (window.location.hostname === 'localhost' ||
-                                    window.location.hostname.includes('127.0.0.1') ||
-                                    navigator.webdriver ||
-                                    localStorage.getItem('is_test_mode') === 'true'),
+                                ((window.location?.hostname || '') === 'localhost' ||
+                                    (window.location?.hostname || '').includes('127.0.0.1') ||
+                                    navigator?.webdriver ||
+                                    localStorage?.getItem('is_test_mode') === 'true'),
                             utmSource: this.utmSource,
                             timestamp: new Date().toISOString(),
                             userAgent: navigator.userAgent,

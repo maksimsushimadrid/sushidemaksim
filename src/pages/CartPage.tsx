@@ -138,7 +138,7 @@ export default function CartPage() {
                 ? 0
                 : selectedZone
                   ? (selectedZone.cost ?? 0)
-                  : (siteSettings?.deliveryFee ?? 3.5)
+                  : 0
             : 0;
 
     const finalTotal = cartSubtotal - discountAmount + deliveryCost;
