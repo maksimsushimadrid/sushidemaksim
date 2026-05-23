@@ -126,8 +126,8 @@ export default function CartSummary({
                                 </span>
                             )}
                         </div>
-                        {!hasAddress ? (
-                            <span className="text-gray-400 italic">A determinar</span>
+                        {!hasZone ? (
+                            <span className="text-[11px] font-bold text-gray-400 italic text-right mt-0.5">A determinar</span>
                         ) : (
                             <div className="text-right">
                                 <span
