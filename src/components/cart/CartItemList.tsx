@@ -147,12 +147,19 @@ export default function CartItemList({
                                             </span>
                                         </div>
                                     ) : (
-                                        <span className="text-[15px] md:text-base font-black text-gray-900 whitespace-nowrap">
-                                            {(item.price * item.quantity)
-                                                .toFixed(2)
-                                                .replace('.', ',')}{' '}
-                                            €
-                                        </span>
+                                        <div className="flex flex-col items-end">
+                                            <span className="text-[15px] md:text-base font-black text-gray-900 whitespace-nowrap leading-none">
+                                                {(item.price * item.quantity)
+                                                    .toFixed(2)
+                                                    .replace('.', ',')}{' '}
+                                                €
+                                            </span>
+                                            {item.quantity > 1 && (
+                                                <span className="text-[10px] text-gray-400 font-medium mt-1">
+                                                    {item.price.toFixed(2).replace('.', ',')} € / ud
+                                                </span>
+                                            )}
+                                        </div>
                                     )}
                                 </div>
                             </div>
