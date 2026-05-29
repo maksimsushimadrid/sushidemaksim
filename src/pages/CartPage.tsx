@@ -764,12 +764,16 @@ export default function CartPage() {
 
             // Google Ads Conversion Event
             if (typeof window !== 'undefined' && (window as any).gtag) {
-                const finalTotal = cartSubtotal - discountAmount + (deliveryType === 'delivery' ? deliveryCost : 0) + tipAmount;
+                const finalTotal =
+                    cartSubtotal -
+                    discountAmount +
+                    (deliveryType === 'delivery' ? deliveryCost : 0) +
+                    tipAmount;
                 (window as any).gtag('event', 'conversion', {
-                    'send_to': 'AW-18177084522/Ih_mCNHA4rUCEOGYwdTD',
-                    'value': finalTotal,
-                    'currency': 'EUR',
-                    'transaction_id': dataRes.order.id
+                    send_to: 'AW-18177084522/Ih_mCNHA4rUCEOGYwdTD',
+                    value: finalTotal,
+                    currency: 'EUR',
+                    transaction_id: dataRes.order.id,
                 });
             }
         } catch (err: any) {
