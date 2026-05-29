@@ -1127,7 +1127,9 @@ export default function AdminOrders({
                                                                 0
                                                             );
                                                         const orderSubtotal =
-                                                            order.total - (order.deliveryFee || 0);
+                                                            order.total -
+                                                            (order.deliveryFee || 0) -
+                                                            (order.tipAmount || 0);
                                                         const globalDiscount =
                                                             itemsSubtotal - orderSubtotal;
 
@@ -1160,6 +1162,19 @@ export default function AdminOrders({
                                                             </div>
                                                             <span className="text-[12px] font-black text-gray-900 tabular-nums">
                                                                 {formatCurrency(order.deliveryFee)}
+                                                            </span>
+                                                        </div>
+                                                    ) : null}
+
+                                                    {order.tipAmount && order.tipAmount > 0 ? (
+                                                        <div className="flex items-center justify-between gap-3 py-3 border-t-2 border-dashed border-gray-200 mt-2 px-3 bg-orange-50/50 rounded-2xl">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-[11px] font-black text-orange-600 uppercase tracking-widest">
+                                                                    Propina
+                                                                </span>
+                                                            </div>
+                                                            <span className="text-[12px] font-black text-orange-600 tabular-nums">
+                                                                {formatCurrency(order.tipAmount)}
                                                             </span>
                                                         </div>
                                                     ) : null}

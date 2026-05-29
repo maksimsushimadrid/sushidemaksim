@@ -110,6 +110,11 @@ export function formatOrder(o: any, userStats: any = null) {
     );
     const deliveryFee = deliveryItem ? deliveryItem.priceAtTime : 0;
 
+    const tipItem = allItems.find(
+        (i: any) => i.name === 'Propina equipo' || i.name?.toLowerCase().includes('propina')
+    );
+    const tipAmount = tipItem ? tipItem.priceAtTime : 0;
+
     // Filter out delivery item from the regular items list if needed,
     // or keep it but let the UI filter.
     // We'll keep all for now but provide the helper field.
@@ -120,6 +125,7 @@ export function formatOrder(o: any, userStats: any = null) {
         userId: o.user_id,
         total: Number(o.total),
         deliveryFee,
+        tipAmount,
         deliveryAddress: o.delivery_address,
         phoneNumber: o.phone_number,
         status: o.status,

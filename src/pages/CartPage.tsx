@@ -61,6 +61,7 @@ export default function CartPage() {
     const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
     const [orderWhatsappUrl, setOrderWhatsappUrl] = useState<string | null>(null);
     const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+    const [tipAmount, setTipAmount] = useState<number>(0);
     const [lastOrderSummary, setLastOrderSummary] = useState<{
         total: number;
         deliveryCost: number;
@@ -141,7 +142,7 @@ export default function CartPage() {
                   : 0
             : 0;
 
-    const finalTotal = cartSubtotal - discountAmount + deliveryCost;
+    const finalTotal = cartSubtotal - discountAmount + deliveryCost + tipAmount;
     const isMinOrderMet = cartSubtotal >= MIN_ORDER;
 
     // Sync form changes back to deliveryDetails in useCart for persistence
@@ -709,6 +710,7 @@ export default function CartPage() {
                 notes: notesArray.join(' | '),
                 deliveryZoneId: selectedZone?.id,
                 promoCode: promoDiscount ? promoCode : undefined,
+                tipAmount,
                 lat,
                 lon,
             };
@@ -939,6 +941,8 @@ export default function CartPage() {
                                         promoError={promoError}
                                         isStoreClosed={isStoreClosed}
                                         isScheduled={isScheduled}
+                                        tipAmount={tipAmount}
+                                        onTipChange={setTipAmount}
                                         onOrder={() =>
                                             (
                                                 handleSubmit(onSubmit as any, errs => {

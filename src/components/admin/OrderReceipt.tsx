@@ -51,6 +51,7 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
         // --- CALCULATIONS ---
         const items = Array.isArray(order.items) ? order.items : [];
         const deliveryFee = Number(order.deliveryFee) || 0;
+        const tipAmount = Number(order.tipAmount) || 0;
         const totalValue = Number(order.total) || 0;
 
         // Sum of all items (original menu price * quantity) - excluding delivery fee item
@@ -60,6 +61,7 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                 return (
                     !name.includes('gastos') &&
                     !name.includes('envío') &&
+                    !name.includes('propina') &&
                     item.menuItemId !== '-1' &&
                     item.menuItemId !== '0' &&
                     !!item.menuItemId
@@ -71,7 +73,7 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                 return sum + unitPrice * qty;
             }, 0);
 
-        const globalDiscount = itemsSubtotal - (totalValue - deliveryFee);
+        const globalDiscount = itemsSubtotal - (totalValue - deliveryFee - tipAmount);
 
         // Taxes calculation (simplified 10% for food)
         const ivaValue = totalValue * 0.090909; // 10% included in price: Total - (Total / 1.1)
@@ -194,6 +196,12 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                         <div className="flex justify-between text-[11px]">
                             <span>Envío / Delivery</span>
                             <span>{deliveryFee.toFixed(2)}€</span>
+                        </div>
+                    )}
+                    {tipAmount > 0 && (
+                        <div className="flex justify-between text-[11px]">
+                            <span>Propina equipo</span>
+                            <span>{tipAmount.toFixed(2)}€</span>
                         </div>
                     )}
                     {globalDiscount > 0.05 && (

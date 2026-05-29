@@ -39,6 +39,7 @@ router.post(
             deliveryZoneId,
             promoCode,
             guestItems,
+            tipAmount = 0,
         } = req.body;
 
         // Map frontend values to backend DB labels if needed, but we mostly use the structured data now
@@ -290,6 +291,10 @@ router.post(
             }
         }
 
+        if (Number(tipAmount) > 0) {
+            finalTotal += Number(tipAmount);
+        }
+
         // 3 & 4. Create Order and items atomically via RPC
         const rpcArgs = {
             p_user_id: req.userId || null,
@@ -329,6 +334,24 @@ router.post(
                                   quantity: 1,
                                   price_at_time: deliveryFee,
                                   image: 'https://cdn-icons-png.flaticon.com/512/709/709790.png',
+                                  description: '',
+                                  category: 'extras',
+                                  selected_option: '',
+                                  is_gift: false,
+                                  gift_label: null,
+                              },
+                          ]
+                        : []
+                )
+                .concat(
+                    Number(tipAmount) > 0
+                        ? [
+                              {
+                                  menu_item_id: null,
+                                  name: 'Propina equipo',
+                                  quantity: 1,
+                                  price_at_time: Number(tipAmount),
+                                  image: 'https://cdn-icons-png.flaticon.com/512/3175/3175183.png',
                                   description: '',
                                   category: 'extras',
                                   selected_option: '',
@@ -377,6 +400,14 @@ router.post(
                     name: 'Gastos de Envío',
                     quantity: 1,
                     price_at_time: deliveryFee,
+                } as any);
+            }
+
+            if (Number(tipAmount) > 0) {
+                itemsForReceipt.push({
+                    name: 'Propina equipo',
+                    quantity: 1,
+                    price_at_time: Number(tipAmount),
                 } as any);
             }
 
@@ -510,6 +541,10 @@ router.post(
 
             if (deliveryFee > 0) {
                 waTextParts.push(`Gastos de Envío: ${deliveryFee.toFixed(2)}€`);
+            }
+
+            if (Number(tipAmount) > 0) {
+                waTextParts.push(`Propina equipo: ${Number(tipAmount).toFixed(2)}€`);
             }
 
             const promoMatch = receiptNotes.match(/\[PROMO:\s(.*?)\s\(-(\d+(?:\.\d+)?)%\)\]/);

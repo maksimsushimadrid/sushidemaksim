@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Clock, ArrowRight, X } from 'lucide-react';
 import { useCart } from '../../hooks/useCart';
@@ -17,6 +18,8 @@ interface CartSummaryProps {
     isOrdering: boolean;
     isApplyingPromo: boolean;
     setPromoCode: (code: string) => void;
+    tipAmount: number;
+    onTipChange: (tip: number) => void;
     minOrder?: number;
     freeDeliveryThreshold?: number;
     deliveryDetails?: {
@@ -42,15 +45,21 @@ export default function CartSummary({
     isOrdering,
     isApplyingPromo,
     setPromoCode,
+    tipAmount,
+    onTipChange,
     minOrder = 0,
     freeDeliveryThreshold = 60,
     deliveryDetails: propDeliveryDetails,
 }: CartSummaryProps) {
+    const [isCustomTip, setIsCustomTip] = useState(false);
+    const [customTipStr, setCustomTipStr] = useState('');
+
     const { items, deliveryDetails: contextDeliveryDetails } = useCart();
     const details = propDeliveryDetails || contextDeliveryDetails;
     const { deliveryType, address, house, selectedZone, paymentMethod } = details;
     const isMinOrderMet = total >= minOrder;
-    const finalTotal = total - (promoDiscount ? (total * promoDiscount) / 100 : 0) + deliveryCost;
+    const finalTotal =
+        total - (promoDiscount ? (total * promoDiscount) / 100 : 0) + deliveryCost + tipAmount;
 
     const hasAddress = !!address;
     const hasHouse = !!house;
@@ -148,6 +157,14 @@ export default function CartSummary({
                         <span>Descuento ({promoDiscount}%)</span>
                         <span className="font-bold">
                             -{((total * promoDiscount) / 100).toFixed(2).replace('.', ',')} €
+                        </span>
+                    </div>
+                )}
+                {tipAmount > 0 && (
+                    <div className="flex justify-between text-orange-600 text-sm animate-in zoom-in duration-300">
+                        <span>Propina equipo</span>
+                        <span className="font-bold">
+                            {tipAmount.toFixed(2).replace('.', ',')} €
                         </span>
                     </div>
                 )}
@@ -252,6 +269,71 @@ export default function CartSummary({
                         <p className="text-[10px] text-orange-500 font-black uppercase tracking-wider italic">
                             {promoError}
                         </p>
+                    </motion.div>
+                )}
+            </div>
+
+            {/* Tip Section */}
+            <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                    <div className="w-1.5 h-4 bg-orange-600 rounded-full" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                        Añadir propina para el equipo
+                    </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 mb-2">
+                    {[0.5, 1, 2, 3, 5].map(amount => (
+                        <button
+                            key={amount}
+                            onClick={() => {
+                                triggerHaptic(HAPTIC_PATTERNS.LIGHT);
+                                setIsCustomTip(false);
+                                onTipChange(tipAmount === amount ? 0 : amount);
+                            }}
+                            className={`py-2 rounded-xl text-xs font-bold transition-all duration-300 border-2 ${
+                                tipAmount === amount && !isCustomTip
+                                    ? 'bg-orange-50 border-orange-500 text-orange-600 shadow-[0_0_10px_rgba(249,115,22,0.1)]'
+                                    : 'bg-white border-gray-100 text-gray-500 hover:border-orange-200 hover:bg-orange-50/50 hover:text-orange-500'
+                            }`}
+                        >
+                            {amount} €
+                        </button>
+                    ))}
+                    <button
+                        onClick={() => {
+                            triggerHaptic(HAPTIC_PATTERNS.LIGHT);
+                            setIsCustomTip(true);
+                            onTipChange(Number(customTipStr) || 0);
+                        }}
+                        className={`py-2 rounded-xl text-xs font-bold transition-all duration-300 border-2 ${
+                            isCustomTip
+                                ? 'bg-orange-50 border-orange-500 text-orange-600 shadow-[0_0_10px_rgba(249,115,22,0.1)]'
+                                : 'bg-white border-gray-100 text-gray-500 hover:border-orange-200 hover:bg-orange-50/50 hover:text-orange-500'
+                        }`}
+                    >
+                        Otro
+                    </button>
+                </div>
+                {isCustomTip && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="mt-2"
+                    >
+                        <div className="flex gap-1 p-1 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl focus-within:border-orange-500/30 focus-within:bg-white focus-within:shadow-lg focus-within:shadow-orange-500/5 transition-all duration-300">
+                            <input
+                                type="number"
+                                min="0"
+                                step="0.5"
+                                placeholder="Importe (€)"
+                                value={customTipStr}
+                                onChange={e => {
+                                    setCustomTipStr(e.target.value);
+                                    onTipChange(Math.max(0, Number(e.target.value) || 0));
+                                }}
+                                className="min-w-0 flex-1 px-4 py-2 bg-transparent border-none text-sm focus:outline-none font-bold text-gray-900 placeholder:text-gray-400 placeholder:font-normal"
+                            />
+                        </div>
                     </motion.div>
                 )}
             </div>

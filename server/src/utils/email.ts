@@ -287,6 +287,10 @@ export async function sendOrderReceiptEmail(
 
     const regularItems = orderData.items.filter((item: any) => Number(item.menu_item_id) !== -1);
     const deliveryItem = orderData.items.find((item: any) => Number(item.menu_item_id) === -1);
+    const tipItem = orderData.items.find(
+        (i: any) => i.name === 'Propina equipo' || i.name?.toLowerCase().includes('propina')
+    );
+    const tipAmount = tipItem ? tipItem.price_at_time : 0;
 
     // Prepare WhatsApp message for admin
     let waUrl = '';
@@ -315,7 +319,7 @@ export async function sendOrderReceiptEmail(
                   ? 'Efectivo'
                   : paymentMethod;
 
-        const statusMessage = `¡Hola! Hemos recibido tu pedido. Te lo entregaremos en  30 - 60 minutos.\n\n`;
+        const statusMessage = `¡Hola! Hemos recibido tu pedido. Te lo entregaremos en  30 - 60 minutos.${tipAmount > 0 ? `\n\n¡Muchas gracias por la propina para el equipo!` : ''}\n\n`;
         const addressLine =
             deliveryType === 'DOMICILIO' ? `\nDirección: ${orderData.deliveryAddress}` : '';
         waMessage = `${statusMessage}Tu pedido #${String(orderData.orderId).padStart(5, '0')} está confirmado${scheduledText}\n\n${itemsListText}${deliveryFeeText}\n\nTotal: ${orderData.total.toFixed(2)}€\nMétodo de pago: ${paymentMethodLabel}${addressLine}`;
@@ -373,6 +377,7 @@ export async function sendOrderReceiptEmail(
         ¡Hola! Hemos recibido tu pedido. Te lo entregaremos en <strong>${orderData.estimatedDeliveryTime || '30 - 60 minutos'}</strong>.
         <br><br>
         Tu pedido <strong>#${String(orderData.orderId).padStart(5, '0')}</strong> está confirmado.
+        ${tipAmount > 0 ? `<br><br><strong>¡Muchas gracias por dejar una propina para el equipo! Apreciamos mucho tu apoyo.</strong>` : ''}
       </p>
 
       ${
@@ -399,7 +404,7 @@ export async function sendOrderReceiptEmail(
                 orderData.customerEmail
                     ? `
             <td style="width: 50%; padding-right: 4px;">
-              <a href="mailto:${orderData.customerEmail}?subject=${encodeURIComponent(`Pedido #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`)}&body=${encodeURIComponent(waMessage.replace(/\*/g, ''))}" style="display: block; background-color: #ffffff; color: #111827; padding: 12px 0; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 13px; text-align: center; border: 1px solid #e2e8f0;">
+              <a href="mailto:${orderData.customerEmail}?subject=${encodeURIComponent(`Pedido #${String(orderData.orderId).padStart(5, '0')} — Sushi de Maksim`)}&body=${encodeURIComponent(waMessage.replace(/\*/g, '').replace(/\n/g, '\r\n'))}" style="display: block; background-color: #ffffff; color: #111827; padding: 12px 0; border-radius: 12px; text-decoration: none; font-weight: 800; font-size: 13px; text-align: center; border: 1px solid #e2e8f0;">
                 ✉️ RESPONDER EMAIL
               </a>
             </td>
