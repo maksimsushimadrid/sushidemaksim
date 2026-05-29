@@ -761,6 +761,17 @@ export default function CartPage() {
 
             showSuccess('¡Pedido realizado! 🍣');
             if ('vibrate' in navigator) navigator.vibrate([100, 50, 100]);
+
+            // Google Ads Conversion Event
+            if (typeof window !== 'undefined' && (window as any).gtag) {
+                const finalTotal = cartSubtotal - discountAmount + (deliveryType === 'delivery' ? deliveryCost : 0) + tipAmount;
+                (window as any).gtag('event', 'conversion', {
+                    'send_to': 'AW-18177084522/Ih_mCNHA4rUCEOGYwdTD',
+                    'value': finalTotal,
+                    'currency': 'EUR',
+                    'transaction_id': dataRes.order.id
+                });
+            }
         } catch (err: any) {
             tracker.track('error_notice', {
                 metadata: {
