@@ -324,12 +324,17 @@ export default function CartSummary({
                             <input
                                 type="number"
                                 min="0"
+                                max="999"
                                 step="0.5"
                                 placeholder="Importe (€)"
                                 value={customTipStr}
                                 onChange={e => {
-                                    setCustomTipStr(e.target.value);
-                                    onTipChange(Math.max(0, Number(e.target.value) || 0));
+                                    let valStr = e.target.value;
+                                    if (Number(valStr) > 999) {
+                                        valStr = '999';
+                                    }
+                                    setCustomTipStr(valStr);
+                                    onTipChange(Math.max(0, Number(valStr) || 0));
                                 }}
                                 className="min-w-0 flex-1 px-4 py-2 bg-transparent border-none text-sm focus:outline-none font-bold text-gray-900 placeholder:text-gray-400 placeholder:font-normal"
                             />

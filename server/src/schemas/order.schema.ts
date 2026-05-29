@@ -80,7 +80,7 @@ export const createOrderSchema = z.object({
             lat: z.number().optional().nullable(),
             lon: z.number().optional().nullable(),
             promoCode: z.string().max(50).optional().nullable(),
-            tipAmount: z.number().min(0).optional().nullable(),
+            tipAmount: z.number().min(0).max(999).optional().nullable(),
 
             // Guest cart
             guestItems: z
