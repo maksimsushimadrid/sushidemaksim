@@ -316,11 +316,9 @@ router.post(
         if (coinsSpent > 0) {
             const maxAllowedByPercentage = Math.floor(finalTotal * 0.2);
             if (coinsSpent > maxAllowedByPercentage) {
-                return res
-                    .status(400)
-                    .json({
-                        error: `Solo puedes usar un máximo de ${maxAllowedByPercentage} Coins (20% del pedido).`,
-                    });
+                return res.status(400).json({
+                    error: `Solo puedes usar un máximo de ${maxAllowedByPercentage} Coins (20% del pedido).`,
+                });
             }
             finalTotal -= coinsSpent;
             if (finalTotal < 0) finalTotal = 0;
