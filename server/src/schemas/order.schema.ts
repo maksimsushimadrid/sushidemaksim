@@ -81,6 +81,7 @@ export const createOrderSchema = z.object({
             lon: z.number().optional().nullable(),
             promoCode: z.string().max(50).optional().nullable(),
             tipAmount: z.number().min(0).max(999).optional().nullable(),
+            coinsSpent: z.number().min(0).optional().nullable(),
 
             // Guest cart
             guestItems: z

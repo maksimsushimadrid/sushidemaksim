@@ -509,7 +509,7 @@ router.patch(
         // 1. Fetch old state to check transitions and get user info
         const { data: oldOrder } = await supabase
             .from('orders')
-            .select('status, user_id, users(email, name)')
+            .select('status, user_id, promo_code, users(email, name)')
             .eq('id', req.params.id)
             .single();
 
@@ -617,6 +617,34 @@ router.patch(
                 }
             } catch (err) {
                 console.error('[LOYALTY] Failed to process loyalty reward:', err);
+            }
+
+            // ───── REFERRAL REWARD: If the user used a REF- code on this order ─────
+            if (oldOrder.promo_code && oldOrder.promo_code.startsWith('REF-')) {
+                try {
+                    const referrerIdFragment = oldOrder.promo_code.split('-')[1];
+                    // Look up the referrer
+                    const { data: referrer } = await supabase
+                        .from('users')
+                        .select('id, coins_balance')
+                        .ilike('id', `${referrerIdFragment}%`)
+                        .single();
+
+                    if (referrer) {
+                        // Give 5 Maksim Coins to referrer
+                        const newBalance = (referrer.coins_balance || 0) + 5;
+                        await supabase
+                            .from('users')
+                            .update({ coins_balance: newBalance })
+                            .eq('id', referrer.id);
+
+                        console.log(
+                            `[REFERRAL] Awarded 5 Maksim Coins to user ${referrer.id} because their referral code ${oldOrder.promo_code} was used by user ${oldOrder.user_id}`
+                        );
+                    }
+                } catch (err) {
+                    console.error('[REFERRAL] Failed to process referral reward:', err);
+                }
             }
         }
 

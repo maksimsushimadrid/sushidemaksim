@@ -14,6 +14,8 @@ import {
     Tag,
     Copy,
     ClipboardCheck,
+    Clock,
+    Check,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
@@ -24,6 +26,7 @@ import OrdersTab from '../components/profile/OrdersTab';
 import FavoritesTab from '../components/profile/FavoritesTab';
 import SafeImage from '../components/common/SafeImage';
 import { ProfileSkeleton } from '../components/skeletons/ProfileSkeleton';
+import { api } from '../utils/api';
 
 type TabId = 'profile' | 'addresses' | 'orders' | 'favorites';
 
@@ -55,6 +58,21 @@ export default function ProfilePage() {
 
     const [activeTab, setActiveTab] = useState<TabId>(getInitialTab());
     const [deliveryZones, setDeliveryZones] = useState<any[]>([]);
+    const [friends, setFriends] = useState<any[]>([]);
+
+    // Load friends
+    useEffect(() => {
+        if (!isAuthenticated) return;
+        const loadFriends = async () => {
+            try {
+                const data = await api.get('/user/friends');
+                setFriends(data.friends || []);
+            } catch (err) {
+                console.error('Failed to load friends', err);
+            }
+        };
+        loadFriends();
+    }, [isAuthenticated]);
 
     // Load delivery zones for address cost calculation
     useEffect(() => {
@@ -350,7 +368,7 @@ export default function ProfilePage() {
 
                         {/* Quick Stats Grid */}
                         <div className="grid grid-cols-2 md:flex gap-3 md:gap-4 w-full md:w-auto mt-4 md:mt-0">
-                            <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-[24px] border border-white/20 text-center min-w-[120px] flex-1 md:flex-none">
+                            <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-[18px] border border-white/20 text-center min-w-[120px] flex-1 md:flex-none">
                                 <div className="text-white font-black text-2xl leading-none">
                                     {user.orderCount || 0}
                                 </div>
@@ -358,9 +376,17 @@ export default function ProfilePage() {
                                     Pedidos
                                 </div>
                             </div>
+                            <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-[18px] border border-white/20 text-center min-w-[120px] flex-1 md:flex-none">
+                                <div className="text-white font-black text-2xl leading-none flex items-center justify-center gap-1">
+                                    {user.coinsBalance || 0}
+                                </div>
+                                <div className="text-orange-100 text-[10px] uppercase font-bold tracking-widest mt-1 opacity-70">
+                                    Maksim Coins
+                                </div>
+                            </div>
                             <button
                                 onClick={handleLogout}
-                                className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-[24px] border border-white/20 text-white font-bold transition-all flex items-center justify-center gap-2 flex-1 md:flex-none"
+                                className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-[18px] border border-white/20 text-white font-bold transition-all flex items-center justify-center gap-2 flex-1 md:flex-none"
                             >
                                 <LogOut size={18} strokeWidth={1.5} />
                                 <span className="md:hidden">Salir</span>
@@ -495,7 +521,7 @@ export default function ProfilePage() {
                             </div>
                             <div>
                                 <h3 className="text-sm font-black text-gray-900 m-0 uppercase tracking-tight">
-                                    Roll Dulce de Regalo 🍣
+                                    Roll Dulce de Regalo
                                 </h3>
                                 <p className="text-[11px] text-gray-400 font-medium m-0">
                                     Cada 10 pedidos
@@ -569,6 +595,109 @@ export default function ProfilePage() {
                             <span className="text-[9px] font-bold text-gray-300 italic">
                                 *Roll dulce enviado tras el 9º pedido para usar en el 10º
                             </span>
+                        </div>
+                    </motion.div>
+                </div>
+
+                {/* Invite a Friend Section */}
+                <div className="mb-8">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="bg-gradient-to-br from-purple-600 to-indigo-600 rounded-[32px] p-6 shadow-xl border border-white/20 relative overflow-hidden group text-white"
+                    >
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-white/20 transition-colors" />
+
+                        <div className="flex items-start justify-between gap-4 relative z-10">
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="text-2xl">🤝</span>
+                                    <h3 className="text-xl font-black uppercase tracking-tight m-0">
+                                        Invita y Gana
+                                    </h3>
+                                </div>
+                                <p className="text-sm font-medium text-white/90 mb-4 leading-relaxed max-w-sm">
+                                    Regala a un amigo un{' '}
+                                    <strong className="text-white">15% de descuento</strong> en su
+                                    primer pedido y llévate{' '}
+                                    <strong className="text-white">5 Maksim Coins</strong> (5€)
+                                    cuando lo reciba.
+                                </p>
+
+                                <div className="bg-black/20 rounded-2xl p-4 border border-white/10 backdrop-blur-sm flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
+                                    <div>
+                                        <div className="text-[10px] font-bold text-white/70 uppercase tracking-widest mb-1">
+                                            Tu código de invitación
+                                        </div>
+                                        <div className="text-xl font-black font-mono tracking-wider">
+                                            REF-{user.id.substring(0, 8).toUpperCase()}
+                                        </div>
+                                    </div>
+                                    <button
+                                        onClick={() =>
+                                            copyToClipboard(
+                                                `REF-${user.id.substring(0, 8).toUpperCase()}`
+                                            )
+                                        }
+                                        className={`p-3 rounded-xl shadow-lg active:scale-95 transition-all flex items-center justify-center min-w-[48px] ${
+                                            copiedCode ===
+                                            `REF-${user.id.substring(0, 8).toUpperCase()}`
+                                                ? 'bg-green-500 text-white shadow-green-900/20'
+                                                : 'bg-white text-purple-600 hover:bg-gray-50'
+                                        }`}
+                                    >
+                                        {copiedCode ===
+                                        `REF-${user.id.substring(0, 8).toUpperCase()}` ? (
+                                            <ClipboardCheck size={20} strokeWidth={2.5} />
+                                        ) : (
+                                            <Copy size={20} strokeWidth={2.5} />
+                                        )}
+                                    </button>
+                                </div>
+
+                                {friends.length > 0 && (
+                                    <div className="mt-6 pt-6 border-t border-white/10">
+                                        <h4 className="text-xs font-black uppercase tracking-widest text-white/80 mb-4">
+                                            Tus amigos invitados ({friends.length})
+                                        </h4>
+                                        <div className="space-y-3">
+                                            {friends.map((friend, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    className="flex items-center justify-between bg-black/10 rounded-xl p-3 border border-white/5"
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm">
+                                                            👤
+                                                        </div>
+                                                        <div>
+                                                            <div className="text-sm font-bold text-white leading-none mb-1">
+                                                                {friend.name}
+                                                            </div>
+                                                            <div className="text-[10px] text-white/60 font-medium">
+                                                                {new Date(
+                                                                    friend.date
+                                                                ).toLocaleDateString('es-ES')}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    {friend.rewarded ? (
+                                                        <div className="bg-green-500/20 text-green-300 border border-green-500/30 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
+                                                            <Check size={12} strokeWidth={3} />
+                                                            +5 Coins
+                                                        </div>
+                                                    ) : (
+                                                        <div className="bg-white/10 text-white/70 border border-white/10 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                                                            <Clock size={12} strokeWidth={2} />
+                                                            Pendiente
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </motion.div>
                 </div>

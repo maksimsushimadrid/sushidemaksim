@@ -62,6 +62,7 @@ export default function CartPage() {
     const [orderWhatsappUrl, setOrderWhatsappUrl] = useState<string | null>(null);
     const [isLoadingSettings, setIsLoadingSettings] = useState(true);
     const [tipAmount, setTipAmount] = useState<number>(0);
+    const [coinsSpent, setCoinsSpent] = useState<number>(0);
     const [lastOrderSummary, setLastOrderSummary] = useState<{
         total: number;
         deliveryCost: number;
@@ -711,6 +712,7 @@ export default function CartPage() {
                 deliveryZoneId: selectedZone?.id,
                 promoCode: promoDiscount ? promoCode : undefined,
                 tipAmount,
+                coinsSpent,
                 lat,
                 lon,
             };
@@ -958,6 +960,9 @@ export default function CartPage() {
                                         isScheduled={isScheduled}
                                         tipAmount={tipAmount}
                                         onTipChange={setTipAmount}
+                                        coinsSpent={coinsSpent}
+                                        onCoinsChange={setCoinsSpent}
+                                        userCoinsBalance={user?.coinsBalance || 0}
                                         onOrder={() =>
                                             (
                                                 handleSubmit(onSubmit as any, errs => {

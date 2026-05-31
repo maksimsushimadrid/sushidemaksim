@@ -90,6 +90,8 @@ export interface Order {
     total: number;
     deliveryFee?: number;
     tipAmount?: number;
+    coinsEarned?: number;
+    coinsSpent?: number;
     deliveryAddress: string;
     phoneNumber: string;
     status: OrderStatus;
@@ -131,6 +133,7 @@ export interface User {
     favoriteDish?: string;
     isVerified?: boolean;
     deletedAt?: string;
+    coinsBalance?: number;
     promoCodes?: {
         code: string;
         discountPercentage: number;

@@ -44,7 +44,7 @@ const ProductCard = React.memo(function ProductCard({
         <div
             id={`item-${item.id}`}
             onClick={() => onZoom?.()}
-            className={`premium-card group relative flex flex-col h-full rounded-[24px] md:rounded-[32px] overflow-hidden transition-all duration-500 ${
+            className={`premium-card group relative flex flex-col h-full rounded-[24px] md:rounded-[32px] overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgba(249,115,22,0.15)] ${
                 isHighlighted ? 'highlight-item' : ''
             } ${isZoomed ? 'ring-2 ring-orange-500/20 shadow-2xl' : ''}`}
         >
@@ -100,7 +100,7 @@ const ProductCard = React.memo(function ProductCard({
                 <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3 flex flex-wrap gap-1.5 max-w-[90%]">
                     {item.isPopular && (
                         <div
-                            className="h-5 w-5 md:h-8 md:w-8 bg-white/95 backdrop-blur-md text-orange-600 border border-orange-100 rounded-full flex items-center justify-center shadow-lg"
+                            className="h-5 w-5 md:h-8 md:w-8 bg-white/95 backdrop-blur-md text-orange-600 border border-orange-100 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:-rotate-12 transition-transform duration-300 cursor-default"
                             title="Popular"
                         >
                             <Flame
@@ -117,7 +117,7 @@ const ProductCard = React.memo(function ProductCard({
                     )}
                     {item.isNew && (
                         <div
-                            className="h-5 w-5 md:h-8 md:w-8 bg-blue-50 text-blue-700 border border-blue-100 rounded-full flex items-center justify-center shadow-lg"
+                            className="h-5 w-5 md:h-8 md:w-8 bg-blue-50 text-blue-700 border border-blue-100 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:rotate-12 transition-transform duration-300 cursor-default"
                             title="Nuevo"
                         >
                             <span className="text-[10px] md:text-[18px] flex-shrink-0">✨</span>
@@ -125,7 +125,7 @@ const ProductCard = React.memo(function ProductCard({
                     )}
                     {item.isChefChoice && (
                         <div
-                            className="h-5 w-5 md:h-8 md:w-8 bg-purple-50 text-purple-700 border border-purple-100 rounded-full flex items-center justify-center shadow-lg"
+                            className="h-5 w-5 md:h-8 md:w-8 bg-purple-50 text-purple-700 border border-purple-100 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:-rotate-6 transition-transform duration-300 cursor-default"
                             title="Sugerencia del Chef"
                         >
                             <span className="text-[10px] md:text-[18px] flex-shrink-0">👨‍🍳</span>
@@ -133,7 +133,7 @@ const ProductCard = React.memo(function ProductCard({
                     )}
                     {item.spicy && (
                         <div
-                            className="h-5 w-5 md:h-8 md:w-8 bg-red-50 text-red-600 border border-red-100 rounded-full flex items-center justify-center shadow-lg"
+                            className="h-5 w-5 md:h-8 md:w-8 bg-red-50 text-red-600 border border-red-100 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:rotate-12 transition-transform duration-300 cursor-default animate-pulse"
                             title="Picante"
                         >
                             <span className="text-[10px] md:text-[18px]">🌶️</span>
@@ -141,7 +141,7 @@ const ProductCard = React.memo(function ProductCard({
                     )}
                     {item.vegetarian && (
                         <div
-                            className="h-5 w-5 md:h-8 md:w-8 bg-green-50 text-green-700 border border-green-100 rounded-full flex items-center justify-center shadow-lg"
+                            className="h-5 w-5 md:h-8 md:w-8 bg-green-50 text-green-700 border border-green-100 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:-rotate-12 transition-transform duration-300 cursor-default"
                             title="Vegetariano"
                         >
                             <span className="text-[10px] md:text-[18px]">🥬</span>
@@ -154,7 +154,7 @@ const ProductCard = React.memo(function ProductCard({
                             return (
                                 <div
                                     key={allergen}
-                                    className={`h-5 w-5 md:h-8 md:w-8 ${info.bg} ${info.text} border ${info.border} rounded-full flex items-center justify-center shadow-lg`}
+                                    className={`h-5 w-5 md:h-8 md:w-8 ${info.bg} ${info.text} border ${info.border} rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:-rotate-6 transition-transform duration-300 cursor-default`}
                                     title={`Alérgeno: ${allergen}`}
                                 >
                                     <span className="text-[10px] md:text-[18px] flex-shrink-0">

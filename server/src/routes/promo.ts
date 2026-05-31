@@ -36,6 +36,44 @@ router.post(
             return res.status(500).json({ error: 'Error del servidor al validar el código' });
         }
 
+        // ─── Support Dynamic Referral Codes ───
+        if (code.startsWith('REF-') && code.length > 5) {
+            const referrerIdFragment = code.split('-')[1];
+
+            // Verify referrer exists
+            const { data: referrer, error: refError } = await supabase
+                .from('users')
+                .select('id')
+                .ilike('id', `${referrerIdFragment}%`)
+                .single();
+
+            if (refError || !referrer) {
+                return res.status(400).json({ error: 'Código de referido no encontrado' });
+            }
+
+            // A user cannot refer themselves
+            if (referrer.id === req.userId) {
+                return res
+                    .status(400)
+                    .json({ error: 'No puedes usar tu propio código de referido' });
+            }
+
+            // Referrals are only valid for the VERY FIRST order of the user
+            const { count: orderCount } = await supabase
+                .from('orders')
+                .select('*', { count: 'exact', head: true })
+                .eq('user_id', req.userId);
+
+            if (orderCount && orderCount > 0) {
+                return res
+                    .status(400)
+                    .json({ error: 'El código de referido solo es válido para tu primer pedido' });
+            }
+
+            // Give 15% discount
+            return res.json({ percentage: 15 });
+        }
+
         if (!promo) {
             console.warn(`[PROMO] Code "${code}" not found for user ${req.userId}`);
             return res.status(400).json({ error: 'Código inválido' });

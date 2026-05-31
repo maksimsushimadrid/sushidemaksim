@@ -967,6 +967,15 @@ export default function AdminOrders({
                                                                 {t.types.noBuzzer}
                                                             </div>
                                                         )}
+                                                        {order.promoCode?.startsWith('REF-') && (
+                                                            <div className="px-3 py-1.5 rounded-xl bg-purple-100 text-purple-700 border border-purple-200 text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-sm">
+                                                                <span className="text-[14px]">
+                                                                    🤝
+                                                                </span>
+                                                                Referido por:{' '}
+                                                                {order.promoCode.split('-')[1]}
+                                                            </div>
+                                                        )}
                                                     </div>
 
                                                     {actualNote && (
@@ -1175,6 +1184,32 @@ export default function AdminOrders({
                                                             </div>
                                                             <span className="text-[12px] font-black text-orange-600 tabular-nums">
                                                                 {formatCurrency(order.tipAmount)}
+                                                            </span>
+                                                        </div>
+                                                    ) : null}
+
+                                                    {order.coinsSpent && order.coinsSpent > 0 ? (
+                                                        <div className="flex items-center justify-between gap-3 py-3 border-t-2 border-dashed border-gray-200 mt-2 px-3 bg-red-50/50 rounded-2xl">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-[11px] font-black text-red-600 uppercase tracking-widest">
+                                                                    Maksim Coins Pagados
+                                                                </span>
+                                                            </div>
+                                                            <span className="text-[12px] font-black text-red-600 tabular-nums">
+                                                                -{formatCurrency(order.coinsSpent)}
+                                                            </span>
+                                                        </div>
+                                                    ) : null}
+
+                                                    {order.coinsEarned && order.coinsEarned > 0 ? (
+                                                        <div className="flex items-center justify-between gap-3 py-3 border-t-2 border-dashed border-gray-200 mt-2 px-3 bg-green-50/50 rounded-2xl">
+                                                            <div className="flex items-center gap-3">
+                                                                <span className="text-[11px] font-black text-green-600 uppercase tracking-widest">
+                                                                    Maksim Coins Ganados
+                                                                </span>
+                                                            </div>
+                                                            <span className="text-[12px] font-black text-green-600 tabular-nums">
+                                                                +{formatCurrency(order.coinsEarned)}
                                                             </span>
                                                         </div>
                                                     ) : null}

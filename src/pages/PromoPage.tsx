@@ -225,6 +225,137 @@ export default function PromoPage() {
                     </div>
                 )}
 
+                {/* Referral Static Banner */}
+                <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-[3rem] p-8 md:p-16 mb-12 md:mb-20 relative overflow-hidden shadow-2xl flex flex-col lg:flex-row items-center gap-8 lg:gap-20 group isolate">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full -ml-32 -mb-32 blur-3xl pointer-events-none"></div>
+
+                    <div className="flex-1 relative z-10 w-full text-center lg:text-left">
+                        <div className="inline-block bg-white/20 backdrop-blur-md px-6 py-2 rounded-full text-[10px] md:text-xs font-black mb-6 border border-white/30 uppercase tracking-[0.2em] text-white shadow-sm">
+                            PROGRAMA DE REFERIDOS
+                        </div>
+                        <h2 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter leading-[0.9] text-white drop-shadow-2xl">
+                            Invita a un amigo y Gana
+                        </h2>
+                        <p className="text-lg md:text-xl font-medium mb-12 text-white/90 leading-relaxed max-w-xl mx-auto lg:mx-0 drop-shadow-md">
+                            Regala un <strong className="text-white">15% de descuento</strong> a tus
+                            amigos en su primer pedido. Cuando lo reciban, ¡tú ganarás{' '}
+                            <strong className="text-white">5 Maksim Coins</strong> (5€)
+                            automáticamente!
+                        </p>
+                        <Link
+                            to={user ? '/profile' : '/profile'}
+                            className="inline-flex items-center justify-center gap-3 bg-white text-purple-700 px-10 py-4 md:px-12 md:py-5 rounded-[2rem] font-black text-sm uppercase transition-all active:scale-95 shadow-xl hover:bg-gray-50 hover:shadow-white/20 w-full sm:w-auto tracking-widest"
+                        >
+                            {user ? 'OBTENER MI CÓDIGO' : 'INICIAR SESIÓN'}{' '}
+                            <ArrowRight size={22} strokeWidth={3} />
+                        </Link>
+                    </div>
+
+                    <div className="w-full max-w-[350px] shrink-0 relative z-10 mx-auto aspect-square bg-white/10 backdrop-blur-md rounded-[3rem] border-4 border-white/20 flex flex-col items-center justify-center shadow-2xl group-hover:scale-105 transition-transform duration-700">
+                        <div className="text-7xl mb-4 drop-shadow-2xl">🤝</div>
+                        <div className="text-3xl font-black text-white tracking-tight leading-none mb-2">
+                            5 COINS
+                        </div>
+                        <div className="text-[10px] text-white/80 uppercase font-black tracking-widest">
+                            Para ti
+                        </div>
+                        <div className="w-16 h-1 bg-white/20 my-4 rounded-full"></div>
+                        <div className="text-3xl font-black text-white tracking-tight leading-none mb-2">
+                            -15%
+                        </div>
+                        <div className="text-[10px] text-white/80 uppercase font-black tracking-widest">
+                            Para tu amigo
+                        </div>
+                    </div>
+                </div>
+
+                {/* Maksim Coins Info Banner */}
+                <div className="bg-white rounded-[3rem] p-8 md:p-12 mb-12 md:mb-20 shadow-2xl border-2 border-orange-100 flex flex-col lg:flex-row gap-8 lg:gap-12 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/5 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none group-hover:bg-orange-500/10 transition-colors"></div>
+
+                    <div className="lg:w-1/3 flex flex-col justify-center relative z-10 text-center lg:text-left border-b lg:border-b-0 lg:border-r border-gray-100 pb-8 lg:pb-0 lg:pr-12">
+                        <div className="inline-block bg-orange-100 text-orange-600 px-4 py-1.5 rounded-full text-[10px] font-black mb-4 uppercase tracking-[0.2em] shadow-sm self-center lg:self-start">
+                            SISTEMA DE PUNTOS
+                        </div>
+                        <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter leading-[0.9] mb-4">
+                            Maksim Coins
+                        </h2>
+                        <p className="text-gray-500 font-medium text-sm md:text-base leading-relaxed">
+                            Tu saldo virtual. Gana monedas y úsalas para obtener hasta un 20% de
+                            descuento en tus próximos pedidos.
+                        </p>
+                        <p className="text-xs font-bold text-gray-400 mt-4 uppercase tracking-widest">
+                            1 Coin = 1€
+                        </p>
+                    </div>
+
+                    <div className="lg:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                        <div className="bg-orange-50/50 p-6 rounded-3xl border border-orange-100 flex flex-col hover:bg-orange-50 transition-colors">
+                            <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-2xl mb-4 border border-orange-100">
+                                📥
+                            </div>
+                            <h3 className="text-xl font-black text-gray-900 tracking-tight mb-2">
+                                Cómo ganar
+                            </h3>
+                            <ul className="space-y-3 text-gray-600 text-sm font-medium mt-2">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-orange-500 mt-0.5 text-lg leading-none">
+                                        •
+                                    </span>
+                                    <span>
+                                        Gana <strong className="text-gray-900">5 Coins</strong> por
+                                        cada amigo que haga su primer pedido con tu código de
+                                        invitación.
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-orange-500 mt-0.5 text-lg leading-none">
+                                        •
+                                    </span>
+                                    <span>
+                                        A través de regalos sorpresa en tus próximos pedidos.
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="bg-emerald-50/50 p-6 rounded-3xl border border-emerald-100 flex flex-col hover:bg-emerald-50 transition-colors">
+                            <div className="w-12 h-12 bg-white rounded-2xl shadow-sm flex items-center justify-center text-2xl mb-4 border border-emerald-100">
+                                🛒
+                            </div>
+                            <h3 className="text-xl font-black text-gray-900 tracking-tight mb-2">
+                                Cómo gastar
+                            </h3>
+                            <ul className="space-y-3 text-gray-600 text-sm font-medium mt-2">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-emerald-500 mt-0.5 text-lg leading-none">
+                                        •
+                                    </span>
+                                    <span>
+                                        Al procesar tu pedido, en el carrito verás la opción{' '}
+                                        <strong className="text-gray-900">
+                                            "Usar mis Coins para pagar"
+                                        </strong>
+                                        .
+                                    </span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <span className="text-emerald-500 mt-0.5 text-lg leading-none">
+                                        •
+                                    </span>
+                                    <span>
+                                        Puedes usar tus Coins para pagar hasta el{' '}
+                                        <strong className="text-gray-900">
+                                            20% del valor total
+                                        </strong>{' '}
+                                        de tu pedido.
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Dynamic Banners */}
                 {banners.map(banner => {
                     const secondaryImages = banner.metadata?.images || [];

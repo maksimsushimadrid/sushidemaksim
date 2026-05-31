@@ -373,7 +373,7 @@ router.get(
         const { data: user, error } = await supabase
             .from('users')
             .select(
-                'id, name, email, phone, avatar, role, is_superadmin, created_at, birth_date, birth_date_verified, last_seen_at, is_verified'
+                'id, name, email, phone, avatar, role, is_superadmin, created_at, birth_date, birth_date_verified, last_seen_at, is_verified, coins_balance'
             )
             .eq('id', req.userId)
             .single();

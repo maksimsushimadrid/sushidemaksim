@@ -54,6 +54,42 @@ router.get(
     })
 );
 
+// GET /api/user/friends (Referred friends)
+router.get(
+    '/friends',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        if (!req.userId) return res.status(401).json({ error: 'No autorizado' });
+        // Find orders using this user's referral code
+        const refCode = `REF-${req.userId.substring(0, 8).toUpperCase()}`;
+
+        const { data: referredOrders, error } = await supabase
+            .from('orders')
+            .select('created_at, status, user_id, users(name)')
+            .eq('promo_code', refCode)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            console.error('[FRIENDS] Error fetching referred friends:', error);
+            return res.status(500).json({ error: 'Error fetching friends' });
+        }
+
+        // Map to friend objects
+        const friends = (referredOrders || []).map(order => {
+            const usersData = order.users as any;
+            const friendName = Array.isArray(usersData) ? usersData[0]?.name : usersData?.name;
+            return {
+                id: order.user_id,
+                name: friendName || 'Amigo Invitado',
+                status: order.status,
+                date: order.created_at,
+                rewarded: order.status === 'delivered',
+            };
+        });
+
+        res.json({ friends });
+    })
+);
+
 // PUT /api/user/profile
 router.put(
     '/profile',

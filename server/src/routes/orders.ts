@@ -40,6 +40,7 @@ router.post(
             promoCode,
             guestItems,
             tipAmount = 0,
+            coinsSpent = 0,
         } = req.body;
 
         // Map frontend values to backend DB labels if needed, but we mostly use the structured data now
@@ -152,13 +153,30 @@ router.post(
                 .json({ error: 'La cesta está vacía o artículos no encontrados' });
         }
 
-        // 2. Calculate subtotal
+        // 2. Calculate subtotal (exclude gifts)
         const subtotal = cartItems.reduce(
-            (sum, item: any) => sum + item.menu_items.price * item.quantity,
+            (sum, item: any) => sum + (item.is_gift ? 0 : item.menu_items.price * item.quantity),
             0
         );
         let finalTotal = subtotal;
         let usedPromoId = null;
+
+        // Verify Coins Balance
+        if (coinsSpent > 0) {
+            if (!req.userId) {
+                return res
+                    .status(400)
+                    .json({ error: 'Solo los usuarios registrados pueden usar Maksim Coins.' });
+            }
+            const { data: userRecord } = await supabase
+                .from('users')
+                .select('coins_balance')
+                .eq('id', req.userId)
+                .single();
+            if (!userRecord || Number(userRecord.coins_balance || 0) < coinsSpent) {
+                return res.status(400).json({ error: 'No tienes suficientes Maksim Coins.' });
+            }
+        }
 
         if (promoCode) {
             if (promoCode === 'TEST10') {
@@ -295,6 +313,20 @@ router.post(
             finalTotal += Number(tipAmount);
         }
 
+        if (coinsSpent > 0) {
+            const maxAllowedByPercentage = Math.floor(finalTotal * 0.2);
+            if (coinsSpent > maxAllowedByPercentage) {
+                return res
+                    .status(400)
+                    .json({
+                        error: `Solo puedes usar un máximo de ${maxAllowedByPercentage} Coins (20% del pedido).`,
+                    });
+            }
+            finalTotal -= coinsSpent;
+            if (finalTotal < 0) finalTotal = 0;
+            notesToSave += notesToSave ? ` | [COINS: -${coinsSpent}€]` : `[COINS: -${coinsSpent}€]`;
+        }
+
         // 3 & 4. Create Order and items atomically via RPC
         const rpcArgs = {
             p_user_id: req.userId || null,
@@ -384,6 +416,34 @@ router.post(
             throw new Error('Database failed to return an order ID');
         }
 
+        // Post-creation Coins Update
+        // Calculate coins earned based on net food value only (exclude delivery, tips, and already spent coins)
+        const netFoodValue = Math.max(0, finalTotal - deliveryFee - Number(tipAmount || 0));
+        const coinsEarned = Number((netFoodValue * 0.05).toFixed(2));
+        if (coinsSpent > 0 || coinsEarned > 0) {
+            await supabase
+                .from('orders')
+                .update({
+                    coins_earned: coinsEarned,
+                    coins_spent: coinsSpent,
+                })
+                .eq('id', orderId);
+
+            if (req.userId) {
+                const { data: currentUser } = await supabase
+                    .from('users')
+                    .select('coins_balance')
+                    .eq('id', req.userId)
+                    .single();
+                const newBalance =
+                    Number(currentUser?.coins_balance || 0) - coinsSpent + coinsEarned;
+                await supabase
+                    .from('users')
+                    .update({ coins_balance: newBalance })
+                    .eq('id', req.userId);
+            }
+        }
+
         try {
             // Format items for receipts/notifications
             const itemsForReceipt = cartItems.map((item: any) => ({
@@ -408,6 +468,14 @@ router.post(
                     name: 'Propina equipo',
                     quantity: 1,
                     price_at_time: Number(tipAmount),
+                } as any);
+            }
+
+            if (coinsSpent > 0) {
+                itemsForReceipt.push({
+                    name: 'Pago con Maksim Coins',
+                    quantity: 1,
+                    price_at_time: -coinsSpent,
                 } as any);
             }
 
@@ -722,6 +790,7 @@ router.post(
             notes = '',
         } = req.body;
 
+        console.log(`[Order Creation] Started for user=${req.userId || 'Guest'} (${deliveryType})`);
         const deliveryAddress =
             deliveryType === 'table'
                 ? `MESA ${mesaNumber || req.body.tableNumber || '?'}`

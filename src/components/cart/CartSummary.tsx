@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Clock, ArrowRight, X } from 'lucide-react';
 import { useCart } from '../../hooks/useCart';
@@ -20,6 +21,9 @@ interface CartSummaryProps {
     setPromoCode: (code: string) => void;
     tipAmount: number;
     onTipChange: (tip: number) => void;
+    userCoinsBalance?: number;
+    coinsSpent?: number;
+    onCoinsChange?: (coins: number) => void;
     minOrder?: number;
     freeDeliveryThreshold?: number;
     deliveryDetails?: {
@@ -47,10 +51,14 @@ export default function CartSummary({
     setPromoCode,
     tipAmount,
     onTipChange,
+    userCoinsBalance = 0,
+    coinsSpent = 0,
+    onCoinsChange,
     minOrder = 0,
     freeDeliveryThreshold = 60,
     deliveryDetails: propDeliveryDetails,
 }: CartSummaryProps) {
+    const navigate = useNavigate();
     const [isCustomTip, setIsCustomTip] = useState(false);
     const [customTipStr, setCustomTipStr] = useState('');
 
@@ -85,7 +93,7 @@ export default function CartSummary({
                         >
                             {total >= freeDeliveryThreshold
                                 ? '¡Genial! Tienes ENVÍO GRATIS 🚚💨'
-                                : `¡Te faltan ${(freeDeliveryThreshold - total).toFixed(2).replace('.', ',')}€ para el envío GRATIS! 🍣`}
+                                : `¡Te faltan ${(freeDeliveryThreshold - total).toFixed(2).replace('.', ',')}€ para el envío GRATIS!`}
                         </span>
                         <span className="text-[10px] font-black text-gray-400">
                             {freeDeliveryThreshold}€
@@ -168,12 +176,23 @@ export default function CartSummary({
                         </span>
                     </div>
                 )}
+                {coinsSpent > 0 && (
+                    <div className="flex justify-between text-green-600 text-sm animate-in zoom-in duration-300">
+                        <span>Maksim Coins</span>
+                        <span className="font-bold">
+                            -{coinsSpent.toFixed(2).replace('.', ',')} €
+                        </span>
+                    </div>
+                )}
                 <div className="border-t border-gray-200 pt-3 mt-1">
                     <div className="flex justify-between text-lg font-bold">
                         <span>Total</span>
                         <div className="text-right">
                             <span className="text-orange-600">
-                                {finalTotal.toFixed(2).replace('.', ',')} €
+                                {Math.max(0, finalTotal - coinsSpent)
+                                    .toFixed(2)
+                                    .replace('.', ',')}{' '}
+                                €
                             </span>
                         </div>
                     </div>
@@ -343,6 +362,57 @@ export default function CartSummary({
                 )}
             </div>
 
+            {/* Maksim Coins Section */}
+            {userCoinsBalance > 0 && onCoinsChange && (
+                <div className="mb-6 p-4 rounded-2xl border-2 border-orange-100 bg-orange-50/30">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-black uppercase tracking-widest text-orange-900">
+                                Maksim Coins
+                            </span>
+                        </div>
+                        <span className="text-[10px] font-bold text-orange-600">
+                            {userCoinsBalance.toFixed(2).replace('.', ',')} disponibles
+                        </span>
+                    </div>
+
+                    {coinsSpent > 0 ? (
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-gray-600">
+                                Vas a usar {coinsSpent} coins (-{coinsSpent}€)
+                            </span>
+                            <button
+                                onClick={() => {
+                                    triggerHaptic(HAPTIC_PATTERNS.LIGHT);
+                                    onCoinsChange(0);
+                                }}
+                                className="text-[10px] uppercase font-black tracking-wider text-red-500 hover:text-red-600"
+                            >
+                                Cancelar
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={() => {
+                                triggerHaptic(HAPTIC_PATTERNS.SUCCESS);
+                                // Spend up to 20% of the final total or available balance
+                                const maxAllowedByPercentage = Math.floor(finalTotal * 0.2);
+                                const maxSpendable = Math.min(
+                                    userCoinsBalance,
+                                    maxAllowedByPercentage
+                                );
+                                if (maxSpendable > 0) {
+                                    onCoinsChange(maxSpendable);
+                                }
+                            }}
+                            className="w-full py-2 bg-orange-100 text-orange-700 hover:bg-orange-200 rounded-xl text-xs font-bold transition-colors"
+                        >
+                            Usar mis Coins para pagar
+                        </button>
+                    )}
+                </div>
+            )}
+
             <button
                 onClick={() => {
                     triggerHaptic(HAPTIC_PATTERNS.SUCCESS);
@@ -367,6 +437,16 @@ export default function CartSummary({
                         <ArrowRight size={18} strokeWidth={2} />
                     </>
                 )}
+            </button>
+
+            <button
+                onClick={() => {
+                    triggerHaptic(HAPTIC_PATTERNS.LIGHT);
+                    navigate('/menu');
+                }}
+                className="w-full py-3 mb-4 rounded-xl font-bold bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-colors flex items-center justify-center gap-2 border-none cursor-pointer md:hidden"
+            >
+                Volver al Menú
             </button>
 
             {(deliveryType === 'delivery' || !paymentMethod) &&
