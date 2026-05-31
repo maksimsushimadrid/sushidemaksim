@@ -5,7 +5,7 @@ import { RefreshCw } from 'lucide-react';
 
 export default function ReloadPrompt() {
     const {
-        offlineReady: [offlineReady],
+        offlineReady: [offlineReady, setOfflineReady],
         needRefresh: [needRefresh, setNeedRefresh],
         updateServiceWorker,
     } = useRegisterSW({
@@ -21,6 +21,16 @@ export default function ReloadPrompt() {
             }
         },
     });
+
+    // Auto-hide the "offline ready" message after 4 seconds
+    useEffect(() => {
+        if (offlineReady) {
+            const timer = setTimeout(() => {
+                setOfflineReady(false);
+            }, 4000);
+            return () => clearTimeout(timer);
+        }
+    }, [offlineReady, setOfflineReady]);
 
     useEffect(() => {
         const checkVersion = async () => {
@@ -97,6 +107,14 @@ export default function ReloadPrompt() {
                                     className="px-3 py-1.5 bg-orange-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-orange-700 transition-colors active:scale-95 shadow-lg shadow-orange-600/20"
                                 >
                                     Actualizar
+                                </button>
+                            )}
+                            {offlineReady && !needRefresh && (
+                                <button
+                                    onClick={() => setOfflineReady(false)}
+                                    className="px-3 py-1.5 bg-gray-100 text-gray-500 text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-gray-200 transition-colors active:scale-95"
+                                >
+                                    Cerrar
                                 </button>
                             )}
                         </div>

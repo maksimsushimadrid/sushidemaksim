@@ -7,6 +7,7 @@ html {
     background-color: #fbf7f0;
     height: 100%;
     transition: background-color 0.5s ease;
+    overscroll-behavior: none;
 }
 
 html.is-table-route,
