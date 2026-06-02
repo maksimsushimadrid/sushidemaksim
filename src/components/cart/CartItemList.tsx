@@ -52,7 +52,7 @@ export default function CartItemList({
                         1
                     </span>
                     <h2 className="text-sm font-black m-0 uppercase tracking-widest text-gray-900">
-                        Tu Pedido ({items.length})
+                        Tu Pedido ({items.reduce((sum, item) => sum + item.quantity, 0)})
                     </h2>
                 </div>
                 <button
