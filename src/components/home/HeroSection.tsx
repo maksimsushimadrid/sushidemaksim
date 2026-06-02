@@ -51,6 +51,18 @@ export function HeroSection() {
         };
     }, []);
 
+    // Dynamically preload hero poster only on the homepage
+    useEffect(() => {
+        const link = document.createElement('link');
+        link.rel = 'preload';
+        link.as = 'image';
+        link.href = '/hero-poster.jpg';
+        document.head.appendChild(link);
+        return () => {
+            document.head.removeChild(link);
+        };
+    }, []);
+
     const [shouldPlayVideo, setShouldPlayVideo] = useState(true);
 
     useEffect(() => {

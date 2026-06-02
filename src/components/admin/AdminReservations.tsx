@@ -377,18 +377,13 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                                             const cleanPhone = res.phone.replace(/\D/g, '');
                                             const dateStr = format(
                                                 new Date(res.reservation_date),
-                                                language === 'ru'
-                                                    ? 'eeee, d MMMM'
-                                                    : "eeee, d 'de' MMMM",
-                                                { locale: dateLocale }
+                                                "eeee, d 'de' MMMM",
+                                                { locale: es }
                                             );
                                             const capitalizedDate =
                                                 dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
 
-                                            const message =
-                                                language === 'ru'
-                                                    ? `Здравствуйте, ${res.name}! Ваше бронирование подтверждено на ${capitalizedDate} в ${res.reservation_time} (${res.guests} чел.). Ждем вас!`
-                                                    : `Hola ${res.name}, tu reserva está confirmada para el ${capitalizedDate} a las ${res.reservation_time} (${res.guests} personas). ¡Te esperamos!`;
+                                            const message = `Hola ${res.name}, tu reserva está confirmada para el ${capitalizedDate} a las ${res.reservation_time} (${res.guests} personas). ¡Te esperamos!`;
 
                                             window.open(
                                                 `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`,

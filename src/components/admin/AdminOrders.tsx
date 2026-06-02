@@ -230,11 +230,16 @@ const getWhatsAppConfirmationUrl = (order: Order, isPickup: boolean) => {
             .join('\r\n');
     }
 
+    const paymentLabel =
+        order.paymentMethod === 'card' || order.paymentMethod === 'TARJETA'
+            ? 'Tarjeta'
+            : 'Efectivo';
+
     let text = '';
     if (isPickup) {
-        text = `¡Hola! Hemos recibido su pedido. Lo preparamos en 20 - 25 minutos.\r\n\r\nSu pedido #${String(order.id).padStart(5, '0')} está confirmado\r\n\r\n${itemsList}\r\n\r\nTotal: ${Number(order.total || 0).toFixed(2)}€\r\nMétodo de pago: ${order.paymentMethod === 'card' || order.paymentMethod === 'TARJETA' ? 'Tarjeta' : 'Efectivo'}\r\nMuchas gracias.`;
+        text = `¡Hola! Hemos recibido su pedido. Lo preparamos en 20 - 25 minutos.\r\n\r\nSu pedido #${String(order.id).padStart(5, '0')} está confirmado\r\n\r\n${itemsList}\r\n\r\nTotal: ${Number(order.total || 0).toFixed(2)}€\r\nMétodo de pago: ${paymentLabel}\r\nMuchas gracias.`;
     } else {
-        text = `¡Hola! Hemos recibido su pedido. Lo preparamos y enviamos pronto.\r\n\r\nSu pedido #${String(order.id).padStart(5, '0')} está confirmado\r\n\r\n${itemsList}\r\n\r\nTotal: ${Number(order.total || 0).toFixed(2)}€\r\nMétodo de pago: ${order.paymentMethod === 'card' || order.paymentMethod === 'TARJETA' ? 'Tarjeta' : 'Efectivo'}\r\nMuchas gracias.`;
+        text = `¡Hola! Hemos recibido su pedido. Lo preparamos y enviamos pronto.\r\n\r\nSu pedido #${String(order.id).padStart(5, '0')} está confirmado\r\n\r\n${itemsList}\r\n\r\nDirección: ${order.deliveryAddress || 'No especificada'}\r\nTeléfono: ${order.phoneNumber || ''}\r\nTotal: ${Number(order.total || 0).toFixed(2)}€\r\nMétodo de pago: ${paymentLabel}\r\nMuchas gracias.`;
     }
 
     return `https://wa.me/${(order.phoneNumber || '').replace(/\D/g, '')}?text=${encodeURIComponent(text)}`;
