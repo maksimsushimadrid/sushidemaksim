@@ -17,6 +17,12 @@ interface CartItemListProps {
     getCategoryEmoji: (category: string) => string;
     chopsticksCount: number;
     updateChopsticks: (count: number) => void;
+    deliveryType?: 'delivery' | 'pickup' | 'reservation';
+    deliveryCost?: number;
+    selectedZone?: any;
+    promoDiscount?: number | null;
+    tipAmount?: number;
+    coinsSpent?: number;
 }
 
 export default function CartItemList({
@@ -27,7 +33,17 @@ export default function CartItemList({
     getCategoryEmoji,
     chopsticksCount,
     updateChopsticks,
+    deliveryType,
+    deliveryCost = 0,
+    selectedZone,
+    promoDiscount,
+    tipAmount = 0,
+    coinsSpent = 0,
 }: CartItemListProps) {
+    const subtotal = items.reduce(
+        (sum, item) => sum + (item.isGift ? 0 : item.price * item.quantity),
+        0
+    );
     return (
         <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 mb-6 overflow-hidden">
             <div className="flex items-center justify-between p-4 pb-2 border-b border-gray-50 bg-gray-50/30">
@@ -183,6 +199,81 @@ export default function CartItemList({
             {/* Footer with Info and Chopsticks */}
             <div className="p-4 bg-gray-50/50 border-t border-gray-100">
                 <div className="flex flex-col gap-4">
+                    {/* Mobile Summary Breakdown */}
+                    {(deliveryType === 'delivery' ||
+                        deliveryType === 'pickup' ||
+                        (promoDiscount && promoDiscount > 0) ||
+                        tipAmount > 0 ||
+                        coinsSpent > 0) && (
+                        <div className="lg:hidden flex flex-col gap-2.5 pb-4 border-b border-gray-100/80">
+                            <div className="flex justify-between items-center text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                <span>Subtotal</span>
+                                <span className="text-gray-900 font-black">
+                                    {subtotal.toFixed(2).replace('.', ',')} €
+                                </span>
+                            </div>
+
+                            {deliveryType === 'delivery' && (
+                                <div className="flex justify-between items-center text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                    <span>
+                                        Envío {selectedZone ? `(${selectedZone.name})` : ''}
+                                    </span>
+                                    {!selectedZone ? (
+                                        <span className="text-[10px] text-gray-400 italic font-bold">
+                                            A determinar
+                                        </span>
+                                    ) : (
+                                        <span
+                                            className={
+                                                deliveryCost <= 0
+                                                    ? 'text-green-600 font-black'
+                                                    : 'text-gray-900 font-black'
+                                            }
+                                        >
+                                            {deliveryCost <= 0
+                                                ? 'Gratis'
+                                                : `${deliveryCost.toFixed(2).replace('.', ',')} €`}
+                                        </span>
+                                    )}
+                                </div>
+                            )}
+
+                            {deliveryType === 'pickup' && (
+                                <div className="flex justify-between items-center text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                    <span>Recogida en local</span>
+                                    <span className="text-green-600 font-black">Gratis</span>
+                                </div>
+                            )}
+
+                            {promoDiscount && promoDiscount > 0 && (
+                                <div className="flex justify-between items-center text-xs font-bold text-green-600 uppercase tracking-widest">
+                                    <span>Descuento ({promoDiscount}%)</span>
+                                    <span>
+                                        -
+                                        {((subtotal * promoDiscount) / 100)
+                                            .toFixed(2)
+                                            .replace('.', ',')}{' '}
+                                        €
+                                    </span>
+                                </div>
+                            )}
+
+                            {tipAmount > 0 && (
+                                <div className="flex justify-between items-center text-xs font-bold text-orange-600 uppercase tracking-widest">
+                                    <span>Propina equipo</span>
+                                    <span>{tipAmount.toFixed(2).replace('.', ',')} €</span>
+                                </div>
+                            )}
+
+                            {coinsSpent > 0 && (
+                                <div className="flex justify-between items-center text-xs font-bold text-green-600 uppercase tracking-widest">
+                                    <span>Maksim Coins</span>
+                                    <span>-{coinsSpent.toFixed(2).replace('.', ',')} €</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {/* Notice */}
                     <div className="bg-orange-50 p-4 rounded-xl border border-orange-100 text-center">
                         <p className="text-[12px] font-black text-orange-600 leading-tight m-0 uppercase tracking-widest">

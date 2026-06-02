@@ -916,6 +916,12 @@ export default function CartPage() {
                                     updateChopsticks={val =>
                                         methods.setValue('chopsticksCount', val)
                                     }
+                                    deliveryType={deliveryType}
+                                    deliveryCost={deliveryCost}
+                                    selectedZone={selectedZone}
+                                    promoDiscount={promoDiscount}
+                                    tipAmount={tipAmount}
+                                    coinsSpent={coinsSpent}
                                 />
 
                                 <DeliveryForm
