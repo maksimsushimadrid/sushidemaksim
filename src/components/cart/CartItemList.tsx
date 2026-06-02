@@ -271,6 +271,24 @@ export default function CartItemList({
                                     <span>-{coinsSpent.toFixed(2).replace('.', ',')} €</span>
                                 </div>
                             )}
+
+                            {/* Total row to summarize the mobile card */}
+                            <div className="flex justify-between items-center text-xs font-black text-gray-900 uppercase tracking-widest pt-2.5 border-t border-dashed border-gray-200 mt-1">
+                                <span>Total</span>
+                                <span className="text-orange-600">
+                                    {Math.max(
+                                        0,
+                                        subtotal -
+                                            (promoDiscount ? (subtotal * promoDiscount) / 100 : 0) +
+                                            deliveryCost +
+                                            tipAmount -
+                                            coinsSpent
+                                    )
+                                        .toFixed(2)
+                                        .replace('.', ',')}{' '}
+                                    €
+                                </span>
+                            </div>
                         </div>
                     )}
 
