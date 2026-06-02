@@ -143,7 +143,7 @@ export default function CartPage() {
                   : 0
             : 0;
 
-    const finalTotal = cartSubtotal - discountAmount + deliveryCost + tipAmount;
+    const finalTotal = cartSubtotal - discountAmount + deliveryCost + tipAmount - coinsSpent;
     const isMinOrderMet = cartSubtotal >= MIN_ORDER;
 
     // Sync form changes back to deliveryDetails in useCart for persistence
