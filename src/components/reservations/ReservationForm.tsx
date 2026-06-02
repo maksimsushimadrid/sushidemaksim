@@ -24,6 +24,7 @@ export default function ReservationForm({
     const { data: settings } = useSettings();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [dbFailed, setDbFailed] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const isReservationsTodayClosed = settings?.isReservationsTodayClosed === true;
@@ -101,52 +102,59 @@ export default function ReservationForm({
     const availableSlots = getTimeSlots();
     const isDayClosed = Boolean(formData.date && availableSlots.length === 0);
 
+    const getWhatsAppUrl = () => {
+        const formattedDate = new Date(formData.date).toLocaleDateString('es-ES', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        });
+
+        const message =
+            `*Nueva Reserva de Mesa a nombre de: ${formData.name}*\r\n\r\n` +
+            `*Nombre:* ${formData.name}\r\n` +
+            `*Teléfono:* +34 ${formData.phone.replace(/\s/g, '')}\r\n` +
+            `*Fecha:* ${formattedDate}\r\n` +
+            `*Hora:* ${formData.time}\r\n` +
+            `*Personas:* ${formData.guests}`;
+
+        const encodedMessage = encodeURIComponent(message);
+        return `https://wa.me/34631920312?text=${encodedMessage}`;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
         setError(null);
+        setDbFailed(false);
+
+        let dbSaved = true;
+        try {
+            // 1. Try to save to DB
+            await api.post('/reservations', {
+                name: formData.name,
+                email: formData.email,
+                phone: `+34${formData.phone.replace(/\D/g, '')}`,
+                date: formData.date,
+                time: formData.time,
+                guests: formData.guests,
+                notes: formData.notes,
+                user_id: user?.id && user.id.length > 5 && !user.id.includes('!') ? user.id : null,
+            });
+        } catch (dbErr) {
+            console.error('Warning: Could not save reservation to DB:', dbErr);
+            dbSaved = false;
+        }
+
+        if (!dbSaved) {
+            setDbFailed(true);
+            setIsSubmitting(false);
+            return;
+        }
 
         try {
-            // 1. Try to save to DB (Log the attempt, but don't let it block WhatsApp)
-            try {
-                await api.post('/reservations', {
-                    name: formData.name,
-                    email: formData.email,
-                    phone: `+34${formData.phone.replace(/\D/g, '')}`,
-                    date: formData.date,
-                    time: formData.time,
-                    guests: formData.guests,
-                    notes: formData.notes,
-                    user_id:
-                        user?.id && user.id.length > 5 && !user.id.includes('!') ? user.id : null,
-                });
-            } catch (dbErr) {
-                console.error(
-                    'Warning: Could not save reservation to DB, proceeding to WhatsApp:',
-                    dbErr
-                );
-            }
-
-            // 2. Prepare WhatsApp redirect
-            const formattedDate = new Date(formData.date).toLocaleDateString('es-ES', {
-                weekday: 'long',
-                day: 'numeric',
-                month: 'long',
-                year: 'numeric',
-            });
-
-            const message =
-                `*Nueva Reserva de Mesa a nombre de: ${formData.name}*\r\n\r\n` +
-                `*Nombre:* ${formData.name}\r\n` +
-                `*Teléfono:* +34 ${formData.phone.replace(/\s/g, '')}\r\n` +
-                `*Fecha:* ${formattedDate}\r\n` +
-                `*Hora:* ${formData.time}\r\n` +
-                `*Personas:* ${formData.guests}`;
-
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/34631920312?text=${encodedMessage}`;
-
-            // 3. Trigger redirect
+            // 2. Prepare and trigger WhatsApp redirect
+            const whatsappUrl = getWhatsAppUrl();
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             if (isMobile) {
                 window.location.href = whatsappUrl;
@@ -154,7 +162,7 @@ export default function ReservationForm({
                 window.open(whatsappUrl, '_blank');
             }
 
-            // 4. Set success state
+            // 3. Set success state
             setIsSuccess(true);
             if (onSuccess) onSuccess();
         } catch (err: any) {
@@ -182,7 +190,40 @@ export default function ReservationForm({
                 </div>
             )}
 
-            {isSuccess ? (
+            {dbFailed ? (
+                <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-center py-8"
+                >
+                    <div className="w-20 h-20 bg-orange-50 text-orange-600 rounded-[26px] flex items-center justify-center mx-auto mb-6 shadow-sm border border-orange-100">
+                        <AlertCircle size={40} strokeWidth={2.5} />
+                    </div>
+                    <h3 className="text-xl font-black text-gray-900 mb-3 uppercase tracking-tight">
+                        Reserva casi lista
+                    </h3>
+                    <p className="text-sm text-gray-500 font-medium mb-8 leading-relaxed max-w-sm mx-auto">
+                        No hemos podido guardar tu reserva automáticamente en el sistema de la web.
+                        <br />
+                        <span className="text-orange-600 font-bold block mt-2">
+                            Por favor, haz clic abajo para finalizar tu reserva enviando los datos
+                            por WhatsApp. Nuestro equipo la registrará manualmente.
+                        </span>
+                    </p>
+                    <a
+                        href={getWhatsAppUrl()}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => {
+                            setIsSuccess(true);
+                            setDbFailed(false);
+                        }}
+                        className="inline-flex w-full py-3 bg-green-600 hover:bg-green-700 text-white rounded-2xl font-black text-xs items-center justify-center gap-3 active:scale-[0.98] border-none cursor-pointer h-12 no-underline tracking-[0.15em] shadow-xl shadow-green-100"
+                    >
+                        FINALIZAR POR WHATSAPP
+                    </a>
+                </motion.div>
+            ) : isSuccess ? (
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}

@@ -16,8 +16,10 @@ import {
     ClipboardCheck,
     Clock,
     Check,
+    BellRing,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 import SEO from '../components/SEO';
 import { getSharpAvatar } from '../utils/avatar';
 import ProfileTab from '../components/profile/ProfileTab';
@@ -46,6 +48,7 @@ export default function ProfilePage() {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const [copiedCode, setCopiedCode] = useState<string | null>(null);
+    const { isSupported, isSubscribed, subscribeToPush } = usePushNotifications();
 
     // Initial tab from URL or state or default
     const getInitialTab = (): TabId => {
@@ -398,6 +401,35 @@ export default function ProfilePage() {
 
             {/* Main Content Area */}
             <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 -mt-16 pb-20 relative z-20">
+                {/* Push Notifications Banner */}
+                {isSupported && !isSubscribed && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-[24px] p-4 shadow-xl flex items-center justify-between text-white"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
+                                <BellRing size={20} className="animate-bounce" />
+                            </div>
+                            <div>
+                                <h3 className="text-sm font-black m-0">
+                                    ¡Activa las notificaciones!
+                                </h3>
+                                <p className="text-[10px] opacity-90 m-0">
+                                    Recibe avisos sobre el estado de tu pedido
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={subscribeToPush}
+                            className="px-4 py-2 bg-white text-blue-600 rounded-xl text-xs font-black shadow-md hover:scale-105 transition-transform"
+                        >
+                            Activar
+                        </button>
+                    </motion.div>
+                )}
+
                 {/* Loyalty Program Section */}
                 <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <motion.div

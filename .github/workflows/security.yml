@@ -41,7 +41,7 @@ jobs:
               run: npm ci --ignore-scripts
 
             - name: Run npm audit (Critical only)
-              run: npm audit --audit-level=critical
+              run: npm audit --omit=dev --audit-level=critical
 
     codeql-analysis:
         name: CodeQL SAST

@@ -393,10 +393,6 @@ router.post(
                 ),
         };
 
-        console.log('--- ATOMIC RPC START (V3) ---');
-        console.log('RPC Args:', JSON.stringify(rpcArgs, null, 2));
-
-        console.log('DEBUG: calling RPC create_order_v3', JSON.stringify(rpcArgs, null, 2));
         const { data: rpcData, error: rpcError } = await supabase.rpc('create_order_v3', rpcArgs);
 
         if (rpcError) {
@@ -406,7 +402,6 @@ router.post(
             );
         }
 
-        console.log('--- RPC SUCCESS ---', rpcData);
         const orderId = rpcData?.id;
 
         if (!orderId) {
@@ -788,7 +783,6 @@ router.post(
             notes = '',
         } = req.body;
 
-        console.log(`[Order Creation] Started for user=${req.userId || 'Guest'} (${deliveryType})`);
         const deliveryAddress =
             deliveryType === 'table'
                 ? `MESA ${mesaNumber || req.body.tableNumber || '?'}`
@@ -938,11 +932,6 @@ router.post(
                 ),
         };
 
-        console.log('--- ATOMIC INVITE RPC START (V3) ---');
-        console.log('RPC Args:', JSON.stringify(rpcArgs, null, 2));
-
-        console.log('DEBUG: invite RPC starting...');
-        console.log('RPC Args:', JSON.stringify(rpcArgs, null, 2));
         const { data: rpcData, error: rpcError } = await supabase.rpc('create_order_v3', rpcArgs);
 
         if (rpcError) {
@@ -952,7 +941,6 @@ router.post(
             );
         }
 
-        console.log('--- INVITE RPC SUCCESS ---', rpcData);
         const orderId = rpcData?.id;
 
         if (!orderId) {

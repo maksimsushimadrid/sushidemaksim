@@ -21,7 +21,8 @@ export const paymentMethodSchema = z
     .enum(['EFECTIVO', 'TARJETA', 'BIZUM', 'STRIPE', 'cash', 'card'])
     .default('EFECTIVO');
 
-const phoneRegex = /^\+34[6789]\d{8}$/;
+const phoneRegex =
+    /^(?:\+34|0034|34)?[6-9]\d{8}$|^(\+?\d{1,4}[\s-]?)?\(?\d{1,4}\)?[\s-]?\d{1,4}[\s-]?\d{1,4}$/;
 
 /**
  * Schema for creating an order.

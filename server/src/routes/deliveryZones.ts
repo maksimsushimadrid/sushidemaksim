@@ -28,9 +28,6 @@ router.get(
     })
 );
 
-// Simple in-memory cache to stay within Nominatim's 1 req/sec limit and avoid 429 errors
-const searchCache = new Map<string, { data: any; timestamp: number }>();
-const houseNumbersCache = new Map<string, { data: string[]; timestamp: number }>();
 const CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours
 
 // Get REAL house numbers for a street using Overpass API
@@ -42,9 +39,20 @@ router.get('/house-numbers', validateResource(houseNumbersQuerySchema), async (r
 
     // Check cache for existing results
 
-    if (houseNumbersCache.has(cacheKey)) {
-        const cached = houseNumbersCache.get(cacheKey)!;
-        if (now - cached.timestamp < CACHE_TTL) return res.json(cached.data);
+    try {
+        const { data } = await supabase
+            .from('geocoding_cache')
+            .select('results, created_at')
+            .eq('query', cacheKey)
+            .maybeSingle();
+        if (data) {
+            const cachedTime = new Date(data.created_at).getTime();
+            if (now - cachedTime < CACHE_TTL) {
+                return res.json(data.results);
+            }
+        }
+    } catch (dbErr) {
+        console.error('Database cache read error (ignored):', dbErr);
     }
 
     try {
@@ -100,11 +108,15 @@ router.get('/house-numbers', validateResource(houseNumbersQuerySchema), async (r
             return a.localeCompare(b, undefined, { numeric: true });
         });
 
-        // Save to cache (using Map methods)
-        houseNumbersCache.set(cacheKey, {
-            data: uniqueNumbers,
-            timestamp: Date.now(),
-        });
+        try {
+            await supabase.from('geocoding_cache').upsert({
+                query: cacheKey,
+                results: uniqueNumbers,
+                created_at: new Date().toISOString(),
+            });
+        } catch (dbErr) {
+            console.error('Database cache write error (ignored):', dbErr);
+        }
 
         res.json(uniqueNumbers);
     } catch (error) {
@@ -123,10 +135,22 @@ router.get(
         const query = q.trim().toLowerCase();
         const now = Date.now();
 
-        // Check cache
-        const cached = searchCache.get(query);
-        if (cached && now - cached.timestamp < CACHE_TTL) {
-            return res.json(cached.data);
+        let staleResults: any = null;
+        try {
+            const { data } = await supabase
+                .from('geocoding_cache')
+                .select('results, created_at')
+                .eq('query', query)
+                .maybeSingle();
+            if (data) {
+                staleResults = data.results;
+                const cachedTime = new Date(data.created_at).getTime();
+                if (now - cachedTime < CACHE_TTL) {
+                    return res.json(data.results);
+                }
+            }
+        } catch (dbErr) {
+            console.error('Database cache read error (ignored):', dbErr);
         }
 
         try {
@@ -298,14 +322,15 @@ router.get(
             // Only return unique results that passed the Madrid filter.
             const finalResults = uniqueResults.slice(0, 15);
 
-            // Update cache
-            searchCache.set(query, { data: finalResults, timestamp: now });
-
-            // Periodically clean cache
-            if (searchCache.size > 500) {
-                for (const [key, val] of searchCache.entries()) {
-                    if (now - val.timestamp > CACHE_TTL) searchCache.delete(key);
-                }
+            // Update cache in database
+            try {
+                await supabase.from('geocoding_cache').upsert({
+                    query: query,
+                    results: finalResults,
+                    created_at: new Date().toISOString(),
+                });
+            } catch (dbErr) {
+                console.error('Database cache write error (ignored):', dbErr);
             }
 
             res.json(finalResults);
@@ -313,7 +338,7 @@ router.get(
             console.error('Nominatim proxy error:', err.message);
 
             // If we have a stale cache, return it on error instead of 429
-            if (cached) return res.json(cached.data);
+            if (staleResults) return res.json(staleResults);
 
             res.status(err.response?.status || 500).json({ error: 'Search failed' });
         }

@@ -18,6 +18,17 @@ import { sendVerificationEmail, sendGoogleWelcomeEmail } from '../utils/email.js
 import { authLimiter, strictLimiter } from '../middleware/rateLimiters.js';
 import { formatUser } from '../utils/helpers.js';
 
+function setTokenCookie(res: Response, token: string) {
+    const isProd = config.nodeEnv === 'production';
+    res.cookie('sushi_token', token, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: isProd ? 'none' : 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        path: '/',
+    });
+}
+
 const router = Router();
 // POST /api/auth/register
 router.post(
@@ -221,6 +232,7 @@ router.get(
                     .eq('id', user.id)
                     .single();
 
+                setTokenCookie(res, loginToken);
                 return res.json({
                     success: true,
                     token: loginToken,
@@ -248,6 +260,7 @@ router.get(
                 .eq('id', user.id)
                 .single();
 
+            setTokenCookie(res, loginToken);
             res.json({
                 success: true,
                 token: loginToken,
@@ -355,6 +368,7 @@ router.post(
             expiresIn: config.jwtExpiresIn,
         });
 
+        setTokenCookie(res, token);
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { password_hash, created_at, birth_date, birth_date_verified, ...userRest } = user;
         res.json({
@@ -695,11 +709,23 @@ router.post(
             expiresIn: config.jwtExpiresIn,
         });
 
+        setTokenCookie(res, token);
         res.json({
             token,
             user: formatUser(user),
         });
     })
 );
+
+// POST /api/auth/logout
+router.post('/logout', (req, res) => {
+    res.clearCookie('sushi_token', {
+        httpOnly: true,
+        secure: config.nodeEnv === 'production',
+        sameSite: config.nodeEnv === 'production' ? 'none' : 'lax',
+        path: '/',
+    });
+    res.json({ success: true, message: 'Sesión cerrada' });
+});
 
 export default router;

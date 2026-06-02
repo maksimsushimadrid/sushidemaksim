@@ -677,6 +677,27 @@ router.patch(
             });
         }
 
+        // Send Web Push Notification
+        if (order && oldOrder && order.status !== oldOrder.status) {
+            const statusMessages: Record<string, string> = {
+                received: 'Recibido',
+                preparing: 'En preparación',
+                ready: 'Listo',
+                delivering: 'En camino',
+                delivered: 'Entregado',
+                cancelled: 'Cancelado',
+            };
+            const msg = statusMessages[order.status] || order.status;
+            const pushTitle = `Pedido actualizado`;
+            const pushBody = `Tu pedido está ahora: ${msg}`;
+
+            import('../utils/push.js')
+                .then(({ sendPushNotification }) => {
+                    sendPushNotification(order.user_id, pushTitle, pushBody, `/profile`);
+                })
+                .catch(e => console.error('Error importing push:', e));
+        }
+
         res.json({ order: orderWithItems });
     })
 );

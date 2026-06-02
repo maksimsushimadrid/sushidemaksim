@@ -71,6 +71,7 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
         const response = await fetch(`/api${endpoint}`, {
             ...options,
             headers,
+            credentials: 'same-origin',
             signal: controller.signal,
         });
 
@@ -79,6 +80,12 @@ async function fetchApi(endpoint: string, options: RequestInit = {}) {
         if (response.status === 401) {
             // Token expired or invalid — clear session
             localStorage.removeItem('sushi_token');
+            localStorage.removeItem('sushi_logged_in');
+
+            // Clear backend cookie
+            fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' }).catch(
+                () => {}
+            );
 
             // List of public pages that should NOT redirect on 401
             const publicPages = ['/', '/menu', '/cart', '/promo', '/contacts', '/tablon'];

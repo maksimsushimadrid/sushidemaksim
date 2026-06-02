@@ -7,14 +7,36 @@ export interface AuthRequest extends Request {
     userId?: string;
 }
 
-export function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
+function parseToken(req: Request): string {
+    // 1. Try Authorization header
     const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({ error: 'Token de acceso requerido' });
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        return authHeader.split(' ')[1];
     }
 
-    const token = authHeader.split(' ')[1];
+    // 2. Try Cookie header
+    const cookieHeader = req.headers.cookie;
+    if (cookieHeader) {
+        const cookies = cookieHeader.split(';').reduce(
+            (acc, curr) => {
+                const [key, val] = curr.split('=').map(c => c.trim());
+                if (key) acc[key] = val;
+                return acc;
+            },
+            {} as Record<string, string>
+        );
+        return cookies['sushi_token'] || '';
+    }
+
+    return '';
+}
+
+export function authMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
+    const token = parseToken(req);
+
+    if (!token) {
+        return res.status(401).json({ error: 'Token de acceso requerido' });
+    }
 
     try {
         const payload = jwt.verify(token, config.jwtSecret) as { userId: string };
@@ -33,14 +55,13 @@ export function authMiddleware(req: AuthRequest, res: Response, next: NextFuncti
         return res.status(401).json({ error: 'Token inválido o expirado' });
     }
 }
-export function optionalAuthMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
-    const authHeader = req.headers.authorization;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+export function optionalAuthMiddleware(req: AuthRequest, res: Response, next: NextFunction) {
+    const token = parseToken(req);
+
+    if (!token) {
         return next();
     }
-
-    const token = authHeader.split(' ')[1];
 
     try {
         const payload = jwt.verify(token, config.jwtSecret) as { userId: string };

@@ -85,6 +85,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             try {
                 const data = await api.post('/auth/login', { email, password });
                 localStorage.setItem('sushi_token', data.token);
+                localStorage.setItem('sushi_logged_in', 'true');
                 // invalidateQueries marks the cached null as stale so
                 // refetchQueries actually re-runs the queryFn (v5 skips fresh queries)
                 await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
@@ -126,6 +127,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const logout = useCallback(
         (redirectPath?: string) => {
             localStorage.removeItem('sushi_token');
+            localStorage.removeItem('sushi_logged_in');
+
+            // Clear backend cookie with keepalive to ensure completion during page unload
+            fetch('/api/auth/logout', {
+                method: 'POST',
+                credentials: 'same-origin',
+                keepalive: true,
+            }).catch(() => {});
+
             queryClient.setQueryData(USER_QUERY_KEY, null);
             queryClient.invalidateQueries();
 
@@ -238,6 +248,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             try {
                 const data = await api.post('/auth/google', { access_token });
                 localStorage.setItem('sushi_token', data.token);
+                localStorage.setItem('sushi_logged_in', 'true');
                 await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
                 await queryClient.refetchQueries({ queryKey: USER_QUERY_KEY });
                 return { success: true };

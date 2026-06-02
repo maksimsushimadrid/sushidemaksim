@@ -8,14 +8,18 @@ export function useUserQuery() {
     return useQuery({
         queryKey: USER_QUERY_KEY,
         queryFn: async () => {
-            const token = localStorage.getItem('sushi_token');
-            if (!token) return null;
+            const hasSession =
+                localStorage.getItem('sushi_logged_in') === 'true' ||
+                localStorage.getItem('sushi_token');
+            if (!hasSession) return null;
             try {
                 const data = await api.get('/auth/me');
+                localStorage.setItem('sushi_logged_in', 'true');
                 return data.user as User;
             } catch (error) {
-                // If it fails, clear token to avoid infinite retry/errors
+                // If it fails, clear tokens to avoid infinite retry/errors
                 localStorage.removeItem('sushi_token');
+                localStorage.removeItem('sushi_logged_in');
                 return null;
             }
         },
@@ -86,6 +90,7 @@ export function useDeleteAccountMutation() {
         },
         onSuccess: () => {
             localStorage.removeItem('sushi_token');
+            localStorage.removeItem('sushi_logged_in');
             queryClient.setQueryData(USER_QUERY_KEY, null);
             queryClient.invalidateQueries(); // Clear everything on account delete
         },

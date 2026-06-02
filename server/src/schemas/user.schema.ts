@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-export const phoneRegex = /^\+34[6789]\d{8}$/;
+export const phoneRegex =
+    /^(?:\+34|0034|34)?[6-9]\d{8}$|^(\+?\d{1,4}[\s-]?)?\(?\d{1,4}\)?[\s-]?\d{1,4}[\s-]?\d{1,4}$/;
 
 /**
  * Shared base rules to maintain consistency across Auth and User modules.

@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import { config } from './config.js';
 import { supabase } from './db/supabase.js';
 import { errorHandler } from './middleware/errorHandler.js';
+import { generalLimiter } from './middleware/rateLimiters.js';
 import authRoutes from './routes/auth.js';
 import menuRoutes from './routes/menu.js';
 import cartRoutes from './routes/cart.js';
@@ -27,6 +28,7 @@ import reportsRoutes from './routes/reports.js';
 import sitemapRoutes from './routes/sitemap.js';
 import merchantRoutes from './routes/merchant.js';
 import threadsRoutes from './routes/threads.js';
+import notificationsRoutes from './routes/notifications.js';
 
 const app = express();
 console.log('DEBUG: Express app initialized');
@@ -45,9 +47,7 @@ app.use(
     })
 );
 app.use(morgan(config.isDev ? 'dev' : 'combined'));
-
-// ─── Static Files for Uploads ──────────────────────────────────────────────────
-app.use('/api/uploads', express.static(path.join(__dirname, '..', 'public', 'uploads')));
+app.use('/api', generalLimiter);
 
 // ─── Body Parsing ──────────────────────────────────────────────────────────────
 app.use(express.json({ limit: '1mb' }));
@@ -73,6 +73,7 @@ app.use('/api/reservations', reservationsRoutes);
 app.use('/api/admin/reports', reportsRoutes);
 app.use('/api/admin/threads', threadsRoutes);
 app.use('/api/threads', threadsRoutes);
+app.use('/api/notifications', notificationsRoutes);
 
 // ─── Invitations Social Preview (Priority) ────────────────────────────────────
 // Handles Telegram/WhatsApp link previews BEFORE the React frontend can override them
