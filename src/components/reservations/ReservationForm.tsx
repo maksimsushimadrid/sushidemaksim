@@ -136,12 +136,12 @@ export default function ReservationForm({
             });
 
             const message =
-                `Nueva Reserva de Mesa\n\n` +
-                `Nombre: ${formData.name}\n` +
-                `Teléfono: +34 ${formData.phone.replace(/\s/g, '')}\n` +
-                `Fecha: ${formattedDate}\n` +
-                `Hora: ${formData.time}\n` +
-                `Personas: ${formData.guests}`;
+                `*Nueva Reserva de Mesa a nombre de: ${formData.name}*\r\n\r\n` +
+                `*Nombre:* ${formData.name}\r\n` +
+                `*Teléfono:* +34 ${formData.phone.replace(/\s/g, '')}\r\n` +
+                `*Fecha:* ${formattedDate}\r\n` +
+                `*Hora:* ${formData.time}\r\n` +
+                `*Personas:* ${formData.guests}`;
 
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://wa.me/34631920312?text=${encodedMessage}`;

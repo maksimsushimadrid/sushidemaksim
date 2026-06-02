@@ -219,6 +219,26 @@ const ORDERS_TRANSLATIONS = {
         discount: 'Descuento',
     },
 } as const;
+const getWhatsAppConfirmationUrl = (order: Order, isPickup: boolean) => {
+    let itemsList = '';
+    if (order.items && Array.isArray(order.items)) {
+        itemsList = order.items
+            .map(
+                (item: any) =>
+                    `• ${item.name || 'Producto'} x${item.quantity}: ${Number((item.price || 0) * (item.quantity || 1)).toFixed(2)}€`
+            )
+            .join('\r\n');
+    }
+
+    let text = '';
+    if (isPickup) {
+        text = `¡Hola! Hemos recibido su pedido. Lo preparamos en 20 - 25 minutos.\r\n\r\nSu pedido #${String(order.id).padStart(5, '0')} está confirmado\r\n\r\n${itemsList}\r\n\r\nTotal: ${Number(order.total || 0).toFixed(2)}€\r\nMétodo de pago: ${order.paymentMethod === 'card' || order.paymentMethod === 'TARJETA' ? 'Tarjeta' : 'Efectivo'}\r\nMuchas gracias.`;
+    } else {
+        text = `¡Hola! Hemos recibido su pedido. Lo preparamos y enviamos pronto.\r\n\r\nSu pedido #${String(order.id).padStart(5, '0')} está confirmado\r\n\r\n${itemsList}\r\n\r\nTotal: ${Number(order.total || 0).toFixed(2)}€\r\nMétodo de pago: ${order.paymentMethod === 'card' || order.paymentMethod === 'TARJETA' ? 'Tarjeta' : 'Efectivo'}\r\nMuchas gracias.`;
+    }
+
+    return `https://wa.me/${(order.phoneNumber || '').replace(/\D/g, '')}?text=${encodeURIComponent(text)}`;
+};
 
 export default function AdminOrders({
     isGlobalSoundEnabled,
@@ -811,7 +831,10 @@ export default function AdminOrders({
                                                             {order.phoneNumber}
                                                         </p>
                                                         <a
-                                                            href={`https://wa.me/${order.phoneNumber.replace(/\D/g, '')}`}
+                                                            href={getWhatsAppConfirmationUrl(
+                                                                order,
+                                                                isPickup
+                                                            )}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
                                                             className="p-1 px-3 bg-green-50 text-green-700 rounded-xl text-[10px] font-black border border-green-200 hover:bg-green-600 hover:text-white transition-all flex items-center gap-2 shadow-sm active:scale-95 uppercase tracking-widest"
