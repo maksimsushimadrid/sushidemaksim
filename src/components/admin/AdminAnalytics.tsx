@@ -476,7 +476,13 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     </h3>
                     <div className="h-56">
                         {isMounted && (
-                            <ResponsiveContainer width="100%" height="100%" debounce={1}>
+                            <ResponsiveContainer
+                                width="100%"
+                                height="100%"
+                                minWidth={1}
+                                minHeight={1}
+                                debounce={1}
+                            >
                                 <PieChart>
                                     <Pie
                                         data={[
@@ -552,7 +558,13 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     </h3>
                     <div className="h-56">
                         {isMounted && (
-                            <ResponsiveContainer width="100%" height="100%" debounce={1}>
+                            <ResponsiveContainer
+                                width="100%"
+                                height="100%"
+                                minWidth={1}
+                                minHeight={1}
+                                debounce={1}
+                            >
                                 <PieChart>
                                     <Pie
                                         data={[
@@ -613,7 +625,13 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     </h3>
                     <div className="h-56">
                         {isMounted && (
-                            <ResponsiveContainer width="100%" height="100%" debounce={1}>
+                            <ResponsiveContainer
+                                width="100%"
+                                height="100%"
+                                minWidth={1}
+                                minHeight={1}
+                                debounce={1}
+                            >
                                 <BarChart data={stats?.categoryStats}>
                                     <CartesianGrid
                                         strokeDasharray="3 3"
@@ -686,7 +704,13 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     </h3>
                     <div className="h-80">
                         {isMounted && (
-                            <ResponsiveContainer width="100%" height="100%" debounce={1}>
+                            <ResponsiveContainer
+                                width="100%"
+                                height="100%"
+                                minWidth={1}
+                                minHeight={1}
+                                debounce={1}
+                            >
                                 <AreaChart data={stats?.growth}>
                                     <defs>
                                         <linearGradient
@@ -769,7 +793,13 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     </h3>
                     <div className="h-80">
                         {isMounted && (
-                            <ResponsiveContainer width="100%" height="100%" debounce={1}>
+                            <ResponsiveContainer
+                                width="100%"
+                                height="100%"
+                                minWidth={1}
+                                minHeight={1}
+                                debounce={1}
+                            >
                                 <BarChart
                                     data={(stats?.heatmap?.hourly || []).map(
                                         (v: number, i: number) => ({ hour: `${i}h`, pedidos: v })
@@ -1245,8 +1275,8 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                                             })}
                                         </p>
                                         <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                            {report.report_data.summary.totalRevenue}€ •{' '}
-                                            {report.report_data.summary.totalOrders}{' '}
+                                            {report.report_data?.summary?.totalRevenue || 0}€ •{' '}
+                                            {report.report_data?.summary?.totalOrders || 0}{' '}
                                             {t.reports.orders.toLowerCase()}
                                         </p>
                                     </div>
@@ -1294,32 +1324,36 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                                 {[
                                     {
                                         label: t.reports.revenue,
-                                        value: `${selectedReport.report_data.summary.totalRevenue}€`,
+                                        value: `${selectedReport.report_data?.summary?.totalRevenue || 0}€`,
                                         color: 'text-gray-900',
                                     },
                                     {
                                         label: t.reports.orders,
-                                        value: selectedReport.report_data.summary.totalOrders,
+                                        value:
+                                            selectedReport.report_data?.summary?.totalOrders || 0,
                                         color: 'text-orange-600',
                                     },
                                     {
                                         label: t.reports.avgCheck,
-                                        value: `${selectedReport.report_data.summary.avgTicket}€`,
+                                        value: `${selectedReport.report_data?.summary?.avgTicket || 0}€`,
                                         color: 'text-gray-900',
                                     },
                                     {
                                         label: t.reports.discounts,
-                                        value: `${selectedReport.report_data.summary.totalDiscounts}€`,
+                                        value: `${selectedReport.report_data?.summary?.totalDiscounts || 0}€`,
                                         color: 'text-red-600',
                                     },
                                     {
                                         label: t.reports.reservations,
-                                        value: selectedReport.report_data.summary.totalReservations,
+                                        value:
+                                            selectedReport.report_data?.summary
+                                                ?.totalReservations || 0,
                                         color: 'text-blue-600',
                                     },
                                     {
                                         label: t.reports.registrations,
-                                        value: selectedReport.report_data.summary.registrations,
+                                        value:
+                                            selectedReport.report_data?.summary?.registrations || 0,
                                         color: 'text-purple-600',
                                     },
                                 ].map((s, i) => (
@@ -1346,7 +1380,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                                         {t.reports.topItems}
                                     </h5>
                                     <div className="space-y-4">
-                                        {selectedReport.report_data.topItems.map(
+                                        {(selectedReport.report_data?.topItems || []).map(
                                             (item: any, i: number) => (
                                                 <div
                                                     key={i}
@@ -1375,7 +1409,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                                         {t.reports.topClients}
                                     </h5>
                                     <div className="space-y-4">
-                                        {selectedReport.report_data.topClients.map(
+                                        {(selectedReport.report_data?.topClients || []).map(
                                             (client: any, i: number) => (
                                                 <div
                                                     key={i}
