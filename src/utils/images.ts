@@ -1,21 +1,20 @@
 export function getOptimizedImageUrl(
     url: string | null | undefined,
-    _width?: number,
-    _quality?: number,
+    width?: number,
+    quality?: number,
     seoName?: string
 ): string {
-    void _width;
-    void _quality;
+    // We don't use seoName in the URL to avoid Vercel 1000 source images limit.
+    void seoName;
+
     if (!url) return '';
-
-    // Always return the direct URL to avoid Vercel Image Optimization limits (402 errors).
-    // The width and quality parameters are kept for compatibility but prefixed with _ to satisfy strict linting.
-
-    // Ensure we have a string
     const baseUrl = String(url);
 
-    // If it's a relative local path, ensure it starts with /
-    if (baseUrl.startsWith('/') && !baseUrl.includes('supabase.co')) {
+    // If it's a relative local path or already a vercel image path, return as is
+    if (
+        (baseUrl.startsWith('/') && !baseUrl.includes('supabase.co')) ||
+        baseUrl.includes('/_vercel/image')
+    ) {
         return baseUrl;
     }
 
@@ -24,13 +23,11 @@ export function getOptimizedImageUrl(
         return baseUrl.startsWith('http') || baseUrl.startsWith('/') ? baseUrl : '/' + baseUrl;
     }
 
-    // For all other cases (Supabase, external URLs), return the direct URL
-    // Append seoName as query parameter if provided
-    let finalUrl = baseUrl;
-    if (seoName) {
-        const separator = finalUrl.includes('?') ? '&' : '?';
-        finalUrl += `${separator}name=${encodeURIComponent(seoName)}`;
-    }
+    // Clean the URL from query params to ensure Vercel caches it properly and doesn't count it as a new source image
+    const cleanUrl = baseUrl.split('?')[0];
 
-    return finalUrl;
+    // Use Vercel Image Optimization endpoint
+    const w = width || 800;
+    const q = quality || 80;
+    return `/_vercel/image?url=${encodeURIComponent(cleanUrl)}&w=${w}&q=${q}`;
 }
