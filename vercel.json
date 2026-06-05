@@ -103,7 +103,7 @@
     "images": {
         "sizes": [256, 384, 400, 640, 750, 800, 828, 1080, 1200, 1920, 2048, 3840],
         "domains": ["images.unsplash.com"],
-        "minimumCacheTTL": 3600,
+        "minimumCacheTTL": 2592000,
         "formats": ["image/avif", "image/webp"],
         "remotePatterns": [
             {
