@@ -335,7 +335,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
     const fetchReports = async () => {
         try {
             setReportsLoading(true);
-            const { data } = await axios.get('/api/admin/reports', { withCredentials: true });
+            const { data } = await axios.get('/api/admin/monthly-reports', { withCredentials: true });
             setReports(data || []);
         } catch (err: any) {
             if (err.response?.status === 401) {
@@ -354,7 +354,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
         try {
             setIsGenerating(true);
             const { data } = await axios.post(
-                '/api/admin/reports/generate',
+                '/api/admin/monthly-reports/generate',
                 {},
                 { withCredentials: true }
             );
