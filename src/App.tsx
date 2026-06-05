@@ -195,7 +195,7 @@ function App() {
                                 }`}
                             >
                                 <Analytics />
-                                <SpeedInsights sampleRate={0.1} />
+                                <SpeedInsights sampleRate={0.02} />
                                 <SmoothScroll />
                                 {!isAdminRoute && !isWaiterRoute && !isTableRoute && (
                                     <CookieConsent />
