@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
@@ -37,8 +38,12 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
         { to: '/promo', label: 'Promo', icon: Star },
     ];
 
+    const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
     const handleGoogleLogin = async (response: { access_token: string }) => {
+        setIsGoogleLoading(true);
         const res = await loginWithGoogle(response.access_token);
+        setIsGoogleLoading(false);
         if (res.success) {
             setShowMobileMenu(false);
             showSuccess('¡Bienvenido de nuevo! 🍣');
@@ -235,7 +240,10 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                             </button>
                                         </p>
                                         <div className="pt-2">
-                                            <GoogleAuthButton onSuccess={handleGoogleLogin} />
+                                            <GoogleAuthButton
+                                                onSuccess={handleGoogleLogin}
+                                                isLoading={isGoogleLoading}
+                                            />
                                         </div>
                                     </div>
                                 )}

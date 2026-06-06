@@ -605,6 +605,25 @@ router.post(
             .eq('google_id', googleId)
             .single();
 
+        if (user) {
+            // Sync name and avatar if they have changed on Google side
+            const needsUpdate = user.name !== name || user.avatar_url !== avatarUrl;
+            if (needsUpdate) {
+                const { data: updatedUser } = await supabase
+                    .from('users')
+                    .update({
+                        name: name || user.name,
+                        avatar_url: avatarUrl || user.avatar_url,
+                    })
+                    .eq('id', user.id)
+                    .select('*')
+                    .single();
+                if (updatedUser) {
+                    user = updatedUser;
+                }
+            }
+        }
+
         // 2. If not found by google_id, try finding by email
         if (!user) {
             const { data: existingUser } = await supabase
