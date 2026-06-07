@@ -158,7 +158,7 @@ export default function WaiterOrderPage() {
 
     return (
         <div
-            className="min-h-screen bg-[#FBF7F0] pb-24 w-screen max-w-[100vw] overflow-x-hidden overflow-y-auto"
+            className="min-h-screen bg-[#FBF7F0] pb-24 w-full overflow-x-hidden overflow-y-auto"
             style={{ overscrollBehaviorX: 'none' }}
         >
             <SEO title="Panel de Camarero" description="Gestión rápida de pedidos en sala" />
@@ -367,9 +367,7 @@ export default function WaiterOrderPage() {
                                                         </>
                                                     )}
                                                     <button
-                                                        onClick={() =>
-                                                            handleQuantityChange(key, 1)
-                                                        }
+                                                        onClick={() => handleQuantityChange(key, 1)}
                                                         className={`w-6 h-6 rounded-md flex items-center justify-center transition active:scale-95 ${
                                                             qty > 0
                                                                 ? 'bg-orange-600 text-white shadow-sm'
@@ -498,9 +496,7 @@ export default function WaiterOrderPage() {
                                 <div className="space-y-3 mb-6">
                                     {Object.entries(selectedItems).map(([key, qty]) => {
                                         const { itemId, option } = parseKey(key);
-                                        const item = menuItems.find(
-                                            i => i.id === itemId
-                                        );
+                                        const item = menuItems.find(i => i.id === itemId);
                                         return (
                                             <div
                                                 key={key}
