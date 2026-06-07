@@ -144,7 +144,10 @@ export default function WaiterOrderPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#FBF7F0] pb-24 w-screen max-w-[100vw] overflow-x-hidden overflow-y-auto" style={{ overscrollBehaviorX: 'none' }}>
+        <div
+            className="min-h-screen bg-[#FBF7F0] pb-24 w-screen max-w-[100vw] overflow-x-hidden overflow-y-auto"
+            style={{ overscrollBehaviorX: 'none' }}
+        >
             <SEO title="Panel de Camarero" description="Gestión rápida de pedidos en sala" />
 
             {/* Minimal Sticky Header */}
