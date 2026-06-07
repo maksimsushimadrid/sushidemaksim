@@ -21,7 +21,7 @@ import { EMOJI } from '../constants/menu';
 
 // Map of item name patterns → available options
 const ITEM_OPTIONS: Record<string, string[]> = {
-    cerveza: ['Mahou', 'Águila', 'De grifo', 'Tostada 0,0', 'Radler'],
+    cerveza: ['Mahou', 'Águila', 'De grifo', 'Tostada 0,0', 'Radler', 'Ladrón de verano'],
     agua: ['Sin gas', 'Con gas'],
     'coca-cola': ['Coca-Cola', 'Fanta', 'Sprite'],
     limonada: ['Aquarius Limón', 'Aquarius Naranja'],
