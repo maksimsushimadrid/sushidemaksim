@@ -190,7 +190,7 @@ function App() {
                             <Schema />
                             <PageTracker />
                             <div
-                                className={`min-h-[100svh] flex flex-col transition-colors duration-500 overflow-x-hidden ${
+                                className={`min-h-[100svh] flex flex-col transition-colors duration-500 overflow-x-clip ${
                                     isTableRoute || isTablonRoute ? 'bg-[#0d0d0d]' : 'bg-[#FBF7F0]'
                                 }`}
                             >
@@ -205,7 +205,7 @@ function App() {
                                 <FloatingCart />
 
                                 {!isAdminRoute && !isWaiterRoute && <Header />}
-                                <main className="flex-1 grid grid-cols-1 grid-rows-1 relative w-full overflow-x-hidden">
+                                <main className="flex-1 grid grid-cols-1 grid-rows-1 relative w-full overflow-x-clip">
                                     <AnimatePresence initial={false}>
                                         <Routes location={location} key={location.pathname}>
                                             <Route
