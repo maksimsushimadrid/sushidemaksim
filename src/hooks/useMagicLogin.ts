@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import { api } from '../utils/api';
 
@@ -14,6 +14,7 @@ const USER_QUERY_KEY = ['user'];
  */
 export function useMagicLogin(): void {
     const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
     const queryClient = useQueryClient();
     const processed = useRef(false);
 
@@ -51,9 +52,25 @@ export function useMagicLogin(): void {
         // Parse hash fragment: #access_token=xxx&token_type=Bearer&...
         const params = new URLSearchParams(hash.substring(1));
         const accessToken = params.get('access_token');
+        const stateParam = params.get('state');
 
         if (!accessToken) return;
         processed.current = true;
+
+        let returnTo = '/';
+        if (stateParam) {
+            try {
+                const normalizedState = decodeURIComponent(stateParam)
+                    .replace(/-/g, '+')
+                    .replace(/_/g, '/');
+                const decodedState = JSON.parse(atob(normalizedState));
+                if (decodedState && decodedState.returnTo) {
+                    returnTo = decodedState.returnTo;
+                }
+            } catch (err) {
+                console.warn('Google redirect: failed to parse state', err);
+            }
+        }
 
         // Clean the hash immediately to prevent re-processing
         window.history.replaceState(null, '', window.location.pathname + window.location.search);
@@ -65,9 +82,12 @@ export function useMagicLogin(): void {
                 localStorage.setItem('sushi_token', data.token);
                 await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
                 await queryClient.refetchQueries({ queryKey: USER_QUERY_KEY });
+                if (returnTo && returnTo !== '/' && returnTo !== window.location.pathname) {
+                    navigate(returnTo, { replace: true });
+                }
             } catch (err) {
                 console.error('Google redirect auth failed:', err);
             }
         })();
-    }, [queryClient]);
+    }, [queryClient, navigate]);
 }

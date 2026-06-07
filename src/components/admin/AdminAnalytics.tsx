@@ -105,8 +105,38 @@ const ANALYTICS_TRANSLATIONS = {
             discountOrders: 'Заказы со скидкой',
             totalSavings: 'Общая экономия клиентов',
             avgDiscount: 'Средняя скидка',
+            promoRevenue: 'Выручка по акциям',
+            ordersShare: 'Доля от всех заказов',
+            revenueShare: 'Доля в выручке',
             insight:
                 'Оценивает, сколько выручки приносят акции. Помогает понять, не слишком ли много вы раздаёте скидок.',
+        },
+        promoCampaignsBreakdown: {
+            title: 'Детализация по акциям и кампаниям',
+            campaign: 'Кампания / Промокод',
+            uses: 'Использовано',
+            revenue: 'Выручка',
+            discounts: 'Скидки',
+            avgCheck: 'Ср. чек',
+            conversion: 'Конверсия (Исп. / Создано)',
+            noData: 'Акций не найдено за этот период',
+            individualTitle: 'Использование конкретных промокодов (30д)',
+            code: 'Код купона',
+            bannersTitle: 'Конфигурация промо-баннеров',
+            bannerName: 'Название акции',
+            bannerStatus: 'Статус',
+            bannerActive: 'Активен',
+            bannerInactive: 'Неактивен',
+            bannerDiscount: 'Скидка',
+            types: {
+                welcome: 'Приветственный купон (NUEVO)',
+                loyalty_bonus: 'Бонус лояльности (LOYALTY)',
+                loyalty_gift: 'Подарочный десерт (DESSERT)',
+                referral: 'Пригласи друга (REF)',
+                special: 'Специальный купон (SPECIAL)',
+                manual: 'Ручная скидка (Direct)',
+                custom: 'Индивидуальный промокод',
+            },
         },
         deliveryZones: {
             title: 'Популярные районы доставки',
@@ -247,8 +277,38 @@ const ANALYTICS_TRANSLATIONS = {
             discountOrders: 'Pedidos con Descuento',
             totalSavings: 'Ahorro Total Cliente',
             avgDiscount: 'Descuento Promedio',
+            promoRevenue: 'Ingresos por Promociones',
+            ordersShare: 'Cuota de Pedidos',
+            revenueShare: 'Cuota de Ingresos',
             insight:
                 'Evalúa cuántos ingresos generan las promociones. Ayuda a entender si estás dando demasiados descuentos.',
+        },
+        promoCampaignsBreakdown: {
+            title: 'Desglose por Campañas y Cupones',
+            campaign: 'Campaña / Promoción',
+            uses: 'Usos',
+            revenue: 'Ingresos',
+            discounts: 'Descuentos',
+            avgCheck: 'Ticket Medio',
+            conversion: 'Conversión (Usado / Creado)',
+            noData: 'No se encontraron promociones en este período',
+            individualTitle: 'Uso de Códigos de Descuento (30d)',
+            code: 'Código',
+            bannersTitle: 'Configuración de Banners de Promoción',
+            bannerName: 'Promoción',
+            bannerStatus: 'Estado',
+            bannerActive: 'Activo',
+            bannerInactive: 'Inactivo',
+            bannerDiscount: 'Descuento',
+            types: {
+                welcome: 'Cupón de Bienvenida (NUEVO)',
+                loyalty_bonus: 'Bono de Fidelidad (LOYALTY)',
+                loyalty_gift: 'Postre de Regalo (DESSERT)',
+                referral: 'Invitar a un Amigo (REF)',
+                special: 'Cupón Especial (SPECIAL)',
+                manual: 'Descuento Manual / Directo',
+                custom: 'Código Personalizado',
+            },
         },
         deliveryZones: {
             title: 'Zonas de Entrega Populares',
@@ -839,8 +899,16 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     </h3>
                     <div className="space-y-6">
                         <div className="flex justify-between items-center p-6 bg-purple-50 rounded-[28px] border border-purple-100 shadow-inner">
-                            <span className="text-[11px] font-black text-purple-900 uppercase tracking-widest">
-                                {t.promoEffectiveness.discountOrders}
+                            <span className="text-[11px] font-black text-purple-900 uppercase tracking-widest flex flex-col">
+                                <span>{t.promoEffectiveness.discountOrders}</span>
+                                <span className="text-[9px] text-purple-600 font-bold normal-case mt-0.5">
+                                    {Math.round(
+                                        ((stats?.promoStats?.count || 0) /
+                                            (stats?.promoStats?.totalOrders30 || 1)) *
+                                            100
+                                    )}
+                                    % {t.promoEffectiveness.ordersShare.toLowerCase()}
+                                </span>
                             </span>
                             <span className="text-3xl font-black text-purple-700 tabular-nums">
                                 {stats?.promoStats?.count || 0}
@@ -861,6 +929,27 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                                 </p>
                                 <p className="text-xl font-black text-gray-900 tabular-nums">
                                     {stats?.promoStats?.avgDiscount || 0}€
+                                </p>
+                            </div>
+                            <div className="p-5 bg-gray-50 rounded-[24px] border border-gray-100 group">
+                                <p className="text-[9px] uppercase font-black text-gray-400 mb-2 group-hover:text-orange-500 transition-colors tracking-widest">
+                                    {t.promoEffectiveness.promoRevenue}
+                                </p>
+                                <p className="text-xl font-black text-gray-900 tabular-nums">
+                                    {stats?.promoStats?.promoRevenue || 0}€
+                                </p>
+                            </div>
+                            <div className="p-5 bg-gray-50 rounded-[24px] border border-gray-100 group">
+                                <p className="text-[9px] uppercase font-black text-gray-400 mb-2 group-hover:text-orange-500 transition-colors tracking-widest">
+                                    {t.promoEffectiveness.revenueShare}
+                                </p>
+                                <p className="text-xl font-black text-gray-900 tabular-nums">
+                                    {Math.round(
+                                        ((stats?.promoStats?.promoRevenue || 0) /
+                                            (stats?.promoStats?.totalRevenue30 || 1)) *
+                                            100
+                                    )}
+                                    %
                                 </p>
                             </div>
                         </div>
@@ -906,6 +995,202 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
                             {t.deliveryZones.insight}
                         </p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Promo Campaigns & Analytics Breakdown */}
+            <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-10">
+                <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
+                    <h3 className="font-black text-gray-900 flex items-center gap-3 text-sm uppercase tracking-widest">
+                        <div className="p-2 bg-purple-50 text-purple-600 rounded-xl">
+                            <Activity size={20} strokeWidth={2.5} />
+                        </div>
+                        {t.promoCampaignsBreakdown.title}
+                    </h3>
+                </div>
+
+                <div className="overflow-x-auto custom-scrollbar">
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="border-b-2 border-gray-50">
+                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                    {t.promoCampaignsBreakdown.campaign}
+                                </th>
+                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-4">
+                                    {t.promoCampaignsBreakdown.uses}
+                                </th>
+                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-4">
+                                    {t.promoCampaignsBreakdown.revenue}
+                                </th>
+                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-4">
+                                    {t.promoCampaignsBreakdown.discounts}
+                                </th>
+                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-4">
+                                    {t.promoCampaignsBreakdown.avgCheck}
+                                </th>
+                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center px-4">
+                                    {t.promoCampaignsBreakdown.conversion}
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-50/50">
+                            {stats?.promoStats?.campaigns &&
+                            stats.promoStats.campaigns.length > 0 ? (
+                                stats.promoStats.campaigns.map((item: any, idx: number) => {
+                                    const convData = stats?.promoStats?.codesStats?.[item.key];
+                                    const convText = convData
+                                        ? `${convData.used} / ${convData.generated} (${Math.round((convData.used / convData.generated) * 100)}%)`
+                                        : 'N/A';
+
+                                    return (
+                                        <tr
+                                            key={idx}
+                                            className="hover:bg-gray-50/50 transition-colors group"
+                                        >
+                                            <td className="py-4 text-xs font-black text-gray-900 uppercase tracking-tight">
+                                                <span className="block text-gray-900">
+                                                    {(t.promoCampaignsBreakdown.types as any)[
+                                                        item.key
+                                                    ] || item.key}
+                                                </span>
+                                                <span className="text-[10px] text-gray-400 font-bold block mt-0.5">
+                                                    Grupo: {item.code}
+                                                </span>
+                                            </td>
+                                            <td className="py-4 text-xs font-black text-slate-700 text-right tabular-nums px-4">
+                                                {item.uses}
+                                            </td>
+                                            <td className="py-4 text-xs font-black text-emerald-600 text-right tabular-nums px-4">
+                                                {item.totalRevenue}€
+                                            </td>
+                                            <td className="py-4 text-xs font-black text-red-500 text-right tabular-nums px-4">
+                                                {item.totalDiscount}€
+                                            </td>
+                                            <td className="py-4 text-xs font-bold text-gray-500 text-right tabular-nums px-4">
+                                                {item.avgCheck}€
+                                            </td>
+                                            <td className="py-4 text-xs font-bold text-gray-600 text-center px-4">
+                                                {convText}
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                            ) : (
+                                <tr>
+                                    <td
+                                        colSpan={6}
+                                        className="py-8 text-center text-gray-400 font-bold text-xs uppercase tracking-widest"
+                                    >
+                                        {t.promoCampaignsBreakdown.noData}
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {/* Individual promo codes & Active banners configuration */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Individual Promo Codes Usage */}
+                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8">
+                    <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest">
+                        <div className="p-2 bg-purple-50 text-purple-600 rounded-xl">
+                            <TrendingUp size={18} strokeWidth={2.5} />
+                        </div>
+                        {t.promoCampaignsBreakdown.individualTitle}
+                    </h3>
+                    <div className="overflow-y-auto max-h-[350px] custom-scrollbar pr-2 space-y-4">
+                        {stats?.promoStats?.individualCodes &&
+                        stats.promoStats.individualCodes.length > 0 ? (
+                            stats.promoStats.individualCodes
+                                .slice(0, 15)
+                                .map((item: any, idx: number) => (
+                                    <div
+                                        key={idx}
+                                        className="flex items-center justify-between group p-3.5 hover:bg-gray-50 rounded-2xl transition-all border border-transparent hover:border-gray-100"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-6 h-6 rounded-lg bg-purple-600 text-white flex items-center justify-center text-[10px] font-black shadow-md shadow-purple-100">
+                                                {idx + 1}
+                                            </div>
+                                            <div>
+                                                <span className="text-xs font-black text-gray-900 uppercase tracking-tight">
+                                                    {item.code}
+                                                </span>
+                                                <span className="text-[9px] text-gray-400 font-bold block mt-0.5">
+                                                    Ahorro total: {item.totalDiscount}€
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-xs font-black text-gray-900 tabular-nums">
+                                                {item.uses} usos
+                                            </p>
+                                            <p className="text-[10px] font-bold text-emerald-600 tabular-nums">
+                                                {item.totalRevenue}€ rev.
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))
+                        ) : (
+                            <p className="text-[10px] text-gray-400 text-center py-12 font-black uppercase tracking-[0.2em]">
+                                {t.promoCampaignsBreakdown.noData}
+                            </p>
+                        )}
+                    </div>
+                </div>
+
+                {/* Banner Promotions Overview */}
+                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8">
+                    <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest">
+                        <div className="p-2 bg-orange-50 text-orange-600 rounded-xl">
+                            <Monitor size={18} strokeWidth={2.5} />
+                        </div>
+                        {t.promoCampaignsBreakdown.bannersTitle}
+                    </h3>
+                    <div className="overflow-y-auto max-h-[350px] custom-scrollbar pr-2 space-y-4">
+                        {stats?.promoStats?.banners && stats.promoStats.banners.length > 0 ? (
+                            stats.promoStats.banners.map((item: any, idx: number) => (
+                                <div
+                                    key={idx}
+                                    className="flex items-center justify-between group p-3.5 bg-gray-50/50 hover:bg-white rounded-2xl transition-all border border-transparent hover:border-orange-100"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <span className="text-2xl">{item.icon || '📢'}</span>
+                                        <div>
+                                            <span className="text-xs font-black text-gray-900 uppercase tracking-tight block max-w-[200px] truncate">
+                                                {item.title}
+                                            </span>
+                                            <span className="text-[9px] text-gray-400 font-bold block max-w-[200px] truncate mt-0.5">
+                                                {item.description}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="text-right flex flex-col items-end gap-1.5">
+                                        <span className="px-2.5 py-1 bg-orange-50 text-orange-600 border border-orange-100 rounded-full text-[9px] font-black uppercase tracking-wider">
+                                            {item.discount || 'PROMO'}
+                                        </span>
+                                        <span
+                                            className={`px-2.5 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                                                item.is_active
+                                                    ? 'bg-emerald-50 text-emerald-600 border border-emerald-100'
+                                                    : 'bg-gray-100 text-gray-400 border border-gray-200'
+                                            }`}
+                                        >
+                                            {item.is_active
+                                                ? t.promoCampaignsBreakdown.bannerActive
+                                                : t.promoCampaignsBreakdown.bannerInactive}
+                                        </span>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-[10px] text-gray-400 text-center py-12 font-black uppercase tracking-[0.2em]">
+                                {t.promoCampaignsBreakdown.noData}
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>

@@ -29,6 +29,15 @@ export const GoogleAuthButton = ({
     isLoading?: boolean;
 }) => {
     const { error: showError } = useToast();
+
+    // Detect mobile devices to use redirect flow instead of popup (which is often blocked or fails inside webviews)
+    const isMobile =
+        typeof window !== 'undefined' &&
+        (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+            navigator.userAgent
+        ) ||
+            window.innerWidth < 768);
+
     const login = useGoogleLogin({
         onSuccess: tokenResponse => {
             onSuccess({ access_token: tokenResponse.access_token });
@@ -45,31 +54,42 @@ export const GoogleAuthButton = ({
                 return;
             }
 
-            // Fallback: redirect to Google OAuth directly
-            const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-            if (clientId && clientId !== 'dummy-client-id') {
-                const redirectUri = window.location.origin;
-                const scope = 'openid email profile';
-                const state = btoa(JSON.stringify({ returnTo: window.location.pathname }));
-                const googleAuthUrl =
-                    `https://accounts.google.com/o/oauth2/v2/auth?` +
-                    `client_id=${clientId}` +
-                    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-                    `&response_type=token` +
-                    `&scope=${encodeURIComponent(scope)}` +
-                    `&state=${encodeURIComponent(state)}` +
-                    `&prompt=select_account`;
-                window.location.href = googleAuthUrl;
-            } else {
-                showError('Error al abrir la ventana de Google.');
-            }
+            triggerRedirect();
         },
     });
+
+    const triggerRedirect = () => {
+        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+        if (clientId && clientId !== 'dummy-client-id') {
+            const redirectUri = window.location.origin;
+            const scope = 'openid email profile';
+            const state = btoa(JSON.stringify({ returnTo: window.location.pathname }));
+            const googleAuthUrl =
+                `https://accounts.google.com/o/oauth2/v2/auth?` +
+                `client_id=${clientId}` +
+                `&redirect_uri=${encodeURIComponent(redirectUri)}` +
+                `&response_type=token` +
+                `&scope=${encodeURIComponent(scope)}` +
+                `&state=${encodeURIComponent(state)}` +
+                `&prompt=select_account`;
+            window.location.href = googleAuthUrl;
+        } else {
+            showError('Error al abrir la ventana de Google.');
+        }
+    };
+
+    const handleLoginClick = () => {
+        if (isMobile) {
+            triggerRedirect();
+        } else {
+            login();
+        }
+    };
 
     return (
         <button
             type="button"
-            onClick={() => login()}
+            onClick={handleLoginClick}
             disabled={isLoading}
             data-testid="google-login-button"
             className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-2xl border-2 border-gray-100 bg-white text-gray-700 font-bold text-xs hover:border-gray-200 hover:shadow-md transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"

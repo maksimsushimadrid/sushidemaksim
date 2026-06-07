@@ -1113,10 +1113,38 @@ router.get(
         const { data: orders90 } = await supabase
             .from('orders')
             .select(
-                'id, total, status, created_at, user_id, device_type, os_name, browser_name, delivery_address'
+                'id, total, status, created_at, user_id, device_type, os_name, browser_name, delivery_address, promo_code'
             )
             .eq('is_archived', false)
             .gte('created_at', thirtyDaysAgo);
+
+        const [{ data: allPromoCodes }, { data: activePromos }] = await Promise.all([
+            supabase.from('promo_codes').select('code, is_used'),
+            supabase.from('promos').select('*').order('sort_order', { ascending: true }),
+        ]);
+
+        const promoCodesStats: Record<string, { generated: number; used: number }> = {};
+        allPromoCodes?.forEach(pc => {
+            if (!pc.code) return;
+            const uc = pc.code.toUpperCase();
+            let key = 'custom';
+            if (uc.startsWith('NUEVO10') || uc.startsWith('NUEVO5')) {
+                key = 'welcome';
+            } else if (uc.startsWith('LOYALTY')) {
+                key = 'loyalty_bonus';
+            } else if (uc.startsWith('DESSERT')) {
+                key = 'loyalty_gift';
+            } else if (uc.startsWith('SPECIAL')) {
+                key = 'special';
+            }
+            if (!promoCodesStats[key]) {
+                promoCodesStats[key] = { generated: 0, used: 0 };
+            }
+            promoCodesStats[key].generated++;
+            if (pc.is_used) {
+                promoCodesStats[key].used++;
+            }
+        });
 
         const orderIds90 = (orders90 || []).filter(o => o.status !== 'cancelled').map(o => o.id);
 
@@ -1182,6 +1210,30 @@ router.get(
         const seenUsers = new Set();
         let promoCount = 0;
         let totalDiscount = 0;
+        let promoRevenue = 0;
+        let totalRevenue30 = 0;
+        let totalOrders30 = 0;
+
+        const campaignsMap: Record<
+            string,
+            {
+                key: string;
+                code: string;
+                uses: number;
+                totalDiscount: number;
+                totalRevenue: number;
+            }
+        > = {};
+
+        const individualCodesMap: Record<
+            string,
+            {
+                code: string;
+                uses: number;
+                totalDiscount: number;
+                totalRevenue: number;
+            }
+        > = {};
 
         orders90?.forEach(o => {
             const date = new Date(o.created_at);
@@ -1189,6 +1241,9 @@ router.get(
             const isWithin30 = o.created_at >= thirtyDaysAgo;
 
             if (o.status !== 'cancelled') {
+                totalOrders30++;
+                totalRevenue30 += Number(o.total);
+
                 // Heatmaps
                 const hour = date.getHours();
                 const day = date.getDay();
@@ -1207,11 +1262,74 @@ router.get(
                 areaMap[area].revenue =
                     Math.round((areaMap[area].revenue + Number(o.total)) * 100) / 100;
 
-                // Promo Detection
+                // Promo Detection & Accumulation
                 const subtotal = orderSubtotals[o.id] || 0;
-                if (subtotal > 0 && Number(o.total) < subtotal - 0.5) {
+                const discount =
+                    subtotal > 0 && Number(o.total) < subtotal - 0.5
+                        ? subtotal - Number(o.total)
+                        : 0;
+                const hasPromo = !!o.promo_code || discount > 0;
+
+                if (hasPromo) {
                     promoCount++;
-                    totalDiscount += subtotal - Number(o.total);
+                    totalDiscount += discount;
+                    promoRevenue += Number(o.total);
+
+                    let promoKey = 'manual';
+                    let displayCode = o.promo_code || 'Manual';
+
+                    if (o.promo_code) {
+                        const uc = o.promo_code.toUpperCase();
+                        if (uc.startsWith('NUEVO10') || uc.startsWith('NUEVO5')) {
+                            promoKey = 'welcome';
+                            displayCode = uc.split('-')[0];
+                        } else if (uc.startsWith('LOYALTY')) {
+                            promoKey = 'loyalty_bonus';
+                            displayCode = uc.split('-')[0];
+                        } else if (uc.startsWith('DESSERT')) {
+                            promoKey = 'loyalty_gift';
+                            displayCode = uc.split('-')[0];
+                        } else if (uc.startsWith('REF-')) {
+                            promoKey = 'referral';
+                            displayCode = 'REFERRAL';
+                        } else if (uc.startsWith('SPECIAL')) {
+                            promoKey = 'special';
+                            displayCode = uc.split('-')[0];
+                        } else {
+                            promoKey = 'custom';
+                            displayCode = uc;
+                        }
+                    }
+
+                    const mapKey = `${promoKey}_${displayCode}`;
+                    if (!campaignsMap[mapKey]) {
+                        campaignsMap[mapKey] = {
+                            key: promoKey,
+                            code: displayCode,
+                            uses: 0,
+                            totalDiscount: 0,
+                            totalRevenue: 0,
+                        };
+                    }
+                    campaignsMap[mapKey].uses++;
+                    campaignsMap[mapKey].totalDiscount += discount;
+                    campaignsMap[mapKey].totalRevenue += Number(o.total);
+
+                    // Track individual codes breakdown
+                    if (o.promo_code) {
+                        const codeKey = o.promo_code.toUpperCase();
+                        if (!individualCodesMap[codeKey]) {
+                            individualCodesMap[codeKey] = {
+                                code: codeKey,
+                                uses: 0,
+                                totalDiscount: 0,
+                                totalRevenue: 0,
+                            };
+                        }
+                        individualCodesMap[codeKey].uses++;
+                        individualCodesMap[codeKey].totalDiscount += discount;
+                        individualCodesMap[codeKey].totalRevenue += Number(o.total);
+                    }
                 }
 
                 // Growth
@@ -1315,6 +1433,26 @@ router.get(
             .sort((a, b) => b.count - a.count)
             .slice(0, 5);
 
+        const campaignsList = Object.values(campaignsMap)
+            .map(c => ({
+                ...c,
+                totalDiscount: Math.round(c.totalDiscount * 100) / 100,
+                totalRevenue: Math.round(c.totalRevenue * 100) / 100,
+                avgDiscount: c.uses > 0 ? Math.round((c.totalDiscount / c.uses) * 100) / 100 : 0,
+                avgCheck: c.uses > 0 ? Math.round((c.totalRevenue / c.uses) * 100) / 100 : 0,
+            }))
+            .sort((a, b) => b.uses - a.uses);
+
+        const individualCodesList = Object.values(individualCodesMap)
+            .map(c => ({
+                ...c,
+                totalDiscount: Math.round(c.totalDiscount * 100) / 100,
+                totalRevenue: Math.round(c.totalRevenue * 100) / 100,
+                avgDiscount: c.uses > 0 ? Math.round((c.totalDiscount / c.uses) * 100) / 100 : 0,
+                avgCheck: c.uses > 0 ? Math.round((c.totalRevenue / c.uses) * 100) / 100 : 0,
+            }))
+            .sort((a, b) => b.uses - a.uses);
+
         res.json({
             revenueToday,
             ordersToday,
@@ -1352,6 +1490,13 @@ router.get(
                 totalDiscount: Math.round(totalDiscount * 100) / 100,
                 avgDiscount:
                     promoCount > 0 ? Math.round((totalDiscount / promoCount) * 100) / 100 : 0,
+                promoRevenue: Math.round(promoRevenue * 100) / 100,
+                totalRevenue30: Math.round(totalRevenue30 * 100) / 100,
+                totalOrders30,
+                campaigns: campaignsList,
+                individualCodes: individualCodesList,
+                codesStats: promoCodesStats,
+                banners: activePromos || [],
             },
             estimatedMargin: revenue > 0 ? Math.round((totalProfit / revenue) * 100) : 0,
             estimatedMarkup:
