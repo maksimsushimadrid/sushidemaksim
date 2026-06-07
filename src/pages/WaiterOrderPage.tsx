@@ -30,6 +30,7 @@ const ITEM_OPTIONS: Record<string, string[]> = {
 // Exclude false positives (e.g. "aguacate" should NOT match "agua")
 const OPTION_EXCLUDES: Record<string, string[]> = {
     agua: ['aguacate'],
+    cerveza: ['artesana', 'artesanas'],
 };
 
 function getItemOptions(name: string): string[] | null {
@@ -82,14 +83,53 @@ export default function WaiterOrderPage() {
     const isBeverage = (category: string) =>
         category === 'bebidas' || category === 'drink' || category === 'drinks';
 
-    const filteredItems = useMemo(() => {
-        return menuItems.filter(item => {
+    type RenderItem = {
+        originalId: number;
+        id: string; // The composite key (itemId or itemId:option)
+        name: string;
+        price: number;
+        image: string;
+        category: string;
+        option?: string;
+    };
+
+    const flattenedItems = useMemo(() => {
+        const items = menuItems.filter(item => {
             if (selectedCategory === 'all') {
                 // Exclude beverages from "Todos" — they only appear in "Bebidas"
                 return !isBeverage(item.category);
             }
             return isBeverage(item.category);
         });
+
+        const flat: RenderItem[] = [];
+        items.forEach(item => {
+            const options = getItemOptions(item.name);
+            if (options) {
+                options.forEach(opt => {
+                    const isStandalone = ['Coca-Cola', 'Fanta', 'Sprite', 'Aquarius Limón', 'Aquarius Naranja'].includes(opt);
+                    flat.push({
+                        originalId: item.id,
+                        id: makeKey(item.id, opt),
+                        name: isStandalone ? opt : `${item.name} ${opt.toUpperCase()}`,
+                        price: item.price,
+                        image: item.image,
+                        category: item.category,
+                        option: opt,
+                    });
+                });
+            } else {
+                flat.push({
+                    originalId: item.id,
+                    id: makeKey(item.id),
+                    name: item.name,
+                    price: item.price,
+                    image: item.image,
+                    category: item.category,
+                });
+            }
+        });
+        return flat;
     }, [menuItems, selectedCategory]);
 
     if (authLoading || !user || (user.role !== 'waiter' && user.role !== 'admin')) {
@@ -255,144 +295,74 @@ export default function WaiterOrderPage() {
                         <Loader2 className="animate-spin text-orange-600 mb-4" size={32} />
                         <p className="text-xs font-bold text-gray-500">Cargando menú...</p>
                     </div>
-                ) : filteredItems.length > 0 ? (
-                    filteredItems.map(item => (
+                ) : flattenedItems.length > 0 ? (
+                    flattenedItems.map(item => (
                         <motion.div
                             layout
                             key={item.id}
-                            className={`bg-white p-2 rounded-2xl border transition-all ${
-                                getItemTotal(item.id) > 0
+                            className={`bg-white p-2 rounded-2xl border transition-all flex items-center gap-3 ${
+                                selectedItems[item.id] > 0
                                     ? 'border-orange-100 bg-orange-50/10'
                                     : 'border-gray-50'
                             }`}
                         >
-                            <div className="flex items-center gap-3">
-                                <div
-                                    onClick={() => {
-                                        const options = getItemOptions(item.name);
-                                        if (!options) {
-                                            // No options — use plain key
-                                            const key = makeKey(item.id);
-                                            handleQuantityChange(key, 1);
-                                        }
-                                        // Items with options — do nothing on image tap, use option buttons
-                                    }}
-                                    className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-50 flex items-center justify-center cursor-pointer"
-                                >
-                                    {item.image ? (
-                                        <img
-                                            src={item.image}
-                                            alt={item.name}
-                                            className="w-full h-full object-cover"
-                                            onError={e => {
-                                                const parent = e.currentTarget.parentElement;
-                                                if (parent) {
-                                                    parent.innerHTML = `<span class="text-2xl grayscale opacity-30">${EMOJI[item.category as keyof typeof EMOJI] || '🍱'}</span>`;
-                                                }
-                                            }}
-                                        />
-                                    ) : (
-                                        <span className="text-2xl grayscale opacity-30">
-                                            {EMOJI[item.category as keyof typeof EMOJI] || '🍱'}
-                                        </span>
-                                    )}
-                                </div>
-
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="text-xs font-black text-gray-900 leading-tight mb-0.5 truncate">
-                                        {item.name}
-                                    </h3>
-                                    <p className="text-[10px] font-bold text-orange-600 leading-none">
-                                        {item.price.toFixed(2)} €
-                                    </p>
-                                </div>
-
-                                {/* Quantity controls for items WITHOUT options */}
-                                {!getItemOptions(item.name) && (
-                                    <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-xl border border-gray-100">
-                                        {(selectedItems[makeKey(item.id)] || 0) > 0 && (
-                                            <>
-                                                <button
-                                                    onClick={() =>
-                                                        handleQuantityChange(makeKey(item.id), -1)
-                                                    }
-                                                    className="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-900 active:bg-gray-50 transition"
-                                                >
-                                                    <Minus size={12} strokeWidth={3} />
-                                                </button>
-                                                <div className="w-6 text-center text-[10px] font-black text-gray-900">
-                                                    {selectedItems[makeKey(item.id)]}
-                                                </div>
-                                            </>
-                                        )}
-                                        <button
-                                            onClick={() =>
-                                                handleQuantityChange(makeKey(item.id), 1)
+                            <div
+                                onClick={() => handleQuantityChange(item.id, 1)}
+                                className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-50 flex items-center justify-center cursor-pointer"
+                            >
+                                {item.image ? (
+                                    <img
+                                        src={item.image}
+                                        alt={item.name}
+                                        className="w-full h-full object-cover"
+                                        onError={e => {
+                                            const parent = e.currentTarget.parentElement;
+                                            if (parent) {
+                                                parent.innerHTML = `<span class="text-2xl grayscale opacity-30">${EMOJI[item.category as keyof typeof EMOJI] || '🍱'}</span>`;
                                             }
-                                            className={`w-7 h-7 rounded-lg flex items-center justify-center transition active:scale-95 ${
-                                                selectedItems[makeKey(item.id)]
-                                                    ? 'bg-orange-600 text-white shadow-lg shadow-orange-100'
-                                                    : 'bg-white border border-gray-200 text-gray-900'
-                                            }`}
-                                        >
-                                            <Plus size={12} strokeWidth={3} />
-                                        </button>
-                                    </div>
+                                        }}
+                                    />
+                                ) : (
+                                    <span className="text-2xl grayscale opacity-30">
+                                        {EMOJI[item.category as keyof typeof EMOJI] || '🍱'}
+                                    </span>
                                 )}
                             </div>
 
-                            {/* Per-option quantity rows for items WITH options */}
-                            {getItemOptions(item.name) && (
-                                <div className="mt-2 space-y-1.5 pl-[60px]">
-                                    {getItemOptions(item.name)!.map(opt => {
-                                        const key = makeKey(item.id, opt);
-                                        const qty = selectedItems[key] || 0;
-                                        return (
-                                            <div
-                                                key={opt}
-                                                className="flex items-center justify-between"
-                                            >
-                                                <span
-                                                    className={`text-[10px] font-black uppercase tracking-wider ${
-                                                        qty > 0
-                                                            ? 'text-orange-600'
-                                                            : 'text-gray-400'
-                                                    }`}
-                                                >
-                                                    {opt}
-                                                </span>
-                                                <div className="flex items-center gap-1 bg-gray-50 p-0.5 rounded-lg border border-gray-100">
-                                                    {qty > 0 && (
-                                                        <>
-                                                            <button
-                                                                onClick={() =>
-                                                                    handleQuantityChange(key, -1)
-                                                                }
-                                                                className="w-6 h-6 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-900 active:bg-gray-50 transition"
-                                                            >
-                                                                <Minus size={10} strokeWidth={3} />
-                                                            </button>
-                                                            <div className="w-5 text-center text-[10px] font-black text-gray-900">
-                                                                {qty}
-                                                            </div>
-                                                        </>
-                                                    )}
-                                                    <button
-                                                        onClick={() => handleQuantityChange(key, 1)}
-                                                        className={`w-6 h-6 rounded-md flex items-center justify-center transition active:scale-95 ${
-                                                            qty > 0
-                                                                ? 'bg-orange-600 text-white shadow-sm'
-                                                                : 'bg-white border border-gray-200 text-gray-900'
-                                                        }`}
-                                                    >
-                                                        <Plus size={10} strokeWidth={3} />
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            )}
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-xs font-black text-gray-900 leading-tight mb-0.5 truncate">
+                                    {item.name}
+                                </h3>
+                                <p className="text-[10px] font-bold text-orange-600 leading-none">
+                                    {item.price.toFixed(2)} €
+                                </p>
+                            </div>
+
+                            <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-xl border border-gray-100">
+                                {(selectedItems[item.id] || 0) > 0 && (
+                                    <>
+                                        <button
+                                            onClick={() => handleQuantityChange(item.id, -1)}
+                                            className="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-900 active:bg-gray-50 transition"
+                                        >
+                                            <Minus size={12} strokeWidth={3} />
+                                        </button>
+                                        <div className="w-6 text-center text-[10px] font-black text-gray-900">
+                                            {selectedItems[item.id]}
+                                        </div>
+                                    </>
+                                )}
+                                <button
+                                    onClick={() => handleQuantityChange(item.id, 1)}
+                                    className={`w-7 h-7 rounded-lg flex items-center justify-center transition active:scale-95 ${
+                                        selectedItems[item.id]
+                                            ? 'bg-orange-600 text-white shadow-lg shadow-orange-100'
+                                            : 'bg-white border border-gray-200 text-gray-900'
+                                    }`}
+                                >
+                                    <Plus size={12} strokeWidth={3} />
+                                </button>
+                            </div>
                         </motion.div>
                     ))
                 ) : (
