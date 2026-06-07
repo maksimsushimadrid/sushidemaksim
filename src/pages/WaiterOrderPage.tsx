@@ -21,15 +21,25 @@ import { EMOJI } from '../constants/menu';
 
 // Map of item name patterns → available options
 const ITEM_OPTIONS: Record<string, string[]> = {
-    cerveza: ['Mahou', 'Águila'],
+    cerveza: ['Mahou', 'Águila', 'De grifo'],
     agua: ['Sin gas', 'Con gas'],
+    'coca-cola': ['Coca-Cola', 'Fanta', 'Sprite'],
+    limonada: ['Aquarius Limón', 'Aquarius Naranja'],
+};
+
+// Exclude false positives (e.g. "aguacate" should NOT match "agua")
+const OPTION_EXCLUDES: Record<string, string[]> = {
+    agua: ['aguacate'],
 };
 
 function getItemOptions(name: string): string[] | null {
     const lower = name.toLowerCase();
     for (const [key, options] of Object.entries(ITEM_OPTIONS)) {
-        // Word-boundary match to avoid "aguacate" matching "agua"
-        if (new RegExp(`\\b${key}\\b`).test(lower)) return options;
+        if (!lower.includes(key)) continue;
+        // Check exclusion list
+        const excludes = OPTION_EXCLUDES[key];
+        if (excludes && excludes.some(ex => lower.includes(ex))) continue;
+        return options;
     }
     return null;
 }
