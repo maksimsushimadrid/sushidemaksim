@@ -262,10 +262,10 @@ const UserRow = memo(
                             )}
                         </div>
                         <div className="flex flex-col min-w-0">
-                            <div className="flex items-center gap-2 mb-0.5">
+                            <div className="flex items-center gap-2 mb-0.5 w-full min-w-0">
                                 <div
                                     ref={triggerRef}
-                                    className="relative group/name cursor-help"
+                                    className="relative group/name cursor-help min-w-0 flex-shrink"
                                     onMouseEnter={() => setShowTooltip(true)}
                                     onMouseLeave={() => setShowTooltip(false)}
                                 >
@@ -289,12 +289,12 @@ const UserRow = memo(
                                 {user.isVerified ? (
                                     <span
                                         title={t.status.verified}
-                                        className="text-green-500 bg-green-50 p-1 rounded-lg border border-green-100 shadow-sm"
+                                        className="text-green-500 bg-green-50 p-1 rounded-lg border border-green-100 shadow-sm shrink-0"
                                     >
                                         <CheckCircle size={10} strokeWidth={3} />
                                     </span>
                                 ) : (
-                                    <div className="flex items-center gap-1.5">
+                                    <div className="flex items-center gap-1.5 shrink-0">
                                         <span
                                             title={t.status.pending}
                                             className="text-amber-500 bg-amber-50 p-1 rounded-lg border border-amber-100 shadow-sm animate-pulse"
@@ -303,7 +303,7 @@ const UserRow = memo(
                                         </span>
                                         <button
                                             onClick={() => onVerifyEmail(user)}
-                                            className="px-2 py-0.5 bg-blue-600 text-white hover:bg-black rounded-lg text-[8px] font-black uppercase tracking-widest transition-all shadow-sm active:scale-95"
+                                            className="px-2 py-0.5 bg-blue-600 text-white hover:bg-black rounded-lg text-[8px] font-black uppercase tracking-widest transition-all shadow-sm active:scale-95 whitespace-nowrap"
                                             title={t.status.manualVerify}
                                         >
                                             {t.status.verify}
@@ -322,15 +322,15 @@ const UserRow = memo(
                         </div>
                     </div>
                 </td>
-                <td className="px-4 py-2.5">
+                <td className="px-4 py-2.5 min-w-[120px]">
                     <div className="flex flex-col gap-1.5">
                         {birthDate ? (
-                            <div className="flex items-center gap-2 text-[10px] font-black text-gray-700 bg-gray-100/50 px-2 py-0.5 rounded-lg w-fit border border-gray-100">
+                            <div className="flex items-center gap-2 text-[10px] font-black text-gray-700 bg-gray-100/50 px-2 py-0.5 rounded-lg w-fit border border-gray-100 whitespace-nowrap">
                                 <Calendar size={10} strokeWidth={2} className="text-orange-400" />
                                 <span className="tabular-nums">{birthDate}</span>
                             </div>
                         ) : (
-                            <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
+                            <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest whitespace-nowrap">
                                 {t.status.noDate}
                             </span>
                         )}
@@ -338,7 +338,7 @@ const UserRow = memo(
                         {birthDate && (
                             <button
                                 onClick={() => onToggleBirthday(user.id, user.isBirthDateVerified)}
-                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[9px] font-black uppercase tracking-tighter w-fit transition-all border shadow-sm active:scale-95 ${
+                                className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[9px] font-black uppercase tracking-tighter w-fit transition-all border shadow-sm active:scale-95 whitespace-nowrap ${
                                     user.isBirthDateVerified
                                         ? 'bg-green-50 text-green-700 border-green-100 hover:bg-green-600 hover:text-white'
                                         : 'bg-amber-50 text-amber-700 border-amber-100 hover:bg-amber-600 hover:text-white'
@@ -402,31 +402,31 @@ const UserRow = memo(
                 <td className="px-4 py-2.5 text-center text-[10px] font-bold text-gray-400 tabular-nums">
                     {regDate}
                 </td>
-                <td className="px-4 py-2.5 text-center">
+                <td className="px-4 py-2.5 text-center min-w-[110px]">
                     <div className="flex flex-col items-center gap-1">
                         {user.isSuperadmin ? (
-                            <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-amber-100 shadow-sm">
+                            <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-amber-100 shadow-sm whitespace-nowrap">
                                 <Crown size={10} strokeWidth={2.5} /> {t.roles.superadmin}
                             </span>
                         ) : user.role === 'admin' ? (
-                            <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-orange-100 shadow-sm">
+                            <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-orange-100 shadow-sm whitespace-nowrap">
                                 <Shield size={10} strokeWidth={2.5} /> {t.roles.admin}
                             </span>
                         ) : user.role === 'waiter' ? (
-                            <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-orange-100 shadow-sm">
+                            <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-orange-100 shadow-sm whitespace-nowrap">
                                 <Clock size={10} strokeWidth={2.5} /> {t.roles.waiter}
                             </span>
                         ) : user.role === 'moderator' ? (
-                            <span className="inline-flex items-center gap-1 bg-purple-50 text-purple-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-purple-100 shadow-sm">
+                            <span className="inline-flex items-center gap-1 bg-purple-50 text-purple-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-purple-100 shadow-sm whitespace-nowrap">
                                 <Eye size={10} strokeWidth={2.5} /> {t.roles.moderator}
                             </span>
                         ) : (
-                            <span className="inline-flex items-center gap-1 bg-gray-50 text-gray-500 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-gray-200">
+                            <span className="inline-flex items-center gap-1 bg-gray-50 text-gray-500 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-gray-200 whitespace-nowrap">
                                 <UsersIcon size={10} strokeWidth={2.5} /> {t.roles.user}
                             </span>
                         )}
                         {user.deletedAt && (
-                            <span className="inline-flex items-center gap-1 bg-black text-white px-2 py-0.5 rounded-lg font-black text-[8px] uppercase tracking-widest shadow-lg">
+                            <span className="inline-flex items-center gap-1 bg-black text-white px-2 py-0.5 rounded-lg font-black text-[8px] uppercase tracking-widest shadow-lg whitespace-nowrap">
                                 {t.status.archived}
                             </span>
                         )}
