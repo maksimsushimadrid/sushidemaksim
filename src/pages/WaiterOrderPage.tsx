@@ -126,7 +126,7 @@ export default function WaiterOrderPage() {
     };
 
     return (
-        <div className="min-h-screen bg-[#FBF7F0] pb-24">
+        <div className="min-h-screen bg-[#FBF7F0] pb-24 w-full max-w-full overflow-x-hidden">
             <SEO title="Panel de Camarero" description="Gestión rápida de pedidos en sala" />
 
             {/* Minimal Sticky Header */}
@@ -198,7 +198,6 @@ export default function WaiterOrderPage() {
                                 : 'bg-white text-gray-500 border border-gray-100'
                         }`}
                     >
-                        <span className="text-xs">🥤</span>
                         Bebidas
                     </button>
                 </div>
@@ -367,9 +366,23 @@ export default function WaiterOrderPage() {
                                     <h2 className="text-sm font-black text-gray-900">
                                         Revisar Comanda
                                     </h2>
-                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                        Mesa {selectedTable}
-                                    </p>
+                                    {selectedTable === 'S/N' ? (
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest animate-pulse">
+                                                ⚠️ Не выбран столик
+                                            </span>
+                                            <button
+                                                onClick={() => setShowTableDrawer(true)}
+                                                className="text-[10px] font-black text-orange-600 underline cursor-pointer"
+                                            >
+                                                Seleccionar
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                            Mesa {selectedTable}
+                                        </p>
+                                    )}
                                 </div>
                                 <button
                                     onClick={() => setShowConfirmModal(false)}
@@ -426,10 +439,24 @@ export default function WaiterOrderPage() {
                             </div>
 
                             <div className="p-5 bg-gray-50/50 border-t border-gray-100">
+                                {selectedTable === 'S/N' && (
+                                    <div className="text-center mb-3">
+                                        <p className="text-[11px] font-bold text-red-500">
+                                            ⚠️ Por favor, seleccione una mesa (Не выбран столик)
+                                        </p>
+                                        <button
+                                            type="button"
+                                            onClick={() => setShowTableDrawer(true)}
+                                            className="text-[11px] font-black text-orange-600 underline mt-0.5 cursor-pointer inline-block"
+                                        >
+                                            Seleccionar Mesa ahora
+                                        </button>
+                                    </div>
+                                )}
                                 <button
                                     onClick={finalizeOrder}
-                                    disabled={isSubmitting}
-                                    className="w-full h-12 bg-orange-600 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 hover:bg-orange-700 active:scale-95 transition-all shadow-xl shadow-orange-500/20 disabled:opacity-50"
+                                    disabled={isSubmitting || selectedTable === 'S/N'}
+                                    className="w-full h-12 bg-orange-600 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 hover:bg-orange-700 active:scale-95 transition-all shadow-xl shadow-orange-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
                                     {isSubmitting ? (
                                         <Loader2 className="animate-spin" size={18} />
