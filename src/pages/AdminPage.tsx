@@ -648,7 +648,10 @@ export default function AdminPage() {
     }
 
     return (
-        <MotionConfig reducedMotion={isMobile ? 'always' : 'user'}>
+        <MotionConfig
+            reducedMotion="never"
+            transition={isMobile ? { duration: 0 } : undefined}
+        >
             <div
                 className="min-h-screen flex flex-col md:flex-row relative"
                 style={{
