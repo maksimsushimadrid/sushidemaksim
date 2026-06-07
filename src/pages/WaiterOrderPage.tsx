@@ -25,6 +25,7 @@ const ITEM_OPTIONS: Record<string, string[]> = {
     agua: ['Sin gas', 'Con gas'],
     'coca-cola': ['Coca-Cola', 'Fanta', 'Sprite'],
     limonada: ['Aquarius Limón', 'Aquarius Naranja'],
+    vino: ['Vino Tinto', 'Vino Blanco'],
 };
 
 // Exclude false positives (e.g. "aguacate" should NOT match "agua")
@@ -120,7 +121,7 @@ export default function WaiterOrderPage() {
             const options = getItemOptions(item.name);
             if (options) {
                 options.forEach(opt => {
-                    const isStandalone = ['Coca-Cola', 'Fanta', 'Sprite', 'Aquarius Limón', 'Aquarius Naranja'].includes(opt);
+                    const isStandalone = ['Coca-Cola', 'Fanta', 'Sprite', 'Aquarius Limón', 'Aquarius Naranja', 'Vino Tinto', 'Vino Blanco'].includes(opt);
                     flat.push({
                         originalId: item.id,
                         id: makeKey(item.id, opt),
