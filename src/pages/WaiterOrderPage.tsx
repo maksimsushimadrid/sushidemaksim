@@ -19,6 +19,20 @@ import { useNavigate } from 'react-router-dom';
 import SEO from '../components/SEO';
 import { EMOJI } from '../constants/menu';
 
+// Map of item name patterns → available options
+const ITEM_OPTIONS: Record<string, string[]> = {
+    cerveza: ['Mahou', 'Águila'],
+    agua: ['Sin gas', 'Con gas'],
+};
+
+function getItemOptions(name: string): string[] | null {
+    const lower = name.toLowerCase();
+    for (const [key, options] of Object.entries(ITEM_OPTIONS)) {
+        if (lower.includes(key)) return options;
+    }
+    return null;
+}
+
 export default function WaiterOrderPage() {
     const [orderComment, setOrderComment] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
@@ -28,6 +42,7 @@ export default function WaiterOrderPage() {
     const [selectedTable, setSelectedTable] = useState('S/N');
     const [showTableDrawer, setShowTableDrawer] = useState(false);
     const [customTable, setCustomTable] = useState('');
+    const [selectedOptions, setSelectedOptions] = useState<Record<number, string>>({});
     const toast = useToast();
     const { user, isLoading: authLoading, logout } = useAuth();
     const navigate = useNavigate();
@@ -91,12 +106,14 @@ export default function WaiterOrderPage() {
             const orderData = {
                 items: Object.entries(selectedItems).map(([id, qty]) => {
                     const item = menuItems.find(i => i.id === Number(id));
+                    const option = selectedOptions[Number(id)];
                     return {
                         id: Number(id),
                         name: item?.name || 'Producto',
                         price: item?.price || 0,
                         quantity: qty,
                         image: item?.image || '',
+                        ...(option ? { selected_option: option } : {}),
                     };
                 }),
                 totalValue: totalPrice,
@@ -115,6 +132,7 @@ export default function WaiterOrderPage() {
             if (navigator.vibrate) navigator.vibrate([40, 40, 40]);
 
             setSelectedItems({});
+            setSelectedOptions({});
             setOrderComment('');
             setShowConfirmModal(false);
         } catch (error) {
@@ -255,6 +273,33 @@ export default function WaiterOrderPage() {
                                 <p className="text-[10px] font-bold text-orange-600 leading-none">
                                     {item.price.toFixed(2)} €
                                 </p>
+                                {/* Option chips for items with variants */}
+                                {selectedItems[item.id] > 0 && getItemOptions(item.name) && (
+                                    <div className="flex gap-1 mt-1.5 flex-wrap">
+                                        {getItemOptions(item.name)!.map(opt => {
+                                            const isActive = selectedOptions[item.id] === opt;
+                                            return (
+                                                <button
+                                                    key={opt}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedOptions(prev => ({
+                                                            ...prev,
+                                                            [item.id]: isActive ? '' : opt,
+                                                        }));
+                                                    }}
+                                                    className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all active:scale-95 ${
+                                                        isActive
+                                                            ? 'bg-orange-600 text-white shadow-sm'
+                                                            : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                                                    }`}
+                                                >
+                                                    {opt}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </div>
 
                             <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-xl border border-gray-100">
@@ -405,9 +450,16 @@ export default function WaiterOrderPage() {
                                                     <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-[10px] font-black">
                                                         {qty}x
                                                     </div>
-                                                    <span className="text-xs font-bold text-gray-800">
-                                                        {item?.name}
-                                                    </span>
+                                                    <div>
+                                                        <span className="text-xs font-bold text-gray-800">
+                                                            {item?.name}
+                                                        </span>
+                                                        {selectedOptions[Number(id)] && (
+                                                            <span className="ml-1.5 text-[9px] font-black text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-full uppercase">
+                                                                {selectedOptions[Number(id)]}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </div>
                                                 <span className="text-xs font-black text-gray-900">
                                                     {((item?.price || 0) * qty).toFixed(2)}€

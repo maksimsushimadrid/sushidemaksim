@@ -102,6 +102,7 @@ router.post(
                 quantity: item.quantity,
                 price_at_time: item.price,
                 image: item.image || '',
+                selected_option: item.selected_option || '',
             }));
 
             const { error: itemsError } = await supabase.from('order_items').insert(orderItems);
