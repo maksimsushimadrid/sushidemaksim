@@ -281,7 +281,7 @@ export default function WaiterOrderPage() {
                                             return (
                                                 <button
                                                     key={opt}
-                                                    onClick={(e) => {
+                                                    onClick={e => {
                                                         e.stopPropagation();
                                                         setSelectedOptions(prev => ({
                                                             ...prev,
