@@ -36,13 +36,26 @@ function getItemOptions(name: string): string[] | null {
 export default function WaiterOrderPage() {
     const [orderComment, setOrderComment] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('all');
-    const [selectedItems, setSelectedItems] = useState<Record<number, number>>({});
+    // Composite key: "itemId" for plain items, "itemId:option" for items with variants
+    const [selectedItems, setSelectedItems] = useState<Record<string, number>>({});
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [selectedTable, setSelectedTable] = useState('S/N');
     const [showTableDrawer, setShowTableDrawer] = useState(false);
     const [customTable, setCustomTable] = useState('');
-    const [selectedOptions, setSelectedOptions] = useState<Record<number, string>>({});
+
+    const makeKey = (itemId: number, option?: string) =>
+        option ? `${itemId}:${option}` : `${itemId}`;
+    const parseKey = (key: string) => {
+        const idx = key.indexOf(':');
+        if (idx === -1) return { itemId: Number(key), option: '' };
+        return { itemId: Number(key.slice(0, idx)), option: key.slice(idx + 1) };
+    };
+    // Total quantity for a given itemId across all options
+    const getItemTotal = (itemId: number) =>
+        Object.entries(selectedItems)
+            .filter(([k]) => parseKey(k).itemId === itemId)
+            .reduce((sum, [, q]) => sum + q, 0);
     const toast = useToast();
     const { user, isLoading: authLoading, logout } = useAuth();
     const navigate = useNavigate();
@@ -76,22 +89,23 @@ export default function WaiterOrderPage() {
         );
     }
 
-    const handleQuantityChange = (itemId: number, delta: number) => {
+    const handleQuantityChange = (key: string, delta: number) => {
         setSelectedItems(prev => {
-            const current = prev[itemId] || 0;
+            const current = prev[key] || 0;
             const next = Math.max(0, current + delta);
             if (next === 0) {
                 const newState = { ...prev };
-                delete newState[itemId];
+                delete newState[key];
                 return newState;
             }
-            return { ...prev, [itemId]: next };
+            return { ...prev, [key]: next };
         });
     };
 
     const totalCount = Object.values(selectedItems).reduce((a, b) => a + b, 0);
-    const totalPrice = Object.entries(selectedItems).reduce((sum, [id, qty]) => {
-        const item = menuItems.find(i => i.id === Number(id));
+    const totalPrice = Object.entries(selectedItems).reduce((sum, [key, qty]) => {
+        const { itemId } = parseKey(key);
+        const item = menuItems.find(i => i.id === itemId);
         return sum + (item?.price || 0) * qty;
     }, 0);
 
@@ -104,11 +118,11 @@ export default function WaiterOrderPage() {
         setIsSubmitting(true);
         try {
             const orderData = {
-                items: Object.entries(selectedItems).map(([id, qty]) => {
-                    const item = menuItems.find(i => i.id === Number(id));
-                    const option = selectedOptions[Number(id)];
+                items: Object.entries(selectedItems).map(([key, qty]) => {
+                    const { itemId, option } = parseKey(key);
+                    const item = menuItems.find(i => i.id === itemId);
                     return {
-                        id: Number(id),
+                        id: itemId,
                         name: item?.name || 'Producto',
                         price: item?.price || 0,
                         quantity: qty,
@@ -132,7 +146,6 @@ export default function WaiterOrderPage() {
             if (navigator.vibrate) navigator.vibrate([40, 40, 40]);
 
             setSelectedItems({});
-            setSelectedOptions({});
             setOrderComment('');
             setShowConfirmModal(false);
         } catch (error) {
@@ -236,100 +249,141 @@ export default function WaiterOrderPage() {
                         <motion.div
                             layout
                             key={item.id}
-                            className={`bg-white p-2 rounded-2xl border transition-all flex items-center gap-3 ${
-                                selectedItems[item.id]
+                            className={`bg-white p-2 rounded-2xl border transition-all ${
+                                getItemTotal(item.id) > 0
                                     ? 'border-orange-100 bg-orange-50/10'
                                     : 'border-gray-50'
                             }`}
                         >
-                            <div
-                                onClick={() => {
-                                    const current = selectedItems[item.id] || 0;
-                                    const next = current > 0 ? current + 1 : 1;
-                                    setSelectedItems(prev => ({ ...prev, [item.id]: next }));
-                                }}
-                                className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-50 flex items-center justify-center cursor-pointer"
-                            >
-                                {item.image ? (
-                                    <img
-                                        src={item.image}
-                                        alt={item.name}
-                                        className="w-full h-full object-cover"
-                                        onError={e => {
-                                            const parent = e.currentTarget.parentElement;
-                                            if (parent) {
-                                                parent.innerHTML = `<span class="text-2xl grayscale opacity-30">${EMOJI[item.category as keyof typeof EMOJI] || '🍱'}</span>`;
-                                            }
-                                        }}
-                                    />
-                                ) : (
-                                    <span className="text-2xl grayscale opacity-30">
-                                        {EMOJI[item.category as keyof typeof EMOJI] || '🍱'}
-                                    </span>
-                                )}
-                            </div>
+                            <div className="flex items-center gap-3">
+                                <div
+                                    onClick={() => {
+                                        const options = getItemOptions(item.name);
+                                        if (!options) {
+                                            // No options — use plain key
+                                            const key = makeKey(item.id);
+                                            handleQuantityChange(key, 1);
+                                        }
+                                        // Items with options — do nothing on image tap, use option buttons
+                                    }}
+                                    className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-50 flex items-center justify-center cursor-pointer"
+                                >
+                                    {item.image ? (
+                                        <img
+                                            src={item.image}
+                                            alt={item.name}
+                                            className="w-full h-full object-cover"
+                                            onError={e => {
+                                                const parent = e.currentTarget.parentElement;
+                                                if (parent) {
+                                                    parent.innerHTML = `<span class="text-2xl grayscale opacity-30">${EMOJI[item.category as keyof typeof EMOJI] || '🍱'}</span>`;
+                                                }
+                                            }}
+                                        />
+                                    ) : (
+                                        <span className="text-2xl grayscale opacity-30">
+                                            {EMOJI[item.category as keyof typeof EMOJI] || '🍱'}
+                                        </span>
+                                    )}
+                                </div>
 
-                            <div className="flex-1 min-w-0">
-                                <h3 className="text-xs font-black text-gray-900 leading-tight mb-0.5 truncate">
-                                    {item.name}
-                                </h3>
-                                <p className="text-[10px] font-bold text-orange-600 leading-none">
-                                    {item.price.toFixed(2)} €
-                                </p>
-                                {/* Option chips for items with variants */}
-                                {selectedItems[item.id] > 0 && getItemOptions(item.name) && (
-                                    <div className="flex gap-1 mt-1.5 flex-wrap">
-                                        {getItemOptions(item.name)!.map(opt => {
-                                            const isActive = selectedOptions[item.id] === opt;
-                                            return (
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="text-xs font-black text-gray-900 leading-tight mb-0.5 truncate">
+                                        {item.name}
+                                    </h3>
+                                    <p className="text-[10px] font-bold text-orange-600 leading-none">
+                                        {item.price.toFixed(2)} €
+                                    </p>
+                                </div>
+
+                                {/* Quantity controls for items WITHOUT options */}
+                                {!getItemOptions(item.name) && (
+                                    <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-xl border border-gray-100">
+                                        {(selectedItems[makeKey(item.id)] || 0) > 0 && (
+                                            <>
                                                 <button
-                                                    key={opt}
-                                                    onClick={e => {
-                                                        e.stopPropagation();
-                                                        setSelectedOptions(prev => ({
-                                                            ...prev,
-                                                            [item.id]: isActive ? '' : opt,
-                                                        }));
-                                                    }}
-                                                    className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider transition-all active:scale-95 ${
-                                                        isActive
-                                                            ? 'bg-orange-600 text-white shadow-sm'
-                                                            : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
-                                                    }`}
+                                                    onClick={() =>
+                                                        handleQuantityChange(makeKey(item.id), -1)
+                                                    }
+                                                    className="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-900 active:bg-gray-50 transition"
                                                 >
-                                                    {opt}
+                                                    <Minus size={12} strokeWidth={3} />
                                                 </button>
-                                            );
-                                        })}
+                                                <div className="w-6 text-center text-[10px] font-black text-gray-900">
+                                                    {selectedItems[makeKey(item.id)]}
+                                                </div>
+                                            </>
+                                        )}
+                                        <button
+                                            onClick={() =>
+                                                handleQuantityChange(makeKey(item.id), 1)
+                                            }
+                                            className={`w-7 h-7 rounded-lg flex items-center justify-center transition active:scale-95 ${
+                                                selectedItems[makeKey(item.id)]
+                                                    ? 'bg-orange-600 text-white shadow-lg shadow-orange-100'
+                                                    : 'bg-white border border-gray-200 text-gray-900'
+                                            }`}
+                                        >
+                                            <Plus size={12} strokeWidth={3} />
+                                        </button>
                                     </div>
                                 )}
                             </div>
 
-                            <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-xl border border-gray-100">
-                                {selectedItems[item.id] > 0 && (
-                                    <>
-                                        <button
-                                            onClick={() => handleQuantityChange(item.id, -1)}
-                                            className="w-7 h-7 rounded-lg bg-white border border-gray-200 flex items-center justify-center text-gray-900 active:bg-gray-50 transition"
-                                        >
-                                            <Minus size={12} strokeWidth={3} />
-                                        </button>
-                                        <div className="w-6 text-center text-[10px] font-black text-gray-900">
-                                            {selectedItems[item.id]}
-                                        </div>
-                                    </>
-                                )}
-                                <button
-                                    onClick={() => handleQuantityChange(item.id, 1)}
-                                    className={`w-7 h-7 rounded-lg flex items-center justify-center transition active:scale-95 ${
-                                        selectedItems[item.id]
-                                            ? 'bg-orange-600 text-white shadow-lg shadow-orange-100'
-                                            : 'bg-white border border-gray-200 text-gray-900'
-                                    }`}
-                                >
-                                    <Plus size={12} strokeWidth={3} />
-                                </button>
-                            </div>
+                            {/* Per-option quantity rows for items WITH options */}
+                            {getItemOptions(item.name) && (
+                                <div className="mt-2 space-y-1.5 pl-[60px]">
+                                    {getItemOptions(item.name)!.map(opt => {
+                                        const key = makeKey(item.id, opt);
+                                        const qty = selectedItems[key] || 0;
+                                        return (
+                                            <div
+                                                key={opt}
+                                                className="flex items-center justify-between"
+                                            >
+                                                <span
+                                                    className={`text-[10px] font-black uppercase tracking-wider ${
+                                                        qty > 0
+                                                            ? 'text-orange-600'
+                                                            : 'text-gray-400'
+                                                    }`}
+                                                >
+                                                    {opt}
+                                                </span>
+                                                <div className="flex items-center gap-1 bg-gray-50 p-0.5 rounded-lg border border-gray-100">
+                                                    {qty > 0 && (
+                                                        <>
+                                                            <button
+                                                                onClick={() =>
+                                                                    handleQuantityChange(key, -1)
+                                                                }
+                                                                className="w-6 h-6 rounded-md bg-white border border-gray-200 flex items-center justify-center text-gray-900 active:bg-gray-50 transition"
+                                                            >
+                                                                <Minus size={10} strokeWidth={3} />
+                                                            </button>
+                                                            <div className="w-5 text-center text-[10px] font-black text-gray-900">
+                                                                {qty}
+                                                            </div>
+                                                        </>
+                                                    )}
+                                                    <button
+                                                        onClick={() =>
+                                                            handleQuantityChange(key, 1)
+                                                        }
+                                                        className={`w-6 h-6 rounded-md flex items-center justify-center transition active:scale-95 ${
+                                                            qty > 0
+                                                                ? 'bg-orange-600 text-white shadow-sm'
+                                                                : 'bg-white border border-gray-200 text-gray-900'
+                                                        }`}
+                                                    >
+                                                        <Plus size={10} strokeWidth={3} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
                         </motion.div>
                     ))
                 ) : (
@@ -442,11 +496,14 @@ export default function WaiterOrderPage() {
 
                             <div className="p-5 max-h-[60vh] overflow-y-auto no-scrollbar">
                                 <div className="space-y-3 mb-6">
-                                    {Object.entries(selectedItems).map(([id, qty]) => {
-                                        const item = menuItems.find(i => i.id === Number(id));
+                                    {Object.entries(selectedItems).map(([key, qty]) => {
+                                        const { itemId, option } = parseKey(key);
+                                        const item = menuItems.find(
+                                            i => i.id === itemId
+                                        );
                                         return (
                                             <div
-                                                key={id}
+                                                key={key}
                                                 className="flex items-center justify-between"
                                             >
                                                 <div className="flex items-center gap-3">
@@ -457,9 +514,9 @@ export default function WaiterOrderPage() {
                                                         <span className="text-xs font-bold text-gray-800">
                                                             {item?.name}
                                                         </span>
-                                                        {selectedOptions[Number(id)] && (
+                                                        {option && (
                                                             <span className="ml-1.5 text-[9px] font-black text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded-full uppercase">
-                                                                {selectedOptions[Number(id)]}
+                                                                {option}
                                                             </span>
                                                         )}
                                                     </div>
