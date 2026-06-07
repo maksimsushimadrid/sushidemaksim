@@ -723,6 +723,20 @@ router.post(
             return res.status(500).json({ error: 'Error al procesar el usuario' });
         }
 
+        // Reactivate account if it was marked for deletion/archived
+        if (user.deleted_at) {
+            const { data: restoredUser, error: restoreError } = await supabase
+                .from('users')
+                .update({ deleted_at: null })
+                .eq('id', user.id)
+                .select('*')
+                .single();
+            if (restoreError) throw restoreError;
+            if (restoredUser) {
+                user = restoredUser;
+            }
+        }
+
         // Generate project JWT
         const token = jwt.sign({ userId: user.id, role: user.role }, config.jwtSecret, {
             expiresIn: config.jwtExpiresIn,
