@@ -93,13 +93,26 @@ export default function WaiterOrderPage() {
         option?: string;
     };
 
+    const isAlcoholic = (name: string) => {
+        const lower = name.toLowerCase();
+        return lower.includes('cerveza') || lower.includes('vino') || lower.includes('copa') || lower.includes('tinto');
+    };
+
     const flattenedItems = useMemo(() => {
         const items = menuItems.filter(item => {
             if (selectedCategory === 'all') {
-                // Exclude beverages from "Todos" — they only appear in "Bebidas"
+                // Exclude beverages from "Todos"
                 return !isBeverage(item.category);
             }
-            return isBeverage(item.category);
+            if (!isBeverage(item.category)) return false;
+
+            if (selectedCategory === 'refrescos') {
+                return !isAlcoholic(item.name);
+            }
+            if (selectedCategory === 'alcohol') {
+                return isAlcoholic(item.name);
+            }
+            return true;
         });
 
         const flat: RenderItem[] = [];
@@ -276,14 +289,24 @@ export default function WaiterOrderPage() {
                         Todos
                     </button>
                     <button
-                        onClick={() => setSelectedCategory('bebidas')}
+                        onClick={() => setSelectedCategory('refrescos')}
                         className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all flex items-center gap-2 ${
-                            selectedCategory === 'bebidas'
+                            selectedCategory === 'refrescos'
                                 ? 'bg-gray-900 text-white shadow-lg shadow-gray-200'
                                 : 'bg-white text-gray-500 border border-gray-100'
                         }`}
                     >
-                        Bebidas
+                        Refrescos
+                    </button>
+                    <button
+                        onClick={() => setSelectedCategory('alcohol')}
+                        className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all flex items-center gap-2 ${
+                            selectedCategory === 'alcohol'
+                                ? 'bg-gray-900 text-white shadow-lg shadow-gray-200'
+                                : 'bg-white text-gray-500 border border-gray-100'
+                        }`}
+                    >
+                        Alcohol
                     </button>
                 </div>
             </div>
