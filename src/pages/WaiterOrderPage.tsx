@@ -1,6 +1,16 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useMenu } from '../hooks/queries/useMenu';
-import { Plus, Minus, Check, ShoppingBag, Loader2, LogOut, MessageSquare, X } from 'lucide-react';
+import {
+    Plus,
+    Minus,
+    Check,
+    ShoppingBag,
+    Loader2,
+    LogOut,
+    MessageSquare,
+    X,
+    ChevronDown,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { api } from '../utils/api';
 import { useToast } from '../context/ToastContext';
@@ -15,6 +25,9 @@ export default function WaiterOrderPage() {
     const [selectedItems, setSelectedItems] = useState<Record<number, number>>({});
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedTable, setSelectedTable] = useState('S/N');
+    const [showTableDrawer, setShowTableDrawer] = useState(false);
+    const [customTable, setCustomTable] = useState('');
     const toast = useToast();
     const { user, isLoading: authLoading, logout } = useAuth();
     const navigate = useNavigate();
@@ -90,7 +103,7 @@ export default function WaiterOrderPage() {
                 itemsCount: totalCount,
                 waiterId: user?.name || 'Camarero',
                 metadata: {
-                    table: 'S/N', // Could be dynamic later
+                    table: selectedTable,
                     comment: orderComment, // Comment passed within metadata
                 },
             };
@@ -124,12 +137,22 @@ export default function WaiterOrderPage() {
                             <ShoppingBag size={16} className="text-white" />
                         </div>
                         <div>
-                            <h1 className="text-sm font-black text-gray-900 leading-none">
+                            <h1 className="text-sm font-black text-gray-900 leading-none mb-1">
                                 Nueva Comanda
                             </h1>
-                            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest leading-none">
-                                {user?.name || 'Mesa'}
-                            </span>
+                            <div className="flex items-center gap-1.5 leading-none">
+                                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">
+                                    {user?.name || 'Camarero'}
+                                </span>
+                                <span className="text-[9px] text-gray-300">•</span>
+                                <button
+                                    onClick={() => setShowTableDrawer(true)}
+                                    className="text-[10px] font-black text-orange-600 hover:text-orange-700 bg-orange-50 active:bg-orange-100 px-2 py-0.5 rounded-full transition-colors flex items-center gap-0.5 cursor-pointer"
+                                >
+                                    <span>Mesa: {selectedTable}</span>
+                                    <ChevronDown size={10} strokeWidth={3} />
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -345,7 +368,7 @@ export default function WaiterOrderPage() {
                                         Revisar Comanda
                                     </h2>
                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                        Mesa S/N
+                                        Mesa {selectedTable}
                                     </p>
                                 </div>
                                 <button
@@ -417,6 +440,154 @@ export default function WaiterOrderPage() {
                                         </>
                                     )}
                                 </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Table Selection Bottom Sheet/Drawer */}
+            <AnimatePresence>
+                {showTableDrawer && (
+                    <div className="fixed inset-0 z-[110] flex items-end justify-center">
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setShowTableDrawer(false)}
+                            className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm"
+                        />
+                        {/* Sheet Content */}
+                        <motion.div
+                            initial={{ y: '100%' }}
+                            animate={{ y: 0 }}
+                            exit={{ y: '100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 250 }}
+                            className="bg-white w-full max-w-md rounded-t-[32px] overflow-hidden shadow-2xl relative z-10 border-t border-gray-100 pb-8"
+                        >
+                            {/* Drag/Visual Handle */}
+                            <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto my-3" />
+
+                            <div className="px-5 pb-3 border-b border-gray-100 flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-sm font-black text-gray-900">
+                                        Seleccionar Mesa
+                                    </h2>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                        Mesa actual: {selectedTable}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => setShowTableDrawer(false)}
+                                    className="p-1.5 text-gray-400 hover:text-gray-900 transition-colors"
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+
+                            <div className="p-5 max-h-[60vh] overflow-y-auto no-scrollbar space-y-5">
+                                {/* Mesas Grid */}
+                                <div>
+                                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2.5">
+                                        Mesas
+                                    </h3>
+                                    <div className="grid grid-cols-4 gap-2">
+                                        {Array.from({ length: 12 }, (_, i) => `Mesa ${i + 1}`).map(
+                                            table => {
+                                                const isSelected = selectedTable === table;
+                                                return (
+                                                    <button
+                                                        key={table}
+                                                        onClick={() => {
+                                                            setSelectedTable(table);
+                                                            setCustomTable('');
+                                                            setShowTableDrawer(false);
+                                                        }}
+                                                        className={`py-3 rounded-xl text-xs font-black transition-all active:scale-95 ${
+                                                            isSelected
+                                                                ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/20'
+                                                                : 'bg-gray-50 text-gray-800 hover:bg-gray-100'
+                                                        }`}
+                                                    >
+                                                        {table.replace('Mesa ', '')}
+                                                    </button>
+                                                );
+                                            }
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Barra & Other Grid */}
+                                <div>
+                                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2.5">
+                                        Barra y Otros
+                                    </h3>
+                                    <div className="grid grid-cols-3 gap-2">
+                                        {[
+                                            'Barra 1',
+                                            'Barra 2',
+                                            'Barra 3',
+                                            'Barra 4',
+                                            'Para Llevar',
+                                            'S/N',
+                                        ].map(table => {
+                                            const isSelected = selectedTable === table;
+                                            return (
+                                                <button
+                                                    key={table}
+                                                    onClick={() => {
+                                                        setSelectedTable(table);
+                                                        setCustomTable('');
+                                                        setShowTableDrawer(false);
+                                                    }}
+                                                    className={`py-3 rounded-xl text-xs font-black transition-all active:scale-95 whitespace-nowrap px-2 ${
+                                                        isSelected
+                                                            ? 'bg-orange-600 text-white shadow-lg shadow-orange-500/20'
+                                                            : 'bg-gray-50 text-gray-800 hover:bg-gray-100'
+                                                    }`}
+                                                >
+                                                    {table}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Custom Table Number */}
+                                <div className="border-t border-gray-50 pt-4">
+                                    <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-2.5">
+                                        Mesa Personalizada
+                                    </h3>
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            placeholder="Ej: Mesa 15, Terraza 3..."
+                                            value={customTable}
+                                            onChange={e => setCustomTable(e.target.value)}
+                                            onKeyDown={e => {
+                                                if (e.key === 'Enter' && customTable.trim()) {
+                                                    setSelectedTable(customTable.trim());
+                                                    setShowTableDrawer(false);
+                                                }
+                                            }}
+                                            className="flex-1 bg-gray-50 border-none rounded-xl px-4 py-3 text-xs font-bold focus:ring-2 ring-orange-500/20 outline-none"
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                if (customTable.trim()) {
+                                                    setSelectedTable(customTable.trim());
+                                                    setShowTableDrawer(false);
+                                                }
+                                            }}
+                                            disabled={!customTable.trim()}
+                                            className="px-5 bg-gray-900 text-white font-black text-xs rounded-xl hover:bg-gray-800 transition active:scale-95 disabled:opacity-50 disabled:pointer-events-none"
+                                        >
+                                            Aplicar
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </motion.div>
                     </div>
