@@ -4,6 +4,7 @@ import {
     Activity,
     TrendingUp,
     ChevronRight,
+    ChevronLeft,
     AlertTriangle,
     HelpCircle,
     Info,
@@ -12,7 +13,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useToast } from '../../context/ToastContext';
 
 interface AdminDashboardProps {
@@ -231,6 +232,20 @@ export default function AdminDashboard({
 
     const t = DASHBOARD_TRANSLATIONS[language];
     const dateLocale = language === 'ru' ? 'ru-RU' : 'es-ES';
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const rowsPerPage = 30;
+
+    const paginatedReports = useMemo(() => {
+        const startIndex = (currentPage - 1) * rowsPerPage;
+        return (reports || []).slice(startIndex, startIndex + rowsPerPage);
+    }, [reports, currentPage]);
+
+    const totalPages = Math.ceil((reports?.length || 0) / rowsPerPage);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [reports?.length]);
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -547,91 +562,134 @@ export default function AdminDashboard({
                         </p>
                     </div>
                 ) : (
-                    <div className="overflow-x-auto no-scrollbar">
-                        <table className="w-full text-left border-collapse">
-                            <thead>
-                                <tr className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-50">
-                                    <th className="px-4 py-4">{t.table.day}</th>
-                                    <th className="px-4 py-4">{t.table.orders}</th>
-                                    <th className="px-4 py-4">{t.table.revenue}</th>
-                                    <th className="px-4 py-4">{t.table.avgTicket}</th>
-                                    <th className="px-4 py-4 text-right">{t.table.details}</th>
-                                </tr>
-                            </thead>
-                            <tbody className="divide-y divide-gray-50">
-                                {reports.map((report: any) => (
-                                    <tr
-                                        key={report.date}
-                                        className="hover:bg-gray-50/80 transition-all group active:scale-[0.99]"
-                                    >
-                                        <td className="px-4 py-5">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex flex-col items-center justify-center shadow-sm group-hover:bg-orange-600 group-hover:border-orange-600 transition-colors">
-                                                    <span className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1 group-hover:text-white/80">
+                    <>
+                        <div className="overflow-x-auto no-scrollbar">
+                            <table className="w-full text-left border-collapse">
+                                <thead>
+                                    <tr className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-50">
+                                        <th className="px-2.5 md:px-4 py-3 md:py-4">
+                                            {t.table.day}
+                                        </th>
+                                        <th className="px-2.5 md:px-4 py-3 md:py-4">
+                                            {t.table.orders}
+                                        </th>
+                                        <th className="px-2.5 md:px-4 py-3 md:py-4">
+                                            {t.table.revenue}
+                                        </th>
+                                        <th className="px-2.5 md:px-4 py-3 md:py-4">
+                                            {t.table.avgTicket}
+                                        </th>
+                                        <th className="px-2.5 md:px-4 py-3 md:py-4 text-right">
+                                            {t.table.details}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-50">
+                                    {paginatedReports.map((report: any) => (
+                                        <tr
+                                            key={report.date}
+                                            className="hover:bg-gray-50/80 transition-all group active:scale-[0.99]"
+                                        >
+                                            <td className="px-2.5 md:px-4 py-3 md:py-5">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex flex-col items-center justify-center shadow-sm group-hover:bg-orange-600 group-hover:border-orange-600 transition-colors">
+                                                        <span className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1 group-hover:text-white/80">
+                                                            {new Date(
+                                                                report.date
+                                                            ).toLocaleDateString(dateLocale, {
+                                                                month: 'short',
+                                                            })}
+                                                        </span>
+                                                        <span className="text-lg font-black text-gray-900 leading-none group-hover:text-white">
+                                                            {new Date(report.date).getDate()}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-xs font-black text-gray-700 uppercase tracking-tight group-hover:text-orange-600 transition-colors">
                                                         {new Date(report.date).toLocaleDateString(
                                                             dateLocale,
                                                             {
-                                                                month: 'short',
+                                                                weekday: 'long',
                                                             }
                                                         )}
                                                     </span>
-                                                    <span className="text-lg font-black text-gray-900 leading-none group-hover:text-white">
-                                                        {new Date(report.date).getDate()}
+                                                </div>
+                                            </td>
+                                            <td className="px-2.5 md:px-4 py-3 md:py-5">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-[15px] font-black text-gray-900">
+                                                        {report.orders_count ??
+                                                            report.orderCount ??
+                                                            0}
+                                                    </span>
+                                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">
+                                                        {t.table.ordersLabel}
                                                     </span>
                                                 </div>
-                                                <span className="text-xs font-black text-gray-700 uppercase tracking-tight group-hover:text-orange-600 transition-colors">
-                                                    {new Date(report.date).toLocaleDateString(
-                                                        dateLocale,
-                                                        {
-                                                            weekday: 'long',
-                                                        }
-                                                    )}
+                                            </td>
+                                            <td className="px-2.5 md:px-4 py-3 md:py-5">
+                                                <span className="text-sm font-black text-green-600 bg-green-50 px-3 py-1.5 rounded-xl border border-green-100 shadow-sm whitespace-nowrap">
+                                                    {Number(
+                                                        report.total_revenue ?? report.total ?? 0
+                                                    )
+                                                        .toFixed(2)
+                                                        .replace('.', ',')}{' '}
+                                                    €
                                                 </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-[15px] font-black text-gray-900">
-                                                    {report.orders_count ?? report.orderCount ?? 0}
+                                            </td>
+                                            <td className="px-2.5 md:px-4 py-3 md:py-5">
+                                                <span className="text-xs font-black text-gray-600 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100 uppercase tracking-tight whitespace-nowrap">
+                                                    {Number(
+                                                        report.avg_ticket ??
+                                                            report.average_ticket ??
+                                                            report.avg_price ??
+                                                            0
+                                                    )
+                                                        .toFixed(2)
+                                                        .replace('.', ',')}{' '}
+                                                    €
                                                 </span>
-                                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">
-                                                    {t.table.ordersLabel}
-                                                </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            <span className="text-sm font-black text-green-600 bg-green-50 px-3 py-1.5 rounded-xl border border-green-100 shadow-sm">
-                                                {Number(report.total_revenue ?? report.total ?? 0)
-                                                    .toFixed(2)
-                                                    .replace('.', ',')}{' '}
-                                                €
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-5">
-                                            <span className="text-xs font-black text-gray-600 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100 uppercase tracking-tight">
-                                                {Number(
-                                                    report.avg_ticket ??
-                                                        report.average_ticket ??
-                                                        report.avg_price ??
-                                                        0
-                                                )
-                                                    .toFixed(2)
-                                                    .replace('.', ',')}{' '}
-                                                €
-                                            </span>
-                                        </td>
-                                        <td className="px-4 py-5 text-right">
-                                            <ChevronRight
-                                                size={18}
-                                                strokeWidth={2.5}
-                                                className="text-gray-200 group-hover:text-orange-500 group-hover:translate-x-1.5 transition-all inline-block"
-                                            />
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                            </td>
+                                            <td className="px-2.5 md:px-4 py-3 md:py-5 text-right">
+                                                <ChevronRight
+                                                    size={18}
+                                                    strokeWidth={2.5}
+                                                    className="text-gray-200 group-hover:text-orange-500 group-hover:translate-x-1.5 transition-all inline-block"
+                                                />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                        {totalPages > 1 && (
+                            <div className="mt-6 flex items-center justify-between border-t border-gray-150 pt-4 px-2 select-none">
+                                <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                    {language === 'ru' ? 'Страница' : 'Página'} {currentPage}{' '}
+                                    {language === 'ru' ? 'из' : 'de'} {totalPages}
+                                </span>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() =>
+                                            setCurrentPage(prev => Math.max(1, prev - 1))
+                                        }
+                                        disabled={currentPage === 1}
+                                        className="p-2.5 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-gray-900 active:scale-95 disabled:opacity-40 disabled:pointer-events-none disabled:active:scale-100 transition shadow-sm flex items-center justify-center cursor-pointer"
+                                    >
+                                        <ChevronLeft size={16} strokeWidth={2.5} />
+                                    </button>
+                                    <button
+                                        onClick={() =>
+                                            setCurrentPage(prev => Math.min(totalPages, prev + 1))
+                                        }
+                                        disabled={currentPage === totalPages}
+                                        className="p-2.5 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-gray-900 active:scale-95 disabled:opacity-40 disabled:pointer-events-none disabled:active:scale-100 transition shadow-sm flex items-center justify-center cursor-pointer"
+                                    >
+                                        <ChevronRight size={16} strokeWidth={2.5} />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </>
                 )}
             </div>
         </div>

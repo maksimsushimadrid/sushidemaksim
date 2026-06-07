@@ -465,25 +465,25 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                             <table className="w-full text-left text-sm text-gray-600">
                                 <thead className="bg-gray-50/50 text-gray-400 border-b border-gray-100">
                                     <tr>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest">
+                                        <th className="px-3.5 md:px-8 py-3 md:py-5 text-[10px] font-black uppercase tracking-widest">
                                             {t.table.image}
                                         </th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest">
+                                        <th className="px-3.5 md:px-8 py-3 md:py-5 text-[10px] font-black uppercase tracking-widest">
                                             {t.table.name}
                                         </th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest">
+                                        <th className="px-3.5 md:px-8 py-3 md:py-5 text-[10px] font-black uppercase tracking-widest">
                                             {t.table.category}
                                         </th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-right">
+                                        <th className="px-3.5 md:px-8 py-3 md:py-5 text-[10px] font-black uppercase tracking-widest text-right">
                                             {t.table.price}
                                         </th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-right">
+                                        <th className="px-3.5 md:px-8 py-3 md:py-5 text-[10px] font-black uppercase tracking-widest text-right">
                                             {t.table.costPrice}
                                         </th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-center">
+                                        <th className="px-3.5 md:px-8 py-3 md:py-5 text-[10px] font-black uppercase tracking-widest text-center">
                                             {t.table.tags}
                                         </th>
-                                        <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-right">
+                                        <th className="px-3.5 md:px-8 py-3 md:py-5 text-[10px] font-black uppercase tracking-widest text-right">
                                             {t.table.actions}
                                         </th>
                                     </tr>
@@ -494,7 +494,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                             key={item.id}
                                             className="hover:bg-gray-50/50 transition-colors group"
                                         >
-                                            <td className="px-8 py-4">
+                                            <td className="px-3.5 md:px-8 py-2 md:py-4">
                                                 <div className="w-14 h-14 rounded-2xl bg-gray-100 overflow-hidden flex items-center justify-center border border-gray-200 shadow-sm group-hover:scale-110 transition-transform">
                                                     {item.image ? (
                                                         <img
@@ -511,18 +511,18 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                     )}
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-4">
+                                            <td className="px-3.5 md:px-8 py-2 md:py-4">
                                                 <p className="font-black text-gray-900 text-base tracking-tight leading-tight">
                                                     {item.name}
                                                 </p>
                                             </td>
-                                            <td className="px-8 py-4">
+                                            <td className="px-3.5 md:px-8 py-2 md:py-4">
                                                 <span className="text-[10px] font-black uppercase tracking-widest bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200 text-gray-500 whitespace-nowrap">
                                                     {(t.categories as any)[item.category] ||
                                                         item.category.replace('-', ' ')}
                                                 </span>
                                             </td>
-                                            <td className="px-8 py-4 text-right">
+                                            <td className="px-3.5 md:px-8 py-2 md:py-4 text-right">
                                                 <p className="font-black text-orange-600 text-lg tabular-nums whitespace-nowrap">
                                                     {Number(item.price)
                                                         .toFixed(2)
@@ -530,7 +530,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                     €
                                                 </p>
                                             </td>
-                                            <td className="px-8 py-4 text-right">
+                                            <td className="px-3.5 md:px-8 py-2 md:py-4 text-right">
                                                 <p className="font-bold text-gray-400 text-sm tabular-nums whitespace-nowrap">
                                                     {Number(item.costPrice || 0)
                                                         .toFixed(2)
@@ -538,7 +538,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                     €
                                                 </p>
                                             </td>
-                                            <td className="px-8 py-4">
+                                            <td className="px-3.5 md:px-8 py-2 md:py-4">
                                                 <div className="flex items-center justify-center gap-1.5 flex-wrap">
                                                     {item.spicy && (
                                                         <span
@@ -596,7 +596,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                         })}
                                                 </div>
                                             </td>
-                                            <td className="px-8 py-4 text-right">
+                                            <td className="px-3.5 md:px-8 py-2 md:py-4 text-right">
                                                 <div className="flex items-center justify-end gap-3">
                                                     <button
                                                         onClick={() => openEditModal(item)}

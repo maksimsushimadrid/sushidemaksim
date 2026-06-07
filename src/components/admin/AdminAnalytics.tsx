@@ -382,15 +382,22 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
     const [reportsLoading, setReportsLoading] = useState(false);
     const [isGenerating, setIsGenerating] = useState(false);
     const [selectedReport, setSelectedReport] = useState<any>(null);
-    const [isMounted, setIsMounted] = useState(false);
+    const [isChartMounted, setIsChartMounted] = useState(false);
 
     useEffect(() => {
-        const timer = setTimeout(() => {
-            setIsMounted(true);
-        }, 50);
         fetchReports();
-        return () => clearTimeout(timer);
     }, []);
+
+    useEffect(() => {
+        if (!loading) {
+            const timer = setTimeout(() => {
+                setIsChartMounted(true);
+            }, 150);
+            return () => clearTimeout(timer);
+        } else {
+            setIsChartMounted(false);
+        }
+    }, [loading]);
 
     const fetchReports = async () => {
         try {
@@ -540,8 +547,8 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         {t.devices.title}
                     </h3>
                     <div className="h-56">
-                        {isMounted && (
-                            <ResponsiveContainer width="99%" height="100%">
+                        {isChartMounted && (
+                            <ResponsiveContainer width="99%" height="100%" minWidth={0}>
                                 <PieChart>
                                     <Pie
                                         data={[
@@ -616,8 +623,8 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         {t.newVsRecurring.title}
                     </h3>
                     <div className="h-56">
-                        {isMounted && (
-                            <ResponsiveContainer width="99%" height="100%">
+                        {isChartMounted && (
+                            <ResponsiveContainer width="99%" height="100%" minWidth={0}>
                                 <PieChart>
                                     <Pie
                                         data={[
@@ -677,8 +684,8 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         {t.categoryPerformance.title}
                     </h3>
                     <div className="h-56">
-                        {isMounted && (
-                            <ResponsiveContainer width="99%" height="100%">
+                        {isChartMounted && (
+                            <ResponsiveContainer width="99%" height="100%" minWidth={0}>
                                 <BarChart data={stats?.categoryStats}>
                                     <CartesianGrid
                                         strokeDasharray="3 3"
@@ -750,8 +757,8 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         {t.salesGrowth.title}
                     </h3>
                     <div className="h-80">
-                        {isMounted && (
-                            <ResponsiveContainer width="99%" height="100%">
+                        {isChartMounted && (
+                            <ResponsiveContainer width="99%" height="100%" minWidth={0}>
                                 <AreaChart data={stats?.growth}>
                                     <defs>
                                         <linearGradient
@@ -833,8 +840,8 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         {t.activityPeaks.title}
                     </h3>
                     <div className="h-80">
-                        {isMounted && (
-                            <ResponsiveContainer width="99%" height="100%">
+                        {isChartMounted && (
+                            <ResponsiveContainer width="99%" height="100%" minWidth={0}>
                                 <BarChart
                                     data={(stats?.heatmap?.hourly || []).map(
                                         (v: number, i: number) => ({ hour: `${i}h`, pedidos: v })
@@ -1014,22 +1021,22 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     <table className="w-full text-left">
                         <thead>
                             <tr className="border-b-2 border-gray-50">
-                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                <th className="pb-3 md:pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                     {t.promoCampaignsBreakdown.campaign}
                                 </th>
-                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-4">
+                                <th className="pb-3 md:pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-2 md:px-4">
                                     {t.promoCampaignsBreakdown.uses}
                                 </th>
-                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-4">
+                                <th className="pb-3 md:pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-2 md:px-4">
                                     {t.promoCampaignsBreakdown.revenue}
                                 </th>
-                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-4">
+                                <th className="pb-3 md:pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-2 md:px-4">
                                     {t.promoCampaignsBreakdown.discounts}
                                 </th>
-                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-4">
+                                <th className="pb-3 md:pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-2 md:px-4">
                                     {t.promoCampaignsBreakdown.avgCheck}
                                 </th>
-                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center px-4">
+                                <th className="pb-3 md:pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center px-2 md:px-4">
                                     {t.promoCampaignsBreakdown.conversion}
                                 </th>
                             </tr>
@@ -1048,7 +1055,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                                             key={idx}
                                             className="hover:bg-gray-50/50 transition-colors group"
                                         >
-                                            <td className="py-4 text-xs font-black text-gray-900 uppercase tracking-tight">
+                                            <td className="py-2.5 md:py-4 text-xs font-black text-gray-900 uppercase tracking-tight">
                                                 <span className="block text-gray-900">
                                                     {(t.promoCampaignsBreakdown.types as any)[
                                                         item.key
@@ -1058,19 +1065,19 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                                                     Grupo: {item.code}
                                                 </span>
                                             </td>
-                                            <td className="py-4 text-xs font-black text-slate-700 text-right tabular-nums px-4">
+                                            <td className="py-2.5 md:py-4 text-xs font-black text-slate-700 text-right tabular-nums px-2 md:px-4">
                                                 {item.uses}
                                             </td>
-                                            <td className="py-4 text-xs font-black text-emerald-600 text-right tabular-nums px-4">
+                                            <td className="py-2.5 md:py-4 text-xs font-black text-emerald-600 text-right tabular-nums px-2 md:px-4">
                                                 {item.totalRevenue}€
                                             </td>
-                                            <td className="py-4 text-xs font-black text-red-500 text-right tabular-nums px-4">
+                                            <td className="py-2.5 md:py-4 text-xs font-black text-red-500 text-right tabular-nums px-2 md:px-4">
                                                 {item.totalDiscount}€
                                             </td>
-                                            <td className="py-4 text-xs font-bold text-gray-500 text-right tabular-nums px-4">
+                                            <td className="py-2.5 md:py-4 text-xs font-bold text-gray-500 text-right tabular-nums px-2 md:px-4">
                                                 {item.avgCheck}€
                                             </td>
-                                            <td className="py-4 text-xs font-bold text-gray-600 text-center px-4">
+                                            <td className="py-2.5 md:py-4 text-xs font-bold text-gray-600 text-center px-2 md:px-4">
                                                 {convText}
                                             </td>
                                         </tr>
@@ -1335,19 +1342,19 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     <table className="w-full text-left">
                         <thead>
                             <tr className="border-b-2 border-gray-50">
-                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                <th className="pb-3 md:pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                     {t.abcAnalysis.product}
                                 </th>
-                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-4">
+                                <th className="pb-3 md:pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-2 md:px-4">
                                     {t.abcAnalysis.units}
                                 </th>
-                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-4">
+                                <th className="pb-3 md:pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-2 md:px-4">
                                     {t.abcAnalysis.income}
                                 </th>
-                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-4">
+                                <th className="pb-3 md:pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right px-2 md:px-4">
                                     {t.abcAnalysis.revShare}
                                 </th>
-                                <th className="pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center px-4">
+                                <th className="pb-3 md:pb-5 text-[10px] font-black text-gray-400 uppercase tracking-widest text-center px-2 md:px-4">
                                     {t.abcAnalysis.abc}
                                 </th>
                             </tr>
@@ -1360,19 +1367,19 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                                         key={idx}
                                         className="hover:bg-gray-50/50 transition-colors group"
                                     >
-                                        <td className="py-4 text-xs font-black text-gray-900 uppercase tracking-tight">
+                                        <td className="py-2.5 md:py-4 text-xs font-black text-gray-900 uppercase tracking-tight">
                                             {item.name}
                                         </td>
-                                        <td className="py-4 text-xs font-bold text-gray-400 text-right tabular-nums px-4">
+                                        <td className="py-2.5 md:py-4 text-xs font-bold text-gray-400 text-right tabular-nums px-2 md:px-4">
                                             {item.sold}
                                         </td>
-                                        <td className="py-4 text-xs font-black text-gray-900 text-right tabular-nums px-4">
+                                        <td className="py-2.5 md:py-4 text-xs font-black text-gray-900 text-right tabular-nums px-2 md:px-4">
                                             {item.revenue}€
                                         </td>
-                                        <td className="py-4 text-xs font-bold text-gray-400 text-right tabular-nums px-4">
+                                        <td className="py-2.5 md:py-4 text-xs font-bold text-gray-400 text-right tabular-nums px-2 md:px-4">
                                             {Math.round(item.revenueShare * 10) / 10}%
                                         </td>
-                                        <td className="py-4 px-4">
+                                        <td className="py-2.5 md:py-4 px-2 md:px-4">
                                             <div className="flex justify-center">
                                                 <span
                                                     className={`w-8 h-8 rounded-xl flex items-center justify-center text-[11px] font-black shadow-sm group-hover:scale-110 transition-transform ${

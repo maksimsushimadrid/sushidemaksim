@@ -288,14 +288,11 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Map Area */}
-                <div
-                    className="lg:col-span-2 bg-white p-2 rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
-                    style={{ minHeight: '600px' }}
-                >
+                <div className="lg:col-span-2 bg-white p-2 rounded-2xl shadow-sm border border-gray-100 overflow-hidden h-[350px] md:h-[600px]">
                     <MapContainer
                         center={RESTAURANT_LOCATION}
                         zoom={14}
-                        style={{ height: '600px', width: '100%', borderRadius: '12px' }}
+                        style={{ height: '100%', width: '100%', borderRadius: '12px' }}
                         attributionControl={false}
                     >
                         <TileLayer url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png" />
@@ -489,8 +486,8 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                             if (e.target === e.currentTarget) setIsModalOpen(false);
                         }}
                     >
-                        <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 border border-white">
-                            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                        <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 border border-white flex flex-col max-h-[90vh]">
+                            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
                                 <h2 className="text-xl font-bold text-gray-900">{t.modal.title}</h2>
                                 <button
                                     onClick={() => setIsModalOpen(false)}
@@ -499,7 +496,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                     <X size={20} />
                                 </button>
                             </div>
-                            <div className="p-6 space-y-4">
+                            <div className="p-6 space-y-4 overflow-y-auto flex-1">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-1">
                                         <label className="text-xs font-bold text-gray-500 uppercase">
@@ -669,7 +666,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                     </div>
                                 </div>
                             </div>
-                            <div className="p-4 bg-gray-50 flex justify-end gap-3">
+                            <div className="p-4 bg-gray-50 flex justify-end gap-3 shrink-0">
                                 <button
                                     onClick={() => setIsModalOpen(false)}
                                     className="px-5 py-2 text-sm font-bold text-gray-500 hover:text-gray-700 transition"

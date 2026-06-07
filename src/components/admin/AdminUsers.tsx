@@ -226,7 +226,7 @@ const UserRow = memo(
                 className={`hover:bg-gray-50/50 transition-all group ${user.deletedAt ? 'opacity-50 grayscale bg-gray-50/30' : ''}`}
             >
                 <td
-                    className="px-4 py-2.5 font-black text-gray-300 text-[9px] tabular-nums group-hover:text-gray-400 transition-colors cursor-pointer active:scale-95"
+                    className="px-2 md:px-4 py-2 md:py-2.5 font-black text-gray-300 text-[9px] tabular-nums group-hover:text-gray-400 transition-colors cursor-pointer active:scale-95"
                     title={user.id}
                     onClick={() => {
                         navigator.clipboard.writeText(user.id);
@@ -237,7 +237,7 @@ const UserRow = memo(
                         ? `#${user.id.slice(0, 8)}...`
                         : `#${user.id}`}
                 </td>
-                <td className="px-4 py-2.5">
+                <td className="px-2 md:px-4 py-2 md:py-2.5">
                     <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-gray-100 border border-gray-100 flex items-center justify-center overflow-hidden shrink-0 shadow-sm transition-transform group-hover:scale-110">
                             {user.avatar ? (
@@ -322,7 +322,7 @@ const UserRow = memo(
                         </div>
                     </div>
                 </td>
-                <td className="px-4 py-2.5 min-w-[120px]">
+                <td className="px-2 md:px-4 py-2 md:py-2.5 min-w-[120px]">
                     <div className="flex flex-col gap-1.5">
                         {birthDate ? (
                             <div className="flex items-center gap-2 text-[10px] font-black text-gray-700 bg-gray-100/50 px-2 py-0.5 rounded-lg w-fit border border-gray-100 whitespace-nowrap">
@@ -359,13 +359,13 @@ const UserRow = memo(
                         )}
                     </div>
                 </td>
-                <td className="px-4 py-2.5 text-center">
+                <td className="px-2 md:px-4 py-2 md:py-2.5 text-center">
                     <div className="inline-flex items-center justify-center bg-gray-50 text-gray-900 w-8 h-8 rounded-xl font-black text-xs border border-gray-100 shadow-inner tabular-nums">
                         {user.orderCount}
                     </div>
                 </td>
-                <td className="px-4 py-2.5 text-center">
-                    <div className="font-black text-orange-600 text-sm tabular-nums">
+                <td className="px-2 md:px-4 py-2 md:py-2.5 text-center">
+                    <div className="font-black text-orange-600 text-sm tabular-nums whitespace-nowrap">
                         {Number(user.totalSpent || 0)
                             .toFixed(2)
                             .replace('.', ',')}{' '}
@@ -373,7 +373,7 @@ const UserRow = memo(
                     </div>
                 </td>
 
-                <td className="px-4 py-2.5">
+                <td className="px-2 md:px-4 py-2 md:py-2.5">
                     <div className="flex flex-col gap-1">
                         {user.lastSeenAt ? (
                             <div className="flex items-center gap-1.5 bg-gray-50 px-2 py-1 rounded-lg border border-gray-100 w-fit">
@@ -399,21 +399,21 @@ const UserRow = memo(
                         )}
                     </div>
                 </td>
-                <td className="px-4 py-2.5 text-center text-[10px] font-bold text-gray-400 tabular-nums">
+                <td className="px-2 md:px-4 py-2 md:py-2.5 text-center text-[10px] font-bold text-gray-400 tabular-nums">
                     {regDate}
                 </td>
-                <td className="px-4 py-2.5 text-center min-w-[110px]">
+                <td className="px-2 md:px-4 py-2 md:py-2.5 text-center min-w-[110px]">
                     <div className="flex flex-col items-center gap-1">
                         {user.isSuperadmin ? (
                             <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-amber-100 shadow-sm whitespace-nowrap">
                                 <Crown size={10} strokeWidth={2.5} /> {t.roles.superadmin}
                             </span>
                         ) : user.role === 'admin' ? (
-                            <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-orange-100 shadow-sm whitespace-nowrap">
+                            <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-orange-100/50 shadow-sm whitespace-nowrap">
                                 <Shield size={10} strokeWidth={2.5} /> {t.roles.admin}
                             </span>
                         ) : user.role === 'waiter' ? (
-                            <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-orange-100 shadow-sm whitespace-nowrap">
+                            <span className="inline-flex items-center gap-1 bg-orange-50 text-orange-700 px-2 py-1 rounded-lg font-black text-[9px] uppercase tracking-widest border border-orange-100/50 shadow-sm whitespace-nowrap">
                                 <Clock size={10} strokeWidth={2.5} /> {t.roles.waiter}
                             </span>
                         ) : user.role === 'moderator' ? (
@@ -432,7 +432,7 @@ const UserRow = memo(
                         )}
                     </div>
                 </td>
-                <td className="px-4 py-2.5 text-center sticky right-0 bg-white/95 backdrop-blur-sm shadow-[-10px_0_15px_rgba(0,0,0,0.03)] border-l border-gray-100 group-hover:bg-gray-50/95 transition-colors">
+                <td className="px-2 md:px-4 py-2 md:py-2.5 text-center sticky right-0 bg-white/95 backdrop-blur-sm shadow-[-10px_0_15px_rgba(0,0,0,0.03)] border-l border-gray-100 group-hover:bg-gray-50/95 transition-colors">
                     {!user.isSuperadmin && (
                         <div className="flex items-center justify-center gap-1.5">
                             {user.deletedAt ? (
@@ -721,7 +721,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                         <thead className="bg-gray-50/50 text-gray-400 border-b border-gray-100">
                             <tr>
                                 <th
-                                    className="px-4 py-3 text-[9px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100/50 transition"
+                                    className="px-2 md:px-4 py-2.5 md:py-3 text-[9px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('id')}
                                 >
                                     <div className="flex items-center gap-2">
@@ -749,14 +749,14 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                         )}
                                     </div>
                                 </th>
-                                <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest whitespace-nowrap">
+                                <th className="px-2 md:px-4 py-2.5 md:py-3 text-[9px] font-black uppercase tracking-widest whitespace-nowrap">
                                     {t.table.nameEmail}
                                 </th>
-                                <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest whitespace-nowrap">
+                                <th className="px-2 md:px-4 py-2.5 md:py-3 text-[9px] font-black uppercase tracking-widest whitespace-nowrap">
                                     {t.table.birthDate}
                                 </th>
                                 <th
-                                    className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-gray-100/50 transition"
+                                    className="px-2 md:px-4 py-2.5 md:py-3 text-[9px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('orderCount')}
                                 >
                                     <div className="flex items-center justify-center gap-2">
@@ -785,7 +785,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-gray-100/50 transition"
+                                    className="px-2 md:px-4 py-2.5 md:py-3 text-[9px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('totalSpent')}
                                 >
                                     <div className="flex items-center justify-center gap-2">
@@ -814,7 +814,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-4 py-3 text-[9px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100/50 transition"
+                                    className="px-2 md:px-4 py-2.5 md:py-3 text-[9px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('lastSeenAt')}
                                 >
                                     <div className="flex items-center gap-2">
@@ -843,7 +843,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-4 py-3 text-[9px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100/50 transition"
+                                    className="px-2 md:px-4 py-2.5 md:py-3 text-[9px] font-black uppercase tracking-widest cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('createdAt')}
                                 >
                                     <div className="flex items-center gap-2">
@@ -872,7 +872,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                     </div>
                                 </th>
                                 <th
-                                    className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-gray-100/50 transition"
+                                    className="px-2 md:px-4 py-2.5 md:py-3 text-[9px] font-black uppercase tracking-widest text-center cursor-pointer hover:bg-gray-100/50 transition"
                                     onClick={() => handleSort('role')}
                                 >
                                     <div className="flex items-center justify-center gap-2">
@@ -900,7 +900,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                                         )}
                                     </div>
                                 </th>
-                                <th className="px-4 py-3 text-[9px] font-black uppercase tracking-widest text-center whitespace-nowrap sticky right-0 bg-gray-50/95 backdrop-blur-sm shadow-[-10px_0_15px_rgba(0,0,0,0.03)] border-l border-gray-100 z-10">
+                                <th className="px-2 md:px-4 py-2.5 md:py-3 text-[9px] font-black uppercase tracking-widest text-center whitespace-nowrap sticky right-0 bg-gray-50/95 backdrop-blur-sm shadow-[-10px_0_15px_rgba(0,0,0,0.03)] border-l border-gray-100 z-10">
                                     {t.table.actions}
                                 </th>
                             </tr>

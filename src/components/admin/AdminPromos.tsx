@@ -323,7 +323,7 @@ const SortablePromoRow = ({ promo: p, index, onEdit, onDelete, t }: any) => {
         <div
             ref={setNodeRef}
             style={style}
-            className={`flex items-center px-8 py-6 hover:bg-gray-50/50 transition-colors group ${
+            className={`flex items-center px-3.5 md:px-8 py-3 md:py-6 hover:bg-gray-50/50 transition-colors group ${
                 isDragging ? 'bg-orange-50/60 shadow-xl rounded-2xl ring-2 ring-orange-200' : ''
             }`}
         >
@@ -976,7 +976,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                     {/* Table Column — Drag-and-Drop Sortable */}
                     <div className="lg:col-span-2">
                         <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
-                            <div className="bg-gray-50/50 border-b border-gray-100 px-8 py-5 flex items-center">
+                            <div className="bg-gray-50/50 border-b border-gray-100 px-3.5 md:px-8 py-3 md:py-5 flex items-center">
                                 <div className="w-10" />
                                 <span className="flex-1 text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                     {t.table.promo}
@@ -1138,7 +1138,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
 
                     {allPromoCodes.length > 0 && (
                         <div className="mt-12 max-w-2xl mx-auto bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
-                            <div className="bg-gray-50/50 border-b border-gray-100 px-8 py-5">
+                            <div className="bg-gray-50/50 border-b border-gray-100 px-4 md:px-8 py-3.5 md:py-5">
                                 <h4 className="text-xs font-black text-gray-900 uppercase tracking-widest">
                                     {language === 'ru' ? 'Все промокоды' : 'Todos los códigos'}
                                 </h4>
@@ -1147,7 +1147,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                 {allPromoCodes.map((pc: any) => (
                                     <div
                                         key={pc.id}
-                                        className="px-8 py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
+                                        className="px-4 md:px-8 py-3 md:py-4 flex items-center justify-between hover:bg-gray-50 transition-colors"
                                     >
                                         <div className="flex flex-col gap-1">
                                             <span className="font-black text-gray-900 tracking-wider">

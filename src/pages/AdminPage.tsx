@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, lazy, Suspense, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, MotionConfig } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import {
     LayoutDashboard,
@@ -56,6 +56,16 @@ type TabId =
     | 'newsletter';
 export default function AdminPage() {
     const { user, isAuthenticated, isLoading } = useAuth();
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [searchParams, setSearchParams] = useSearchParams();
@@ -638,298 +648,302 @@ export default function AdminPage() {
     }
 
     return (
-        <div
-            className="min-h-screen flex flex-col md:flex-row relative"
-            style={{
-                backgroundImage: `linear-gradient(rgba(251, 247, 240, 0.85), rgba(251, 247, 240, 0.85)), url('/admin-bg.webp')`,
-                backgroundSize: '400px', // Set as pattern
-                backgroundRepeat: 'repeat',
-                backgroundAttachment: 'fixed',
-            }}
-        >
-            <SEO
-                title="Panel de Administración"
-                description="Gestión interna de Sushi de Maksim"
-                robots="noindex, nofollow"
-            />
-            <audio ref={audioRef} src="/sounds/order-new.mp3" preload="auto" />
-            <audio ref={audioMesaRef} src="/sounds/mesa-new.mp3" preload="auto" />
-            {/* Mobile Overlay */}
-            <AnimatePresence>
-                {isMobileMenuOpen && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] md:hidden"
-                    />
-                )}
-            </AnimatePresence>
-
-            {/* Sidebar */}
-            <aside
-                className={`fixed top-0 bottom-0 left-0 w-[280px] md:w-60 bg-white/95 backdrop-blur-xl border-r border-gray-200 flex flex-col z-[101] transition-transform duration-300 shadow-2xl
-                    ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+        <MotionConfig reducedMotion={isMobile ? 'always' : 'user'}>
+            <div
+                className="min-h-screen flex flex-col md:flex-row relative"
+                style={{
+                    backgroundImage: `linear-gradient(rgba(251, 247, 240, 0.85), rgba(251, 247, 240, 0.85)), url('/admin-bg.webp')`,
+                    backgroundSize: '400px', // Set as pattern
+                    backgroundRepeat: 'repeat',
+                    backgroundAttachment: 'fixed',
+                }}
             >
-                <div className="p-4 border-b border-gray-100">
-                    <div className="flex flex-col gap-3">
-                        <img
-                            src="/logo.svg"
-                            alt="Sushi de Maksim"
-                            className="h-10 w-auto object-contain brightness-0 opacity-70"
+                <SEO
+                    title="Panel de Administración"
+                    description="Gestión interna de Sushi de Maksim"
+                    robots="noindex, nofollow"
+                />
+                <audio ref={audioRef} src="/sounds/order-new.mp3" preload="auto" />
+                <audio ref={audioMesaRef} src="/sounds/mesa-new.mp3" preload="auto" />
+                {/* Mobile Overlay */}
+                <AnimatePresence>
+                    {isMobileMenuOpen && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsMobileMenuOpen(false)}
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] md:hidden"
                         />
+                    )}
+                </AnimatePresence>
+
+                {/* Sidebar */}
+                <aside
+                    className={`fixed top-0 bottom-0 left-0 w-[280px] md:w-60 bg-white/95 backdrop-blur-xl border-r border-gray-200 flex flex-col z-[101] transition-transform duration-300 shadow-2xl
+                    ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
+                >
+                    <div className="p-4 border-b border-gray-100">
+                        <div className="flex flex-col gap-3">
+                            <img
+                                src="/logo.svg"
+                                alt="Sushi de Maksim"
+                                className="h-10 w-auto object-contain brightness-0 opacity-70"
+                            />
+                        </div>
                     </div>
-                </div>
-                <nav className="flex-1 p-4 space-y-1 overflow-y-auto no-scrollbar">
-                    {navLinks.map(tab => {
-                        const Icon = tab.icon;
-                        const isActive = activeTab === tab.id;
-                        return (
-                            <button
-                                key={tab.id}
-                                onClick={() => {
-                                    setActiveTab(tab.id as TabId);
-                                    setIsMobileMenuOpen(false);
-                                    if (typeof navigator !== 'undefined' && navigator.vibrate) {
-                                        navigator.vibrate(5);
-                                    }
-                                }}
-                                className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl font-bold text-sm transition-all relative group
+                    <nav className="flex-1 p-4 space-y-1 overflow-y-auto no-scrollbar">
+                        {navLinks.map(tab => {
+                            const Icon = tab.icon;
+                            const isActive = activeTab === tab.id;
+                            return (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => {
+                                        setActiveTab(tab.id as TabId);
+                                        setIsMobileMenuOpen(false);
+                                        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                                            navigator.vibrate(5);
+                                        }
+                                    }}
+                                    className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl font-bold text-sm transition-all relative group
                                     ${
                                         isActive
                                             ? 'text-slate-900 bg-white/50 shadow-sm border border-white/50'
                                             : 'text-slate-500 hover:bg-white/30 hover:text-slate-900'
                                     }`}
-                            >
-                                {isActive && (
-                                    <motion.div
-                                        layoutId="admin-nav-active"
-                                        className="absolute inset-0 bg-gradient-to-r from-white/80 to-transparent rounded-xl"
-                                        transition={{
-                                            type: 'spring',
-                                            bounce: 0.2,
-                                            duration: 0.6,
-                                        }}
-                                    />
-                                )}
-                                <div className="flex items-center gap-2.5 relative z-10 w-full">
-                                    <Icon
-                                        size={20}
-                                        strokeWidth={isActive ? 2.5 : 2}
-                                        className={`shrink-0 transition-transform group-hover:scale-110 ${isActive ? 'text-slate-900' : 'text-slate-400'}`}
-                                    />
-                                    <span className="flex-1 text-left leading-[1.2] py-0.5">
-                                        {tab.label}
-                                    </span>
-                                    {(tab as any).badge && (
-                                        <span className="ml-auto bg-orange-600 text-white text-[10px] h-5 w-5 flex items-center justify-center rounded-full font-bold animate-pulse shadow-sm border border-white">
-                                            {(tab as any).badge}
-                                        </span>
+                                >
+                                    {isActive && (
+                                        <motion.div
+                                            layoutId="admin-nav-active"
+                                            className="absolute inset-0 bg-gradient-to-r from-white/80 to-transparent rounded-xl"
+                                            transition={{
+                                                type: 'spring',
+                                                bounce: 0.2,
+                                                duration: 0.6,
+                                            }}
+                                        />
                                     )}
-                                </div>
-                            </button>
-                        );
-                    })}
-                </nav>
-                <div className="p-4 border-t border-gray-100 mt-auto">
-                    <button
-                        onClick={() => navigate('/menu')}
-                        className="w-full flex items-center justify-center gap-2 px-4 py-3 metallic-button rounded-xl active:scale-[0.98]"
-                    >
-                        <ArrowLeft size={16} strokeWidth={2} />
-                        {t.ui.backToShop}
-                    </button>
-                </div>
-            </aside>
-
-            {/* Main Content */}
-            <main className="flex-1 md:ml-60 p-3 md:p-4 flex flex-col min-h-screen">
-                <div className="w-full flex-1 flex flex-col">
-                    {/* Top Bar */}
-                    <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-                        <div className="flex items-center gap-4">
-                            <button
-                                onClick={() => setIsMobileMenuOpen(true)}
-                                className="md:hidden p-2 text-slate-600 hover:bg-gray-100 rounded-xl active:scale-95 transition-all"
-                            >
-                                <MenuIcon size={24} strokeWidth={2.5} />
-                            </button>
-                            <h1 className="text-xl md:text-2xl metallic-text flex items-center gap-2 md:gap-3 group">
-                                <div className="hidden md:block w-1.5 h-6 bg-slate-800 rounded-full group-hover:h-8 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
-                                {navLinks.find(t_link => t_link.id === activeTab)?.label}
-                            </h1>
-                        </div>
-                        <div className="flex items-center gap-2 md:gap-4">
-                            {/* Language Switcher */}
-                            <div className="flex p-1 bg-gray-100 rounded-xl border border-gray-200 shadow-inner">
-                                <button
-                                    onClick={() => setLanguage('ru')}
-                                    className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${
-                                        language === 'ru'
-                                            ? 'bg-white text-orange-600 shadow-md transform scale-105'
-                                            : 'text-gray-400 hover:text-gray-600'
-                                    }`}
-                                >
-                                    RU
+                                    <div className="flex items-center gap-2.5 relative z-10 w-full">
+                                        <Icon
+                                            size={20}
+                                            strokeWidth={isActive ? 2.5 : 2}
+                                            className={`shrink-0 transition-transform group-hover:scale-110 ${isActive ? 'text-slate-900' : 'text-slate-400'}`}
+                                        />
+                                        <span className="flex-1 text-left leading-[1.2] py-0.5">
+                                            {tab.label}
+                                        </span>
+                                        {(tab as any).badge && (
+                                            <span className="ml-auto bg-orange-600 text-white text-[10px] h-5 w-5 flex items-center justify-center rounded-full font-bold animate-pulse shadow-sm border border-white">
+                                                {(tab as any).badge}
+                                            </span>
+                                        )}
+                                    </div>
                                 </button>
-                                <button
-                                    onClick={() => setLanguage('es')}
-                                    className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${
-                                        language === 'es'
-                                            ? 'bg-white text-orange-600 shadow-md transform scale-105'
-                                            : 'text-gray-400 hover:text-gray-600'
-                                    }`}
-                                >
-                                    ESP
-                                </button>
-                            </div>
-
-                            <button
-                                onClick={() => setShowHelp(!showHelp)}
-                                className="flex items-center gap-2 px-4 py-2 metallic-button rounded-xl active:scale-95"
-                            >
-                                <HelpCircle size={18} strokeWidth={2.5} />
-                                <span className="hidden md:inline uppercase tracking-tight text-[11px] font-black">
-                                    {showHelp ? t.ui.hideHelp : t.ui.showHelp}
-                                </span>
-                            </button>
-                        </div>
+                            );
+                        })}
+                    </nav>
+                    <div className="p-4 border-t border-gray-100 mt-auto">
+                        <button
+                            onClick={() => navigate('/menu')}
+                            className="w-full flex items-center justify-center gap-2 px-4 py-3 metallic-button rounded-xl active:scale-[0.98]"
+                        >
+                            <ArrowLeft size={16} strokeWidth={2} />
+                            {t.ui.backToShop}
+                        </button>
                     </div>
+                </aside>
 
-                    {/* Interactive Help Banner */}
-                    <AnimatePresence>
-                        {showHelp && (
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.95, y: -20 }}
-                                animate={{ opacity: 1, scale: 1, y: 0 }}
-                                exit={{ opacity: 0, scale: 0.95, y: -20 }}
-                                className="mb-5 metallic-surface rounded-2xl p-4 relative backdrop-blur-md shadow-lg"
-                            >
+                {/* Main Content */}
+                <main className="flex-1 md:ml-60 p-3 md:p-4 flex flex-col min-h-screen">
+                    <div className="w-full flex-1 flex flex-col">
+                        {/* Top Bar */}
+                        <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
+                            <div className="flex items-center gap-4">
                                 <button
-                                    onClick={() => setShowHelp(false)}
-                                    className="absolute top-3 right-3 text-slate-400 hover:text-slate-900 transition-colors p-1"
+                                    onClick={() => setIsMobileMenuOpen(true)}
+                                    className="md:hidden p-2 text-slate-600 hover:bg-gray-100 rounded-xl active:scale-95 transition-all"
                                 >
-                                    <X size={18} strokeWidth={2} />
+                                    <MenuIcon size={24} strokeWidth={2.5} />
                                 </button>
-                                <div className="flex gap-4">
-                                    <div className="mt-1">
-                                        <div className="w-10 h-10 bg-white/50 text-slate-600 rounded-xl flex items-center justify-center shadow-inner border border-white/50">
-                                            <HelpCircle
-                                                size={20}
-                                                strokeWidth={2.5}
-                                                className="text-slate-800"
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="flex-1">
-                                        <h3 className="font-black text-slate-900 mb-0.5 text-base metallic-text !bg-clip-text !text-transparent">
-                                            {t.ui.welcome}
-                                        </h3>
-                                        <p className="text-slate-700 text-[13px] font-bold leading-relaxed max-w-4xl">
-                                            {(t.help as any)[activeTab]}
-                                        </p>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-
-                    {/* Audio Blocked Warning */}
-                    <AnimatePresence>
-                        {audioBlocked && isSoundEnabled && (
-                            <motion.div
-                                initial={{ y: -100, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                exit={{ y: -100, opacity: 0 }}
-                                className="fixed top-20 left-1/2 -translate-x-1/2 z-[200] w-full max-w-sm px-4"
-                            >
-                                <div className="bg-orange-600 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-4 border border-orange-500/50 backdrop-blur-md">
-                                    <div className="flex items-center gap-3">
-                                        <div className="bg-white/20 p-2 rounded-xl">
-                                            <Bell className="animate-bounce" size={20} />
-                                        </div>
-                                        <div>
-                                            <p className="text-xs font-black uppercase tracking-widest">
-                                                Sonido Bloqueado
-                                            </p>
-                                            <p className="text-[10px] opacity-90 font-bold">
-                                                Haz clic en cualquier lugar para activar avisos
-                                            </p>
-                                        </div>
-                                    </div>
+                                <h1 className="text-xl md:text-2xl metallic-text flex items-center gap-2 md:gap-3 group">
+                                    <div className="hidden md:block w-1.5 h-6 bg-slate-800 rounded-full group-hover:h-8 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                                    {navLinks.find(t_link => t_link.id === activeTab)?.label}
+                                </h1>
+                            </div>
+                            <div className="flex items-center gap-2 md:gap-4">
+                                {/* Language Switcher */}
+                                <div className="flex p-1 bg-gray-100 rounded-xl border border-gray-200 shadow-inner">
                                     <button
-                                        onClick={() => setAudioBlocked(false)}
-                                        className="bg-white/10 hover:bg-white/20 p-2 rounded-xl transition-colors"
+                                        onClick={() => setLanguage('ru')}
+                                        className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${
+                                            language === 'ru'
+                                                ? 'bg-white text-orange-600 shadow-md transform scale-105'
+                                                : 'text-gray-400 hover:text-gray-600'
+                                        }`}
                                     >
-                                        <X size={16} />
+                                        RU
+                                    </button>
+                                    <button
+                                        onClick={() => setLanguage('es')}
+                                        className={`px-3.5 py-1.5 rounded-lg text-xs font-black transition-all ${
+                                            language === 'es'
+                                                ? 'bg-white text-orange-600 shadow-md transform scale-105'
+                                                : 'text-gray-400 hover:text-gray-600'
+                                        }`}
+                                    >
+                                        ESP
                                     </button>
                                 </div>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
 
-                    {/* Tab Contents */}
-                    <Suspense fallback={<AdminContentSkeleton />}>
-                        {activeTab === 'dashboard' && (
-                            <AdminDashboard
-                                stats={stats}
-                                reports={reports}
-                                loading={statsLoading || reportsLoading}
-                                loadStats={handleRefetchStats}
-                                setActiveTab={setActiveTab}
-                                language={language}
-                            />
-                        )}
+                                <button
+                                    onClick={() => setShowHelp(!showHelp)}
+                                    className="flex items-center gap-2 px-4 py-2 metallic-button rounded-xl active:scale-95"
+                                >
+                                    <HelpCircle size={18} strokeWidth={2.5} />
+                                    <span className="hidden md:inline uppercase tracking-tight text-[11px] font-black">
+                                        {showHelp ? t.ui.hideHelp : t.ui.showHelp}
+                                    </span>
+                                </button>
+                            </div>
+                        </div>
 
-                        {activeTab === 'analytics' && (
-                            <AdminAnalytics
-                                stats={stats}
-                                loading={statsLoading}
-                                language={language}
-                            />
-                        )}
+                        {/* Interactive Help Banner */}
+                        <AnimatePresence>
+                            {showHelp && (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95, y: -20 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95, y: -20 }}
+                                    className="mb-5 metallic-surface rounded-2xl p-4 relative backdrop-blur-md shadow-lg"
+                                >
+                                    <button
+                                        onClick={() => setShowHelp(false)}
+                                        className="absolute top-3 right-3 text-slate-400 hover:text-slate-900 transition-colors p-1"
+                                    >
+                                        <X size={18} strokeWidth={2} />
+                                    </button>
+                                    <div className="flex gap-4">
+                                        <div className="mt-1">
+                                            <div className="w-10 h-10 bg-white/50 text-slate-600 rounded-xl flex items-center justify-center shadow-inner border border-white/50">
+                                                <HelpCircle
+                                                    size={20}
+                                                    strokeWidth={2.5}
+                                                    className="text-slate-800"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="flex-1">
+                                            <h3 className="font-black text-slate-900 mb-0.5 text-base metallic-text !bg-clip-text !text-transparent">
+                                                {t.ui.welcome}
+                                            </h3>
+                                            <p className="text-slate-700 text-[13px] font-bold leading-relaxed max-w-4xl">
+                                                {(t.help as any)[activeTab]}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
-                        {/* {activeTab === 'abandoned' && <AdminAbandonedCarts language={language} />} */}
+                        {/* Audio Blocked Warning */}
+                        <AnimatePresence>
+                            {audioBlocked && isSoundEnabled && (
+                                <motion.div
+                                    initial={{ y: -100, opacity: 0 }}
+                                    animate={{ y: 0, opacity: 1 }}
+                                    exit={{ y: -100, opacity: 0 }}
+                                    className="fixed top-20 left-1/2 -translate-x-1/2 z-[200] w-full max-w-sm px-4"
+                                >
+                                    <div className="bg-orange-600 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-4 border border-orange-500/50 backdrop-blur-md">
+                                        <div className="flex items-center gap-3">
+                                            <div className="bg-white/20 p-2 rounded-xl">
+                                                <Bell className="animate-bounce" size={20} />
+                                            </div>
+                                            <div>
+                                                <p className="text-xs font-black uppercase tracking-widest">
+                                                    Sonido Bloqueado
+                                                </p>
+                                                <p className="text-[10px] opacity-90 font-bold">
+                                                    Haz clic en cualquier lugar para activar avisos
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <button
+                                            onClick={() => setAudioBlocked(false)}
+                                            className="bg-white/10 hover:bg-white/20 p-2 rounded-xl transition-colors"
+                                        >
+                                            <X size={16} />
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
 
-                        {activeTab === 'menu' && <AdminMenu language={language} />}
-                        {activeTab === 'users' && <AdminUsers language={language} />}
-                        {activeTab === 'orders' && (
-                            <AdminOrders
-                                isGlobalSoundEnabled={isSoundEnabled}
-                                setIsGlobalSoundEnabled={setIsSoundEnabled}
-                                onTestSound={playAlert}
-                                onPrintOrder={handlePrintOrder}
-                                globalPendingCount={pendingCount}
-                                language={language}
-                            />
-                        )}
-                        {activeTab === 'settings' && <AdminSettings language={language} />}
-                        {activeTab === 'delivery' && <AdminDeliveryZones language={language} />}
-                        {activeTab === 'promos' && <AdminPromos language={language} />}
-                        {activeTab === 'tablon' && <AdminTablon language={language} />}
-                        {activeTab === 'reservations' && <AdminReservations language={language} />}
-                        {activeTab === 'newsletter' && <AdminNewsletter language={language} />}
-                    </Suspense>
+                        {/* Tab Contents */}
+                        <Suspense fallback={<AdminContentSkeleton />}>
+                            {activeTab === 'dashboard' && (
+                                <AdminDashboard
+                                    stats={stats}
+                                    reports={reports}
+                                    loading={statsLoading || reportsLoading}
+                                    loadStats={handleRefetchStats}
+                                    setActiveTab={setActiveTab}
+                                    language={language}
+                                />
+                            )}
 
-                    {/* Developer Footer */}
-                    <footer className="mt-auto py-6 border-t border-gray-100">
-                        <p className="text-gray-400 text-[10px] md:text-[11px] font-bold flex items-center justify-center gap-2 flex-wrap text-center uppercase tracking-widest">
-                            {t.ui.developedBy}{' '}
-                            <Heart
-                                size={14}
-                                className="text-orange-500 fill-current animate-pulse"
-                            />{' '}
-                            {t.ui.by}{' '}
-                            <span className="text-gray-700 font-black">
-                                SelenIT / alekseevpo@gmail.com
-                            </span>{' '}
-                            — 2026. {t.ui.rights}
-                        </p>
-                    </footer>
-                </div>
-            </main>
-            {printingOrder && <OrderReceipt order={printingOrder} />}
-        </div>
+                            {activeTab === 'analytics' && (
+                                <AdminAnalytics
+                                    stats={stats}
+                                    loading={statsLoading}
+                                    language={language}
+                                />
+                            )}
+
+                            {/* {activeTab === 'abandoned' && <AdminAbandonedCarts language={language} />} */}
+
+                            {activeTab === 'menu' && <AdminMenu language={language} />}
+                            {activeTab === 'users' && <AdminUsers language={language} />}
+                            {activeTab === 'orders' && (
+                                <AdminOrders
+                                    isGlobalSoundEnabled={isSoundEnabled}
+                                    setIsGlobalSoundEnabled={setIsSoundEnabled}
+                                    onTestSound={playAlert}
+                                    onPrintOrder={handlePrintOrder}
+                                    globalPendingCount={pendingCount}
+                                    language={language}
+                                />
+                            )}
+                            {activeTab === 'settings' && <AdminSettings language={language} />}
+                            {activeTab === 'delivery' && <AdminDeliveryZones language={language} />}
+                            {activeTab === 'promos' && <AdminPromos language={language} />}
+                            {activeTab === 'tablon' && <AdminTablon language={language} />}
+                            {activeTab === 'reservations' && (
+                                <AdminReservations language={language} />
+                            )}
+                            {activeTab === 'newsletter' && <AdminNewsletter language={language} />}
+                        </Suspense>
+
+                        {/* Developer Footer */}
+                        <footer className="mt-auto py-6 border-t border-gray-100">
+                            <p className="text-gray-400 text-[10px] md:text-[11px] font-bold flex items-center justify-center gap-2 flex-wrap text-center uppercase tracking-widest">
+                                {t.ui.developedBy}{' '}
+                                <Heart
+                                    size={14}
+                                    className="text-orange-500 fill-current animate-pulse"
+                                />{' '}
+                                {t.ui.by}{' '}
+                                <span className="text-gray-700 font-black">
+                                    SelenIT / alekseevpo@gmail.com
+                                </span>{' '}
+                                — 2026. {t.ui.rights}
+                            </p>
+                        </footer>
+                    </div>
+                </main>
+                {printingOrder && <OrderReceipt order={printingOrder} />}
+            </div>
+        </MotionConfig>
     );
 }

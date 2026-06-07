@@ -132,8 +132,8 @@ export default function AdminNewsletter({ language = 'es' }: AdminNewsletterProp
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-gray-50/50 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-100">
-                                <th className="px-8 py-5">{t.email}</th>
-                                <th className="px-8 py-5">{t.date}</th>
+                                <th className="px-4 md:px-8 py-3 md:py-5">{t.email}</th>
+                                <th className="px-4 md:px-8 py-3 md:py-5">{t.date}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-50">
@@ -146,7 +146,7 @@ export default function AdminNewsletter({ language = 'es' }: AdminNewsletterProp
                                         key={sub.id}
                                         className="hover:bg-gray-50/80 transition-all group"
                                     >
-                                        <td className="px-8 py-5">
+                                        <td className="px-4 md:px-8 py-3 md:py-5">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-8 h-8 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center font-black text-[10px] group-hover:scale-110 transition-transform">
                                                     {idx + 1}
@@ -156,7 +156,7 @@ export default function AdminNewsletter({ language = 'es' }: AdminNewsletterProp
                                                 </span>
                                             </div>
                                         </td>
-                                        <td className="px-8 py-5">
+                                        <td className="px-4 md:px-8 py-3 md:py-5">
                                             <div className="flex items-center gap-2 text-gray-500 font-bold">
                                                 <Calendar size={14} className="text-gray-300" />
                                                 <span className="text-xs uppercase tracking-tight">
