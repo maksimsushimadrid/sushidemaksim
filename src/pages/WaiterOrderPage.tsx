@@ -53,7 +53,7 @@ export default function WaiterOrderPage() {
         });
     }, [menuItems, selectedCategory]);
 
-    if (authLoading) {
+    if (authLoading || !user || (user.role !== 'waiter' && user.role !== 'admin')) {
         return (
             <div className="min-h-screen bg-[#FBF7F0] flex items-center justify-center">
                 <Loader2 className="animate-spin text-orange-600" size={32} />
