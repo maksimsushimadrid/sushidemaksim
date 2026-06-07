@@ -64,11 +64,7 @@ export default function WaiterOrderPage() {
         if (idx === -1) return { itemId: Number(key), option: '' };
         return { itemId: Number(key.slice(0, idx)), option: key.slice(idx + 1) };
     };
-    // Total quantity for a given itemId across all options
-    const getItemTotal = (itemId: number) =>
-        Object.entries(selectedItems)
-            .filter(([k]) => parseKey(k).itemId === itemId)
-            .reduce((sum, [, q]) => sum + q, 0);
+
     const toast = useToast();
     const { user, isLoading: authLoading, logout } = useAuth();
     const navigate = useNavigate();
@@ -96,7 +92,13 @@ export default function WaiterOrderPage() {
 
     const isAlcoholic = (name: string) => {
         const lower = name.toLowerCase();
-        return lower.includes('cerveza') || lower.includes('vino') || lower.includes('copa') || lower.includes('tinto') || lower.includes('chupito');
+        return (
+            lower.includes('cerveza') ||
+            lower.includes('vino') ||
+            lower.includes('copa') ||
+            lower.includes('tinto') ||
+            lower.includes('chupito')
+        );
     };
 
     const flattenedItems = useMemo(() => {
@@ -121,7 +123,15 @@ export default function WaiterOrderPage() {
             const options = getItemOptions(item.name);
             if (options) {
                 options.forEach(opt => {
-                    const isStandalone = ['Coca-Cola', 'Fanta', 'Sprite', 'Aquarius Limón', 'Aquarius Naranja', 'Vino Tinto', 'Vino Blanco'].includes(opt);
+                    const isStandalone = [
+                        'Coca-Cola',
+                        'Fanta',
+                        'Sprite',
+                        'Aquarius Limón',
+                        'Aquarius Naranja',
+                        'Vino Tinto',
+                        'Vino Blanco',
+                    ].includes(opt);
                     flat.push({
                         originalId: item.id,
                         id: makeKey(item.id, opt),
