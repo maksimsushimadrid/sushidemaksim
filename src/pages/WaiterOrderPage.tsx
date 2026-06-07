@@ -95,7 +95,7 @@ export default function WaiterOrderPage() {
 
     const isAlcoholic = (name: string) => {
         const lower = name.toLowerCase();
-        return lower.includes('cerveza') || lower.includes('vino') || lower.includes('copa') || lower.includes('tinto');
+        return lower.includes('cerveza') || lower.includes('vino') || lower.includes('copa') || lower.includes('tinto') || lower.includes('chupito');
     };
 
     const flattenedItems = useMemo(() => {
