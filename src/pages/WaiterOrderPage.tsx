@@ -28,7 +28,8 @@ const ITEM_OPTIONS: Record<string, string[]> = {
 function getItemOptions(name: string): string[] | null {
     const lower = name.toLowerCase();
     for (const [key, options] of Object.entries(ITEM_OPTIONS)) {
-        if (lower.includes(key)) return options;
+        // Word-boundary match to avoid "aguacate" matching "agua"
+        if (new RegExp(`\\b${key}\\b`).test(lower)) return options;
     }
     return null;
 }
