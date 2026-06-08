@@ -1,0 +1,11 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Ignore historical false positives and deleted keys"
+commits = [
+    "9110c0334e7dc49d86d5eb03ff8a0ec64872d7fa",
+    "2cd123f2f541a7d58d325ab0f743669f28c0b059",
+    "35d4e291e7caa164cb2caac9be0500f8db9fa616",
+    "28a1cf9cbb6036283721ac9f292822c3b9a7a536"
+]
