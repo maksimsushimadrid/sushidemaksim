@@ -1301,7 +1301,8 @@ export default function AdminOrders({
                                                             </div>
                                                         ) : null}
 
-                                                        {order.coinsSpent &&
+                                                        {order.users &&
+                                                        order.coinsSpent &&
                                                         order.coinsSpent > 0 ? (
                                                             <div className="flex items-center justify-between gap-3 py-3 border-t-2 border-dashed border-gray-200 mt-2 px-3 bg-red-50/50 rounded-2xl">
                                                                 <div className="flex items-center gap-3">
@@ -1318,7 +1319,8 @@ export default function AdminOrders({
                                                             </div>
                                                         ) : null}
 
-                                                        {order.coinsEarned &&
+                                                        {order.users &&
+                                                        order.coinsEarned &&
                                                         order.coinsEarned > 0 ? (
                                                             <div className="flex items-center justify-between gap-3 py-3 border-t-2 border-dashed border-gray-200 mt-2 px-3 bg-green-50/50 rounded-2xl">
                                                                 <div className="flex items-center gap-3">

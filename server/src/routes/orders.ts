@@ -412,7 +412,7 @@ router.post(
         // Post-creation Coins Update
         // Calculate coins earned based on net food value only (exclude delivery, tips, and already spent coins)
         const netFoodValue = Math.max(0, finalTotal - deliveryFee - Number(tipAmount || 0));
-        const coinsEarned = Number((netFoodValue * 0.05).toFixed(2));
+        const coinsEarned = req.userId ? Number((netFoodValue * 0.05).toFixed(2)) : 0;
         if (coinsSpent > 0 || coinsEarned > 0) {
             await supabase
                 .from('orders')
