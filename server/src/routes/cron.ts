@@ -1,7 +1,13 @@
 import { Router } from 'express';
+import jwt from 'jsonwebtoken';
 import { supabase } from '../db/supabase.js';
+import { config } from '../config.js';
 import { getMadridStartOfDay, getMadridYesterdayStartOfDay } from '../utils/helpers.js';
-import { sendBirthdayGiftEmail, sendAbandonedCartEmail } from '../utils/email.js';
+import {
+    sendBirthdayGiftEmail,
+    sendAbandonedCartEmail,
+    sendUnconfirmedReminderEmail,
+} from '../utils/email.js';
 
 const router = Router();
 
@@ -251,12 +257,6 @@ router.post('/check-abandoned-carts', async (req, res) => {
         return res.status(200).json({ success: false, error: 'Unauthorized (Silent)' });
     }
 
-    // Abandoned cart reminders are temporarily disabled by owner request
-    return res.json({
-        success: true,
-        message: 'Abandoned cart reminders are currently disabled',
-    });
-
     try {
         const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
@@ -325,6 +325,82 @@ router.post('/check-abandoned-carts', async (req, res) => {
         res.json({ success: true, remindersSent: results.length, processed: results });
     } catch (e: any) {
         console.error('❌ Abandoned cart cron error:', e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// CRON job to check for unconfirmed registrations (> 12h) and send reminders
+router.post('/check-unconfirmed-users', async (req, res) => {
+    const cronSecret = req.headers['x-cron-secret'];
+    const authHeader = req.headers['authorization'];
+    const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
+
+    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
+        return res.status(200).json({ success: false, error: 'Unauthorized (Silent)' });
+    }
+
+    try {
+        const twelveHoursAgo = new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString();
+        const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+
+        // 1. Get users who are not verified, registered between 12h and 7d ago, and haven't received a reminder
+        const { data: users, error: fetchError } = await supabase
+            .from('users')
+            .select('id, name, email, created_at, unconfirmed_reminder_sent_at')
+            .eq('is_verified', false)
+            .is('google_id', null)
+            .is('unconfirmed_reminder_sent_at', null)
+            .lt('created_at', twelveHoursAgo)
+            .gt('created_at', sevenDaysAgo);
+
+        if (fetchError) throw fetchError;
+
+        const results = [];
+        const now = new Date().toISOString();
+
+        for (const user of users || []) {
+            try {
+                // Get active registration welcome promo code (if any)
+                const { data: promo } = await supabase
+                    .from('promo_codes')
+                    .select('code, discount_percentage')
+                    .eq('user_id', user.id)
+                    .eq('is_used', false)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+
+                // Generate a new 24h verification token
+                const verificationToken = jwt.sign(
+                    { userId: user.id, purpose: 'email_verification' },
+                    config.jwtSecret,
+                    { expiresIn: '24h' }
+                );
+
+                // Send reminder email
+                await sendUnconfirmedReminderEmail(
+                    user.email,
+                    user.name,
+                    verificationToken,
+                    promo?.code || '',
+                    promo?.discount_percentage || 10
+                );
+
+                // Update unconfirmed_reminder_sent_at timestamp
+                await supabase
+                    .from('users')
+                    .update({ unconfirmed_reminder_sent_at: now })
+                    .eq('id', user.id);
+
+                results.push({ userId: user.id, email: user.email });
+            } catch (err) {
+                console.error(`❌ Failed to send registration reminder to ${user.email}:`, err);
+            }
+        }
+
+        res.json({ success: true, remindersSent: results.length, processed: results });
+    } catch (e: any) {
+        console.error('❌ Unconfirmed users cron error:', e);
         res.status(500).json({ error: e.message });
     }
 });

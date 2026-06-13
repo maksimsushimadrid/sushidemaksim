@@ -74,7 +74,7 @@ describe('Order Schema Validation', () => {
             const invalidOrder = {
                 body: {
                     deliveryType: 'pickup',
-                    phone: '123',
+                    phone: 'abcd',
                     customerName: 'Test User',
                 },
             };
