@@ -674,6 +674,31 @@ export default function DeliveryForm({
                         />
                     </div>
                     <ErrorMessage name="phone" />
+                    {isAuthenticated && (
+                        <div className="px-1 mt-3">
+                            <label className="flex items-center gap-3 p-3 bg-orange-50/20 rounded-2xl border border-orange-100/30 cursor-pointer group hover:bg-orange-50/40 transition-all select-none">
+                                <div className="relative flex items-center">
+                                    <input
+                                        type="checkbox"
+                                        className="w-5 h-5 accent-orange-600 rounded-md cursor-pointer border-2 border-orange-200"
+                                        {...register('saveProfile')}
+                                        onChange={e => {
+                                            triggerHaptic();
+                                            setValue('saveProfile', e.target.checked);
+                                        }}
+                                    />
+                                </div>
+                                <div>
+                                    <p className="text-[13px] font-black text-gray-900 uppercase tracking-tight leading-none mb-1">
+                                        Guardar teléfono en mi perfil
+                                    </p>
+                                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">
+                                        Para tus futuros pedidos
+                                    </p>
+                                </div>
+                            </label>
+                        </div>
+                    )}
                 </div>
 
                 <div className="flex flex-col gap-2 mt-4">

@@ -175,6 +175,7 @@ export default function OrderTrackingPage() {
                             <OrderStepper
                                 currentStatus={order.status}
                                 estimatedTime={order.estimatedDeliveryTime}
+                                deliveryType={order.deliveryType}
                             />
                         </div>
 

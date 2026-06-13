@@ -679,17 +679,77 @@ router.patch(
 
         // Send Web Push Notification
         if (order && oldOrder && order.status !== oldOrder.status) {
-            const statusMessages: Record<string, string> = {
-                received: 'Recibido',
-                preparing: 'En preparación',
-                ready: 'Listo',
-                delivering: 'En camino',
-                delivered: 'Entregado',
-                cancelled: 'Cancelado',
-            };
-            const msg = statusMessages[order.status] || order.status;
-            const pushTitle = `Pedido actualizado`;
-            const pushBody = `Tu pedido está ahora: ${msg}`;
+            let pushTitle = 'Pedido actualizado';
+            let pushBody = `Tu pedido está ahora: ${order.status}`;
+
+            const isMesa =
+                order.delivery_address?.toUpperCase().includes('MESA') ||
+                order.delivery_type === 'table';
+            const isPickup =
+                !isMesa &&
+                (order.delivery_type === 'pickup' ||
+                    order.delivery_address === 'RECOGIDA' ||
+                    (order.notes && order.notes.includes('[TIPO: RECOGIDA EN LOCAL]')));
+
+            if (isMesa) {
+                const titleMap: Record<string, string> = {
+                    received: 'Pedido recibido',
+                    confirmed: 'Pedido confirmado',
+                    preparing: 'En preparación',
+                    on_the_way: 'Servicio en mesa',
+                    delivered: 'Pedido servido',
+                    cancelled: 'Pedido cancelado',
+                };
+                const bodyMap: Record<string, string> = {
+                    received: 'Hemos recibido tu pedido para la mesa.',
+                    confirmed: 'Tu pedido ha sido confirmado.',
+                    preparing: 'Tu pedido ya se está preparando en la cocina.',
+                    on_the_way: 'Tu pedido está listo y se está sirviendo.',
+                    delivered: '¡Que aproveche!',
+                    cancelled: 'Tu pedido de mesa ha sido cancelado.',
+                };
+                pushTitle = titleMap[order.status] || pushTitle;
+                pushBody = bodyMap[order.status] || pushBody;
+            } else if (isPickup) {
+                const titleMap: Record<string, string> = {
+                    received: 'Pedido recibido',
+                    confirmed: 'Pedido confirmado',
+                    preparing: 'En preparación',
+                    on_the_way: '¡Pedido listo!',
+                    delivered: 'Pedido entregado',
+                    cancelled: 'Pedido cancelado',
+                };
+                const bodyMap: Record<string, string> = {
+                    received: 'Hemos recibido tu pedido para recoger en el local.',
+                    confirmed: 'Tu pedido ha sido confirmado.',
+                    preparing: 'Tu pedido ya se está preparando en la cocina.',
+                    on_the_way: 'Tu pedido está listo y te está esperando en el local.',
+                    delivered: '¡Gracias por tu visita! Que aproveche.',
+                    cancelled: 'Tu pedido de recogida ha sido cancelado.',
+                };
+                pushTitle = titleMap[order.status] || pushTitle;
+                pushBody = bodyMap[order.status] || pushBody;
+            } else {
+                // Delivery
+                const titleMap: Record<string, string> = {
+                    received: 'Pedido recibido',
+                    confirmed: 'Pedido confirmado',
+                    preparing: 'En preparación',
+                    on_the_way: 'Pedido en camino',
+                    delivered: 'Pedido entregado',
+                    cancelled: 'Pedido cancelado',
+                };
+                const bodyMap: Record<string, string> = {
+                    received: 'Hemos recibido tu pedido a domicilio.',
+                    confirmed: 'Tu pedido ha sido confirmado.',
+                    preparing: 'Tu pedido ya está en la cocina.',
+                    on_the_way: 'El repartidor ya va hacia tu dirección.',
+                    delivered: '¡Gracias por tu compra! Que aproveche.',
+                    cancelled: 'Tu pedido a domicilio ha sido cancelado.',
+                };
+                pushTitle = titleMap[order.status] || pushTitle;
+                pushBody = bodyMap[order.status] || pushBody;
+            }
 
             import('../utils/push.js')
                 .then(({ sendPushNotification }) => {

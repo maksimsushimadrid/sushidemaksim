@@ -53,6 +53,7 @@ export const checkoutSchema = z
         noBuzzer: z.boolean().default(false),
         customNote: z.string().max(500, 'El mensaje es demasiado largo').optional(),
         saveAddress: z.boolean().default(true),
+        saveProfile: z.boolean().default(true),
 
         // Internal/Hidden
         selectedZone: z.any().optional().nullable(),

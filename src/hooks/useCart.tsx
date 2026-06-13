@@ -38,6 +38,7 @@ interface DeliveryDetails {
     scheduledTime: string;
     customNote: string;
     saveAddress: boolean;
+    saveProfile: boolean;
     guestsCount: number;
     chopsticksCount: number;
     lat?: number;
@@ -94,6 +95,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 scheduledTime: '',
                 customNote: '',
                 saveAddress: true,
+                saveProfile: true,
                 guestsCount: 2,
                 chopsticksCount: 1,
             };
@@ -117,6 +119,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             scheduledTime: '',
             customNote: '',
             saveAddress: true,
+            saveProfile: true,
             guestsCount: 2,
             chopsticksCount: 1,
         };
@@ -138,6 +141,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
                         postalCode: parsed.postalCode || '',
                         customerName: parsed.customerName || '',
                         saveAddress: parsed.saveAddress ?? true,
+                        saveProfile: parsed.saveProfile ?? true,
                     };
                 }
                 // Merge with defaults to ensure new fields are present
@@ -182,6 +186,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             scheduledTime: '',
             customNote: '',
             saveAddress: true,
+            saveProfile: true,
             guestsCount: 2,
             chopsticksCount: 1,
         });

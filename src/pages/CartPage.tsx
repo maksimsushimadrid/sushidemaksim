@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
@@ -50,7 +51,8 @@ export default function CartPage() {
         resetDeliveryDetails,
     } = useCart();
 
-    const { isAuthenticated, user } = useAuth();
+    const navigate = useNavigate();
+    const { isAuthenticated, user, updateProfile } = useAuth();
     const { success: showSuccess, error: showError } = useToast();
 
     const [promoCode, setPromoCode] = useState('');
@@ -729,6 +731,20 @@ export default function CartPage() {
 
             await saveCurrentAddress();
 
+            if (isAuthenticated && data.saveProfile) {
+                const finalPhoneInput = (phoneRef.current?.value || '').trim();
+                const cleanPhone = finalPhoneInput.replace(/\D/g, '').slice(0, 9);
+                const formattedPhone = cleanPhone ? `+34${cleanPhone}` : '';
+
+                if (formattedPhone && formattedPhone !== user?.phone) {
+                    try {
+                        await updateProfile({ phone: formattedPhone });
+                    } catch (updateErr) {
+                        console.error('Failed to auto-save phone number on checkout:', updateErr);
+                    }
+                }
+            }
+
             tracker.track('order_placed', {
                 metadata: {
                     totalValue: cartSubtotal,
@@ -888,6 +904,56 @@ export default function CartPage() {
                                                 </div>
                                             </div>
                                         </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {isAuthenticated && user && !user.phone && (
+                            <div className="mb-6 animate-in fade-in slide-in-from-top-4 duration-300">
+                                <div className="bg-amber-50 border border-amber-100 rounded-[24px] p-4 md:p-5 shadow-sm">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                        <div>
+                                            <h3 className="font-black text-amber-900 leading-none mb-1.5 text-[15px] uppercase tracking-wider">
+                                                Perfil incompleto
+                                            </h3>
+                                            <p className="text-[13px] text-amber-800/80 leading-snug m-0 font-medium">
+                                                Necesitamos tu número de teléfono para enviarte
+                                                actualizaciones del pedido. ¡Añádelo en tu perfil!
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => navigate('/profile?tab=profile')}
+                                            className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-md shadow-amber-200 border-none cursor-pointer self-start sm:self-center"
+                                        >
+                                            Ir al perfil
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {isAuthenticated && user && !user.birthDate && (
+                            <div className="mb-6 animate-in fade-in slide-in-from-top-4 duration-300">
+                                <div className="bg-orange-550/10 bg-orange-50 border border-orange-100 rounded-[24px] p-4 md:p-5 shadow-sm">
+                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                        <div>
+                                            <h3 className="font-black text-orange-950 leading-none mb-1.5 text-[15px] uppercase tracking-wider">
+                                                Consigue un regalo en tu cumpleaños
+                                            </h3>
+                                            <p className="text-[13px] text-orange-900/85 leading-snug m-0 font-medium">
+                                                Añade tu fecha de nacimiento en tu perfil para
+                                                recibir un cupón especial en tu día.
+                                            </p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => navigate('/profile?tab=profile')}
+                                            className="px-5 py-2.5 bg-orange-600 hover:bg-orange-700 text-white rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-md shadow-orange-200 border-none cursor-pointer self-start sm:self-center"
+                                        >
+                                            Añadir fecha
+                                        </button>
                                     </div>
                                 </div>
                             </div>

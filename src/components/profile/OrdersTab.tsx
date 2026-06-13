@@ -7,42 +7,58 @@ import { useOrdersQuery } from '../../hooks/queries/useOrders';
 import { useOrderRealtime } from '../../hooks/useOrderRealtime';
 import { Order } from '../../types';
 
-function getStatusBadge(status: string) {
+function getStatusBadge(status: string, deliveryType?: string) {
+    const isPickup = deliveryType === 'pickup';
     const styles: Record<string, { bg: string; color: string; label: string; icon?: string }> = {
-        pending: { bg: 'bg-green-600', color: 'text-white', label: 'Pedido Realizado', icon: '📨' },
+        pending: {
+            bg: 'bg-green-600',
+            color: 'text-white',
+            label: 'Pedido Realizado',
+            icon: isPickup ? undefined : '📨',
+        },
         received: {
             bg: 'bg-green-600',
             color: 'text-white',
             label: 'Pedido Realizado',
-            icon: '👀',
+            icon: isPickup ? undefined : '👀',
         },
         confirmed: {
             bg: 'bg-green-700',
             color: 'text-white',
             label: 'Pedido Confirmado',
-            icon: '✅',
+            icon: isPickup ? undefined : '✅',
         },
         preparing: {
             bg: 'bg-green-500',
             color: 'text-white',
-            label: 'Entrega',
-            icon: '👨‍🍳',
+            label: isPickup ? 'En preparación' : 'Entrega',
+            icon: isPickup ? undefined : '👨‍🍳',
         },
-        on_the_way: { bg: 'bg-green-500', color: 'text-white', label: 'Entrega', icon: '🛵' },
+        on_the_way: {
+            bg: 'bg-green-500',
+            color: 'text-white',
+            label: isPickup ? 'Listo para Recoger' : 'Entrega',
+            icon: isPickup ? undefined : '🛵',
+        },
         delivered: {
             bg: 'bg-emerald-600',
             color: 'text-white',
-            label: 'Pedido Entregado',
-            icon: '🍱',
+            label: isPickup ? 'Pedido Entregado' : 'Pedido Entregado',
+            icon: isPickup ? undefined : '🍱',
         },
-        cancelled: { bg: 'bg-gray-400', color: 'text-white', label: 'Cancelado', icon: '❌' },
+        cancelled: {
+            bg: 'bg-gray-400',
+            color: 'text-white',
+            label: 'Cancelado',
+            icon: isPickup ? undefined : '❌',
+        },
     };
     const s = styles[status] || styles.pending;
     return (
         <span
             className={`px-3 py-1 md:py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-sm shadow-black/5 ${s.bg} ${s.color}`}
         >
-            <span>{s.icon}</span>
+            {s.icon && <span>{s.icon}</span>}
             {s.label}
         </span>
     );
@@ -181,7 +197,7 @@ export default function OrdersTab() {
                                             ? order.id.slice(0, 8).toUpperCase()
                                             : String(order.id).padStart(5, '0')}
                                     </span>
-                                    {getStatusBadge(order.status)}
+                                    {getStatusBadge(order.status, order.deliveryType)}
                                 </div>
                                 <div className="flex items-center gap-2 text-[9px] md:text-[10px] font-bold text-gray-400 opacity-80">
                                     <Clock size={10} strokeWidth={1.5} />

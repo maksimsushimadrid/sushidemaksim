@@ -1,24 +1,29 @@
-import { CheckCircle, Clock, Truck, CheckCircle2, XCircle } from 'lucide-react';
+import { CheckCircle, Clock, Truck, CheckCircle2, XCircle, Package } from 'lucide-react';
 import { motion } from 'framer-motion';
-
-const STEPS = [
-    { status: 'received', label: 'Pedido Realizado', icon: Clock },
-    { status: 'confirmed', label: 'Pedido Confirmado', icon: CheckCircle },
-    {
-        status: 'preparing', // covers both preparing and on_the_way in this view
-        label: 'Entrega',
-        icon: Truck,
-        iconLabel: '🛵',
-    },
-    { status: 'delivered', label: 'Pedido Entregado', icon: CheckCircle2 },
-];
 
 interface OrderStepperProps {
     currentStatus: string;
     estimatedTime?: string;
+    deliveryType?: string;
 }
 
-export default function OrderStepper({ currentStatus, estimatedTime }: OrderStepperProps) {
+export default function OrderStepper({
+    currentStatus,
+    estimatedTime,
+    deliveryType,
+}: OrderStepperProps) {
+    const isPickup = deliveryType === 'pickup';
+    const steps = [
+        { status: 'received', label: 'Pedido Realizado', icon: Clock },
+        { status: 'confirmed', label: 'Pedido Confirmado', icon: CheckCircle },
+        {
+            status: 'preparing', // covers both preparing and on_the_way in this view
+            label: isPickup ? 'Listo para Recoger' : 'Entrega',
+            icon: isPickup ? Package : Truck,
+            iconLabel: isPickup ? undefined : '🛵',
+        },
+        { status: 'delivered', label: 'Pedido Entregado', icon: CheckCircle2 },
+    ];
     if (currentStatus === 'cancelled') {
         return (
             <div className="flex flex-col items-center gap-4 py-8">
@@ -66,11 +71,11 @@ export default function OrderStepper({ currentStatus, estimatedTime }: OrderStep
             <div className="absolute top-1/2 left-0 w-full h-1 bg-gray-100 -translate-y-1/2 z-0 hidden md:block" />
             <div
                 className="absolute top-1/2 left-0 h-1 bg-green-600 -translate-y-1/2 z-0 transition-all duration-1000 hidden md:block"
-                style={{ width: `${(normalizedIdx / (STEPS.length - 1)) * 100}%` }}
+                style={{ width: `${(normalizedIdx / (steps.length - 1)) * 100}%` }}
             />
 
             <div className="relative z-10 flex flex-col md:flex-row justify-between items-stretch md:items-center gap-2 md:gap-0">
-                {STEPS.map((step, idx) => {
+                {steps.map((step, idx) => {
                     const isActive = idx <= normalizedIdx;
                     const isCurrent = idx === normalizedIdx;
                     const Icon = step.icon;
@@ -109,9 +114,24 @@ export default function OrderStepper({ currentStatus, estimatedTime }: OrderStep
                                         isActive ? 'text-gray-900' : 'text-gray-300'
                                     }`}
                                 >
-                                    {isCurrent && idx === 2 && estimatedTime
-                                        ? `Entrega ${estimatedTime.split(' ').pop() || estimatedTime}`
-                                        : step.label}
+                                    {(() => {
+                                        if (idx === 2) {
+                                            if (isPickup) {
+                                                if (isCurrent && estimatedTime) {
+                                                    return `Recogida ${estimatedTime.split(' ').pop() || estimatedTime}`;
+                                                } else if (currentStatus === 'preparing') {
+                                                    return 'En preparación';
+                                                } else if (currentStatus === 'on_the_way') {
+                                                    return 'Listo para Recoger';
+                                                }
+                                            } else {
+                                                if (isCurrent && estimatedTime) {
+                                                    return `Entrega ${estimatedTime.split(' ').pop() || estimatedTime}`;
+                                                }
+                                            }
+                                        }
+                                        return step.label;
+                                    })()}
                                 </span>
                                 {isCurrent && (
                                     <span className="text-[9px] font-black text-green-600 animate-pulse bg-green-100 px-2 py-0.5 rounded-full md:mt-1">

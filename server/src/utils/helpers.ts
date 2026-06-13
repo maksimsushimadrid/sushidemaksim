@@ -139,6 +139,7 @@ export function formatOrder(o: any, userStats: any = null) {
         updatedAt: o.updated_at,
         estimatedDeliveryTime: o.estimated_delivery_time,
         promoCode: o.promo_code,
+        deliveryType: o.delivery_type,
         items,
         users: o.users
             ? {

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import {
     User,
@@ -91,6 +91,70 @@ export default function ProfileTab({ user, updateProfile }: Props) {
     const queryClient = useQueryClient();
     const { deleteAccount } = useAuth();
     const { success, error } = useToast();
+
+    const completionPct = useMemo(() => {
+        let pct = 0;
+        if (user.email) pct += 20;
+        if (
+            user.name &&
+            user.name.trim() !== '' &&
+            !user.name.toLowerCase().includes('invitado') &&
+            !user.name.toLowerCase().includes('guest')
+        )
+            pct += 25;
+        if (user.phone && user.phone.trim() !== '') pct += 25;
+        if (user.birthDate && user.birthDate.trim() !== '') pct += 15;
+        if (user.avatar && user.avatar.trim() !== '') pct += 15;
+        return pct;
+    }, [user]);
+
+    const missingFields = useMemo(() => {
+        const missing = [];
+        if (
+            !user.name ||
+            user.name.trim() === '' ||
+            user.name.toLowerCase().includes('invitado') ||
+            user.name.toLowerCase().includes('guest')
+        ) {
+            missing.push({ field: 'name', label: 'Añade tu nombre completo (+25%)' });
+        }
+        if (!user.phone || user.phone.trim() === '') {
+            missing.push({ field: 'phone', label: 'Añade tu número de teléfono (+25%)' });
+        }
+        if (!user.birthDate || user.birthDate.trim() === '') {
+            missing.push({
+                field: 'birthDate',
+                label: 'Añade tu cumpleaños (+15%) para recibir un regalo especial',
+            });
+        }
+        if (!user.avatar || user.avatar.trim() === '') {
+            missing.push({ field: 'avatar', label: 'Elige un avatar o sube una foto (+15%)' });
+        }
+        return missing;
+    }, [user]);
+
+    const handleCompleteField = (field: string) => {
+        if (!isEditing) {
+            startEditing();
+        }
+        setTimeout(() => {
+            if (field === 'name') {
+                nameRef.current?.focus();
+                nameRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (field === 'phone') {
+                phoneRef.current?.focus();
+                phoneRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (field === 'birthDate') {
+                birthDateRef.current?.focus();
+                birthDateRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (field === 'avatar') {
+                const element = document.getElementById('avatar-grid');
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }, 100);
+    };
 
     // Calculate initials based on current editing state or original user data
     const currentInitials =
@@ -300,6 +364,52 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                         </>
                     )}
                 </div>
+            </div>
+
+            {/* Profile Completion Card */}
+            <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm relative overflow-hidden group">
+                <div className="flex items-center justify-between gap-4 mb-3">
+                    <div>
+                        <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider m-0">
+                            Progreso de tu perfil
+                        </h3>
+                        <p className="text-[11px] text-gray-500 font-semibold m-0 mt-0.5 uppercase tracking-tight">
+                            Completa tu perfil para asegurar tu cuenta y conseguir Maksim Coins
+                        </p>
+                    </div>
+                    <span className="text-xl font-black text-orange-600 leading-none">
+                        {completionPct}%
+                    </span>
+                </div>
+
+                <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50 mb-4">
+                    <div
+                        className="h-full rounded-full bg-gradient-to-r from-orange-500 to-orange-600 shadow-[0_0_8px_rgba(242,101,34,0.3)] transition-all duration-500"
+                        style={{ width: `${completionPct}%` }}
+                    />
+                </div>
+
+                {missingFields.length > 0 && (
+                    <div className="space-y-2.5 pt-1">
+                        {missingFields.map(f => (
+                            <div
+                                key={f.field}
+                                className="flex items-center justify-between bg-orange-50/20 border border-orange-100/30 rounded-xl p-3"
+                            >
+                                <span className="text-xs font-semibold text-gray-700 leading-snug">
+                                    {f.label}
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => handleCompleteField(f.field)}
+                                    className="px-4 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-black text-[10px] uppercase tracking-wider transition-all border-none cursor-pointer"
+                                >
+                                    Completar
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {/* Information Grid Wrapped in Form */}
