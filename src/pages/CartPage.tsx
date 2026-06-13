@@ -1063,6 +1063,15 @@ export default function CartPage() {
             {/* Mobile Sticky Bottom Bar */}
             {items.length > 0 && (
                 <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md border-t border-gray-100 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-[0_-10px_40px_rgba(0,0,0,0.08)] z-[100] transform transition-transform duration-300">
+                    {!isMinOrderMet && (
+                        <div className="mb-3 text-center border-b border-gray-100/50 pb-2">
+                            <p className="text-[10px] text-orange-600 font-black uppercase tracking-wider animate-pulse">
+                                Mínimo de comida para envío:{' '}
+                                {MIN_ORDER.toFixed(2).replace('.', ',')}€ (llevas{' '}
+                                {cartSubtotal.toFixed(2).replace('.', ',')}€)
+                            </p>
+                        </div>
+                    )}
                     <div className="flex items-center justify-between gap-4">
                         <div className="flex flex-col">
                             <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider">
@@ -1093,8 +1102,16 @@ export default function CartPage() {
                             }
                             className={`flex-1 max-w-[200px] px-6 py-3.5 rounded-xl font-black border-none cursor-pointer transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wide ${isMinOrderMet ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/30' : 'bg-gray-200 text-gray-400'}`}
                         >
-                            {isOrdering ? 'Procesando...' : 'Pagar'}
-                            {!isOrdering && <ArrowRight size={18} />}
+                            {isOrdering ? (
+                                'Procesando...'
+                            ) : !isMinOrderMet ? (
+                                `Mínimo ${MIN_ORDER.toFixed(2).replace('.', ',')}€`
+                            ) : (
+                                <>
+                                    <span>Pagar</span>
+                                    <ArrowRight size={18} />
+                                </>
+                            )}
                         </button>
                     </div>
                 </div>
