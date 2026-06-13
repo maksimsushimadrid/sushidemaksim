@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useToast } from '../../context/ToastContext';
 
 interface AdminDashboardProps {
@@ -141,6 +141,20 @@ interface StatCardProps {
 
 const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint, t }: StatCardProps) => {
     const [showHint, setShowHint] = useState(false);
+    const [alignRight, setAlignRight] = useState(false);
+    const iconRef = useRef<HTMLDivElement>(null);
+
+    const handleMouseEnter = () => {
+        if (iconRef.current) {
+            const rect = iconRef.current.getBoundingClientRect();
+            if (rect.left > window.innerWidth / 2) {
+                setAlignRight(true);
+            } else {
+                setAlignRight(false);
+            }
+        }
+        setShowHint(true);
+    };
 
     return (
         <div className="metallic-card p-5 flex flex-col justify-between group hover:border-white/50 hover:shadow-xl transition-all relative overflow-visible h-full min-h-[140px]">
@@ -151,9 +165,9 @@ const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint, t }: StatC
                             {title}
                         </p>
                         {hint && (
-                            <div className="relative">
+                            <div className="relative" ref={iconRef}>
                                 <div
-                                    onMouseEnter={() => setShowHint(true)}
+                                    onMouseEnter={handleMouseEnter}
                                     onMouseLeave={() => setShowHint(false)}
                                     className={`w-4 h-4 rounded-full flex items-center justify-center transition-all border-none cursor-help shrink-0 z-20 ${
                                         showHint
@@ -171,9 +185,11 @@ const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint, t }: StatC
                                             initial={{ opacity: 0, y: 5, scale: 0.95 }}
                                             animate={{ opacity: 1, y: 0, scale: 1 }}
                                             exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                                            className="absolute left-0 bottom-full mb-3 w-72 bg-slate-900 text-white rounded-2xl shadow-2xl z-[100] overflow-visible border border-white/20 backdrop-blur-sm"
+                                            className={`absolute bottom-full mb-3 w-72 bg-slate-900 text-white rounded-2xl shadow-2xl z-[100] overflow-visible border border-white/20 backdrop-blur-sm ${alignRight ? 'right-0' : 'left-0'}`}
                                             style={{
-                                                transformOrigin: 'bottom left',
+                                                transformOrigin: alignRight
+                                                    ? 'bottom right'
+                                                    : 'bottom left',
                                             }}
                                         >
                                             <div className="bg-white/10 px-4 py-2.5 flex items-center justify-between border-b border-white/10">
@@ -192,7 +208,9 @@ const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint, t }: StatC
                                                 </p>
                                             </div>
                                             {/* Arrow Component */}
-                                            <div className="absolute -bottom-1.5 left-2 w-3 h-3 bg-slate-900 rotate-45 border-r border-b border-white/20" />
+                                            <div
+                                                className={`absolute -bottom-1.5 w-3 h-3 bg-slate-900 rotate-45 border-r border-b border-white/20 ${alignRight ? 'right-2' : 'left-2'}`}
+                                            />
                                         </motion.div>
                                     )}
                                 </AnimatePresence>
