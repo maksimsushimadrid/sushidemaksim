@@ -17,11 +17,8 @@ import { useAuth } from '../hooks/useAuth';
 import { useToast } from '../context/ToastContext';
 import { useBodyScrollLock } from '../hooks/useBodyScrollLock';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useGoogleLogin } from '@react-oauth/google';
-
-// ========== SUB-COMPONENTS (Memoized for performance) ==========
-
 export const GoogleAuthButton = ({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onSuccess,
     isLoading = false,
 }: {
@@ -29,34 +26,6 @@ export const GoogleAuthButton = ({
     isLoading?: boolean;
 }) => {
     const { error: showError } = useToast();
-
-    // Detect mobile devices to use redirect flow instead of popup (which is often blocked or fails inside webviews)
-    const isMobile =
-        typeof window !== 'undefined' &&
-        (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-            navigator.userAgent
-        ) ||
-            window.innerWidth < 768);
-
-    const login = useGoogleLogin({
-        onSuccess: tokenResponse => {
-            onSuccess({ access_token: tokenResponse.access_token });
-        },
-        onError: error => {
-            console.warn('Google login error:', error);
-            showError('No se pudo conectar con Google. Inténtalo de nuevo.');
-        },
-        onNonOAuthError: error => {
-            console.warn('Google popup error:', error);
-
-            // Only redirect if the popup actually failed to open (i.e. blocked by browser)
-            if (!error || error.type !== 'popup_failed_to_open') {
-                return;
-            }
-
-            triggerRedirect();
-        },
-    });
 
     const triggerRedirect = () => {
         const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
