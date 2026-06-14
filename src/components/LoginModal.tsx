@@ -79,11 +79,7 @@ export const GoogleAuthButton = ({
     };
 
     const handleLoginClick = () => {
-        if (isMobile) {
-            triggerRedirect();
-        } else {
-            login();
-        }
+        triggerRedirect();
     };
 
     return (
