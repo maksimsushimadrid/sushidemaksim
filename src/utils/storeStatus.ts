@@ -56,6 +56,9 @@ export function isStoreOpen(date: Date = new Date()): boolean {
  * Checks if a specific date string (YYYY-MM-DD) and time string (HH:MM) is within business hours.
  */
 export function isTimeWithinBusinessHours(dateStr: string, timeStr: string): boolean {
+    if (dateStr === '2026-06-15') {
+        return timeStr >= '20:30' && timeStr <= '23:30';
+    }
     const day = getDayOfWeekFromDateString(dateStr);
     const todayIntervals = BUSINESS_HOURS[day] || [];
     return todayIntervals.some(interval => timeStr >= interval.start && timeStr < interval.end);

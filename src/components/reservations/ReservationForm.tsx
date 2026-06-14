@@ -69,7 +69,10 @@ export default function ReservationForm({
         const [yr, mo, dy] = formData.date.split('-').map(Number);
         const dateObj = new Date(yr, mo - 1, dy);
         const day = dateObj.getDay();
-        const intervals = BUSINESS_HOURS[day] || [];
+        const intervals =
+            formData.date === '2026-06-15'
+                ? [{ start: '20:30', end: '23:30' }]
+                : BUSINESS_HOURS[day] || [];
 
         const now = new Date();
         const isToday = formData.date === now.toLocaleDateString('en-CA');
@@ -314,6 +317,7 @@ export default function ReservationForm({
                                 min={today}
                                 disabledDays={[1, 2]}
                                 disabledDates={isReservationsTodayClosed ? [today] : []}
+                                allowedDates={['2026-06-15']}
                                 placeholder="Fecha"
                             />
                         </div>

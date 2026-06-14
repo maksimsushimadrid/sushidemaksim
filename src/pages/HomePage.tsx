@@ -4,6 +4,7 @@ import SEO from '../components/SEO';
 import Newsletter from '../components/Newsletter';
 import RatingsBanner from '../components/RatingsBanner';
 import ReviewsSEO from '../components/ReviewsSEO';
+import EventBanner from '../components/EventBanner';
 import { useCart } from '../hooks/useCart';
 import { usePopularItems, useCategories, MenuItem } from '../hooks/queries/useMenu';
 import ShareModal from '../components/menu/ShareModal';
@@ -246,6 +247,9 @@ export default function HomePage() {
             </div>
 
             <RatingsBanner />
+            <div className="max-w-7xl mx-auto px-4 mt-12">
+                <EventBanner />
+            </div>
             <PressSection />
             <CategoriesGrid
                 categoryList={categoryList}

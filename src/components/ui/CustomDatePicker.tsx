@@ -8,6 +8,7 @@ interface CustomDatePickerProps {
     min?: string;
     disabledDays?: number[]; // [0, 1, 2, ...]
     disabledDates?: string[]; // ['2023-01-01', ...]
+    allowedDates?: string[];
     placeholder?: string;
 }
 
@@ -34,6 +35,7 @@ export default function CustomDatePicker({
     min,
     disabledDays,
     disabledDates,
+    allowedDates,
     placeholder,
 }: CustomDatePickerProps) {
     const [isOpen, setIsOpen] = useState(false);
@@ -97,7 +99,8 @@ export default function CustomDatePicker({
             const isToday = new Date().toISOString().split('T')[0] === dateStr;
             const isSelected = value === dateStr;
             const isMin = min ? dateStr < min : false;
-            const isDayDisabled = disabledDays?.includes(dayOfWeek);
+            const isDayDisabled =
+                disabledDays?.includes(dayOfWeek) && !allowedDates?.includes(dateStr);
             const isSpecificDateDisabled = disabledDates?.includes(dateStr);
 
             days.push({
