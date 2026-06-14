@@ -79,14 +79,15 @@ export default function EventBanner() {
                         <div className="flex items-center gap-2 text-yellow-500 mb-1">
                             <Beer size={16} strokeWidth={2.5} />
                             <h4 className="text-xs font-black uppercase tracking-wider">
-                                Cerveza Especial
+                                Cerveza de Verano
                             </h4>
                         </div>
                         <div className="flex items-center gap-2 text-white">
                             <span className="font-bold text-sm">Botella a 2€ (0.33l)</span>
                         </div>
                         <p className="text-gray-400 text-[11px] font-medium mt-1">
-                            Disfruta de cerveza bien fría a precio especial durante el partido.
+                            Disfruta de nuestra cerveza de verano fresquita a solo 2€ durante el
+                            partido.
                         </p>
                     </div>
                 </div>

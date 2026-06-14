@@ -16,7 +16,7 @@ export const transporter = nodemailer.createTransport({
 /**
  * Global sendMail function that prioritizes Resend SDK if available
  */
-async function sendEmail({
+export async function sendEmail({
     to,
     subject,
     html,
