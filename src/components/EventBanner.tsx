@@ -68,7 +68,7 @@ export default function EventBanner() {
                         </div>
                         <div className="flex items-center gap-2 text-white">
                             <Clock size={16} className="text-gray-400" />
-                            <span className="font-bold text-sm">Desde las 17:30h</span>
+                            <span className="font-bold text-sm">Desde las 18:00h</span>
                         </div>
                         <p className="text-gray-400 text-[11px] font-medium mt-1">
                             Salón climatizado y sonido envolvente para el partido.

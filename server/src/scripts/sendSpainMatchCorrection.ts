@@ -16,7 +16,7 @@ async function main() {
     const targetEmails =
         emailsArgIndex !== -1 ? args[emailsArgIndex + 1].split(',').map(e => e.trim()) : null;
 
-    console.log('--- 🍣 Sushi de Maksim: Spain World Cup Match Newsletter ---');
+    console.log('--- 🍣 Sushi de Maksim: Spain World Cup Match Correction Email ---');
     console.log(`Frontend URL: ${config.frontendUrl}`);
 
     let recipients: string[] = [];
@@ -61,7 +61,8 @@ async function main() {
         process.exit(0);
     }
 
-    const subject = '¡Apoya a la Roja en el Mundial con Sushi de Maksim! 🇪🇸⚽';
+    const subject =
+        '⚠️ [CORRECCIÓN DE HORA] ¡Apoya a la Roja desde las 17:30h en Sushi de Maksim! 🇪🇸⚽';
     const html = `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -79,27 +80,31 @@ async function main() {
 
     <!-- Content -->
     <div style="padding: 32px 24px; text-align: center;">
-      <span style="display:inline-block;background-color:#fef2f2;border:1px solid #fecaca;color:#ef4444;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;padding:6px 16px;border-radius:20px;margin-bottom:20px;">
-        🔴 EVENTO ESPECIAL MUNDIAL ⚽
+      <span style="display:inline-block;background-color:#fffbeb;border:1px solid #fde68a;color:#d97706;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1.5px;padding:6px 16px;border-radius:20px;margin-bottom:20px;">
+        ⚠️ ACTUALIZACIÓN DE HORARIO ⚽
       </span>
       
       <h2 style="color: #111827; margin: 0 0 16px; font-size: 26px; font-weight: 800; line-height: 1.2; text-transform: uppercase;">
-        ¡Apoya a la Roja en Sushi de Maksim!
+        Corrección de horario para mañana lunes
       </h2>
       
+      <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 24px; text-align: left;">
+        Estimado cliente, te enviamos este correo para corregir el horario de nuestro evento especial de mañana lunes para el debut de la <strong>Selección Española</strong>.
+      </p>
+
       <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 28px; text-align: left;">
-        Este lunes viviremos el gran debut de la <strong>Selección Española</strong> en el Mundial de Fútbol. Queremos invitarte a disfrutar de la emoción del partido en un ambiente exclusivo, con pantalla gigante, sonido envolvente y la mejor compañía.
+        El partido y la transmisión en nuestra pantalla gigante comenzarán a las <strong>18:00h</strong> (y no a las 21:00h como indicamos por error en el correo anterior). Estaremos <strong>recibiendo reservas y abriendo mesas a partir de las 17:30h</strong> para que puedas acomodarte antes del inicio del juego.
       </p>
 
       <!-- Event Highlights box -->
       <div style="background: #FFF7ED; border: 2px dashed #ffedd5; border-radius: 20px; padding: 24px; margin-bottom: 32px; text-align: left;">
-        <h3 style="color: #ea580c; font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 16px;">DETALLES DEL EVENTO</h3>
+        <h3 style="color: #ea580c; font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px; margin: 0 0 16px;">NUEVOS DETALLES DEL EVENTO</h3>
         
         <div style="margin-bottom: 12px; font-size: 15px; color: #111827; display: flex; align-items: center; gap: 8px;">
           📅 <strong>Fecha:</strong> Lunes, 15 de Junio
         </div>
         <div style="margin-bottom: 12px; font-size: 15px; color: #111827; display: flex; align-items: center; gap: 8px;">
-          ⏰ <strong>Hora:</strong> Transmisión desde las 18:00h (Inicio del partido)
+          ⏰ <strong>Hora:</strong> Transmisión desde las 18:00h (Reservas desde las 17:30h)
         </div>
         <div style="margin-bottom: 12px; font-size: 15px; color: #111827; display: flex; align-items: center; gap: 8px;">
           📍 <strong>Dirección:</strong> Calle Barrilero, 20, 28007 Madrid (Barrio de Retiro)
@@ -110,7 +115,7 @@ async function main() {
       </div>
 
       <p style="color: #4b5563; font-size: 15px; line-height: 1.6; margin: 0 0 32px; text-align: left;">
-        Disfruta de nuestra exclusiva carta de sushi premium mientras animas a la selección. Las mesas son limitadas y esperamos completar aforo rápidamente. ¡Reserva la tuya hoy mismo!
+        Lamentamos cualquier inconveniente que hayamos podido causar. Las mesas son muy limitadas y esperamos completar el aforo rápidamente. ¡Reserva la tuya hoy mismo!
       </p>
 
       <!-- CTA Button -->
@@ -131,7 +136,7 @@ async function main() {
 </html>`;
 
     if (isSend || targetEmails || (isTest && testEmail)) {
-        console.log(`🚀 Sending email to ${recipients.length} recipients...`);
+        console.log(`🚀 Sending correction email to ${recipients.length} recipients...`);
         const failed: string[] = [];
         for (let i = 0; i < recipients.length; i++) {
             const email = recipients[i];
@@ -153,9 +158,9 @@ async function main() {
     } else {
         console.log('\n📝 DRY RUN: No emails were sent.');
         console.log('To send a test email, run:');
-        console.log('   npx tsx src/scripts/sendSpainMatchNewsletter.ts --test <your-email>');
+        console.log('   npx tsx src/scripts/sendSpainMatchCorrection.ts --test <your-email>');
         console.log('To send to ALL subscribers and users, run:');
-        console.log('   npx tsx src/scripts/sendSpainMatchNewsletter.ts --send\n');
+        console.log('   npx tsx src/scripts/sendSpainMatchCorrection.ts --send\n');
     }
 }
 
