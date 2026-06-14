@@ -99,7 +99,7 @@ async function main() {
           📅 <strong>Fecha:</strong> Lunes, 15 de Junio
         </div>
         <div style="margin-bottom: 12px; font-size: 15px; color: #111827; display: flex; align-items: center; gap: 8px;">
-          ⏰ <strong>Hora:</strong> Transmisión desde las 20:30h (Inicio partido a las 21:00h)
+          ⏰ <strong>Hora:</strong> Transmisión desde las 17:30h (Inicio partido a las 18:00h)
         </div>
         <div style="margin-bottom: 12px; font-size: 15px; color: #111827; display: flex; align-items: center; gap: 8px;">
           📍 <strong>Dirección:</strong> Calle Barrilero, 20, 28007 Madrid (Barrio de Retiro)

@@ -57,7 +57,7 @@ export function isStoreOpen(date: Date = new Date()): boolean {
  */
 export function isTimeWithinBusinessHours(dateStr: string, timeStr: string): boolean {
     if (dateStr === '2026-06-15') {
-        return timeStr >= '20:30' && timeStr <= '23:30';
+        return timeStr >= '17:00' && timeStr <= '22:00';
     }
     const day = getDayOfWeekFromDateString(dateStr);
     const todayIntervals = BUSINESS_HOURS[day] || [];

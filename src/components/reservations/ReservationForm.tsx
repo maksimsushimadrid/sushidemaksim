@@ -71,7 +71,7 @@ export default function ReservationForm({
         const day = dateObj.getDay();
         const intervals =
             formData.date === '2026-06-15'
-                ? [{ start: '20:30', end: '23:30' }]
+                ? [{ start: '17:00', end: '22:00' }]
                 : BUSINESS_HOURS[day] || [];
 
         const now = new Date();
