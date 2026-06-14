@@ -2,12 +2,19 @@ import { config } from '../config.js';
 import { supabase } from '../db/supabase.js';
 import { sendEmail } from '../utils/email.js';
 
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 async function main() {
     const args = process.argv.slice(2);
     const isTest = args.includes('--test');
     const isSend = args.includes('--send');
     const testEmailIndex = args.indexOf('--test');
     const testEmail = testEmailIndex !== -1 ? args[testEmailIndex + 1] : null;
+
+    // Support a direct list of emails
+    const emailsArgIndex = args.indexOf('--emails');
+    const targetEmails =
+        emailsArgIndex !== -1 ? args[emailsArgIndex + 1].split(',').map(e => e.trim()) : null;
 
     console.log('--- 🍣 Sushi de Maksim: Spain World Cup Match Newsletter ---');
     console.log(`Frontend URL: ${config.frontendUrl}`);
@@ -17,6 +24,9 @@ async function main() {
     if (isTest && testEmail) {
         recipients = [testEmail];
         console.log(`🧪 Running in TEST mode. Target email: ${testEmail}`);
+    } else if (targetEmails) {
+        recipients = targetEmails;
+        console.log(`🎯 Sending to manual target emails: ${recipients.join(', ')}`);
     } else {
         // Fetch subscribers
         const { data: subscribers, error: subErr } = await supabase
@@ -120,18 +130,26 @@ async function main() {
 </body>
 </html>`;
 
-    if (isSend || (isTest && testEmail)) {
+    if (isSend || targetEmails || (isTest && testEmail)) {
         console.log(`🚀 Sending email to ${recipients.length} recipients...`);
+        const failed: string[] = [];
         for (let i = 0; i < recipients.length; i++) {
             const email = recipients[i];
             try {
                 await sendEmail({ to: email, subject, html });
                 console.log(`[${i + 1}/${recipients.length}] ✅ Sent to ${email}`);
             } catch (err) {
-                console.error(`[${i + 1}/${recipients.length}] ❌ Failed for ${email}:`, err);
+                console.error(`[${i + 1}/${recipients.length}] ❌ Failed for ${email}`);
+                failed.push(email);
             }
+            await sleep(250); // Delay of 250ms (max 4 reqs/sec) to avoid Resend rate limiting (5 reqs/sec)
         }
-        console.log('🏁 Finished sending.');
+        console.log('\n🏁 Finished sending.');
+        if (failed.length > 0) {
+            console.log(`⚠️ Failed recipients (${failed.length}): ${failed.join(', ')}`);
+        } else {
+            console.log('🎉 All emails sent successfully!');
+        }
     } else {
         console.log('\n📝 DRY RUN: No emails were sent.');
         console.log('To send a test email, run:');
