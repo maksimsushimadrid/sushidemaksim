@@ -138,4 +138,29 @@ describe('CartItemList', () => {
         fireEvent.change(select, { target: { value: 'Sprite' } });
         expect(defaultProps.updateQuantity).toHaveBeenCalledWith('116', 1, undefined, 'Sprite');
     });
+
+    it('renders the beer selector for beer items (ID 113)', () => {
+        const beerItem = {
+            id: '113',
+            name: 'Cerveza 0,33l',
+            price: 2.5,
+            quantity: 1,
+            category: 'bebidas' as any,
+            image: '',
+            description: '',
+        };
+        render(<CartItemList {...defaultProps} items={[beerItem]} />);
+
+        const select = screen.getByRole('combobox');
+        expect(select).toBeInTheDocument();
+        expect(screen.getByText(/Elegir cerveza/i)).toBeInTheDocument();
+
+        fireEvent.change(select, { target: { value: 'Amstel Radler' } });
+        expect(defaultProps.updateQuantity).toHaveBeenCalledWith(
+            '113',
+            1,
+            undefined,
+            'Amstel Radler'
+        );
+    });
 });

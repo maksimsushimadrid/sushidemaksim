@@ -14,7 +14,7 @@ interface TableBottomSheetProps {
 }
 
 const ITEM_OPTIONS: Record<string, string[]> = {
-    '113': ['Mahou Clásica', 'Mahou 0.0', 'Alhambra', 'Heineken', 'Estrella Galicia'],
+    '113': ['Mahou', 'El Águila', 'Amstel Oro 0,0', 'Ladrón de Tinto', 'Amstel Radler'],
     '116': ['Coca-Cola', 'Coca-Cola Zero', 'Fanta Naranja', 'Fanta Limón', 'Sprite'],
 };
 

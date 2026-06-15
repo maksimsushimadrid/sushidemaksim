@@ -123,6 +123,35 @@ export default function CartItemList({
                                         </select>
                                     </div>
                                 )}
+
+                                {(item.id === '113' || item.menuItemId === 113) && (
+                                    <div className="mt-2">
+                                        <select
+                                            value={item.selectedOption || ''}
+                                            onChange={e => {
+                                                triggerHaptic();
+                                                updateQuantity(
+                                                    item.id,
+                                                    item.quantity,
+                                                    item.cartItemId,
+                                                    e.target.value
+                                                );
+                                            }}
+                                            className="text-[11px] font-bold bg-white border border-gray-200 rounded-md px-3 py-1.5 outline-none text-gray-700 focus:border-orange-200 shadow-sm transition-all cursor-pointer hover:bg-gray-50 active:scale-95"
+                                        >
+                                            <option value="">Elegir cerveza...</option>
+                                            <option value="Mahou">🍺 Mahou</option>
+                                            <option value="El Águila">🍺 El Águila</option>
+                                            <option value="Amstel Oro 0,0">
+                                                🍺 Amstel Oro 0,0
+                                            </option>
+                                            <option value="Ladrón de Tinto">
+                                                🍷 Ladrón de Tinto
+                                            </option>
+                                            <option value="Amstel Radler">🍺 Amstel Radler</option>
+                                        </select>
+                                    </div>
+                                )}
                             </div>
                             <div className="flex items-center justify-between gap-1 md:gap-4 mt-1">
                                 <div className="flex items-center bg-gray-50 rounded-lg p-1 border border-gray-100">
