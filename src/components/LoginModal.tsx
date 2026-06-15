@@ -1219,7 +1219,7 @@ export default function LoginModal({
                                                 }}
                                                 className="w-full py-4 bg-white border-2 border-gray-100 text-gray-900 rounded-2xl font-black text-sm hover:border-orange-600 hover:text-orange-600 transition-all flex items-center justify-center gap-2"
                                             >
-                                                Explorar Menú
+                                                Nuestra Carta
                                             </button>
                                             <button
                                                 onClick={() => setMode('login')}

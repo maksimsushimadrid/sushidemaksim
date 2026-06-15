@@ -115,14 +115,14 @@ export default function FavoritesTab() {
                         Aún no tienes favoritos
                     </h3>
                     <p className="text-gray-500 text-sm max-w-xs mx-auto mb-8 leading-relaxed">
-                        Añade tus platos favoritos desde el menú para tenerlos siempre a mano y
+                        Añade tus platos favoritos desde la carta para tenerlos siempre a mano y
                         realizar pedidos más rápido.
                     </p>
                     <button
                         onClick={() => (window.location.href = '/menu')}
                         className="inline-flex items-center gap-2 px-8 py-3 bg-orange-600 text-white rounded-xl font-bold text-sm hover:bg-orange-700 transition-all shadow-lg shadow-orange-100"
                     >
-                        Explorar Menú
+                        Nuestra Carta
                     </button>
                 </div>
             </div>

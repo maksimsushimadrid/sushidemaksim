@@ -110,7 +110,7 @@ export default function VerifyPage() {
                                     to="/menu"
                                     className="w-full py-4 bg-gray-50 text-gray-700 rounded-2xl font-black text-sm hover:bg-gray-100 transition-all flex items-center justify-center gap-2"
                                 >
-                                    <Home size={18} strokeWidth={1.5} /> Explorar Menú
+                                    <Home size={18} strokeWidth={1.5} /> Nuestra Carta
                                 </Link>
                             </div>
                         )}

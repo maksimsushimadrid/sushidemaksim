@@ -32,7 +32,7 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
         : '';
 
     const navLinks = [
-        { to: '/menu', label: 'Menú', icon: Menu },
+        { to: '/menu', label: 'Carta', icon: Menu },
         { to: '/tablon', label: 'Tablón', icon: Megaphone },
         { to: '/contacts', label: 'Contactos', icon: Phone },
         { to: '/promo', label: 'Promo', icon: Star },

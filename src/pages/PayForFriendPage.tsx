@@ -92,9 +92,9 @@ export default function PayForFriendPage() {
                     </p>
                     <Link
                         to="/menu"
-                        className="inline-block bg-gray-900 text-white px-8 py-3 rounded-2xl font-bold no-underline hover:bg-gray-800 transition"
+                        className="inline-block bg-gray-900 text-white px-8 py-3 rounded-2xl font-bold no-underline hover:bg-gray-800 transition animate-in fade-in"
                     >
-                        Ir al menú
+                        Ir a la carta
                     </Link>
                 </div>
             </div>
@@ -205,7 +205,7 @@ export default function PayForFriendPage() {
                         {/* Summary */}
                         <div className="mb-10">
                             <h2 className="text-xs uppercase font-black text-gray-400 tracking-widest mb-6 flex items-center gap-2">
-                                <div className="h-0.5 w-4 bg-gray-200" /> El menú elegido
+                                <div className="h-0.5 w-4 bg-gray-200" /> Los platos elegidos
                             </h2>
                             <div className="space-y-4">
                                 {order.items.map(item => {

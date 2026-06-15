@@ -89,7 +89,7 @@ export function PromosSection({ activePromos }: PromosSectionProps) {
                                             to={promo.cta_link || '/menu'}
                                             className="px-10 py-5 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-orange-600 transition-all shadow-xl shrink-0 uppercase"
                                         >
-                                            {promo.cta_text || 'VER MENÚ'}
+                                            {promo.cta_text || 'VER CARTA'}
                                         </Link>
                                     )}
                                 </div>
@@ -150,7 +150,7 @@ export function PromosSection({ activePromos }: PromosSectionProps) {
                                 to="/menu"
                                 className="px-10 py-5 bg-gray-900 text-white rounded-2xl font-black text-xs tracking-widest hover:bg-orange-600 transition-all shadow-xl uppercase"
                             >
-                                VER MENÚ
+                                VER CARTA
                             </Link>
                         )}
                     </div>

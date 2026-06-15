@@ -253,7 +253,7 @@ describe('LoginModal - Password Recovery', () => {
             <LoginModal isOpen={true} onClose={mockOnClose} initialMode="verify-sent" />
         );
 
-        fireEvent.click(screen.getByText('Explorar Menú'));
+        fireEvent.click(screen.getByText('Nuestra Carta'));
         expect(mockOnClose).toHaveBeenCalled();
         expect(mockNavigate).toHaveBeenCalledWith('/menu');
 

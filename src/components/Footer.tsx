@@ -104,7 +104,7 @@ export default function Footer() {
                             className="hover:text-white transition-colors flex items-center gap-2 no-underline"
                         >
                             <Menu size={14} strokeWidth={2.5} className="hidden md:block" />
-                            Menú
+                            Carta
                         </Link>
                         <Link
                             to="/tablon"

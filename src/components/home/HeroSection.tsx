@@ -178,7 +178,7 @@ export function HeroSection() {
                             to="/menu"
                             className="group relative w-full sm:w-auto px-10 py-5 bg-orange-600 text-white rounded-2xl font-black text-[13px] tracking-widest transition-all duration-300 hover:bg-orange-700 hover:scale-105 active:scale-95 flex items-center justify-center gap-2 shadow-2xl shadow-orange-600/20 no-underline"
                         >
-                            EXPLORAR MENÚ
+                            NUESTRA CARTA
                             <ArrowRight
                                 className="transition-transform group-hover:translate-x-1"
                                 size={18}

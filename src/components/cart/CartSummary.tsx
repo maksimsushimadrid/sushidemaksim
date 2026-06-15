@@ -446,7 +446,7 @@ export default function CartSummary({
                 }}
                 className="w-full py-3 mb-4 rounded-xl font-bold bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 transition-colors flex items-center justify-center gap-2 border-none cursor-pointer md:hidden"
             >
-                Volver al Menú
+                Volver a la Carta
             </button>
 
             {(deliveryType === 'delivery' || !paymentMethod) &&

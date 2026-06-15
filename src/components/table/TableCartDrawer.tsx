@@ -159,7 +159,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                     onClick={handleClose}
                                     className="mt-8 text-gray-500 font-black text-xs uppercase tracking-widest hover:text-white transition-colors"
                                 >
-                                    Cerrar y ver el menú
+                                    Cerrar y ver la carta
                                 </button>
                             </div>
                         ) : (
@@ -202,7 +202,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                                 onClick={onClose}
                                                 className="mt-6 px-8 py-3 bg-white text-black rounded-2xl font-black text-xs tracking-widest uppercase"
                                             >
-                                                Volver al menú
+                                                Volver a la carta
                                             </button>
                                         </div>
                                     ) : (
@@ -355,7 +355,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                                 onClick={onClose}
                                                 className="h-11 rounded-xl bg-white/5 border border-white/10 text-gray-400 font-black text-[10px] uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center"
                                             >
-                                                Menú
+                                                Carta
                                             </button>
                                             <button
                                                 onClick={() => setShowConfirmModal(true)}

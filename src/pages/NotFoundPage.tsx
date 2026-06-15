@@ -10,7 +10,7 @@ export default function NotFoundPage() {
         <div className="min-h-[80vh] flex flex-col items-center justify-center px-6 relative overflow-hidden bg-[#FBF7F0]">
             <SEO
                 title="404 - Página no encontrada | Sushi de Maksim"
-                description="La página que buscas no existe. Vuelve al menú de Sushi de Maksim para disfrutar de la mejor gastronomía japonesa."
+                description="La página que buscas no existe. Vuelve a la carta de Sushi de Maksim para disfrutar de la mejor gastronomía japonesa."
                 robots="noindex, nofollow"
             />
 
@@ -73,7 +73,7 @@ export default function NotFoundPage() {
                         onClick={() => navigate('/menu')}
                         className="flex-1 px-8 py-4 bg-gray-900 text-white rounded-[24px] font-black flex items-center justify-center gap-3 hover:bg-gray-800 transition-all active:scale-95 shadow-xl shadow-gray-900/10"
                     >
-                        <Utensils size={20} /> Ver el Menú
+                        <Utensils size={20} /> Ver la Carta
                     </button>
                     <button
                         onClick={() => navigate('/')}

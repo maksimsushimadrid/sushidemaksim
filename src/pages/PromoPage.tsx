@@ -211,7 +211,7 @@ export default function PromoPage() {
                                                         : promo.color,
                                             }}
                                         >
-                                            {promo.cta_text || 'Ver menú'}{' '}
+                                            {promo.cta_text || 'Ver carta'}{' '}
                                             <ArrowRight
                                                 size={18}
                                                 strokeWidth={2.5}

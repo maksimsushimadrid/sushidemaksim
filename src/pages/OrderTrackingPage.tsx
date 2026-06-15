@@ -48,7 +48,7 @@ export default function OrderTrackingPage() {
             <div className="min-h-screen bg-[#FBF7F0] flex items-center justify-center p-6">
                 <SEO
                     title="404 - Página no encontrada | Sushi de Maksim"
-                    description="La página que buscas no existe. Vuelve al menú de Sushi de Maksim para disfrutar de la mejor gastronomía japonesa."
+                    description="La página que buscas no existe. Vuelve a la carta de Sushi de Maksim para disfrutar de la mejor gastronomía japonesa."
                     robots="noindex, nofollow"
                 />
                 <div className="max-w-md w-full bg-white rounded-[40px] p-12 shadow-2xl text-center border border-gray-100">
@@ -66,7 +66,7 @@ export default function OrderTrackingPage() {
                         onClick={() => navigate('/menu')}
                         className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100"
                     >
-                        Volver al menú
+                        Volver a la carta
                     </button>
                 </div>
             </div>
