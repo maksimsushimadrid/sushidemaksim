@@ -1108,7 +1108,7 @@ export default function CartPage() {
                                 `Mínimo ${MIN_ORDER.toFixed(2).replace('.', ',')}€`
                             ) : (
                                 <>
-                                    <span>Pagar</span>
+                                    <span>Realizar pedido</span>
                                     <ArrowRight size={18} />
                                 </>
                             )}
