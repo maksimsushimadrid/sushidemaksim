@@ -72,6 +72,7 @@ export default function CartSummary({
     const hasAddress = !!address;
     const hasHouse = !!house;
     const hasZone = !!selectedZone;
+    const isZoneInvalid = deliveryType === 'delivery' && hasAddress && !hasZone;
 
     const isAddressMissing = deliveryType === 'delivery' && (!hasAddress || !hasHouse || !hasZone);
     const isPaymentMissing = !paymentMethod;
@@ -420,11 +421,13 @@ export default function CartSummary({
                 }}
                 disabled={isDisabled}
                 className={`px-6 py-4 rounded-2xl font-black border-none cursor-pointer w-full mb-3 text-base transition disabled:opacity-50 disabled:cursor-not-allowed shadow-xl flex items-center justify-center gap-2 active:scale-[0.98] uppercase tracking-wide
-                    ${isMinOrderMet ? 'bg-orange-600 text-white hover:bg-orange-700 shadow-orange-200' : 'bg-gray-200 text-gray-400 shadow-none'}`}
+                    ${isMinOrderMet && !isZoneInvalid ? 'bg-orange-600 text-white hover:bg-orange-700 shadow-orange-200' : 'bg-gray-200 text-gray-400 shadow-none'}`}
                 data-testid="order-button"
             >
                 {isOrdering ? (
                     'Procesando...'
+                ) : isZoneInvalid ? (
+                    'Zona no válida'
                 ) : !isMinOrderMet ? (
                     `Mínimo ${minOrder.toFixed(2).replace('.', ',')}€`
                 ) : (
@@ -449,33 +452,30 @@ export default function CartSummary({
                 Volver a la Carta
             </button>
 
-            {(deliveryType === 'delivery' || !paymentMethod) &&
-                !isOrdering &&
-                isMinOrderMet &&
-                items.length > 0 && (
-                    <div className="mt-4 px-2 space-y-1.5 text-center">
-                        {deliveryType === 'delivery' && !hasAddress && (
-                            <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest animate-pulse">
-                                📍 Selecciona una dirección de entrega
-                            </p>
-                        )}
-                        {deliveryType === 'delivery' && hasAddress && !hasHouse && (
-                            <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest animate-bounce">
-                                🏠 Indica el número o portal
-                            </p>
-                        )}
-                        {deliveryType === 'delivery' && hasAddress && hasHouse && !hasZone && (
-                            <p className="text-[10px] text-red-500 font-black uppercase tracking-widest">
-                                ❌ Lo sentimos, no entregamos en esta zona
-                            </p>
-                        )}
-                        {!paymentMethod && (
-                            <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest animate-pulse">
-                                💳 Selecciona un método de pago
-                            </p>
-                        )}
-                    </div>
-                )}
+            {(deliveryType === 'delivery' || !paymentMethod) && !isOrdering && items.length > 0 && (
+                <div className="mt-4 px-2 space-y-1.5 text-center">
+                    {deliveryType === 'delivery' && !hasAddress && (
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest animate-pulse">
+                            📍 Selecciona una dirección de entrega
+                        </p>
+                    )}
+                    {deliveryType === 'delivery' && hasAddress && !hasHouse && (
+                        <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest animate-bounce">
+                            🏠 Indica el número o portal
+                        </p>
+                    )}
+                    {deliveryType === 'delivery' && hasAddress && hasHouse && !hasZone && (
+                        <p className="text-[10px] text-red-500 font-black uppercase tracking-widest">
+                            ❌ Lo sentimos, no entregamos en esta zona
+                        </p>
+                    )}
+                    {!paymentMethod && (
+                        <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest animate-pulse">
+                            💳 Selecciona un método de pago
+                        </p>
+                    )}
+                </div>
+            )}
 
             {items.length > 0 && (
                 <p className="text-[10px] text-gray-400 mt-4 text-center font-medium px-4">
