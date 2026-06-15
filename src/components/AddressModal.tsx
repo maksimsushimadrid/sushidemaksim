@@ -645,10 +645,20 @@ export default function AddressModal({
                 // Provide user feedback on failure (e.g. denied permission or timeout)
                 if (err.code === err.PERMISSION_DENIED) {
                     alert(
-                        'Por favor, permite el acceso a tu ubicación en los ajustes del navegador.'
+                        'Por favor, permite el acceso a tu ubicación en los ajustes del navegador y de tu sistema operativo.'
+                    );
+                } else if (err.code === err.POSITION_UNAVAILABLE) {
+                    alert(
+                        'No se pudo determinar tu ubicación. Asegúrate de tener activados los servicios de localización y el Wi-Fi en los ajustes de tu dispositivo, o introduce tu dirección manualmente.'
+                    );
+                } else if (err.code === err.TIMEOUT) {
+                    alert(
+                        'Se agotó el tiempo de espera para obtener tu ubicación. Por favor, inténtalo de nuevo o introduce tu dirección manualmente.'
                     );
                 } else {
-                    alert('No pudimos detectar tu ubicación. Intenta buscar tu calle manualmente.');
+                    alert(
+                        'No pudimos detectar tu ubicación. Por favor, intenta buscar tu calle manualmente.'
+                    );
                 }
             },
             { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
