@@ -336,7 +336,7 @@ export default function OrderTrackingPage() {
                                         ¿Dudas? Contáctanos
                                     </span>
                                     <span className="font-black text-gray-900">
-                                        +34 912 345 678
+                                        +34 631 920 312
                                     </span>
                                 </div>
                             </div>
