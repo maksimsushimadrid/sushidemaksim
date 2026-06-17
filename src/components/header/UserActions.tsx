@@ -243,7 +243,7 @@ export default function UserActions({
                                         <p className="text-sm font-black text-gray-900 mb-0.5 truncate">
                                             {user.name}
                                         </p>
-                                        <p className="text-[10px] text-gray-500 font-bold tracking-tight uppercase whitespace-nowrap">
+                                        <p className="text-[10px] text-gray-500 font-bold tracking-tight uppercase whitespace-nowrap truncate">
                                             {user.email}
                                         </p>
                                     </div>
