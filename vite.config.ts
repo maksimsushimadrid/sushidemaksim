@@ -57,7 +57,7 @@ export default defineConfig({
                 ],
             },
             workbox: {
-                importScripts: ['/push-sw.js'],
+                importScripts: ['/notifications-sw.js'],
                 maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
                 globPatterns: ['**/*.{js,css,html,ico,svg,webp}'],
                 runtimeCaching: [
