@@ -43,7 +43,7 @@ router.post(
             coinsSpent = 0,
         } = req.body;
 
-        let promoCode = rawPromoCode ? String(rawPromoCode).trim().toUpperCase() : undefined;
+        const promoCode = rawPromoCode ? String(rawPromoCode).trim().toUpperCase() : undefined;
 
         // Map frontend values to backend DB labels if needed, but we mostly use the structured data now
         const deliveryAddress =
