@@ -140,7 +140,7 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
                             <p className="font-bold text-[11px] mt-1">
                                 {order.estimatedDeliveryTime.includes('min')
                                     ? `Estimado: ${order.estimatedDeliveryTime}`
-                                    : `ENTREGA PROGRAMADA: ${order.estimatedDeliveryTime}`}
+                                    : `${isPickup ? 'RECOGIDA' : 'ENTREGA'} PROGRAMADA: ${order.estimatedDeliveryTime}`}
                             </p>
                         )}
                     </div>

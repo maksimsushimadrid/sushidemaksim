@@ -255,12 +255,50 @@ const getWhatsAppConfirmationUrl = (order: Order, isPickup: boolean) => {
             ? 'Tarjeta'
             : 'Efectivo';
 
-    let text = '';
-    if (isPickup) {
-        text = `¡Hola! Hemos recibido su pedido. Lo preparamos en 20 - 25 minutos.\r\n\r\nSu pedido #${String(order.id).padStart(5, '0')} está confirmado\r\n\r\n${itemsList}\r\n\r\nTotal: ${Number(order.total || 0).toFixed(2)}€\r\nMétodo de pago: ${paymentLabel}\r\nMuchas gracias.`;
-    } else {
-        text = `¡Hola! Hemos recibido su pedido. Lo preparamos y enviamos pronto.\r\n\r\nSu pedido #${String(order.id).padStart(5, '0')} está confirmado\r\n\r\n${itemsList}\r\n\r\nDirección: ${order.deliveryAddress || 'No especificada'}\r\nTeléfono: ${order.phoneNumber || ''}\r\nTotal: ${Number(order.total || 0).toFixed(2)}€\r\nMétodo de pago: ${paymentLabel}\r\nMuchas gracias.`;
+    // Parse scheduled time
+    let scheduledTime = '';
+    if (
+        order.estimatedDeliveryTime &&
+        !order.estimatedDeliveryTime.includes('min') &&
+        order.estimatedDeliveryTime.match(/^\d{4}-\d{2}-\d{2}/)
+    ) {
+        const rawDate = order.estimatedDeliveryTime;
+        const dateParts = rawDate.split(' ');
+        if (dateParts.length === 2) {
+            const [dPart, tPart] = dateParts;
+            const components = dPart.split('-');
+            if (components.length === 3 && components[0].length === 4) {
+                scheduledTime = `${components[2]}-${components[1]}-${components[0]} ${tPart}`;
+            } else {
+                scheduledTime = rawDate;
+            }
+        } else {
+            scheduledTime = rawDate;
+        }
     }
+
+    const scheduledText = scheduledTime
+        ? isPickup
+            ? `\r\n*RECOGIDA PROGRAMADA: ${scheduledTime}*`
+            : `\r\n*ENTREGA PROGRAMADA: ${scheduledTime}*`
+        : '';
+
+    let deliveryStatusMsg = '';
+    if (scheduledTime) {
+        deliveryStatusMsg = isPickup
+            ? 'Lo preparamos para la hora indicada.'
+            : 'Lo preparamos y entregamos a la hora indicada.';
+    } else {
+        deliveryStatusMsg = isPickup
+            ? 'Estará listo para recoger en el local en 30 - 45 minutos.'
+            : 'Lo preparamos y enviamos pronto.';
+    }
+
+    let text = `¡Hola! Hemos recibido su pedido. ${deliveryStatusMsg}${scheduledText}\r\n\r\nSu pedido #${String(order.id).padStart(5, '0')} está confirmado\r\n\r\n${itemsList}\r\n\r\n`;
+    if (!isPickup) {
+        text += `Dirección: ${order.deliveryAddress || 'No especificada'}\r\nTeléfono: ${order.phoneNumber || ''}\r\n`;
+    }
+    text += `Total: ${Number(order.total || 0).toFixed(2)}€\r\nMétodo de pago: ${paymentLabel}\r\nMuchas gracias.`;
 
     return `https://wa.me/${(order.phoneNumber || '').replace(/\D/g, '')}?text=${encodeURIComponent(text)}`;
 };

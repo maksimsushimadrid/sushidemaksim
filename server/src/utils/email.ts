@@ -285,6 +285,8 @@ export async function sendOrderReceiptEmail(
         deliveryType = 'RECOGIDA';
     }
 
+    const isPickup = deliveryType.includes('RECOGIDA');
+
     const regularItems = orderData.items.filter((item: any) => Number(item.menu_item_id) !== -1);
     const deliveryItem = orderData.items.find((item: any) => Number(item.menu_item_id) === -1);
     const tipItem = orderData.items.find(
@@ -308,7 +310,11 @@ export async function sendOrderReceiptEmail(
             ? `\n• Gastos de Envío: ${deliveryItem.price_at_time.toFixed(2)}€`
             : '';
 
-        const scheduledText = scheduledTime ? `\n*ENTREGA PROGRAMADA: ${scheduledTime}*` : '';
+        const scheduledText = scheduledTime
+            ? isPickup
+                ? `\n*RECOGIDA PROGRAMADA: ${scheduledTime}*`
+                : `\n*ENTREGA PROGRAMADA: ${scheduledTime}*`
+            : '';
 
         const paymentMethodLabel =
             paymentMethod.toUpperCase().includes('TARJETA') ||
@@ -319,7 +325,18 @@ export async function sendOrderReceiptEmail(
                   ? 'Efectivo'
                   : paymentMethod;
 
-        const statusMessage = `¡Hola! Hemos recibido tu pedido. Te lo entregaremos en  30 - 60 minutos.${tipAmount > 0 ? `\n\n¡Muchas gracias por la propina para el equipo!` : ''}\n\n`;
+        let deliveryStatusMsg = '';
+        if (scheduledTime) {
+            deliveryStatusMsg = isPickup
+                ? 'Estará listo para recoger en el local en la fecha y hora seleccionadas.'
+                : 'Te lo entregaremos en la fecha y hora seleccionadas.';
+        } else {
+            deliveryStatusMsg = isPickup
+                ? 'Estará listo para recoger en el local en 30 - 45 minutos.'
+                : 'Te lo entregaremos en 30 - 60 minutos.';
+        }
+
+        const statusMessage = `¡Hola! Hemos recibido tu pedido. ${deliveryStatusMsg}${tipAmount > 0 ? `\n\n¡Muchas gracias por la propina para el equipo!` : ''}\n\n`;
         const addressLine =
             deliveryType === 'DOMICILIO' ? `\nDirección: ${orderData.deliveryAddress}` : '';
         waMessage = `${statusMessage}Tu pedido #${String(orderData.orderId).padStart(5, '0')} está confirmado${scheduledText}\n\n${itemsListText}${deliveryFeeText}\n\nTotal: ${orderData.total.toFixed(2)}€\nMétodo de pago: ${paymentMethodLabel}${addressLine}`;
@@ -374,7 +391,15 @@ export async function sendOrderReceiptEmail(
     <div style="padding: 16px 20px;">
       <h2 style="color: #111827; margin: 0 0 4px; font-size: 20px; font-weight: 800;">${greeting}</h2>
       <p style="color: #4b5563; font-size: 14px; line-height: 1.5; margin: 0 0 16px;">
-        ¡Hola! Hemos recibido tu pedido. Te lo entregaremos en <strong>${orderData.estimatedDeliveryTime || '30 - 60 minutos'}</strong>.
+        ¡Hola! Hemos recibido tu pedido. ${
+            isPickup
+                ? scheduledTime
+                    ? `Estará listo para recoger en el local el <strong>${scheduledTime}</strong>.`
+                    : `Estará listo para recoger en el local en <strong>${orderData.estimatedDeliveryTime || '30 - 45 minutos'}</strong>.`
+                : scheduledTime
+                  ? `Te lo entregaremos el <strong>${scheduledTime}</strong>.`
+                  : `Te lo entregaremos en <strong>${orderData.estimatedDeliveryTime || '30 - 60 minutos'}</strong>.`
+        }
         <br><br>
         Tu pedido <strong>#${String(orderData.orderId).padStart(5, '0')}</strong> está confirmado.
         ${tipAmount > 0 ? `<br><br><strong>¡Muchas gracias por dejar una propina para el equipo! Apreciamos mucho tu apoyo.</strong>` : ''}
@@ -476,7 +501,7 @@ export async function sendOrderReceiptEmail(
                 ? `
         <h4 style="color: #9ca3af; margin: 12px 0 6px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">Instrucciones Especiales</h4>
         <div style="background-color: #FFF7ED; border-radius: 12px; padding: 12px; border: 1px solid #ffedd5;">
-          ${scheduledTime ? `<div style="color: #111827; font-size: 13px; font-weight: 700; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #ffedd5;">Entrega programada: <span style="color: #ea580c;">${scheduledTime}</span></div>` : ''}
+          ${scheduledTime ? `<div style="color: #111827; font-size: 13px; font-weight: 700; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px dashed #ffedd5;">${isPickup ? 'Recogida programada' : 'Entrega programada'}: <span style="color: #ea580c;">${scheduledTime}</span></div>` : ''}
           ${chopsticksCount ? `<div style="color: #111827; font-size: 13px; font-weight: 700; margin-bottom: 4px;">🥢 Palillos: <span style="color: #ea580c;">${chopsticksCount}</span></div>` : ''}
           ${personasCount ? `<div style="color: #111827; font-size: 13px; font-weight: 700; margin-bottom: 4px;">👥 Personas: <span style="color: #ea580c;">${personasCount}</span></div>` : ''}
           ${noCall ? '<div style="color: #c2410c; font-size: 13px; font-weight: 700; margin-bottom: 4px;">No llamar para confirmar pedido</div>' : ''}

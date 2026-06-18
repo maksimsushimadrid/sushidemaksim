@@ -237,10 +237,14 @@ export default function OrderTrackingPage() {
                                             strokeWidth={1.5}
                                             className="text-orange-600"
                                         />
-                                        Dirección de entrega
+                                        {order.deliveryAddress === 'RECOGIDA' || order.deliveryType === 'pickup'
+                                            ? 'Punto de recogida'
+                                            : 'Dirección de entrega'}
                                     </h3>
                                     <p className="text-gray-600 font-medium leading-relaxed bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                                        {order.deliveryAddress}
+                                        {order.deliveryAddress === 'RECOGIDA' || order.deliveryType === 'pickup'
+                                            ? 'Calle Barrilero, 20, 28007 Madrid'
+                                            : order.deliveryAddress}
                                     </p>
                                 </div>
 

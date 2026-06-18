@@ -595,7 +595,7 @@ router.post(
             ];
 
             if (isScheduled) {
-                waTextParts.push(`*ENTREGA PROGRAMADA: ${serverEstimatedTime}*`);
+                waTextParts.push(`*${deliveryType === 'pickup' ? 'RECOGIDA' : 'ENTREGA'} PROGRAMADA: ${serverEstimatedTime}*`);
             }
 
             waTextParts.push(`PRODUCTOS:\n${itemsSummary}`);
@@ -613,8 +613,14 @@ router.post(
                 waTextParts.push(`Descuento Promocional: ${promoMatch[1]} (-${promoMatch[2]}%)`);
             }
 
-            waTextParts.push(`Direccion: ${deliveryAddress}`);
-            waTextParts.push(`Metodo de Pago: ${paymentMethodText}`);
+            if (deliveryType === 'pickup') {
+                waTextParts.push(`Tipo de entrega: Recogida en Local`);
+            } else if (deliveryType === 'table') {
+                waTextParts.push(`Mesa: ${mesaNumber || req.body.tableNumber || '?'}`);
+            } else {
+                waTextParts.push(`Dirección: ${deliveryAddress}`);
+            }
+            waTextParts.push(`Método de Pago: ${paymentMethodText}`);
             waTextParts.push(`Total: ${finalTotal.toFixed(2)}€`);
             waTextParts.push(`Muchas gracias.`);
 
