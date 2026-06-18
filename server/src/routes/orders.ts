@@ -37,11 +37,13 @@ router.post(
             customNote = '',
             notes = '',
             deliveryZoneId,
-            promoCode,
+            promoCode: rawPromoCode,
             guestItems,
             tipAmount = 0,
             coinsSpent = 0,
         } = req.body;
+
+        let promoCode = rawPromoCode ? String(rawPromoCode).trim().toUpperCase() : undefined;
 
         // Map frontend values to backend DB labels if needed, but we mostly use the structured data now
         const deliveryAddress =
@@ -783,13 +785,15 @@ router.post(
             phone,
             senderName,
             customNote = '',
-            promoCode,
+            promoCode: rawPromoCode,
             deliveryZoneId,
             isScheduled = false,
             scheduledDate,
             scheduledTime,
             notes = '',
         } = req.body;
+
+        const promoCode = rawPromoCode ? String(rawPromoCode).trim().toUpperCase() : null;
 
         const deliveryAddress =
             deliveryType === 'table'

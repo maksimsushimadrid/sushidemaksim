@@ -15,18 +15,21 @@ router.post(
     validateResource(validatePromoSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { code, subtotal } = req.body;
+        const normalizedCode = String(code || '')
+            .trim()
+            .toUpperCase();
 
         // ─── Hardcoded Test Promos ───
-        if (code === 'TEST10') {
+        if (normalizedCode === 'TEST10') {
             return res.json({ percentage: 10 });
         }
 
         // ─── DB Lookup for Promo Codes ───
-        console.log(`[PROMO] Validating "${code}" for user ${req.userId}...`);
+        console.log(`[PROMO] Validating "${normalizedCode}" for user ${req.userId}...`);
         const { data: promo, error } = await supabase
             .from('promo_codes')
             .select('*')
-            .eq('code', code)
+            .eq('code', normalizedCode)
             // Allow checking existing codes even if used, so we can give better errors
             .or(`user_id.is.null,user_id.eq.${req.userId}`)
             .maybeSingle();
@@ -37,8 +40,8 @@ router.post(
         }
 
         // ─── Support Dynamic Referral Codes ───
-        if (code.startsWith('REF-') && code.length > 5) {
-            const referrerIdFragment = code.split('-')[1];
+        if (normalizedCode.startsWith('REF-') && normalizedCode.length > 5) {
+            const referrerIdFragment = normalizedCode.split('-')[1];
 
             // Verify referrer exists
             const { data: referrer, error: refError } = await supabase
@@ -75,7 +78,7 @@ router.post(
         }
 
         if (!promo) {
-            console.warn(`[PROMO] Code "${code}" not found for user ${req.userId}`);
+            console.warn(`[PROMO] Code "${normalizedCode}" not found for user ${req.userId}`);
             return res.status(400).json({ error: 'Código inválido' });
         }
 
