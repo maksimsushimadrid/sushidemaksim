@@ -245,7 +245,7 @@ const getWhatsAppConfirmationUrl = (order: Order, isPickup: boolean) => {
         itemsList = order.items
             .map(
                 (item: any) =>
-                    `• ${item.name || 'Producto'} x${item.quantity}: ${Number((item.price || 0) * (item.quantity || 1)).toFixed(2)}€`
+                    `• ${item.name || 'Producto'} x${item.quantity}: ${Number((item.priceAtTime || item.price || 0) * (item.quantity || 1)).toFixed(2)}€`
             )
             .join('\r\n');
     }
