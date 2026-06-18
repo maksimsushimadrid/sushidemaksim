@@ -595,7 +595,9 @@ router.post(
             ];
 
             if (isScheduled) {
-                waTextParts.push(`*${deliveryType === 'pickup' ? 'RECOGIDA' : 'ENTREGA'} PROGRAMADA: ${serverEstimatedTime}*`);
+                waTextParts.push(
+                    `*${deliveryType === 'pickup' ? 'RECOGIDA' : 'ENTREGA'} PROGRAMADA: ${serverEstimatedTime}*`
+                );
             }
 
             waTextParts.push(`PRODUCTOS:\n${itemsSummary}`);
