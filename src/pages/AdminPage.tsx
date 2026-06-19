@@ -755,7 +755,7 @@ export default function AdminPage() {
                 </aside>
 
                 {/* Main Content */}
-                <main className="flex-1 md:ml-60 p-3 md:p-4 flex flex-col min-h-screen">
+                <main className="flex-1 min-w-0 md:ml-60 p-3 md:p-4 flex flex-col min-h-screen">
                     <div className="w-full flex-1 flex flex-col">
                         {/* Top Bar */}
                         <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
