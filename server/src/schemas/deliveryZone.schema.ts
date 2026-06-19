@@ -32,14 +32,14 @@ export const createDeliveryZoneSchema = z.object({
 
 export const updateDeliveryZoneSchema = z.object({
     params: z.object({
-        id: z.string().transform(val => parseInt(val, 10)),
+        id: z.string().uuid('ID de zona inválido'),
     }),
     body: z.object(deliveryZoneBase).partial(),
 });
 
 export const deliveryZoneIdParamSchema = z.object({
     params: z.object({
-        id: z.string().transform(val => parseInt(val, 10)),
+        id: z.string().uuid('ID de zona inválido'),
     }),
 });
 

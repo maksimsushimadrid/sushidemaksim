@@ -548,7 +548,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                                 onChange={e =>
                                                     setEditingZone({
                                                         ...editingZone,
-                                                        minRadius: parseFloat(e.target.value),
+                                                        minRadius: parseFloat(e.target.value) || 0,
                                                     })
                                                 }
                                                 className="w-full px-4 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:outline-none focus:border-blue-400 transition"
@@ -565,7 +565,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                                 onChange={e =>
                                                     setEditingZone({
                                                         ...editingZone,
-                                                        maxRadius: parseFloat(e.target.value),
+                                                        maxRadius: parseFloat(e.target.value) || 0,
                                                     })
                                                 }
                                                 className="w-full px-4 py-2 bg-blue-50/50 border border-blue-100 rounded-lg focus:outline-none focus:border-blue-400 transition"
@@ -584,7 +584,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                             onChange={e =>
                                                 setEditingZone({
                                                     ...editingZone,
-                                                    cost: parseFloat(e.target.value),
+                                                    cost: parseFloat(e.target.value) || 0,
                                                 })
                                             }
                                             className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
@@ -600,7 +600,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                             onChange={e =>
                                                 setEditingZone({
                                                     ...editingZone,
-                                                    minOrder: parseFloat(e.target.value),
+                                                    minOrder: parseFloat(e.target.value) || 0,
                                                 })
                                             }
                                             className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
@@ -620,7 +620,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                                 setEditingZone({
                                                     ...editingZone,
                                                     freeThreshold: e.target.value
-                                                        ? parseFloat(e.target.value)
+                                                        ? parseFloat(e.target.value) || 0
                                                         : null,
                                                 })
                                             }
