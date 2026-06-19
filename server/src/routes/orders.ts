@@ -250,25 +250,17 @@ router.post(
 
             // Site-wide fallbacks
             let defaultFee = 3.5;
-            let defaultFreeThreshold = 60;
             let defaultMinOrder = 15;
 
             // Load global settings for fallbacks if needed
             const { data: settings } = await supabase.from('site_settings').select('*');
             if (settings) {
                 const feeSet = settings.find(s => s.key === 'delivery_fee');
-                const threshSet = settings.find(s => s.key === 'free_delivery_threshold');
                 const minSet = settings.find(s => s.key === 'min_order');
 
                 if (feeSet)
                     defaultFee = parseFloat(
                         typeof feeSet.value === 'string' ? JSON.parse(feeSet.value) : feeSet.value
-                    );
-                if (threshSet)
-                    defaultFreeThreshold = parseFloat(
-                        typeof threshSet.value === 'string'
-                            ? JSON.parse(threshSet.value)
-                            : threshSet.value
                     );
                 if (minSet)
                     defaultMinOrder = parseFloat(
@@ -289,10 +281,6 @@ router.post(
 
             const currentFee =
                 matchedZone && matchedZone.cost !== null ? Number(matchedZone.cost) : defaultFee;
-            const currentFreeThreshold =
-                matchedZone && matchedZone.free_threshold !== null
-                    ? Number(matchedZone.free_threshold)
-                    : defaultFreeThreshold;
             const currentMinOrder =
                 matchedZone && matchedZone.min_order !== null
                     ? Number(matchedZone.min_order)
@@ -305,10 +293,8 @@ router.post(
                 });
             }
 
-            if (subtotal < currentFreeThreshold) {
-                deliveryFee = currentFee;
-                finalTotal += deliveryFee;
-            }
+            deliveryFee = currentFee;
+            finalTotal += deliveryFee;
         }
 
         if (Number(tipAmount) > 0) {

@@ -1143,17 +1143,6 @@ export default function AddressModal({
                                                                 Mín
                                                             </span>
                                                         </span>
-                                                        {selectedZone.freeThreshold && (
-                                                            <>
-                                                                <div className="w-1 h-1 rounded-full bg-gray-200" />
-                                                                <span className="flex items-center gap-1">
-                                                                    {selectedZone.freeThreshold}€
-                                                                    <span className="text-[10px] opacity-40">
-                                                                        Gratis
-                                                                    </span>
-                                                                </span>
-                                                            </>
-                                                        )}
                                                     </div>
                                                 </div>
 
@@ -1181,9 +1170,7 @@ export default function AddressModal({
                                                         </div>
                                                     </div>
 
-                                                    <div
-                                                        className={`grid ${selectedZone.freeThreshold ? 'grid-cols-3' : 'grid-cols-2'} gap-2.5`}
-                                                    >
+                                                    <div className="grid grid-cols-2 gap-2.5">
                                                         <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30 flex flex-col h-full">
                                                             <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 leading-tight min-h-[20px]">
                                                                 Envío
@@ -1202,16 +1189,6 @@ export default function AddressModal({
                                                                 {selectedZone.minOrder}€
                                                             </p>
                                                         </div>
-                                                        {selectedZone.freeThreshold && (
-                                                            <div className="bg-white/80 backdrop-blur-sm p-3 rounded-2xl border border-green-100/30 flex flex-col h-full">
-                                                                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1.5 leading-tight min-h-[20px]">
-                                                                    Gratis desde
-                                                                </p>
-                                                                <p className="text-[17px] font-black text-orange-600 mt-auto leading-none">
-                                                                    {selectedZone.freeThreshold}€
-                                                                </p>
-                                                            </div>
-                                                        )}
                                                     </div>
                                                 </div>
                                             </div>

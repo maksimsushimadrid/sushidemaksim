@@ -25,7 +25,6 @@ interface CartSummaryProps {
     coinsSpent?: number;
     onCoinsChange?: (coins: number) => void;
     minOrder?: number;
-    freeDeliveryThreshold?: number;
     deliveryDetails?: {
         deliveryType: 'delivery' | 'pickup' | 'reservation';
         address?: string;
@@ -55,7 +54,6 @@ export default function CartSummary({
     coinsSpent = 0,
     onCoinsChange,
     minOrder = 0,
-    freeDeliveryThreshold = 60,
     deliveryDetails: propDeliveryDetails,
 }: CartSummaryProps) {
     const navigate = useNavigate();
@@ -85,33 +83,6 @@ export default function CartSummary({
             className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 sticky top-24 rounded-t-[32px] border-b md:border-none border-gray-50 h-fit"
         >
             <h2 className="text-lg font-black mb-4 uppercase tracking-tight">Resumen</h2>
-
-            {deliveryType === 'delivery' && (
-                <div className="mb-6 animate-in slide-in-from-top duration-500">
-                    <div className="flex justify-between items-end mb-1.5">
-                        <span
-                            className={`text-[10px] font-black uppercase tracking-widest ${total >= freeDeliveryThreshold ? 'text-green-600' : 'text-orange-600'}`}
-                        >
-                            {total >= freeDeliveryThreshold
-                                ? '¡Genial! Tienes ENVÍO GRATIS 🚚💨'
-                                : `¡Te faltan ${(freeDeliveryThreshold - total).toFixed(2).replace('.', ',')}€ para el envío GRATIS!`}
-                        </span>
-                        <span className="text-[10px] font-black text-gray-400">
-                            {freeDeliveryThreshold}€
-                        </span>
-                    </div>
-                    <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden p-0.5 border border-gray-50">
-                        <motion.div
-                            initial={{ width: 0 }}
-                            animate={{
-                                width: `${Math.min((total / freeDeliveryThreshold) * 100, 100)}%`,
-                            }}
-                            transition={{ type: 'spring', stiffness: 50, damping: 15 }}
-                            className={`h-full rounded-full ${total >= freeDeliveryThreshold ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.3)]' : 'bg-orange-500 shadow-[0_0_10px_rgba(249,115,22,0.2)]'}`}
-                        />
-                    </div>
-                </div>
-            )}
 
             {isStoreClosed && !isScheduled && (
                 <motion.div

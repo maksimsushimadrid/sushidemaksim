@@ -440,14 +440,6 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                                 {t.min}:{' '}
                                                 <b className="text-gray-800">{zone.minOrder}€</b>
                                             </span>
-                                            {zone.freeThreshold && (
-                                                <>
-                                                    <span className="text-gray-300">|</span>
-                                                    <span className="text-emerald-600 font-bold bg-emerald-50 px-1 rounded">
-                                                        {t.free} &gt;{zone.freeThreshold}€
-                                                    </span>
-                                                </>
-                                            )}
                                         </div>
                                     </div>
 
@@ -604,27 +596,6 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                                                 })
                                             }
                                             className="w-full px-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:border-orange-400 transition"
-                                        />
-                                    </div>
-                                </div>
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="space-y-1">
-                                        <label className="text-xs font-bold text-gray-500 uppercase">
-                                            {t.modal.freeFrom}
-                                        </label>
-                                        <input
-                                            type="number"
-                                            placeholder="P. ej. 60"
-                                            value={editingZone.freeThreshold || ''}
-                                            onChange={e =>
-                                                setEditingZone({
-                                                    ...editingZone,
-                                                    freeThreshold: e.target.value
-                                                        ? parseFloat(e.target.value) || 0
-                                                        : null,
-                                                })
-                                            }
-                                            className="w-full px-4 py-2 bg-green-50/30 border border-green-100 rounded-lg focus:outline-none focus:border-green-400 transition"
                                         />
                                     </div>
                                 </div>
