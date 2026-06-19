@@ -575,7 +575,17 @@ router.post(
             const paymentMethodText = isCard ? 'Tarjeta' : 'Efectivo';
 
             const itemsSummary = cartItems
-                .map(item => `- ${item.menu_items.name} x${item.quantity}`)
+                .map(item => {
+                    const price = item.is_gift ? 0 : Number(item.menu_items.price || 0);
+                    const lineTotal = price * item.quantity;
+                    const priceText = item.is_gift ? 'Gratis' : `${price.toFixed(2)}€`;
+                    const totalText = item.is_gift ? 'Gratis' : `${lineTotal.toFixed(2)}€`;
+
+                    if (item.quantity > 1 && !item.is_gift) {
+                        return `- ${item.menu_items.name} x${item.quantity} - ${totalText} (${priceText}/ud)`;
+                    }
+                    return `- ${item.menu_items.name} x${item.quantity} - ${totalText}`;
+                })
                 .join('\n');
 
             const waTextParts = [
