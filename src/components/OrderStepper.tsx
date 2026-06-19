@@ -1,4 +1,4 @@
-import { CheckCircle, Clock, Truck, CheckCircle2, XCircle, Package } from 'lucide-react';
+import { CheckCircle, Clock, Truck, CheckCircle2, XCircle, Package, ChefHat } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface OrderStepperProps {
@@ -17,13 +17,19 @@ export default function OrderStepper({
         { status: 'received', label: 'Pedido Realizado', icon: Clock },
         { status: 'confirmed', label: 'Pedido Confirmado', icon: CheckCircle },
         {
-            status: 'preparing', // covers both preparing and on_the_way in this view
-            label: isPickup ? 'Listo para Recoger' : 'Entrega',
+            status: 'preparing',
+            label: isPickup ? 'En preparación' : 'En cocina',
+            icon: ChefHat,
+        },
+        {
+            status: 'on_the_way',
+            label: isPickup ? 'Listo para Recoger' : 'En camino',
             icon: isPickup ? Package : Truck,
             iconLabel: isPickup ? undefined : '🛵',
         },
         { status: 'delivered', label: 'Pedido Entregado', icon: CheckCircle2 },
     ];
+
     if (currentStatus === 'cancelled') {
         return (
             <div className="flex flex-col items-center gap-4 py-8">
@@ -54,12 +60,13 @@ export default function OrderStepper({
         );
     }
 
-    // Mapping technical statuses to the 4 simplified steps
+    // Mapping technical statuses to the 5 simplified steps
     const getNormalizedIdx = () => {
         if (currentStatus === 'pending' || currentStatus === 'received') return 0;
         if (currentStatus === 'confirmed') return 1;
-        if (currentStatus === 'preparing' || currentStatus === 'on_the_way') return 2;
-        if (currentStatus === 'delivered') return 3;
+        if (currentStatus === 'preparing') return 2;
+        if (currentStatus === 'on_the_way') return 3;
+        if (currentStatus === 'delivered') return 4;
         return 0;
     };
 
@@ -116,18 +123,19 @@ export default function OrderStepper({
                                 >
                                     {(() => {
                                         if (idx === 2) {
+                                            if (isCurrent && estimatedTime && isPickup) {
+                                                return `Recogida ${estimatedTime.split(' ').pop() || estimatedTime}`;
+                                            }
+                                            return step.label;
+                                        }
+                                        if (idx === 3) {
                                             if (isPickup) {
-                                                if (isCurrent && estimatedTime) {
-                                                    return `Recogida ${estimatedTime.split(' ').pop() || estimatedTime}`;
-                                                } else if (currentStatus === 'preparing') {
-                                                    return 'En preparación';
-                                                } else if (currentStatus === 'on_the_way') {
-                                                    return 'Listo para Recoger';
-                                                }
+                                                return step.label;
                                             } else {
                                                 if (isCurrent && estimatedTime) {
                                                     return `Entrega ${estimatedTime.split(' ').pop() || estimatedTime}`;
                                                 }
+                                                return step.label;
                                             }
                                         }
                                         return step.label;
