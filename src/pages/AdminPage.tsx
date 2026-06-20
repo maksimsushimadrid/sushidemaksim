@@ -171,7 +171,7 @@ export default function AdminPage() {
                         try {
                             await targetAudio.play();
                         } catch (e) {
-                            /* ignore */
+                            throw e;
                         }
                         await new Promise(resolve => setTimeout(resolve, 700));
                     }
@@ -181,7 +181,7 @@ export default function AdminPage() {
                     try {
                         await targetAudio.play();
                     } catch (e) {
-                        /* ignore */
+                        throw e;
                     }
                 }
 
