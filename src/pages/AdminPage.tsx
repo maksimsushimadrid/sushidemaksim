@@ -164,17 +164,25 @@ export default function AdminPage() {
             try {
                 targetAudio.volume = 1.0;
 
-                // Triple chirp for ALL orders (natural bird whistle)
-                const gap = type === 'mesa' ? 700 : 900;
-
-                for (let i = 0; i < 3; i++) {
+                if (type === 'mesa') {
+                    // Triple chirp for mesa orders
+                    for (let i = 0; i < 3; i++) {
+                        targetAudio.currentTime = 0;
+                        try {
+                            await targetAudio.play();
+                        } catch (e) {
+                            /* ignore */
+                        }
+                        await new Promise(resolve => setTimeout(resolve, 700));
+                    }
+                } else {
+                    // Play fanfare once for delivery/pickup orders
                     targetAudio.currentTime = 0;
                     try {
                         await targetAudio.play();
                     } catch (e) {
                         /* ignore */
                     }
-                    await new Promise(resolve => setTimeout(resolve, gap));
                 }
 
                 setAudioBlocked(false);
