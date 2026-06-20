@@ -168,7 +168,7 @@ export default function AdminPage() {
                     // Triple chirp for mesa orders
                     for (let i = 0; i < 3; i++) {
                         targetAudio.currentTime = 0;
-                            await targetAudio.play();
+                        await targetAudio.play();
                         await new Promise(resolve => setTimeout(resolve, 700));
                     }
                 } else {
