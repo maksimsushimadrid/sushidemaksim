@@ -419,7 +419,7 @@ export async function sendOrderReceiptEmail(
         <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
             (() => {
                 const rawAddr = orderData.deliveryAddress || '';
-                const parts = rawAddr.split(',').map(p => p.trim());
+                const parts = rawAddr.split(',').map((p: string) => p.trim());
                 let query = '';
                 if (parts.length >= 4) {
                     const street = parts[0];

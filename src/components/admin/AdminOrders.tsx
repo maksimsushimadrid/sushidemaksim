@@ -1014,7 +1014,9 @@ export default function AdminOrders({
                                                                             '';
                                                                         const parts = rawAddr
                                                                             .split(',')
-                                                                            .map(p => p.trim());
+                                                                            .map((p: string) =>
+                                                                                p.trim()
+                                                                            );
                                                                         let query = '';
                                                                         if (parts.length >= 4) {
                                                                             const street = parts[0];
