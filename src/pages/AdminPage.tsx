@@ -196,6 +196,17 @@ export default function AdminPage() {
         [isSoundEnabled]
     );
 
+    const stopAlert = useCallback(() => {
+        if (audioRef.current) {
+            audioRef.current.pause();
+            audioRef.current.currentTime = 0;
+        }
+        if (audioMesaRef.current) {
+            audioMesaRef.current.pause();
+            audioMesaRef.current.currentTime = 0;
+        }
+    }, []);
+
     const handlePrintOrder = useCallback((order: Order) => {
         setPrintingOrder(order);
         // Small delay to ensure the receipt is rendered before printing
@@ -918,6 +929,7 @@ export default function AdminPage() {
                                     isGlobalSoundEnabled={isSoundEnabled}
                                     setIsGlobalSoundEnabled={setIsSoundEnabled}
                                     onTestSound={playAlert}
+                                    onStopSound={stopAlert}
                                     onPrintOrder={handlePrintOrder}
                                     globalPendingCount={pendingCount}
                                     language={language}

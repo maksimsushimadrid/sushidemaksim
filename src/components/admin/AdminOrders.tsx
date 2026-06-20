@@ -70,6 +70,7 @@ interface AdminOrdersProps {
     globalPendingCount: number;
     language?: 'ru' | 'es';
     onPrintOrder?: (order: Order) => void;
+    onStopSound?: () => void;
 }
 
 const ORDERS_TRANSLATIONS = {
@@ -312,6 +313,7 @@ export default function AdminOrders({
     globalPendingCount,
     language = 'es',
     onPrintOrder,
+    onStopSound,
 }: AdminOrdersProps) {
     const queryClient = useQueryClient();
     const { success } = useToast();
@@ -395,6 +397,9 @@ export default function AdminOrders({
     });
 
     const handleUpdateStatus = (id: string, newStatus: string) => {
+        if (newStatus === 'preparing' && onStopSound) {
+            onStopSound();
+        }
         statusMutation.mutate({ id, newStatus });
     };
 
