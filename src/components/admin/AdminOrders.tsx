@@ -286,7 +286,15 @@ const getWhatsAppConfirmationUrl = (order: Order, isPickup: boolean) => {
             : `\r\n*ENTREGA PROGRAMADA: ${scheduledTime}*`
         : '';
 
-    let text = `¡Hola! Hemos recibido tu pedido #${String(order.id).padStart(5, '0')}${scheduledText ? `\r\n${scheduledText}` : ''}\r\n\r\n${itemsList}\r\n\r\n`;
+    let text = '';
+    if (scheduledTime) {
+        text = `¡Hola! Hemos recibido tu pedido #${String(order.id).padStart(5, '0')}${scheduledText ? `\r\n${scheduledText}` : ''}\r\n\r\n${itemsList}\r\n\r\n`;
+    } else {
+        const deliveryStatusMsg = isPickup
+            ? 'Aproximada hora de recogida en 30 - 45 minutos.'
+            : 'Te lo entregaremos en 30 - 60 minutos.';
+        text = `¡Hola! Hemos recibido tu pedido. ${deliveryStatusMsg}\r\n\r\nTu pedido #${String(order.id).padStart(5, '0')} está confirmado\r\n\r\n${itemsList}\r\n\r\n`;
+    }
     if (!isPickup) {
         text += `Dirección: ${order.deliveryAddress || 'No especificada'}\r\nTeléfono: ${order.phoneNumber || ''}\r\n`;
     }
