@@ -1008,7 +1008,22 @@ export default function AdminOrders({
                                                                 </p>
                                                             ) : (
                                                                 <a
-                                                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(order.deliveryAddress + ', Madrid, Spain')}`}
+                                                                    href={(() => {
+                                                                        const rawAddr =
+                                                                            order.deliveryAddress ||
+                                                                            '';
+                                                                        const query = rawAddr
+                                                                            .replace(
+                                                                                /\bCP\s*:\s*/gi,
+                                                                                ''
+                                                                            )
+                                                                            .trim();
+                                                                        const finalQuery =
+                                                                            /\b\d{5}\b/.test(query)
+                                                                                ? `${query}, Spain`
+                                                                                : `${query}, Madrid, Spain`;
+                                                                        return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(finalQuery)}`;
+                                                                    })()}
                                                                     target="_blank"
                                                                     rel="noopener noreferrer"
                                                                     className="block group/address transition-all active:scale-95"

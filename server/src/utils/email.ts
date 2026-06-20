@@ -416,7 +416,13 @@ export async function sendOrderReceiptEmail(
         ${
             !deliveryType.includes('RECOGIDA')
                 ? `
-        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(orderData.deliveryAddress + ', Madrid, Spain')}" target="_blank" style="display: block; background-color: #4285F4; color: #ffffff; padding: 14px 20px; border-radius: 16px; text-decoration: none; font-weight: 800; font-size: 14px; text-align: center; margin-bottom: 12px; line-height: 1.4;">
+        <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+            (() => {
+                const rawAddr = orderData.deliveryAddress || '';
+                const query = rawAddr.replace(/\bCP\s*:\s*/gi, '').trim();
+                return /\b\d{5}\b/.test(query) ? `${query}, Spain` : `${query}, Madrid, Spain`;
+            })()
+        )}" target="_blank" style="display: block; background-color: #4285F4; color: #ffffff; padding: 14px 20px; border-radius: 16px; text-decoration: none; font-weight: 800; font-size: 14px; text-align: center; margin-bottom: 12px; line-height: 1.4;">
           🗺️ MAPA: ${orderData.deliveryAddress}
         </a>
         `
