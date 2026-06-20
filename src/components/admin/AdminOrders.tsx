@@ -293,7 +293,7 @@ const getWhatsAppConfirmationUrl = (order: Order, isPickup: boolean) => {
             : 'Lo preparamos y entregamos a la hora indicada.';
     } else {
         deliveryStatusMsg = isPickup
-            ? 'Estará listo para recoger en el local en 30 - 45 minutos.'
+            ? 'Aproximada hora de recogida en 30 - 45 minutos.'
             : 'Lo preparamos y enviamos pronto.';
     }
 

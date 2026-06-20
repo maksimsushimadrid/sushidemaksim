@@ -328,11 +328,11 @@ export async function sendOrderReceiptEmail(
         let deliveryStatusMsg = '';
         if (scheduledTime) {
             deliveryStatusMsg = isPickup
-                ? 'Estará listo para recoger en el local en la fecha y hora seleccionadas.'
+                ? 'Aproximada hora de recogida en la fecha y hora seleccionadas.'
                 : 'Te lo entregaremos en la fecha y hora seleccionadas.';
         } else {
             deliveryStatusMsg = isPickup
-                ? 'Estará listo para recoger en el local en 30 - 45 minutos.'
+                ? 'Aproximada hora de recogida en 30 - 45 minutos.'
                 : 'Te lo entregaremos en 30 - 60 minutos.';
         }
 
@@ -394,8 +394,8 @@ export async function sendOrderReceiptEmail(
         ¡Hola! Hemos recibido tu pedido. ${
             isPickup
                 ? scheduledTime
-                    ? `Estará listo para recoger en el local el <strong>${scheduledTime}</strong>.`
-                    : `Estará listo para recoger en el local en <strong>${orderData.estimatedDeliveryTime || '30 - 45 minutos'}</strong>.`
+                    ? `Aproximada hora de recogida el <strong>${scheduledTime}</strong>.`
+                    : `Aproximada hora de recogida en <strong>${orderData.estimatedDeliveryTime || '30 - 45 minutos'}</strong>.`
                 : scheduledTime
                   ? `Te lo entregaremos el <strong>${scheduledTime}</strong>.`
                   : `Te lo entregaremos en <strong>${orderData.estimatedDeliveryTime || '30 - 60 minutos'}</strong>.`
