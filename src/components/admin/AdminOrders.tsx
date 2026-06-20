@@ -966,7 +966,10 @@ export default function AdminOrders({
                                                         {order.users?.email && (
                                                             <p
                                                                 onClick={() => {
-                                                                    const emailName = order.users.email.split('@')[0];
+                                                                    const emailName =
+                                                                        order.users?.email?.split(
+                                                                            '@'
+                                                                        )[0] || '';
                                                                     setSearch(emailName);
                                                                 }}
                                                                 className="text-[11px] font-bold text-gray-400 mt-2 bg-gray-50 px-2 py-1 rounded-lg w-fit border border-gray-100 cursor-pointer hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200 transition-all active:scale-95 select-none"
