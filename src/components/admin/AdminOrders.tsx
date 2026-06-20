@@ -79,6 +79,7 @@ const ORDERS_TRANSLATIONS = {
         soundOff: 'Включить звук',
         refresh: 'Обновить',
         testSound: 'Проверить звук (Зал)',
+        testSoundWeb: 'Проверить звук (Web)',
         filters: {
             active: 'ВСЕ АКТИВНЫЕ',
             unpaid: 'Ожидание оплаты',
@@ -161,6 +162,7 @@ const ORDERS_TRANSLATIONS = {
         soundOff: 'Activar sonido',
         refresh: 'Actualizar',
         testSound: 'Probar sonido (Sala)',
+        testSoundWeb: 'Probar sonido (Web)',
         filters: {
             active: 'TODO ACTIVO',
             unpaid: 'Por Pagar',
@@ -496,9 +498,16 @@ export default function AdminOrders({
                             <button
                                 onClick={() => onTestSound?.('mesa')}
                                 className="flex-[2] sm:flex-none flex items-center justify-center px-4 py-3 bg-orange-50 text-orange-600 border border-orange-100 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-600 hover:text-white transition-all active:scale-95 shadow-sm whitespace-nowrap"
-                                title="Test: Mesa (3 dings)"
+                                title="Test: Mesa"
                             >
                                 {t.testSound}
+                            </button>
+                            <button
+                                onClick={() => onTestSound?.('delivery')}
+                                className="flex-[2] sm:flex-none flex items-center justify-center px-4 py-3 bg-blue-50 text-blue-600 border border-blue-100 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all active:scale-95 shadow-sm whitespace-nowrap"
+                                title="Test: Web/Delivery"
+                            >
+                                {t.testSoundWeb}
                             </button>
                             <button
                                 onClick={() => refetch()}
