@@ -325,21 +325,10 @@ export async function sendOrderReceiptEmail(
                   ? 'Efectivo'
                   : paymentMethod;
 
-        let deliveryStatusMsg = '';
-        if (scheduledTime) {
-            deliveryStatusMsg = isPickup
-                ? 'Aproximada hora de recogida en la fecha y hora seleccionadas.'
-                : 'Te lo entregaremos en la fecha y hora seleccionadas.';
-        } else {
-            deliveryStatusMsg = isPickup
-                ? 'Aproximada hora de recogida en 30 - 45 minutos.'
-                : 'Te lo entregaremos en 30 - 60 minutos.';
-        }
-
-        const statusMessage = `¡Hola! Hemos recibido tu pedido. ${deliveryStatusMsg}${tipAmount > 0 ? `\n\n¡Muchas gracias por la propina para el equipo!` : ''}\n\n`;
+        const statusMessage = `¡Hola! Hemos recibido tu pedido #${String(orderData.orderId).padStart(5, '0')}${scheduledText ? `\n${scheduledText}` : ''}${tipAmount > 0 ? `\n\n¡Muchas gracias por la propina para el equipo!` : ''}\n\n`;
         const addressLine =
             deliveryType === 'DOMICILIO' ? `\nDirección: ${orderData.deliveryAddress}` : '';
-        waMessage = `${statusMessage}Tu pedido #${String(orderData.orderId).padStart(5, '0')} está confirmado${scheduledText}\n\n${itemsListText}${deliveryFeeText}\n\nTotal: ${orderData.total.toFixed(2)}€\nMétodo de pago: ${paymentMethodLabel}${addressLine}`;
+        waMessage = `${statusMessage}${itemsListText}${deliveryFeeText}\n\nTotal: ${orderData.total.toFixed(2)}€\nMétodo de pago: ${paymentMethodLabel}${addressLine}`;
         const cleanPhone = orderData.phoneNumber.replace(/\D/g, '');
         // wa.me doesn't like '+' prefix usually, digits only is safest
         waUrl = `https://wa.me/${cleanPhone}/?text=${encodeURIComponent(waMessage)}`;
