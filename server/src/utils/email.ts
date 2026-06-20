@@ -389,17 +389,19 @@ export async function sendOrderReceiptEmail(
     <div style="padding: 16px 20px;">
       <h2 style="color: #111827; margin: 0 0 4px; font-size: 20px; font-weight: 800;">${greeting}</h2>
       <p style="color: #4b5563; font-size: 14px; line-height: 1.5; margin: 0 0 16px;">
-        ¡Hola! Hemos recibido tu pedido. ${
-            isPickup
-                ? scheduledTime
-                    ? `Aproximada hora de recogida el <strong>${scheduledTime}</strong>.`
-                    : `Aproximada hora de recogida en <strong>${orderData.estimatedDeliveryTime || '30 - 45 minutos'}</strong>.`
-                : scheduledTime
-                  ? `Te lo entregaremos el <strong>${scheduledTime}</strong>.`
-                  : `Te lo entregaremos en <strong>${orderData.estimatedDeliveryTime || '30 - 60 minutos'}</strong>.`
-        }
+        ${
+            scheduledTime
+                ? `¡Hola! Hemos recibido tu pedido <strong>#${String(orderData.orderId).padStart(5, '0')}</strong>.
         <br><br>
-        Tu pedido <strong>#${String(orderData.orderId).padStart(5, '0')}</strong> está confirmado.
+        <strong>${isPickup ? 'RECOGIDA PROGRAMADA' : 'ENTREGA PROGRAMADA'}: ${scheduledTime}</strong>`
+                : `¡Hola! Hemos recibido tu pedido. ${
+                    isPickup
+                        ? `Aproximada hora de recogida en <strong>${orderData.estimatedDeliveryTime || '30 - 45 minutos'}</strong>.`
+                        : `Te lo entregaremos en <strong>${orderData.estimatedDeliveryTime || '30 - 60 minutos'}</strong>.`
+                  }
+        <br><br>
+        Tu pedido <strong>#${String(orderData.orderId).padStart(5, '0')}</strong> está confirmado.`
+        }
         ${tipAmount > 0 ? `<br><br><strong>¡Muchas gracias por dejar una propina para el equipo! Apreciamos mucho tu apoyo.</strong>` : ''}
       </p>
 
