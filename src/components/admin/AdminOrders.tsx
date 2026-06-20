@@ -1012,12 +1012,28 @@ export default function AdminOrders({
                                                                         const rawAddr =
                                                                             order.deliveryAddress ||
                                                                             '';
-                                                                        const query = rawAddr
-                                                                            .replace(
-                                                                                /\bCP\s*:\s*/gi,
-                                                                                ''
-                                                                            )
-                                                                            .trim();
+                                                                        const parts = rawAddr
+                                                                            .split(',')
+                                                                            .map(p => p.trim());
+                                                                        let query = '';
+                                                                        if (parts.length >= 4) {
+                                                                            const street = parts[0];
+                                                                            const house = parts[1];
+                                                                            const cp = parts[3]
+                                                                                .replace(
+                                                                                    /\bCP\s*:\s*/gi,
+                                                                                    ''
+                                                                                )
+                                                                                .trim();
+                                                                            query = `${street}, ${house}, ${cp}`;
+                                                                        } else {
+                                                                            query = rawAddr
+                                                                                .replace(
+                                                                                    /\bCP\s*:\s*/gi,
+                                                                                    ''
+                                                                                )
+                                                                                .trim();
+                                                                        }
                                                                         const finalQuery =
                                                                             /\b\d{5}\b/.test(query)
                                                                                 ? `${query}, Spain`
