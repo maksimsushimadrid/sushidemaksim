@@ -325,7 +325,6 @@ export async function sendOrderReceiptEmail(
                   ? 'Efectivo'
                   : paymentMethod;
 
-        let waMessage = '';
         const addressLine =
             deliveryType === 'DOMICILIO' ? `\nDirección: ${orderData.deliveryAddress}` : '';
 
