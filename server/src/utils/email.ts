@@ -395,9 +395,9 @@ export async function sendOrderReceiptEmail(
         <br><br>
         <strong>${isPickup ? 'RECOGIDA PROGRAMADA' : 'ENTREGA PROGRAMADA'}: ${scheduledTime}</strong>`
                 : `¡Hola! Hemos recibido tu pedido. ${
-                    isPickup
-                        ? `Aproximada hora de recogida en <strong>${orderData.estimatedDeliveryTime || '30 - 45 minutos'}</strong>.`
-                        : `Te lo entregaremos en <strong>${orderData.estimatedDeliveryTime || '30 - 60 minutos'}</strong>.`
+                      isPickup
+                          ? `Aproximada hora de recogida en <strong>${orderData.estimatedDeliveryTime || '30 - 45 minutos'}</strong>.`
+                          : `Te lo entregaremos en <strong>${orderData.estimatedDeliveryTime || '30 - 60 minutos'}</strong>.`
                   }
         <br><br>
         Tu pedido <strong>#${String(orderData.orderId).padStart(5, '0')}</strong> está confirmado.`
