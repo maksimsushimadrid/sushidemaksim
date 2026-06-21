@@ -125,6 +125,29 @@ router.get('/house-numbers', validateResource(houseNumbersQuerySchema), async (r
     }
 });
 
+export function cleanSpanishAddress(q: string): string {
+    let cleaned = q.trim().toLowerCase();
+
+    // 1. Remove common number prefixes (nº, n°, num., numero)
+    cleaned = cleaned.replace(/\b(?:nº|n°|n\.º|num\.?|numero)\s*(\d+)\b/g, '$1');
+
+    // 2. Normalize starting abbreviations
+    cleaned = cleaned
+        .replace(/^c[\/\.]?\s+/i, 'calle ')
+        .replace(/^cl[\/\.]?\s+/i, 'calle ')
+        .replace(/^av(?:d|da)?[\/\.]?\s+/i, 'avenida ')
+        .replace(/^pl[zª]?[\/\.]?\s+/i, 'plaza ')
+        .replace(/^p[ºº]?\s+/i, 'paseo ')
+        .replace(/^trav[\/\.]?\s+/i, 'travesía ')
+        .replace(/^ctra[\/\.]?\s+/i, 'carretera ')
+        .replace(/^g\.?\s*v\.?\s+/i, 'gran via ');
+
+    // 3. Remove multiple spaces
+    cleaned = cleaned.replace(/\s+/g, ' ');
+
+    return cleaned.trim();
+}
+
 // Proxy search because Nominatim blocks direct browser access (CORS/UA)
 router.get(
     '/search',
@@ -132,7 +155,7 @@ router.get(
     asyncHandler(async (req: Request, res: Response) => {
         const { q } = req.query as any;
 
-        const query = q.trim().toLowerCase();
+        const query = cleanSpanishAddress(q);
         const now = Date.now();
 
         let staleResults: any = null;
