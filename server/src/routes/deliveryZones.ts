@@ -133,13 +133,13 @@ export function cleanSpanishAddress(q: string): string {
 
     // 2. Normalize starting abbreviations
     cleaned = cleaned
-        .replace(/^c[\/\.]?\s+/i, 'calle ')
-        .replace(/^cl[\/\.]?\s+/i, 'calle ')
-        .replace(/^av(?:d|da)?[\/\.]?\s+/i, 'avenida ')
-        .replace(/^pl[zª]?[\/\.]?\s+/i, 'plaza ')
+        .replace(/^c[/.]?\s+/i, 'calle ')
+        .replace(/^cl[/.]?\s+/i, 'calle ')
+        .replace(/^av(?:d|da)?[/.]?\s+/i, 'avenida ')
+        .replace(/^pl[zª]?[/.]?\s+/i, 'plaza ')
         .replace(/^p[ºº]?\s+/i, 'paseo ')
-        .replace(/^trav[\/\.]?\s+/i, 'travesía ')
-        .replace(/^ctra[\/\.]?\s+/i, 'carretera ')
+        .replace(/^trav[/.]?\s+/i, 'travesía ')
+        .replace(/^ctra[/.]?\s+/i, 'carretera ')
         .replace(/^g\.?\s*v\.?\s+/i, 'gran via ');
 
     // 3. Remove multiple spaces
