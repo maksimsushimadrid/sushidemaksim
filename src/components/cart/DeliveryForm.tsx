@@ -114,12 +114,17 @@ export default function DeliveryForm({
 
         const slots: string[] = [];
         intervals.forEach(interval => {
-            const [startH] = interval.start.split(':').map(Number);
-            const [endH] = interval.end.split(':').map(Number);
+            const [startH, startM] = interval.start.split(':').map(Number);
+            const [endH, endM] = interval.end.split(':').map(Number);
 
-            for (let h = startH; h < endH; h++) {
-                slots.push(`${h.toString().padStart(2, '0')}:00`);
-                slots.push(`${h.toString().padStart(2, '0')}:30`);
+            let currentMinutes = startH * 60 + startM;
+            const endMinutes = endH * 60 + endM;
+
+            while (currentMinutes < endMinutes) {
+                const h = Math.floor(currentMinutes / 60);
+                const min = currentMinutes % 60;
+                slots.push(`${h.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`);
+                currentMinutes += 30;
             }
         });
         return slots;
@@ -273,13 +278,15 @@ export default function DeliveryForm({
                                                 <span className="opacity-50 uppercase text-[9px] tracking-tight">
                                                     Mié – Vie
                                                 </span>
-                                                <span className="font-bold">19:00 – 23:00</span>
+                                                <span className="font-bold">19:00 – 22:30</span>
                                             </div>
                                             <div className="flex flex-col gap-0.5">
                                                 <span className="opacity-50 uppercase text-[9px] tracking-tight">
                                                     Sáb – Dom
                                                 </span>
-                                                <span className="font-bold">14:00 – 23:00</span>
+                                                <span className="font-bold">
+                                                    14:00–16:00, 19:00–22:30
+                                                </span>
                                             </div>
                                             <div className="flex flex-col gap-0.5">
                                                 <span className="text-amber-900/40 uppercase text-[9px] tracking-tight font-black">

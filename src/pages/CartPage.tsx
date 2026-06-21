@@ -867,18 +867,18 @@ export default function CartPage() {
                                                 <div className="flex flex-col gap-1.5 text-[12px] text-orange-800/80 font-medium max-w-[280px]">
                                                     <div className="flex justify-between items-center bg-orange-50/50 px-3 py-1.5 rounded-xl border border-orange-100/30">
                                                         <span className="opacity-60">
-                                                            Miércoles – Jueves
+                                                            Miércoles – Viernes
                                                         </span>
                                                         <span className="font-black text-orange-950">
-                                                            19:00 – 23:00
+                                                            19:00 – 22:30
                                                         </span>
                                                     </div>
                                                     <div className="flex justify-between items-center bg-orange-50/50 px-3 py-1.5 rounded-xl border border-orange-100/30">
                                                         <span className="opacity-60">
-                                                            Viernes – Domingo
+                                                            Sábado – Domingo
                                                         </span>
-                                                        <span className="font-black text-orange-950">
-                                                            14:00 – 23:00
+                                                        <span className="font-black text-orange-950 text-right">
+                                                            14:00 – 16:00, 19:00 – 22:30
                                                         </span>
                                                     </div>
                                                     <div className="flex justify-between items-center bg-orange-950/5 px-3 py-1.5 rounded-xl border border-orange-950/5">

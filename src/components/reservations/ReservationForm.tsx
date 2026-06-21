@@ -81,22 +81,27 @@ export default function ReservationForm({
 
         const slots: string[] = [];
         intervals.forEach(interval => {
-            const [startH] = interval.start.split(':').map(Number);
-            const [endH] = interval.end.split(':').map(Number);
+            const [startH, startM] = interval.start.split(':').map(Number);
+            const [endH, endM] = interval.end.split(':').map(Number);
 
-            for (let h = startH; h < endH; h++) {
-                ['00', '30'].forEach(m => {
-                    const slotM = Number(m);
+            let currentMinutes = startH * 60 + startM;
+            const endMinutes = endH * 60 + endM;
 
-                    // If today, filter out passed or too close slots
-                    if (isToday) {
-                        if (h < currentH || (h === currentH && slotM <= currentM + 15)) {
-                            return;
-                        }
+            while (currentMinutes < endMinutes) {
+                const h = Math.floor(currentMinutes / 60);
+                const m = currentMinutes % 60;
+                const mStr = m.toString().padStart(2, '0');
+
+                // If today, filter out passed or too close slots
+                if (isToday) {
+                    if (h < currentH || (h === currentH && m <= currentM + 15)) {
+                        currentMinutes += 30;
+                        continue;
                     }
+                }
 
-                    slots.push(`${h.toString().padStart(2, '0')}:${m}`);
-                });
+                slots.push(`${h.toString().padStart(2, '0')}:${mStr}`);
+                currentMinutes += 30;
             }
         });
         return slots;

@@ -212,15 +212,21 @@ export default function HomePage() {
                     openingHoursSpecification: [
                         {
                             '@type': 'OpeningHoursSpecification',
-                            dayOfWeek: ['Wednesday', 'Thursday'],
+                            dayOfWeek: ['Wednesday', 'Thursday', 'Friday'],
                             opens: '19:00',
-                            closes: '23:00',
+                            closes: '22:30',
                         },
                         {
                             '@type': 'OpeningHoursSpecification',
-                            dayOfWeek: ['Friday', 'Saturday', 'Sunday'],
+                            dayOfWeek: ['Saturday', 'Sunday'],
                             opens: '14:00',
-                            closes: '23:00',
+                            closes: '16:00',
+                        },
+                        {
+                            '@type': 'OpeningHoursSpecification',
+                            dayOfWeek: ['Saturday', 'Sunday'],
+                            opens: '19:00',
+                            closes: '22:30',
                         },
                     ],
                     acceptsReservations: 'true',

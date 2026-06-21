@@ -113,8 +113,8 @@ export default function ContactsPage() {
         settings?.contactSchedule && settings.contactSchedule.length > 0
             ? settings.contactSchedule
             : [
-                  { days: 'Miércoles - Jueves', hours: '19:00 - 23:00' },
-                  { days: 'Viernes - Domingo', hours: '14:00 - 23:00' },
+                  { days: 'Miércoles - Viernes', hours: '19:00 - 22:30' },
+                  { days: 'Sábado - Domingo', hours: '14:00 - 16:00, 19:00 - 22:30' },
                   { days: 'Lunes - Martes', hours: 'Cerrado', closed: true },
               ];
 
@@ -201,15 +201,21 @@ export default function ContactsPage() {
                         openingHoursSpecification: [
                             {
                                 '@type': 'OpeningHoursSpecification',
-                                dayOfWeek: ['Wednesday', 'Thursday'],
+                                dayOfWeek: ['Wednesday', 'Thursday', 'Friday'],
                                 opens: '19:00',
-                                closes: '23:00',
+                                closes: '22:30',
                             },
                             {
                                 '@type': 'OpeningHoursSpecification',
-                                dayOfWeek: ['Friday', 'Saturday', 'Sunday'],
+                                dayOfWeek: ['Saturday', 'Sunday'],
                                 opens: '14:00',
-                                closes: '23:00',
+                                closes: '16:00',
+                            },
+                            {
+                                '@type': 'OpeningHoursSpecification',
+                                dayOfWeek: ['Saturday', 'Sunday'],
+                                opens: '19:00',
+                                closes: '22:30',
                             },
                         ],
                     },

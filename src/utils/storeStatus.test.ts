@@ -29,15 +29,24 @@ describe('storeStatus Utility', () => {
 
         it('handles boundary cases (exactly at start and end)', () => {
             const start = new Date('2026-04-01T19:00:00');
-            const end = new Date('2026-04-01T23:00:00');
+            const end = new Date('2026-04-01T22:30:00');
             expect(isStoreOpen(start)).toBe(true);
             expect(isStoreOpen(end)).toBe(false); // Should be false because of timeStr < interval.end
         });
 
-        it('handles weekend business hours (Sunday 15:00)', () => {
-            // Sunday = 0, target: 14:00-23:00
-            const sundayAfternoon = new Date('2026-04-05T15:00:00');
-            expect(isStoreOpen(sundayAfternoon)).toBe(true);
+        it('handles weekend business hours (Sunday 15:00 - open, 17:00 - closed, 20:00 - open, 22:45 - closed)', () => {
+            // Sunday = 0, target intervals: 14:00-16:00 and 19:00-22:30
+            const sunday1500 = new Date('2026-04-05T15:00:00');
+            expect(isStoreOpen(sunday1500)).toBe(true);
+
+            const sunday1700 = new Date('2026-04-05T17:00:00');
+            expect(isStoreOpen(sunday1700)).toBe(false);
+
+            const sunday2000 = new Date('2026-04-05T20:00:00');
+            expect(isStoreOpen(sunday2000)).toBe(true);
+
+            const sunday2245 = new Date('2026-04-05T22:45:00');
+            expect(isStoreOpen(sunday2245)).toBe(false);
         });
     });
 
