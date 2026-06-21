@@ -120,7 +120,7 @@ export default function DeliveryForm({
             let currentMinutes = startH * 60 + startM;
             const endMinutes = endH * 60 + endM;
 
-            while (currentMinutes < endMinutes) {
+            while (currentMinutes <= endMinutes) {
                 const h = Math.floor(currentMinutes / 60);
                 const min = currentMinutes % 60;
                 slots.push(`${h.toString().padStart(2, '0')}:${min.toString().padStart(2, '0')}`);

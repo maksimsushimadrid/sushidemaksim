@@ -87,7 +87,7 @@ export default function ReservationForm({
             let currentMinutes = startH * 60 + startM;
             const endMinutes = endH * 60 + endM;
 
-            while (currentMinutes < endMinutes) {
+            while (currentMinutes <= endMinutes) {
                 const h = Math.floor(currentMinutes / 60);
                 const m = currentMinutes % 60;
                 const mStr = m.toString().padStart(2, '0');

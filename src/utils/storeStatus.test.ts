@@ -30,8 +30,10 @@ describe('storeStatus Utility', () => {
         it('handles boundary cases (exactly at start and end)', () => {
             const start = new Date('2026-04-01T19:00:00+02:00');
             const end = new Date('2026-04-01T22:30:00+02:00');
+            const afterEnd = new Date('2026-04-01T22:31:00+02:00');
             expect(isStoreOpen(start)).toBe(true);
-            expect(isStoreOpen(end)).toBe(false); // Should be false because of timeStr < interval.end
+            expect(isStoreOpen(end)).toBe(true); // Should be true because of inclusive comparison (<=)
+            expect(isStoreOpen(afterEnd)).toBe(false);
         });
 
         it('handles weekend business hours (Sunday 15:00 - open, 17:00 - closed, 20:00 - open, 22:45 - closed)', () => {

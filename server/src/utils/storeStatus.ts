@@ -57,7 +57,7 @@ export function isStoreOpen(date: Date = new Date()): boolean {
     const day = dayMap[weekdayName] ?? date.getDay();
 
     const todayIntervals = BUSINESS_HOURS[day] || [];
-    return todayIntervals.some(interval => timeStr >= interval.start && timeStr < interval.end);
+    return todayIntervals.some(interval => timeStr >= interval.start && timeStr <= interval.end);
 }
 
 /**
@@ -69,5 +69,5 @@ export function isTimeWithinBusinessHours(dateStr: string, timeStr: string): boo
     }
     const day = getDayOfWeekFromDateString(dateStr);
     const todayIntervals = BUSINESS_HOURS[day] || [];
-    return todayIntervals.some(interval => timeStr >= interval.start && timeStr < interval.end);
+    return todayIntervals.some(interval => timeStr >= interval.start && timeStr <= interval.end);
 }
