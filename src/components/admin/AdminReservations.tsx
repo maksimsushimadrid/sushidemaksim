@@ -141,7 +141,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
     const { data, isLoading } = useQuery({
         queryKey: ['admin-reservations', filter],
         queryFn: () => api.get(`/admin/reservations${filter !== 'all' ? `?status=${filter}` : ''}`),
-        refetchInterval: 30000,
+        refetchInterval: false,
     });
 
     const updateMutation = useMutation({

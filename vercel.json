@@ -94,10 +94,6 @@
         {
             "path": "/api/cron/cleanup-deleted-users",
             "schedule": "0 3 * * *"
-        },
-        {
-            "path": "/api/cron/check-abandoned-carts",
-            "schedule": "0 18 * * *"
         }
     ],
     "images": {

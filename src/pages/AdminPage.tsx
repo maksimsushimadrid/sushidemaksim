@@ -244,7 +244,7 @@ export default function AdminPage() {
         queryKey: ['admin-pending-monitor'],
         queryFn: () => api.get('/admin/orders?status=pending&limit=100'),
         enabled: isAuthenticated && (user?.role === 'admin' || user?.isSuperadmin),
-        refetchInterval: 1000 * 30, // 30 sec fallback (increased from 30 min)
+        refetchInterval: false,
     });
 
     // Pending Reservations Query
@@ -252,7 +252,7 @@ export default function AdminPage() {
         queryKey: ['admin-pending-res-monitor'],
         queryFn: () => api.get('/admin/reservations?status=pending'),
         enabled: isAuthenticated && (user?.role === 'admin' || user?.isSuperadmin),
-        refetchInterval: 1000 * 30, // 30 sec fallback
+        refetchInterval: false,
     });
 
     // Pending Tablon Posts Query
@@ -263,7 +263,7 @@ export default function AdminPage() {
         queryKey: ['tablon', 'suggested-categories'],
         queryFn: () => api.get('/admin/tablon-categories?approved=false'),
         enabled: isAuthenticated && (user?.role === 'admin' || user?.isSuperadmin),
-        refetchInterval: 1000 * 30, // 30 sec fallback
+        refetchInterval: false,
     });
 
     // Initial New Users Count

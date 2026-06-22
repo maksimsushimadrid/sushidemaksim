@@ -364,7 +364,7 @@ export default function AdminOrders({
             }
             return await api.get(url);
         },
-        refetchInterval: 30000, // Automagical polling every 30s
+        refetchInterval: false,
     });
 
     const orders = data?.orders || [];
