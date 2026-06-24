@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import SEO from '../components/SEO';
 import ReservationForm from '../components/reservations/ReservationForm';
 import SafeImage from '../components/common/SafeImage';
@@ -64,7 +65,14 @@ export default function ReservationPage() {
                                 <p className="text-gray-600 font-medium leading-relaxed">
                                     Aceptamos reservas todos los días durante nuestro horario de
                                     apertura. Para grupos de más de 10 personas, por favor
-                                    contáctanos directamente.
+                                    contáctanos{' '}
+                                    <Link
+                                        to="/contacts"
+                                        className="text-orange-600 hover:text-orange-700 underline font-bold transition-colors"
+                                    >
+                                        directamente
+                                    </Link>
+                                    .
                                 </p>
                             </div>
 
