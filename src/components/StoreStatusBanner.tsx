@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, Info, X, Calendar, Timer } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '../utils/api';
 import { useLocation } from 'react-router-dom';
 import { isStoreOpen, getNextOpeningTime, formatTimeLeft } from '../utils/storeStatus';
+import { useSettings } from '../hooks/queries/useSettings';
 
 export default function StoreStatusBanner() {
     const [isVisible, setIsVisible] = useState(true);
@@ -13,12 +12,7 @@ export default function StoreStatusBanner() {
     const location = useLocation();
     const isAdminRoute = location.pathname.startsWith('/admin');
 
-    const { data: settings } = useQuery({
-        queryKey: ['settings'],
-        queryFn: () => api.get('/settings'),
-        refetchOnWindowFocus: true,
-        staleTime: 60000,
-    });
+    const { data: settings } = useSettings();
 
     useEffect(() => {
         const updateCountdown = () => {
@@ -46,8 +40,8 @@ export default function StoreStatusBanner() {
         return () => clearInterval(timer);
     }, []);
 
-    const isStoreClosed = !!settings?.is_store_closed || !!settings?.isStoreClosed;
-    const isTodayClosed = !!settings?.is_today_closed || !!settings?.isTodayClosed;
+    const isStoreClosed = !!settings?.isStoreClosed;
+    const isTodayClosed = !!settings?.isTodayClosed;
     const isPickupOnly = !!settings?.isPickupOnly;
 
     if (isAdminRoute || (!isStoreClosed && !isTodayClosed && !isPickupOnly)) {
@@ -55,12 +49,12 @@ export default function StoreStatusBanner() {
     }
 
     const todayDay = new Date().toLocaleDateString('es-ES', { weekday: 'long' }).toLowerCase();
-    const rawSchedule = settings?.contactSchedule || settings?.contact_schedule;
+    const rawSchedule = settings?.contactSchedule;
     const schedule = Array.isArray(rawSchedule) ? rawSchedule : [];
     const todaySchedule = schedule.find((s: any) => s?.days?.toLowerCase().includes(todayDay));
 
     const statusTitle = isStoreClosed
-        ? settings?.is_store_closed
+        ? settings?.isStoreClosed
             ? 'Restaurante Cerrado'
             : 'Fuera de Horario'
         : isPickupOnly && !isTodayClosed

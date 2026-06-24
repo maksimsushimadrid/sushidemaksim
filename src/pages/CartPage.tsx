@@ -6,6 +6,7 @@ import { useAuth } from '../hooks/useAuth';
 import { api } from '../utils/api';
 import { useToast } from '../context/ToastContext';
 import SEO from '../components/SEO';
+import { useSettings } from '../hooks/queries/useSettings';
 import {
     isStoreOpen,
     isTimeWithinBusinessHours,
@@ -62,7 +63,7 @@ export default function CartPage() {
     const [isOrderingState, setIsOrdering] = useState(false);
     const [orderSuccess, setOrderSuccess] = useState<number | null>(null);
     const [orderWhatsappUrl, setOrderWhatsappUrl] = useState<string | null>(null);
-    const [isLoadingSettings, setIsLoadingSettings] = useState(true);
+    const [isLoadingZones, setIsLoadingZones] = useState(true);
     const [tipAmount, setTipAmount] = useState<number>(0);
     const [coinsSpent, setCoinsSpent] = useState<number>(0);
     const [lastOrderSummary, setLastOrderSummary] = useState<{
@@ -83,7 +84,8 @@ export default function CartPage() {
     const [popularItems, setPopularItems] = useState<MenuItem[]>([]);
     const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
     const [isLoadingPopular, setIsLoadingPopular] = useState(false);
-    const [siteSettings, setSiteSettings] = useState<any>(null);
+    const { data: siteSettings, isLoading: settingsLoading } = useSettings();
+    const isLoadingSettings = settingsLoading || isLoadingZones;
 
     const [isApplyingPromo, setIsApplyingPromo] = useState(false);
 
@@ -222,16 +224,12 @@ export default function CartPage() {
     useEffect(() => {
         const loadInitialData = async () => {
             try {
-                const [settingsData, zonesData] = await Promise.all([
-                    api.get('/settings'),
-                    api.get('/delivery-zones'),
-                ]);
-                setSiteSettings(settingsData);
+                const zonesData = await api.get('/delivery-zones');
                 setDeliveryZones(zonesData.zones || []);
             } catch (err) {
                 console.error('Failed to load initial data', err);
             } finally {
-                setIsLoadingSettings(false);
+                setIsLoadingZones(false);
             }
         };
         loadInitialData();
@@ -856,7 +854,7 @@ export default function CartPage() {
                                             </h3>
                                             <p className="text-[13px] text-orange-800/80 whitespace-pre-line leading-snug">
                                                 {isManualClosed
-                                                    ? siteSettings?.closed_message ||
+                                                    ? siteSettings?.closedMessage ||
                                                       'Nuestra cocina está tomando un breve descanso.'
                                                     : 'Actualmente nuestra cocina está fuera de servicio.'}
                                             </p>

@@ -151,6 +151,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         if (!user) return;
         const sendHeartbeat = async () => {
+            if (document.visibilityState === 'hidden') return;
             try {
                 await api.put('/user/active');
             } catch (e: any) {
@@ -161,8 +162,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
         };
         sendHeartbeat();
-        const interval = setInterval(sendHeartbeat, 180_000); // 3 min
-        return () => clearInterval(interval);
+
+        const handleVisibility = () => {
+            if (document.visibilityState === 'visible') {
+                sendHeartbeat();
+            }
+        };
+        document.addEventListener('visibilitychange', handleVisibility);
+
+        const interval = setInterval(sendHeartbeat, 600_000); // 10 min
+        return () => {
+            clearInterval(interval);
+            document.removeEventListener('visibilitychange', handleVisibility);
+        };
     }, [user, logout]);
 
     const updateProfile = useCallback(

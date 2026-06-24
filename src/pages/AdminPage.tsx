@@ -114,6 +114,7 @@ export default function AdminPage() {
     const hasInteracted = useRef(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const isFirstLoad = useRef(true);
+    const isStopRequested = useRef(false);
 
     // New Users Notification State
     const [newUsersCount, setNewUsersCount] = useState(0);
@@ -161,12 +162,15 @@ export default function AdminPage() {
             const targetAudio = type === 'mesa' ? audioMesaRef.current : audioRef.current;
             if (!targetAudio || !isSoundEnabled) return;
 
+            isStopRequested.current = false;
+
             try {
                 targetAudio.volume = 1.0;
 
                 if (type === 'mesa') {
                     // Triple chirp for mesa orders
                     for (let i = 0; i < 3; i++) {
+                        if (isStopRequested.current) break;
                         targetAudio.currentTime = 0;
                         await targetAudio.play();
                         await new Promise(resolve => setTimeout(resolve, 700));
@@ -189,6 +193,7 @@ export default function AdminPage() {
     );
 
     const stopAlert = useCallback(() => {
+        isStopRequested.current = true;
         if (audioRef.current) {
             audioRef.current.pause();
             audioRef.current.currentTime = 0;
@@ -335,6 +340,22 @@ export default function AdminPage() {
                         );
                     }
 
+                    // If the order is updated and its status changes to a processed status (no longer pending/received/confirmed),
+                    // stop the sound notification immediately.
+                    if (payload.eventType === 'UPDATE') {
+                        const newStatus = newOrder?.status;
+                        const isProcessed =
+                            newStatus &&
+                            newStatus !== 'pending' &&
+                            newStatus !== 'received' &&
+                            newStatus !== 'confirmed' &&
+                            newStatus !== 'waiting_payment';
+
+                        if (isProcessed) {
+                            stopAlert();
+                        }
+                    }
+
                     // Refresh relevant data
                     queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
                     queryClient.invalidateQueries({ queryKey: ['admin-pending-monitor'] });
@@ -413,7 +434,7 @@ export default function AdminPage() {
             supabase.removeChannel(usersChannel);
             supabase.removeChannel(tablonChannel);
         };
-    }, [isAuthenticated, user, isSoundEnabled, queryClient, playAlert, activeTab]);
+    }, [isAuthenticated, user, isSoundEnabled, queryClient, playAlert, stopAlert, activeTab]);
 
     // Screen Wake Lock API to prevent sleep
     useEffect(() => {

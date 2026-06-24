@@ -15,6 +15,11 @@ export interface SiteSettings {
     ratingGoogle: number;
     ratingReviewsCount: number;
     isReservationsTodayClosed: boolean;
+    isStoreClosed: boolean;
+    isTodayClosed: boolean;
+    isPickupOnly: boolean;
+    minOrder: number;
+    deliveryFee: number;
 }
 
 export function useSettings() {
@@ -22,6 +27,8 @@ export function useSettings() {
         queryKey: ['settings'],
         queryFn: async () => {
             const data = await api.get('/settings');
+            const minOrderVal = data.minOrder ?? data.min_order;
+            const deliveryFeeVal = data.deliveryFee ?? data.delivery_fee;
             return {
                 contactPhone: data.contactPhone || '',
                 contactEmail: data.contactEmail || '',
@@ -37,6 +44,23 @@ export function useSettings() {
                 ratingGoogle: data.ratingGoogle || 4.8,
                 ratingReviewsCount: data.ratingReviewsCount || 543,
                 isReservationsTodayClosed: data.isReservationsTodayClosed === 'true',
+                isStoreClosed:
+                    data.isStoreClosed === 'true' ||
+                    data.isStoreClosed === true ||
+                    data.is_store_closed === 'true' ||
+                    data.is_store_closed === true,
+                isTodayClosed:
+                    data.isTodayClosed === 'true' ||
+                    data.isTodayClosed === true ||
+                    data.is_today_closed === 'true' ||
+                    data.is_today_closed === true,
+                isPickupOnly:
+                    data.isPickupOnly === 'true' ||
+                    data.isPickupOnly === true ||
+                    data.is_pickup_only === 'true' ||
+                    data.is_pickup_only === true,
+                minOrder: minOrderVal !== undefined ? Number(minOrderVal) : 15,
+                deliveryFee: deliveryFeeVal !== undefined ? Number(deliveryFeeVal) : 3.5,
             };
         },
         staleTime: 1000 * 60 * 60, // 1 hour

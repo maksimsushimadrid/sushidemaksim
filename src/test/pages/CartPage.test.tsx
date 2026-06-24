@@ -3,6 +3,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import CartPage from '../../pages/CartPage';
 import { useAuth } from '../../hooks/useAuth';
 import { useCart } from '../../hooks/useCart';
+import { useSettings } from '../../hooks/queries/useSettings';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -13,6 +14,10 @@ vi.mock('../../hooks/useAuth', () => ({
 
 vi.mock('../../hooks/useCart', () => ({
     useCart: vi.fn(),
+}));
+
+vi.mock('../../hooks/queries/useSettings', () => ({
+    useSettings: vi.fn(),
 }));
 
 // Mock storeStatus
@@ -85,6 +90,19 @@ describe('CartPage (Mocked Hooks)', () => {
             deliveryDetails: mockDeliveryDetails,
             updateDeliveryDetails: vi.fn(),
         } as any);
+
+        vi.mocked(useSettings).mockReturnValue({
+            data: {
+                isStoreClosed: false,
+                isTodayClosed: false,
+                isPickupOnly: false,
+                minOrder: 15,
+                deliveryFee: 3.5,
+                closedMessage: '',
+                contactSchedule: [],
+            } as any,
+            isLoading: false,
+        } as any);
     });
 
     const renderPage = () => {
@@ -146,14 +164,19 @@ describe('CartPage (Mocked Hooks)', () => {
             updateDeliveryDetails: updateMock,
         } as any);
 
-        // Mock settings API to return isTodayClosed: true
-        const { api } = await import('../../utils/api');
-        vi.mocked(api.get).mockImplementation(url => {
-            if (url === '/settings') {
-                return Promise.resolve({ isTodayClosed: true });
-            }
-            return Promise.resolve({ items: [] });
-        });
+        // Mock useSettings to return isTodayClosed: true
+        vi.mocked(useSettings).mockReturnValue({
+            data: {
+                isStoreClosed: false,
+                isTodayClosed: true,
+                isPickupOnly: false,
+                minOrder: 15,
+                deliveryFee: 3.5,
+                closedMessage: '',
+                contactSchedule: [],
+            } as any,
+            isLoading: false,
+        } as any);
 
         renderPage();
 

@@ -27,6 +27,8 @@ export default defineConfig({
                 'pwa-192.png',
                 'pwa-512.png',
                 'maskable-icon.png',
+                'sounds/Negrocan-Cada_Vez.mp3',
+                'sounds/mesa-new.mp3',
             ],
             manifest: {
                 name: 'Sushi de Maksim',
@@ -58,8 +60,8 @@ export default defineConfig({
             },
             workbox: {
                 importScripts: ['/notifications-sw.js'],
-                maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5 MB
-                globPatterns: ['**/*.{js,css,html,ico,svg,webp}'],
+                maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // 6 MB to fit 5.1MB sound file
+                globPatterns: ['**/*.{js,css,html,ico,svg,webp,mp3}'],
                 runtimeCaching: [
                     {
                         urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
