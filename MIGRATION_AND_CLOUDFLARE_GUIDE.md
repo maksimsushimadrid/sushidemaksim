@@ -9,20 +9,22 @@
 Если у вас установлен **Supabase CLI** или **Postgres (pg_dump)**, вы можете легко экспортировать схему и данные из терминала.
 
 ### Вариант А: Использование pg_dump (Рекомендуется)
+
 1. **Экспортируйте схему базы данных** (только структуру публичной схемы, без лишних системных таблиц):
-   ```bash
-   pg_dump -h db.dvsmzciknlfevgxpnefr.supabase.co -U postgres -d postgres --schema-only -N auth -N storage -F p -f sushidemaksim_schema.sql
-   ```
+    ```bash
+    pg_dump -h db.dvsmzciknlfevgxpnefr.supabase.co -U postgres -d postgres --schema-only -N auth -N storage -F p -f sushidemaksim_schema.sql
+    ```
 2. **Экспортируйте данные**:
-   ```bash
-   pg_dump -h db.dvsmzciknlfevgxpnefr.supabase.co -U postgres -d postgres --data-only -N auth -N storage -F p -f sushidemaksim_data.sql
-   ```
+    ```bash
+    pg_dump -h db.dvsmzciknlfevgxpnefr.supabase.co -U postgres -d postgres --data-only -N auth -N storage -F p -f sushidemaksim_data.sql
+    ```
 3. **Импортируйте в новую базу данных** (через консоль или GUI вроде pgAdmin/DBeaver):
    Примените сначала `sushidemaksim_schema.sql`, затем `sushidemaksim_data.sql` к вашей новой базе данных Supabase.
 
 ---
 
 ### Вариант B: Ручной перенос через SQL Editor
+
 Если терминала под рукой нет, вы можете получить схему таблиц из консоли Supabase. Но так как в Supabase также настроены права доступа (Row Level Security и Grants), после создания таблиц на новом проекте **обязательно выполните этот SQL-скрипт** в **SQL Editor** нового Supabase:
 
 ```sql
@@ -48,60 +50,67 @@ GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO service_role;
 1. Создайте проект в новом аккаунте Vercel и подключите ваш репозиторий GitHub.
 2. В процессе настройки добавьте следующие **Environment Variables** (Переменные окружения):
 
-| Имя переменной | Откуда взять значение / Пример |
-| :--- | :--- |
-| `VITE_SUPABASE_URL` | Новый Supabase -> Settings -> API -> Project URL |
-| `SUPABASE_URL` | То же, что и `VITE_SUPABASE_URL` |
-| `VITE_SUPABASE_ANON_KEY` | Новый Supabase -> Settings -> API -> `anon` public key |
-| `SUPABASE_KEY` | Новый Supabase -> Settings -> API -> `service_role` secret key |
-| `VITE_FRONTEND_URL` | `https://www.sushidemaksim.com` |
-| `FRONTEND_URL` | `https://www.sushidemaksim.com` |
-| `VITE_SITE_URL` | `https://www.sushidemaksim.com` |
-| `JWT_SECRET` | Случайная длинная строка (например, 32+ символа) |
-| `SMTP_HOST` | `smtp.gmail.com` |
-| `SMTP_PORT` | `587` |
-| `SMTP_USER` | Ваша почта Gmail (например, `19fire43@gmail.com`) |
-| `SMTP_PASS` | Пароль приложения Gmail (App Password, 16 символов) |
-| `SMTP_FROM_NAME` | `Sushi de Maksim` |
-| `RESEND_API_KEY` | API-ключ вашего аккаунта Resend (если используется) |
-| `ADMIN_EMAIL` | `19fire43@gmail.com,maksimsushimadrid@gmail.com` |
-| `VITE_GOOGLE_CLIENT_ID`| ID клиента Google OAuth (полученный в Google Cloud Console) |
-| `RECAPTCHA_SECRET_KEY` | Секретный ключ Google reCAPTCHA v2 / v3 |
+| Имя переменной           | Откуда взять значение / Пример                                 |
+| :----------------------- | :------------------------------------------------------------- |
+| `VITE_SUPABASE_URL`      | Новый Supabase -> Settings -> API -> Project URL               |
+| `SUPABASE_URL`           | То же, что и `VITE_SUPABASE_URL`                               |
+| `VITE_SUPABASE_ANON_KEY` | Новый Supabase -> Settings -> API -> `anon` public key         |
+| `SUPABASE_KEY`           | Новый Supabase -> Settings -> API -> `service_role` secret key |
+| `VITE_FRONTEND_URL`      | `https://www.sushidemaksim.com`                                |
+| `FRONTEND_URL`           | `https://www.sushidemaksim.com`                                |
+| `VITE_SITE_URL`          | `https://www.sushidemaksim.com`                                |
+| `JWT_SECRET`             | Случайная длинная строка (например, 32+ символа)               |
+| `SMTP_HOST`              | `smtp.gmail.com`                                               |
+| `SMTP_PORT`              | `587`                                                          |
+| `SMTP_USER`              | Ваша почта Gmail (например, `19fire43@gmail.com`)              |
+| `SMTP_PASS`              | Пароль приложения Gmail (App Password, 16 символов)            |
+| `SMTP_FROM_NAME`         | `Sushi de Maksim`                                              |
+| `RESEND_API_KEY`         | API-ключ вашего аккаунта Resend (если используется)            |
+| `ADMIN_EMAIL`            | `19fire43@gmail.com,maksimsushimadrid@gmail.com`               |
+| `VITE_GOOGLE_CLIENT_ID`  | ID клиента Google OAuth (полученный в Google Cloud Console)    |
+| `RECAPTCHA_SECRET_KEY`   | Секретный ключ Google reCAPTCHA v2 / v3                        |
 
 ---
 
 ## Шаг 3. Делегирование DNS и настройка Cloudflare
 
 ### 1. Подключение домена
+
 1. Зарегистрируйтесь на [Cloudflare](https://www.cloudflare.com/) и добавьте ваш домен `sushidemaksim.com`.
 2. Скопируйте предоставленные Cloudflare NS-серверы (например, `xxx.ns.cloudflare.com`).
 3. Зайдите в панель регистратора вашего домена и обновите DNS-серверы (NS-записи), заменив старые на новые серверы Cloudflare.
 
 ### 2. Настройка SSL/TLS (Важнейший шаг)
-* В панели Cloudflare перейдите в раздел **SSL/TLS** -> **Overview**.
-* Измените режим шифрования на **Full** или **Full (strict)**.
-* *Если оставить режим Flexible, сайт уйдет в циклическую переадресацию (Error 310).*
+
+- В панели Cloudflare перейдите в раздел **SSL/TLS** -> **Overview**.
+- Измените режим шифрования на **Full** или **Full (strict)**.
+- _Если оставить режим Flexible, сайт уйдет в циклическую переадресацию (Error 310)._
 
 ### 3. DNS-записи в Cloudflare для Vercel
+
 В разделе **DNS** -> **Records** добавьте две записи:
+
 1. **Тип**: `A`, **Имя**: `@` (или `sushidemaksim.com`), **Target**: `76.76.21.21`, **Proxy status**: `Proxied` (Оранжевое облако).
 2. **Тип**: `CNAME`, **Имя**: `www`, **Target**: `cname.vercel-dns.com`, **Proxy status**: `Proxied` (Оранжевое облако).
 
 ### 4. Создание правил Cache Rules
+
 Для сниженияEdge-запросов к Vercel перейдите в **Caching** -> **Cache Rules** и добавьте два правила:
 
 #### Правило №1: Кэширование статических ресурсов
-* **Имя**: `Cache Static Assets`
-* **Условие (If...)**:
-  * Поле: `URI Path` -> Оператор: `starts with` -> Значение: `/assets/`
-  * *ИЛИ* Поле: `URI Path` -> Оператор: `starts with` -> Значение: `/sounds/`
-* **Действие (Then...)**:
-  * Cache eligibility: **Eligible for cache**
-  * Edge Cache TTL: **Respect origin headers** или **Override to 1 month**
+
+- **Имя**: `Cache Static Assets`
+- **Условие (If...)**:
+    - Поле: `URI Path` -> Оператор: `starts with` -> Значение: `/assets/`
+    - _ИЛИ_ Поле: `URI Path` -> Оператор: `starts with` -> Значение: `/sounds/`
+- **Действие (Then...)**:
+    - Cache eligibility: **Eligible for cache**
+    - Edge Cache TTL: **Respect origin headers** или **Override to 1 month**
 
 #### Правило №2: Обход кэша для API (Динамические данные)
-* **Имя**: `Bypass API Cache`
-* **Условие (If...)**:
-  * Поле: `URI Path` -> Оператор: `starts with` -> Значение: `/api/`
-* **Действие (Then...)**:
-  * Cache eligibility: **Bypass cache** (это гарантирует актуальность заказов и статусов).
+
+- **Имя**: `Bypass API Cache`
+- **Условие (If...)**:
+    - Поле: `URI Path` -> Оператор: `starts with` -> Значение: `/api/`
+- **Действие (Then...)**:
+    - Cache eligibility: **Bypass cache** (это гарантирует актуальность заказов и статусов).
