@@ -114,3 +114,21 @@ GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO service_role;
     - Поле: `URI Path` -> Оператор: `starts with` -> Значение: `/api/`
 - **Действие (Then...)**:
     - Cache eligibility: **Bypass cache** (это гарантирует актуальность заказов и статусов).
+
+---
+
+## Шаг 4. Настройка секретов в GitHub (для CI/CD)
+
+Если у вас настроены автоматические тесты (GitHub Actions), запуск Playwright тестов (E2E) завершится ошибкой, пока вы не добавите секреты в ваш новый репозиторий GitHub.
+
+1. Перейдите в ваш репозиторий на GitHub: `https://github.com/maksimsushimadrid/sushidemaksim`.
+2. Зайдите в **Settings** (Настройки репозитория) -> **Secrets and variables** -> **Actions**.
+3. Нажмите **New repository secret** и добавьте следующие переменные:
+
+| Имя секрета    | Описание / Где взять значение                                  |
+| :------------- | :------------------------------------------------------------- |
+| `SUPABASE_URL` | Адрес нового Supabase (Settings -> API -> Project URL)         |
+| `SUPABASE_KEY` | Секретный ключ `service_role` (Settings -> API -> `service_role` key) |
+| `JWT_SECRET`   | Тот же `JWT_SECRET`, который вы указали в Vercel                 |
+
+4. После добавления секретов перейдите во вкладку **Actions**, откройте последний упавший запуск и нажмите **Re-run all jobs** (или отправьте новый коммит). Тесты пройдут успешно.
