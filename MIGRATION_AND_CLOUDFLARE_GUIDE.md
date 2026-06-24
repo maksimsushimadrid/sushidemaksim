@@ -125,10 +125,10 @@ GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO service_role;
 2. Зайдите в **Settings** (Настройки репозитория) -> **Secrets and variables** -> **Actions**.
 3. Нажмите **New repository secret** и добавьте следующие переменные:
 
-| Имя секрета    | Описание / Где взять значение                                  |
-| :------------- | :------------------------------------------------------------- |
-| `SUPABASE_URL` | Адрес нового Supabase (Settings -> API -> Project URL)         |
+| Имя секрета    | Описание / Где взять значение                                         |
+| :------------- | :-------------------------------------------------------------------- |
+| `SUPABASE_URL` | Адрес нового Supabase (Settings -> API -> Project URL)                |
 | `SUPABASE_KEY` | Секретный ключ `service_role` (Settings -> API -> `service_role` key) |
-| `JWT_SECRET`   | Тот же `JWT_SECRET`, который вы указали в Vercel                 |
+| `JWT_SECRET`   | Тот же `JWT_SECRET`, который вы указали в Vercel                      |
 
 4. После добавления секретов перейдите во вкладку **Actions**, откройте последний упавший запуск и нажмите **Re-run all jobs** (или отправьте новый коммит). Тесты пройдут успешно.
