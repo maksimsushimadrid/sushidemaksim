@@ -47,39 +47,39 @@ export default function HomePage() {
         // Hardcoded mapping for homepage to ensure premium look if DB fallback fails
         const TOP_CATEGORY_FALLBACKS: Record<string, string> = {
             postre: getOptimizedImageUrl(
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1772834659669-446.webp',
+                'https://lmuytpvktanykcubpodh.supabase.co/storage/v1/object/public/images/menu/1772834659669-446.webp',
                 640
             ),
             'rollos-clasicos': getOptimizedImageUrl(
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773679824487-765.webp',
+                'https://lmuytpvktanykcubpodh.supabase.co/storage/v1/object/public/images/menu/1773679824487-765.webp',
                 640
             ),
             entrantes: getOptimizedImageUrl(
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773469716444-139.webp',
+                'https://lmuytpvktanykcubpodh.supabase.co/storage/v1/object/public/images/menu/1773469716444-139.webp',
                 640
             ),
             'rollos-grandes': getOptimizedImageUrl(
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773691339304-197.webp',
+                'https://lmuytpvktanykcubpodh.supabase.co/storage/v1/object/public/images/menu/1773691339304-197.webp',
                 640
             ),
             'rollos-fritos': getOptimizedImageUrl(
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682008412-27.webp',
+                'https://lmuytpvktanykcubpodh.supabase.co/storage/v1/object/public/images/menu/1773682008412-27.webp',
                 640
             ),
             'rollos-fritos-horneados': getOptimizedImageUrl(
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773682008412-27.webp',
+                'https://lmuytpvktanykcubpodh.supabase.co/storage/v1/object/public/images/menu/1773682008412-27.webp',
                 640
             ),
             menus: getOptimizedImageUrl(
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773689515418-937.webp',
+                'https://lmuytpvktanykcubpodh.supabase.co/storage/v1/object/public/images/menu/1773689515418-937.webp',
                 640
             ),
             extras: getOptimizedImageUrl(
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773690670774-801.webp',
+                'https://lmuytpvktanykcubpodh.supabase.co/storage/v1/object/public/images/menu/1773690670774-801.webp',
                 640
             ),
             sopas: getOptimizedImageUrl(
-                'https://dvsmzciknlfevgxpnefr.supabase.co/storage/v1/object/public/images/menu/1773688556688-515.webp',
+                'https://lmuytpvktanykcubpodh.supabase.co/storage/v1/object/public/images/menu/1773688556688-515.webp',
                 640
             ),
         };
