@@ -62,7 +62,7 @@ export default function CartSummary({
 
     const { items, deliveryDetails: contextDeliveryDetails } = useCart();
     const details = propDeliveryDetails || contextDeliveryDetails;
-    const { deliveryType, address, house, selectedZone, paymentMethod } = details;
+    const { deliveryType, address, house, selectedZone } = details;
     const isMinOrderMet = total >= minOrder;
     const finalTotal =
         total - (promoDiscount ? (total * promoDiscount) / 100 : 0) + deliveryCost + tipAmount;
@@ -71,11 +71,8 @@ export default function CartSummary({
     const hasHouse = !!house;
     const hasZone = !!selectedZone;
     const isZoneInvalid = deliveryType === 'delivery' && hasAddress && !hasZone;
-
     const isAddressMissing = deliveryType === 'delivery' && (!hasAddress || !hasHouse || !hasZone);
-    const isPaymentMissing = !paymentMethod;
-    const isDisabled =
-        isOrdering || items.length === 0 || !isMinOrderMet || isAddressMissing || isPaymentMissing;
+    const isDisabled = isOrdering || items.length === 0 || !isMinOrderMet || isAddressMissing;
 
     return (
         <div
@@ -423,26 +420,21 @@ export default function CartSummary({
                 Volver a la Carta
             </button>
 
-            {(deliveryType === 'delivery' || !paymentMethod) && !isOrdering && items.length > 0 && (
+            {deliveryType === 'delivery' && !isOrdering && items.length > 0 && (
                 <div className="mt-4 px-2 space-y-1.5 text-center">
-                    {deliveryType === 'delivery' && !hasAddress && (
+                    {!hasAddress && (
                         <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest animate-pulse">
                             📍 Selecciona una dirección de entrega
                         </p>
                     )}
-                    {deliveryType === 'delivery' && hasAddress && !hasHouse && (
+                    {hasAddress && !hasHouse && (
                         <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest animate-bounce">
                             🏠 Indica el número o portal
                         </p>
                     )}
-                    {deliveryType === 'delivery' && hasAddress && hasHouse && !hasZone && (
+                    {hasAddress && hasHouse && !hasZone && (
                         <p className="text-[10px] text-red-500 font-black uppercase tracking-widest">
                             ❌ Lo sentimos, no entregamos en esta zona
-                        </p>
-                    )}
-                    {!paymentMethod && (
-                        <p className="text-[10px] text-orange-500 font-black uppercase tracking-widest animate-pulse">
-                            💳 Selecciona un método de pago
                         </p>
                     )}
                 </div>

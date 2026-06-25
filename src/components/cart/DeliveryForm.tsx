@@ -554,7 +554,10 @@ export default function DeliveryForm({
                         type="button"
                         onClick={() => {
                             triggerHaptic();
-                            setValue('paymentMethod', 'card');
+                            setValue(
+                                'paymentMethod',
+                                watch('paymentMethod') === 'card' ? null : 'card'
+                            );
                         }}
                         data-testid="payment-method-card"
                         className={`group flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
@@ -574,7 +577,10 @@ export default function DeliveryForm({
                         type="button"
                         onClick={() => {
                             triggerHaptic();
-                            setValue('paymentMethod', 'cash');
+                            setValue(
+                                'paymentMethod',
+                                watch('paymentMethod') === 'cash' ? null : 'cash'
+                            );
                         }}
                         data-testid="payment-method-cash"
                         className={`group flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-300 cursor-pointer ${

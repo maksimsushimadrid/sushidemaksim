@@ -34,12 +34,7 @@ export const checkoutSchema = z
         guestEmail: z.string().email('Email inválido').optional().or(z.literal('')),
 
         // Logistic preferences
-        paymentMethod: z
-            .enum(['cash', 'card'])
-            .nullable()
-            .refine(val => val !== null, {
-                message: 'Selecciona un método de pago',
-            }),
+        paymentMethod: z.enum(['cash', 'card']).nullable().optional(),
         guestsCount: z.number().min(1).max(50),
         chopsticksCount: z.number().min(1, 'El número de personas debe ser al menos 1').max(50),
 

@@ -644,7 +644,7 @@ export default function CartPage() {
                 notesArray.push(`[PERSONAS: ${Number(guestsCount) || 2}]`);
             }
             notesArray.push(
-                `[MÉTODO DE PAGO: ${paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO'}]`
+                `[MÉTODO DE PAGO: ${paymentMethod ? (paymentMethod === 'card' ? 'TARJETA' : 'EFECTIVO') : 'SIN ESPECIFICAR'}]`
             );
             if (isStoreClosed) notesArray.push('[PRE-ORDEN: Restaurante cerrado]');
             if (isScheduled && scheduledDate && scheduledTime) {
