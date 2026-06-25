@@ -89,10 +89,10 @@ describe('CartItemList', () => {
         const plusItem = buttons[2];
 
         fireEvent.click(plusItem);
-        expect(defaultProps.updateQuantity).toHaveBeenCalledWith('1', 2);
+        expect(defaultProps.updateQuantity).toHaveBeenCalledWith('1', 2, undefined, undefined);
 
         fireEvent.click(minusItem);
-        expect(defaultProps.removeItem).toHaveBeenCalledWith('1');
+        expect(defaultProps.removeItem).toHaveBeenCalledWith('1', undefined);
     });
 
     it('calls updateQuantity when item quantity > 1', () => {
@@ -102,14 +102,14 @@ describe('CartItemList', () => {
         const minusItem = buttons[1];
 
         fireEvent.click(minusItem);
-        expect(defaultProps.updateQuantity).toHaveBeenCalledWith('1', 4);
+        expect(defaultProps.updateQuantity).toHaveBeenCalledWith('1', 4, undefined, undefined);
     });
 
     it('calls removeItem when clicking the X button', () => {
         render(<CartItemList {...defaultProps} />);
         const removeButton = screen.getByLabelText(/Eliminar/i);
         fireEvent.click(removeButton);
-        expect(defaultProps.removeItem).toHaveBeenCalledWith('1');
+        expect(defaultProps.removeItem).toHaveBeenCalledWith('1', undefined);
     });
 
     it('handles image load error', () => {
