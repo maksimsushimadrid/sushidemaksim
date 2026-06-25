@@ -158,9 +158,11 @@ export default function CartItemList({
                                     <button
                                         onClick={() => {
                                             triggerHaptic();
-                                            item.quantity > 1
-                                                ? updateQuantity(item.id, item.quantity - 1)
-                                                : removeItem(item.id);
+                                            if (item.quantity > 1) {
+                                                updateQuantity(item.id, item.quantity - 1);
+                                            } else {
+                                                removeItem(item.id);
+                                            }
                                         }}
                                         className="w-11 h-11 md:w-8 md:h-8 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30 disabled:cursor-not-allowed"
                                         disabled={item.isGift}
