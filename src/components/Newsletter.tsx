@@ -25,7 +25,7 @@ export default function Newsletter() {
     };
 
     return (
-        <section className="py-8 md:py-16 px-2 md:px-6">
+        <section className="pt-8 pb-4 md:py-16 px-2 md:px-6">
             <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 whileInView={{ opacity: 1, scale: 1 }}
