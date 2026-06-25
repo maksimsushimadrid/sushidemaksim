@@ -24,9 +24,10 @@ export function useCartQuery(user: any, isAuthLoading: boolean = false) {
                         return { items: [], total: 0 };
                     }
 
-                    const formattedItems = items.map((item: any) => ({
+                    const formattedItems = items.map((item: any, index: number) => ({
                         ...item,
                         selectedOption: item.selectedOption || '',
+                        cartItemId: item.cartItemId || 1000000 + index,
                     }));
 
                     const total = formattedItems.reduce(
@@ -97,7 +98,17 @@ export function useAddToCartMutation(user: any) {
                         quantity: newItems[existingIndex].quantity + quantity,
                     };
                 } else {
-                    newItems = [...items, { ...item, quantity, selectedOption, isGift, giftLabel }];
+                    newItems = [
+                        ...items,
+                        {
+                            ...item,
+                            quantity,
+                            selectedOption,
+                            isGift,
+                            giftLabel,
+                            cartItemId: Date.now() + Math.floor(Math.random() * 1000),
+                        },
+                    ];
                 }
 
                 localStorage.setItem(
@@ -193,15 +204,12 @@ export function useUpdateQuantityMutation(user: any) {
                 const localCart = localStorage.getItem('guest_cart');
                 const parsed = localCart ? JSON.parse(localCart) : null;
                 const items = (Array.isArray(parsed) ? parsed : parsed?.items) || [];
-                // For updates, we need both id and existing selectedOption to find the right item
-                // However, since we don't pass 'previousOption', we assume the ID is unique for the update call
-                // OR we just use the index if it was passed.
-                // For simplicity, we assume 'id' here is unique in the list being updated.
-                const newItems = items.map((i: any) =>
-                    i.id === id
+                const newItems = items.map((i: any) => {
+                    const match = cartItemId ? i.cartItemId === cartItemId : i.id === id;
+                    return match
                         ? { ...i, quantity, selectedOption: selectedOption ?? i.selectedOption }
-                        : i
-                );
+                        : i;
+                });
 
                 localStorage.setItem(
                     'guest_cart',
@@ -221,18 +229,21 @@ export function useUpdateQuantityMutation(user: any) {
             }
             return api.put(`/cart/${cartItemId}`, { quantity, selectedOption });
         },
-        onMutate: async ({ id, quantity, selectedOption }) => {
+        onMutate: async ({ id, quantity, selectedOption, cartItemId }) => {
             await queryClient.cancelQueries({ queryKey });
             const previousCart = queryClient.getQueryData<{ items: CartItem[]; total: number }>(
                 queryKey
             );
 
             if (previousCart) {
-                const updatedItems = previousCart.items.map(i =>
-                    i.id === id
+                const updatedItems = previousCart.items.map(i => {
+                    const match = cartItemId
+                        ? i.cartItemId === cartItemId
+                        : i.id === id && (i.selectedOption || '') === (selectedOption || '');
+                    return match
                         ? { ...i, quantity, selectedOption: selectedOption ?? i.selectedOption }
-                        : i
-                );
+                        : i;
+                });
                 const updatedTotal = updatedItems.reduce(
                     (sum, i) => sum + (i.isGift ? 0 : i.price * i.quantity),
                     0
@@ -263,7 +274,9 @@ export function useRemoveItemMutation(user: any) {
                 const localCart = localStorage.getItem('guest_cart');
                 const parsed = localCart ? JSON.parse(localCart) : null;
                 const items = (Array.isArray(parsed) ? parsed : parsed?.items) || [];
-                const newItems = items.filter((i: any) => i.id !== id);
+                const newItems = items.filter((i: any) =>
+                    cartItemId ? i.cartItemId !== cartItemId : i.id !== id
+                );
 
                 localStorage.setItem(
                     'guest_cart',
@@ -283,14 +296,16 @@ export function useRemoveItemMutation(user: any) {
             }
             return api.delete(`/cart/${cartItemId}`);
         },
-        onMutate: async ({ id }) => {
+        onMutate: async ({ id, cartItemId }) => {
             await queryClient.cancelQueries({ queryKey });
             const previousCart = queryClient.getQueryData<{ items: CartItem[]; total: number }>(
                 queryKey
             );
 
             if (previousCart) {
-                const updatedItems = previousCart.items.filter(i => i.id !== id);
+                const updatedItems = previousCart.items.filter(i =>
+                    cartItemId ? i.cartItemId !== cartItemId : i.id !== id
+                );
                 const updatedTotal = updatedItems.reduce(
                     (sum, i) => sum + (i.isGift ? 0 : i.price * i.quantity),
                     0

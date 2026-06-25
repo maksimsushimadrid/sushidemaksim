@@ -66,7 +66,7 @@ export default function CartItemList({
             <div className="flex flex-col">
                 {items.map(item => (
                     <div
-                        key={item.id}
+                        key={item.cartItemId || `${item.id}-${item.selectedOption || 'default'}`}
                         className="relative flex items-center gap-3 px-3 py-3 bg-white border-b border-gray-50 last:border-none animate-in slide-in-from-left duration-300"
                     >
                         <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-gray-50 flex items-center justify-center border border-gray-100 relative group/img">
@@ -159,9 +159,14 @@ export default function CartItemList({
                                         onClick={() => {
                                             triggerHaptic();
                                             if (item.quantity > 1) {
-                                                updateQuantity(item.id, item.quantity - 1);
+                                                updateQuantity(
+                                                    item.id,
+                                                    item.quantity - 1,
+                                                    item.cartItemId,
+                                                    item.selectedOption
+                                                );
                                             } else {
-                                                removeItem(item.id);
+                                                removeItem(item.id, item.cartItemId);
                                             }
                                         }}
                                         className="w-11 h-11 md:w-8 md:h-8 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30 disabled:cursor-not-allowed"
@@ -175,7 +180,12 @@ export default function CartItemList({
                                     <button
                                         onClick={() => {
                                             triggerHaptic();
-                                            updateQuantity(item.id, item.quantity + 1);
+                                            updateQuantity(
+                                                item.id,
+                                                item.quantity + 1,
+                                                item.cartItemId,
+                                                item.selectedOption
+                                            );
                                         }}
                                         className="w-11 h-11 md:w-8 md:h-8 rounded-md bg-white border-none shadow-sm cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30 disabled:cursor-not-allowed"
                                         disabled={item.isGift}
@@ -216,7 +226,7 @@ export default function CartItemList({
                         <button
                             onClick={() => {
                                 triggerHaptic(40); // HEAVY
-                                removeItem(item.id);
+                                removeItem(item.id, item.cartItemId);
                             }}
                             className="absolute top-1.5 right-1.5 text-gray-300 hover:text-orange-500 cursor-pointer w-10 h-10 transition-colors flex items-center justify-center border-none bg-transparent z-10"
                             aria-label="Eliminar"
