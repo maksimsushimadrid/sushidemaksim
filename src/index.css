@@ -12,9 +12,7 @@ html {
 }
 
 html.is-table-route,
-html.is-table-route body,
-html.is-tablon-route,
-html.is-tablon-route body {
+html.is-tablon-route {
     background-color: #0d0d0d !important;
 }
 
@@ -54,11 +52,34 @@ html.lenis body {
 @layer base {
     body {
         @apply antialiased text-gray-900;
-        background-color: #fbf7f0;
+        background-color: transparent;
         overflow-x: clip;
         font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
         min-height: 100%;
         overscroll-behavior-y: none;
+        position: relative;
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('/sushi-pattern.png');
+        background-repeat: repeat;
+        background-size: 320px 320px;
+        opacity: 0.055; /* Повышенная непрозрачность для лучшей видимости */
+        pointer-events: none;
+        z-index: -1;
+        transition: opacity 0.5s ease, filter 0.5s ease;
+    }
+
+    html.is-table-route body::before,
+    html.is-tablon-route body::before {
+        filter: invert(1);
+        opacity: 0.035; /* Повышенная непрозрачность на темном фоне */
     }
 }
 

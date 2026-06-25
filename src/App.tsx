@@ -141,7 +141,6 @@ function App() {
     const isAdminRoute = location.pathname.startsWith('/admin');
     const isWaiterRoute = location.pathname.startsWith('/waiter');
     const isTableRoute = location.pathname === '/table';
-    const isTablonRoute = location.pathname.startsWith('/tablon');
 
     useEffect(() => {
         // Disable automatic scroll restoration on mount
@@ -189,11 +188,7 @@ function App() {
                         <CartProvider>
                             <Schema />
                             <PageTracker />
-                            <div
-                                className={`min-h-[100svh] flex flex-col transition-colors duration-500 overflow-x-clip ${
-                                    isTableRoute || isTablonRoute ? 'bg-[#0d0d0d]' : 'bg-[#FBF7F0]'
-                                }`}
-                            >
+                            <div className="min-h-[100svh] flex flex-col transition-colors duration-500 overflow-x-clip bg-transparent">
                                 <Analytics />
                                 <SpeedInsights sampleRate={0.02} />
                                 <SmoothScroll />
