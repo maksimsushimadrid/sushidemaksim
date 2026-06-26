@@ -190,7 +190,7 @@ function App() {
                             <PageTracker />
                             <div className="min-h-[100svh] flex flex-col transition-colors duration-500 overflow-x-clip bg-transparent">
                                 <Analytics />
-                                <SpeedInsights sampleRate={0.02} />
+                                <SpeedInsights />
                                 <SmoothScroll />
                                 {!isAdminRoute && !isWaiterRoute && !isTableRoute && (
                                     <CookieConsent />
