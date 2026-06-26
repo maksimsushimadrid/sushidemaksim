@@ -50,11 +50,12 @@ export default function ReloadPrompt() {
                 // If version on server is different from bundled version
                 if (data.version && data.version !== __APP_VERSION__) {
                     console.log(`[PWA] New version detected on server: ${data.version}`);
-                    if (registrationRef.current) {
+                    const registration = registrationRef.current || (
+                        'serviceWorker' in navigator ? await navigator.serviceWorker.getRegistration() : null
+                    );
+                    if (registration) {
                         console.log('[PWA] Triggering service worker update check...');
-                        await registrationRef.current.update();
-                    } else {
-                        setNeedRefresh(true);
+                        await registration.update();
                     }
                 }
             } catch (e) {
@@ -73,7 +74,7 @@ export default function ReloadPrompt() {
             window.removeEventListener('focus', checkVersion);
             clearInterval(interval);
         };
-    }, [setNeedRefresh]);
+    }, []);
 
     return (
         <AnimatePresence>
@@ -104,13 +105,8 @@ export default function ReloadPrompt() {
                             {needRefresh && (
                                 <button
                                     onClick={() => {
-                                        // 1. Trigger service worker update
+                                        // Trigger service worker update which skips waiting and automatically reloads the page
                                         updateServiceWorker(true);
-                                        // 2. Force hard reload as fallback to ensure the new version is loaded
-                                        // especially if the update was detected manually via version.json
-                                        setTimeout(() => {
-                                            window.location.reload();
-                                        }, 500);
                                     }}
                                     className="px-3 py-1.5 bg-orange-600 text-white text-[10px] font-black uppercase tracking-widest rounded-lg hover:bg-orange-700 transition-colors active:scale-95 shadow-lg shadow-orange-600/20"
                                 >
