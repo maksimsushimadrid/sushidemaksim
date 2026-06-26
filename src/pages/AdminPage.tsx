@@ -705,14 +705,14 @@ export default function AdminPage() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] md:hidden"
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1005] md:hidden"
                         />
                     )}
                 </AnimatePresence>
 
                 {/* Sidebar */}
                 <aside
-                    className={`fixed top-0 bottom-0 left-0 w-[280px] md:w-60 bg-white/95 backdrop-blur-xl border-r border-gray-200 flex flex-col z-[101] transition-transform duration-300 shadow-2xl
+                    className={`fixed top-0 bottom-0 left-0 w-[280px] md:w-60 bg-white/95 backdrop-blur-xl border-r border-gray-200 flex flex-col z-[1006] transition-transform duration-300 shadow-2xl
                     ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
                 >
                     <div className="p-4 border-b border-gray-100">
