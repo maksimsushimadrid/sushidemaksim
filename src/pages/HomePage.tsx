@@ -178,7 +178,7 @@ export default function HomePage() {
     return (
         <div className="overflow-hidden">
             <Helmet>
-                <link rel="preload" href="/hero-poster.jpg" as="image" fetchpriority="high" />
+                <link rel="preload" href="/hero-poster.jpg" as="image" fetchPriority="high" />
             </Helmet>
             <SEO
                 title="Sushi a domicilio en Madrid — Sushi de Maksim | Calidad Premium"
