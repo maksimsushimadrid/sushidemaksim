@@ -881,34 +881,36 @@ export default function AdminPage() {
                         {/* Audio Blocked Warning */}
                         <AnimatePresence>
                             {audioBlocked && isSoundEnabled && (
-                                <motion.div
-                                    initial={{ y: -100, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    exit={{ y: -100, opacity: 0 }}
-                                    className="fixed top-20 left-1/2 -translate-x-1/2 z-[200] w-full max-w-sm px-4"
-                                >
-                                    <div className="bg-orange-600 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-4 border border-orange-500/50 backdrop-blur-md">
-                                        <div className="flex items-center gap-3">
-                                            <div className="bg-white/20 p-2 rounded-xl">
-                                                <Bell className="animate-bounce" size={20} />
+                                <div className="fixed top-20 left-0 right-0 flex justify-center z-[200] px-4 pointer-events-none">
+                                    <motion.div
+                                        initial={{ y: -100, opacity: 0 }}
+                                        animate={{ y: 0, opacity: 1 }}
+                                        exit={{ y: -100, opacity: 0 }}
+                                        className="w-full max-w-sm pointer-events-auto"
+                                    >
+                                        <div className="bg-orange-600 text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-4 border border-orange-500/50 backdrop-blur-md">
+                                            <div className="flex items-center gap-3">
+                                                <div className="bg-white/20 p-2 rounded-xl">
+                                                    <Bell className="animate-bounce" size={20} />
+                                                </div>
+                                                <div>
+                                                    <p className="text-xs font-black uppercase tracking-widest">
+                                                        Sonido Bloqueado
+                                                    </p>
+                                                    <p className="text-[10px] opacity-90 font-bold">
+                                                        Haz clic en cualquier lugar para activar avisos
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="text-xs font-black uppercase tracking-widest">
-                                                    Sonido Bloqueado
-                                                </p>
-                                                <p className="text-[10px] opacity-90 font-bold">
-                                                    Haz clic en cualquier lugar para activar avisos
-                                                </p>
-                                            </div>
+                                            <button
+                                                onClick={() => setAudioBlocked(false)}
+                                                className="bg-white/10 hover:bg-white/20 p-2 rounded-xl transition-colors"
+                                            >
+                                                <X size={16} />
+                                            </button>
                                         </div>
-                                        <button
-                                            onClick={() => setAudioBlocked(false)}
-                                            className="bg-white/10 hover:bg-white/20 p-2 rounded-xl transition-colors"
-                                        >
-                                            <X size={16} />
-                                        </button>
-                                    </div>
-                                </motion.div>
+                                    </motion.div>
+                                </div>
                             )}
                         </AnimatePresence>
 
