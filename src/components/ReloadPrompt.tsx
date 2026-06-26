@@ -8,7 +8,7 @@ export default function ReloadPrompt() {
 
     const {
         offlineReady: [offlineReady, setOfflineReady],
-        needRefresh: [needRefresh, setNeedRefresh],
+        needRefresh: [needRefresh],
         updateServiceWorker,
     } = useRegisterSW({
         onRegistered(r: ServiceWorkerRegistration | undefined) {
@@ -50,9 +50,11 @@ export default function ReloadPrompt() {
                 // If version on server is different from bundled version
                 if (data.version && data.version !== __APP_VERSION__) {
                     console.log(`[PWA] New version detected on server: ${data.version}`);
-                    const registration = registrationRef.current || (
-                        'serviceWorker' in navigator ? await navigator.serviceWorker.getRegistration() : null
-                    );
+                    const registration =
+                        registrationRef.current ||
+                        ('serviceWorker' in navigator
+                            ? await navigator.serviceWorker.getRegistration()
+                            : null);
                     if (registration) {
                         console.log('[PWA] Triggering service worker update check...');
                         await registration.update();
