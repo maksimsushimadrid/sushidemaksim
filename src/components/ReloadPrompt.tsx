@@ -1,9 +1,11 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRegisterSW } from 'virtual:pwa-register/react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCw } from 'lucide-react';
 
 export default function ReloadPrompt() {
+    const registrationRef = useRef<ServiceWorkerRegistration | null>(null);
+
     const {
         offlineReady: [offlineReady, setOfflineReady],
         needRefresh: [needRefresh, setNeedRefresh],
@@ -12,6 +14,7 @@ export default function ReloadPrompt() {
         onRegistered(r: ServiceWorkerRegistration | undefined) {
             console.log('[PWA] Service Worker registered');
             if (r) {
+                registrationRef.current = r;
                 setInterval(
                     () => {
                         r.update();
@@ -47,7 +50,12 @@ export default function ReloadPrompt() {
                 // If version on server is different from bundled version
                 if (data.version && data.version !== __APP_VERSION__) {
                     console.log(`[PWA] New version detected on server: ${data.version}`);
-                    setNeedRefresh(true);
+                    if (registrationRef.current) {
+                        console.log('[PWA] Triggering service worker update check...');
+                        await registrationRef.current.update();
+                    } else {
+                        setNeedRefresh(true);
+                    }
                 }
             } catch (e) {
                 console.error('[PWA] Version check failed', e);

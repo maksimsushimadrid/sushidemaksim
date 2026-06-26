@@ -143,6 +143,15 @@
                     "value": "public, max-age=31536000, immutable"
                 }
             ]
+        },
+        {
+            "source": "/(sw.js|version.json)",
+            "headers": [
+                {
+                    "key": "Cache-Control",
+                    "value": "public, max-age=0, must-revalidate, no-cache, no-store"
+                }
+            ]
         }
     ]
 }
