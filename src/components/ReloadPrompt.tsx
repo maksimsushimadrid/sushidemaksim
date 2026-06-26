@@ -51,7 +51,7 @@ export default function ReloadPrompt() {
             window.location.reload();
         }, 5000);
 
-        updateServiceWorker(true).catch((err) => {
+        updateServiceWorker(true).catch(err => {
             console.error('[PWA] updateServiceWorker failed:', err);
             clearTimeout(fallbackTimer);
             // On error, force reload as well

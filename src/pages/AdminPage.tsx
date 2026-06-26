@@ -898,7 +898,8 @@ export default function AdminPage() {
                                                         Sonido Bloqueado
                                                     </p>
                                                     <p className="text-[10px] opacity-90 font-bold">
-                                                        Haz clic en cualquier lugar para activar avisos
+                                                        Haz clic en cualquier lugar para activar
+                                                        avisos
                                                     </p>
                                                 </div>
                                             </div>
