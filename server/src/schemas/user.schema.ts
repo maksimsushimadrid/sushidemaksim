@@ -169,3 +169,40 @@ export const verifyBirthdaySchema = z.object({
         id: z.string().min(1, 'ID de usuario obligatorio'),
     }),
 });
+
+/**
+ * Schema for admin GET /users query parameters.
+ * Ensures all query params are properly typed strings/numbers to prevent
+ * type confusion through parameter tampering (CodeQL critical).
+ */
+export const getUsersQuerySchema = z.object({
+    query: z.object({
+        page: z
+            .string()
+            .optional()
+            .transform(val => {
+                const parsed = val ? parseInt(val, 10) : 1;
+                return isNaN(parsed) ? 1 : Math.max(1, parsed);
+            }),
+        limit: z
+            .string()
+            .optional()
+            .transform(val => {
+                const parsed = val ? parseInt(val, 10) : 20;
+                return isNaN(parsed) ? 20 : Math.min(100, Math.max(1, parsed));
+            }),
+        sortBy: z.string().optional().default('lastSeenAt'),
+        order: z.enum(['asc', 'desc']).optional().default('desc'),
+        search: z.string().optional().default(''),
+        filter: z.enum(['active', 'archived', 'all']).optional().default('active'),
+    }),
+});
+
+/**
+ * Schema for admin user ID parameter (used by routes without body validation).
+ */
+export const userIdParamSchema = z.object({
+    params: z.object({
+        id: z.string().min(1, 'ID de usuario obligatorio'),
+    }),
+});

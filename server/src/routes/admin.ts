@@ -12,7 +12,10 @@ import {
     updateUserRoleSchema,
     verifyEmailSchema,
     verifyBirthdaySchema,
+    getUsersQuerySchema,
+    userIdParamSchema,
 } from '../schemas/user.schema.js';
+import { toStr } from '../utils/queryHelpers.js';
 import { getOrdersSchema, updateOrderStatusSchema } from '../schemas/order.schema.js';
 import {
     createMenuItemSchema,
@@ -312,7 +315,7 @@ router.put(
     '/menu/:id',
     validateResource(updateMenuItemSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params as any;
+        const { id } = req.params;
 
         const {
             name,
@@ -375,7 +378,7 @@ router.delete(
     '/menu/:id',
     validateResource(menuIdParamSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params as any;
+        const { id } = req.params;
 
         // 1. Handle dependencies before deletion to avoid FK constraint errors (23503)
         // Order history is preserved because order_items stores name/price/image strings
@@ -405,7 +408,11 @@ router.get(
     '/orders',
     validateResource(getOrdersSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { page, limit, status, userId, search } = req.query as any;
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 20;
+        const status = toStr(req.query.status);
+        const userId = toStr(req.query.userId);
+        const search = toStr(req.query.search);
         const offset = (page - 1) * limit;
 
         let query = supabase
@@ -767,15 +774,16 @@ router.patch(
 // GET /api/admin/users
 router.get(
     '/users',
+    validateResource(getUsersQuerySchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const page = Math.max(1, parseInt(req.query.page as string) || 1);
-        const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 20));
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 20;
         const offset = (page - 1) * limit;
-        const sortBy = (req.query.sortBy as string) || 'lastSeenAt';
-        const order = (req.query.order as string) || 'desc';
-        const search = (req.query.search as string) || '';
+        const sortBy = toStr(req.query.sortBy) || 'lastSeenAt';
+        const order = toStr(req.query.order) || 'desc';
+        const search = toStr(req.query.search);
         const ascending = order === 'asc';
-        const filter = (req.query.filter as string) || 'active';
+        const filter = toStr(req.query.filter) || 'active';
 
         const sortMap: Record<string, string> = {
             id: 'id',
@@ -914,7 +922,7 @@ router.patch(
     '/users/:id/role',
     validateResource(updateUserRoleSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const id = req.params.id;
+        const id = String(req.params.id);
 
         const { data: currentUser } = await supabase
             .from('users')
@@ -963,8 +971,9 @@ router.patch(
 // DELETE /api/admin/users/:id — Permanent hard delete (Admin only)
 router.delete(
     '/users/:id',
+    validateResource(userIdParamSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const id = req.params.id;
+        const id = String(req.params.id);
 
         if (id === req.userId) {
             return res.status(400).json({ error: 'No puedes eliminar tu propia cuenta' });
@@ -1041,8 +1050,9 @@ router.delete(
 // PATCH /api/admin/users/:id/restore — Restore archived user
 router.patch(
     '/users/:id/restore',
+    validateResource(userIdParamSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const id = req.params.id;
+        const id = String(req.params.id);
         const { error } = await supabase.from('users').update({ deleted_at: null }).eq('id', id);
 
         if (error) throw error;
@@ -1055,7 +1065,7 @@ router.patch(
     '/users/:id/verify-birthday',
     validateResource(verifyBirthdaySchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const id = req.params.id;
+        const id = String(req.params.id);
         const { verified } = req.body;
 
         const { data: user, error } = await supabase
@@ -1658,7 +1668,7 @@ router.put(
     '/promos/:id',
     validateResource(updatePromoSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params as any;
+        const { id } = req.params;
         const {
             title,
             description,
@@ -1710,7 +1720,7 @@ router.delete(
     '/promos/:id',
     validateResource(promoIdParamSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params as any;
+        const { id } = req.params;
         const { error } = await supabase.from('promos').delete().eq('id', id);
         if (error) throw error;
         res.json({ success: true });
@@ -1887,7 +1897,7 @@ router.put(
     '/delivery-zones/:id',
     validateResource(updateDeliveryZoneSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params as any;
+        const { id } = req.params;
         const {
             name,
             cost,
@@ -1930,7 +1940,7 @@ router.delete(
     '/delivery-zones/:id',
     validateResource(deliveryZoneIdParamSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params as any;
+        const { id } = req.params;
         const { error } = await supabase.from('delivery_zones').delete().eq('id', id);
         if (error) throw error;
         res.json({ success: true });
@@ -1944,7 +1954,8 @@ router.get(
     '/reservations',
     validateResource(getReservationsQuerySchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { status, date } = req.query as any;
+        const status = toStr(req.query.status);
+        const date = toStr(req.query.date);
         let query = supabase
             .from('reservations')
             .select('*')
@@ -1964,7 +1975,7 @@ router.patch(
     '/reservations/:id',
     validateResource(updateReservationSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params as any;
+        const { id } = req.params;
         const { status, notes } = req.body;
 
         const updateData: any = {};
@@ -1988,7 +1999,7 @@ router.delete(
     '/reservations/:id',
     validateResource(reservationIdParamSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params as any;
+        const { id } = req.params;
         const { error } = await supabase.from('reservations').delete().eq('id', id);
         if (error) throw error;
         res.status(204).send();
