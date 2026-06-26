@@ -52,6 +52,8 @@ export default function HeaderLogo({
                     <img
                         src="/logo.svg"
                         alt="Sushi de Maksim"
+                        width={140}
+                        height={56}
                         className={`
                             h-10 md:h-14 w-auto object-contain transition-all duration-500
                             ${

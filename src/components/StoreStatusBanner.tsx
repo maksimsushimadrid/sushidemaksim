@@ -76,10 +76,10 @@ export default function StoreStatusBanner() {
                 <motion.div
                     key="store-closed-banner"
                     initial={false}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: 'easeInOut' }}
-                    className="bg-gray-950 border-b border-white/5 relative z-[101] overflow-hidden"
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -40 }}
+                    transition={{ duration: 0.25, ease: 'easeInOut' }}
+                    className="bg-gray-950 border-b border-white/5 relative z-[101]"
                 >
                     <div className="max-w-7xl mx-auto px-4 py-2 md:py-2.5">
                         <div className="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">

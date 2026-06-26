@@ -41,8 +41,8 @@ export function PromosSection({ activePromos }: PromosSectionProps) {
                         return (
                             <motion.div
                                 key={promo.id}
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
+                                initial={{ opacity: 0 }}
+                                whileInView={{ opacity: 1 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: idx * 0.15 }}
                                 className="relative overflow-hidden rounded-[2.5rem] bg-orange-500 p-8 md:p-12 shadow-xl shadow-orange-500/20"
@@ -118,8 +118,8 @@ export function PromosSection({ activePromos }: PromosSectionProps) {
         <section className="px-4 py-6 md:py-12">
             <div className="max-w-7xl mx-auto">
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
                     className="relative overflow-hidden rounded-[2.5rem] bg-orange-500 p-8 md:p-12 shadow-xl shadow-orange-500/20"
                 >

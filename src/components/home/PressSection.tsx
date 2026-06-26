@@ -5,8 +5,8 @@ export function PressSection() {
         <section className="bg-[#fd6e2b]/5 py-10 md:py-20 overflow-hidden border-b border-gray-100">
             <div className="max-w-7xl mx-auto px-6">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8 }}
                     className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24"

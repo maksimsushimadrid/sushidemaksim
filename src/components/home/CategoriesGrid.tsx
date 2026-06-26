@@ -15,8 +15,8 @@ interface CategoryCardProps {
 const CategoryCard = memo(({ id, name, image, index }: CategoryCardProps) => {
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
             className="group relative h-40 md:h-56 rounded-[2rem] overflow-hidden cursor-pointer bg-gray-100"

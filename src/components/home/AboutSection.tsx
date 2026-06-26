@@ -9,14 +9,14 @@ export function AboutSection() {
         <section className="py-10 md:py-20 bg-transparent px-4 border-t border-gray-100">
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                 <motion.div
-                    initial={{ opacity: 0, x: -30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
                     viewport={{ once: true, amount: 0.2 }}
                     transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
                     style={{ willChange: 'opacity, transform', backfaceVisibility: 'hidden' }}
                     className="relative px-4"
                 >
-                    <div className="rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl skew-y-1">
+                    <div className="rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl skew-y-1 aspect-[4/3]">
                         <SafeImage
                             src="/blog_post_chef_hands.webp"
                             getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 800)}
@@ -48,8 +48,8 @@ export function AboutSection() {
                 </motion.div>
 
                 <motion.div
-                    initial={{ opacity: 0, x: 30 }}
-                    whileInView={{ opacity: 1, x: 0 }}
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
                     viewport={{ once: true, amount: 0.2 }}
                     transition={{ duration: 0.8, delay: 0.2, ease: [0.21, 0.47, 0.32, 0.98] }}
                     style={{ willChange: 'opacity, transform', backfaceVisibility: 'hidden' }}
