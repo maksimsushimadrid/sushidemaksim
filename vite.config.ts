@@ -27,7 +27,7 @@ export default defineConfig({
                 'pwa-192.png',
                 'pwa-512.png',
                 'maskable-icon.png',
-                'sounds/Negrocan-Cada_Vez.mp3',
+                'sounds/fanfare.mp3',
                 'sounds/mesa-new.mp3',
             ],
             manifest: {

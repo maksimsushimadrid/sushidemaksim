@@ -695,7 +695,7 @@ export default function AdminPage() {
                     description="Gestión interna de Sushi de Maksim"
                     robots="noindex, nofollow"
                 />
-                <audio ref={audioRef} src="/sounds/Negrocan-Cada_Vez.mp3" preload="auto" />
+                <audio ref={audioRef} src="/sounds/fanfare.mp3" preload="auto" />
                 <audio ref={audioMesaRef} src="/sounds/mesa-new.mp3" preload="auto" />
                 {/* Mobile Overlay */}
                 <AnimatePresence>
