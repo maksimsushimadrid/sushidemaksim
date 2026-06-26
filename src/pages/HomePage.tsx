@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Helmet } from 'react-helmet-async';
 import SEO from '../components/SEO';
 import Newsletter from '../components/Newsletter';
 import RatingsBanner from '../components/RatingsBanner';
@@ -176,6 +177,9 @@ export default function HomePage() {
 
     return (
         <div className="overflow-hidden">
+            <Helmet>
+                <link rel="preload" href="/hero-poster.jpg" as="image" fetchpriority="high" />
+            </Helmet>
             <SEO
                 title="Sushi a domicilio en Madrid — Sushi de Maksim | Calidad Premium"
                 description={`El mejor sushi artesanal de Madrid con entrega a domicilio. Pide online rolls, nigiri y sashimi frescos. ⭐ ${settings?.ratingGoogle || '4.9'}/5 basado en ${settings?.ratingReviewsCount || '+500'} reseñas. ¡Pide ahora y disfruta de la experiencia japonesa!`}
