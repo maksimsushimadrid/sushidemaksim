@@ -259,9 +259,6 @@ export default function ContactsPage() {
                     transition={{ duration: 0.8 }}
                     className="relative z-10 text-center px-4"
                 >
-                    <span className="inline-block px-3 py-1 bg-orange-600 text-white text-[11px] font-bold rounded-full mb-4 tracking-widest uppercase">
-                        Estamos a tu disposición
-                    </span>
                     <h1 className="text-4xl md:text-6xl font-black text-white mb-4 drop-shadow-lg">
                         Contacto & <span className="text-orange-500 italic">Soporte</span>
                     </h1>
