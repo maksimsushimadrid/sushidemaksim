@@ -127,7 +127,42 @@ export const HomeSkeleton = () => (
             </div>
         </section>
 
-        {/* Reservation Section */}
+        {/* Popular Items Section Skeleton */}
+        <section className="py-10 md:py-24 px-0 md:px-6 bg-gray-50/50 overflow-hidden relative">
+            <div className="max-w-7xl mx-auto px-4">
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                    <div className="max-w-xl text-center md:text-left space-y-4 w-full">
+                        <div className="h-[16px] w-48 bg-gray-200 rounded-full mx-auto md:mx-0 animate-pulse" />
+                        <div className="h-[36px] md:h-[48px] w-3/4 mx-auto md:mx-0 bg-gray-200 rounded-2xl animate-pulse" />
+                    </div>
+                    <div className="hidden md:block h-[40px] w-48 bg-gray-100 rounded-full animate-pulse" />
+                </div>
+                <div className="relative -mx-4 px-4 overflow-hidden pb-10">
+                    <div className="flex gap-2.5 md:gap-8 flex-nowrap w-max min-w-full">
+                        {[1, 2, 3, 4].map(idx => (
+                            <div
+                                key={idx}
+                                className="w-[260px] md:w-[320px] h-[380px] bg-gray-100 animate-pulse rounded-3xl shrink-0"
+                            />
+                        ))}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {/* Reviews Section Skeleton */}
+        <section className="py-8 md:py-20 bg-transparent overflow-hidden relative">
+            <div className="max-w-7xl mx-auto px-4 flex flex-col items-center text-center">
+                <div className="h-[16px] w-48 bg-gray-200 rounded-full animate-pulse mb-4" />
+                <div className="h-[36px] md:h-[48px] w-2/3 bg-gray-200 rounded-2xl animate-pulse mb-8" />
+                <div className="h-6 w-32 bg-gray-100 rounded-full animate-pulse mb-6" />
+                <div className="h-[100px] w-full max-w-2xl bg-gray-100 rounded-2xl animate-pulse mb-6" />
+                <div className="w-14 h-14 bg-gray-200 rounded-3xl animate-pulse mb-4" />
+                <div className="h-[20px] w-32 bg-gray-200 rounded-full animate-pulse" />
+            </div>
+        </section>
+
+        {/* Reservation Section (AboutSection fallback) */}
         <section className="py-10 md:py-20 px-4 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
                 <div className="h-[300px] md:h-[500px] rounded-[3rem] bg-gray-100 animate-pulse order-last lg:order-first" />
@@ -139,6 +174,15 @@ export const HomeSkeleton = () => (
                     <div className="h-[20px] w-[80%] mx-auto lg:mx-0 bg-gray-100 rounded-lg animate-pulse mb-10" />
                     <div className="h-[65px] w-full sm:w-[220px] bg-gray-200 rounded-2xl animate-pulse mx-auto lg:mx-0 mt-10" />
                 </div>
+            </div>
+        </section>
+
+        {/* Newsletter Section Skeleton */}
+        <section className="py-12 md:py-20 px-4 bg-orange-600/10 overflow-hidden">
+            <div className="max-w-4xl mx-auto text-center space-y-6">
+                <div className="h-[36px] md:h-[48px] w-3/4 bg-gray-200 rounded-2xl animate-pulse mx-auto" />
+                <div className="h-[20px] w-1/2 bg-gray-100 rounded-lg animate-pulse mx-auto" />
+                <div className="h-[60px] w-full max-w-md bg-gray-100 rounded-2xl animate-pulse mx-auto" />
             </div>
         </section>
     </div>

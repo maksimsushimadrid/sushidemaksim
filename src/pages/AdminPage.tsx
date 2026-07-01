@@ -18,6 +18,7 @@ import {
     CalendarDays,
     Map as MapIcon,
     Bell,
+    BookOpen,
 } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
@@ -33,6 +34,7 @@ const AdminAnalytics = lazy(() => import('../components/admin/AdminAnalytics'));
 const AdminDeliveryZones = lazy(() => import('../components/admin/AdminDeliveryZones'));
 const AdminReservations = lazy(() => import('../components/admin/AdminReservations'));
 const AdminNewsletter = lazy(() => import('../components/admin/AdminNewsletter'));
+const AdminGuide = lazy(() => import('../components/admin/AdminGuide'));
 import { useTablonPending } from '../hooks/queries/useTablon';
 import { AdminSkeleton, AdminContentSkeleton } from '../components/skeletons/AdminSkeleton';
 import { supabase } from '../utils/supabase';
@@ -53,7 +55,8 @@ type TabId =
     | 'abandoned'
     | 'delivery'
     | 'reservations'
-    | 'newsletter';
+    | 'newsletter'
+    | 'guide';
 export default function AdminPage() {
     const { user, isAuthenticated, isLoading } = useAuth();
     const [isMobile, setIsMobile] = useState(false);
@@ -612,6 +615,7 @@ export default function AdminPage() {
             },
             { id: 'delivery', label: t.nav.delivery, icon: MapIcon },
             { id: 'newsletter', label: t.nav.newsletter, icon: Bell },
+            { id: 'guide', label: t.nav.guide, icon: BookOpen },
         ],
         [
             pendingCount,
@@ -959,6 +963,7 @@ export default function AdminPage() {
                                 <AdminReservations language={language} />
                             )}
                             {activeTab === 'newsletter' && <AdminNewsletter language={language} />}
+                            {activeTab === 'guide' && <AdminGuide language={language} />}
                         </Suspense>
 
                         {/* Developer Footer */}

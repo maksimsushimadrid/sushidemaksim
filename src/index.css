@@ -67,7 +67,7 @@ html.lenis body {
         left: 0;
         width: 100%;
         height: 100%;
-        background-image: url('/sushi-pattern.png');
+        background-image: url('/sushi-pattern.webp');
         background-repeat: repeat;
         background-size: 320px 320px;
         opacity: 0.055; /* Повышенная непрозрачность для лучшей видимости */

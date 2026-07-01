@@ -50,8 +50,8 @@ const lazyRetry = (componentImport: () => Promise<{ default: React.ComponentType
         }
     });
 };
+import HomePage from './pages/HomePage';
 
-const HomePage = lazyRetry(() => import('./pages/HomePage'));
 const MenuPage = lazyRetry(() => import('./pages/MenuPage'));
 const CartPage = lazyRetry(() => import('./pages/CartPage'));
 const PromoPage = lazyRetry(() => import('./pages/PromoPage'));

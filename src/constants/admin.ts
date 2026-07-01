@@ -15,6 +15,7 @@ export const ADMIN_TRANSLATIONS = {
             reservations: 'Бронирование столов',
             delivery: 'Зоны доставки',
             newsletter: 'Подписчики рассылки',
+            guide: 'Инструкция',
         },
         ui: {
             backToShop: 'В ресторан',
@@ -65,6 +66,7 @@ export const ADMIN_TRANSLATIONS = {
             reservations: 'Reservas de Mesas',
             delivery: 'Zonas de Entrega',
             newsletter: 'Suscriptores Newsletter',
+            guide: 'Manual de uso',
         },
         ui: {
             backToShop: 'Al restaurante',
