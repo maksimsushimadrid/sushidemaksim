@@ -61,6 +61,12 @@ const SETTINGS_TRANSLATIONS = {
         isReservationsTodayClosed: 'Закрыть резервы на сегодня',
         isReservationsTodayClosedDesc:
             'Если включено, клиенты не смогут забронировать стол на сегодня (все столы заняты), но смогут на будущие даты.',
+        vacationTitle: 'Даты отпуска / закрытия ресторана',
+        vacationDesc:
+            'Укажите период, в течение которого ресторан будет полностью закрыт для заказов.',
+        vacationStart: 'Дата начала отпуска',
+        vacationEnd: 'Дата окончания отпуска',
+        clearVacation: 'Сбросить даты отпуска',
     },
     es: {
         title: 'Configuración de Contactos',
@@ -113,7 +119,13 @@ const SETTINGS_TRANSLATIONS = {
             'Si se activa, los clientes podrán pedir para hoy pero solo para recoger en el local. El reparto a domicilio quedará desactivado.',
         isReservationsTodayClosed: 'Cerrar reservas para hoy',
         isReservationsTodayClosedDesc:
-            'Si se activa, los clientes не смогут забронировать стол на сегодня (мест нет), но смогут на будущие даты.',
+            'Si se activa, los clientes no podrán reservar mesa para hoy, pero sí para fechas futuras.',
+        vacationTitle: 'Fechas de Vacaciones (Cierre del Restaurante)',
+        vacationDesc:
+            'Especifica el período en el que el restaurante estará completamente cerrado.',
+        vacationStart: 'Fecha de inicio',
+        vacationEnd: 'Fecha de fin',
+        clearVacation: 'Limpiar fechas de vacaciones',
     },
 } as const;
 
@@ -147,6 +159,8 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 isTodayClosed: data.isTodayClosed === 'true',
                 isPickupOnly: data.isPickupOnly === 'true',
                 isReservationsTodayClosed: data.isReservationsTodayClosed === 'true',
+                vacationStartDate: data.vacationStartDate || '',
+                vacationEndDate: data.vacationEndDate || '',
             };
         },
         refetchOnWindowFocus: false,
@@ -349,6 +363,68 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                             ></div>
                         </label>
                     </div>
+                </div>
+
+                {/* Vacation Dates Configuration */}
+                <div className="p-6 bg-orange-50/30 rounded-2xl border border-orange-100/50 mb-8 space-y-4">
+                    <div>
+                        <h4 className="text-sm font-black text-orange-900 uppercase tracking-tight mb-1">
+                            {t.vacationTitle}
+                        </h4>
+                        <p className="text-[11px] text-orange-800/80 font-medium">
+                            {t.vacationDesc}
+                        </p>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1.5">
+                            <label className="block text-[9px] font-black text-orange-800/60 uppercase tracking-wider pl-1">
+                                {t.vacationStart}
+                            </label>
+                            <input
+                                type="date"
+                                value={localSettings.vacationStartDate || ''}
+                                onChange={e =>
+                                    setLocalSettings({
+                                        ...localSettings,
+                                        vacationStartDate: e.target.value,
+                                    })
+                                }
+                                className="w-full bg-white border border-orange-100 rounded-xl px-4 py-3 text-sm font-black text-gray-900 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-50 transition-all cursor-pointer"
+                            />
+                        </div>
+                        <div className="space-y-1.5">
+                            <label className="block text-[9px] font-black text-orange-800/60 uppercase tracking-wider pl-1">
+                                {t.vacationEnd}
+                            </label>
+                            <input
+                                type="date"
+                                value={localSettings.vacationEndDate || ''}
+                                onChange={e =>
+                                    setLocalSettings({
+                                        ...localSettings,
+                                        vacationEndDate: e.target.value,
+                                    })
+                                }
+                                className="w-full bg-white border border-orange-100 rounded-xl px-4 py-3 text-sm font-black text-gray-900 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-50 transition-all cursor-pointer"
+                            />
+                        </div>
+                    </div>
+                    {(localSettings.vacationStartDate || localSettings.vacationEndDate) && (
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setLocalSettings({
+                                    ...localSettings,
+                                    vacationStartDate: '',
+                                    vacationEndDate: '',
+                                })
+                            }
+                            className="text-[9px] font-black text-orange-600 hover:text-black uppercase tracking-widest pl-1 transition-colors border-none bg-transparent cursor-pointer flex items-center gap-1.5"
+                        >
+                            <X size={12} strokeWidth={3} />
+                            {t.clearVacation}
+                        </button>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-pretty">

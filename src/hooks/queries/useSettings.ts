@@ -20,6 +20,8 @@ export interface SiteSettings {
     isPickupOnly: boolean;
     minOrder: number;
     deliveryFee: number;
+    vacationStartDate?: string;
+    vacationEndDate?: string;
 }
 
 export function useSettings() {
@@ -61,6 +63,8 @@ export function useSettings() {
                     data.is_pickup_only === true,
                 minOrder: minOrderVal !== undefined ? Number(minOrderVal) : 15,
                 deliveryFee: deliveryFeeVal !== undefined ? Number(deliveryFeeVal) : 3.5,
+                vacationStartDate: data.vacationStartDate || '',
+                vacationEndDate: data.vacationEndDate || '',
             };
         },
         staleTime: 1000 * 60 * 60, // 1 hour

@@ -40,7 +40,14 @@ export default function StoreStatusBanner() {
         return () => clearInterval(timer);
     }, []);
 
-    const isStoreClosed = !!settings?.isStoreClosed;
+    const todayStr = new Date().toLocaleDateString('sv-SE');
+    const isOnVacation =
+        !!settings?.vacationStartDate &&
+        !!settings?.vacationEndDate &&
+        todayStr >= settings.vacationStartDate &&
+        todayStr <= settings.vacationEndDate;
+
+    const isStoreClosed = !!settings?.isStoreClosed || isOnVacation;
     const isTodayClosed = !!settings?.isTodayClosed;
     const isPickupOnly = !!settings?.isPickupOnly;
 
@@ -53,22 +60,31 @@ export default function StoreStatusBanner() {
     const schedule = Array.isArray(rawSchedule) ? rawSchedule : [];
     const todaySchedule = schedule.find((s: any) => s?.days?.toLowerCase().includes(todayDay));
 
-    const statusTitle = isStoreClosed
-        ? settings?.isStoreClosed
-            ? 'Restaurante Cerrado'
-            : 'Fuera de Horario'
-        : isPickupOnly && !isTodayClosed
-          ? 'Solo Recogida'
-          : 'Cerrado para hoy';
+    const formatDate = (dateStr: string): string => {
+        if (!dateStr) return '';
+        const [y, m, d] = dateStr.split('-');
+        return `${d}/${m}/${y}`;
+    };
 
-    const statusSubtitle =
-        isTodayClosed && !isStoreClosed
-            ? 'Solo aceptamos pedidos para mañana u otros días.'
-            : isPickupOnly && !isTodayClosed && !isStoreClosed
-              ? 'Aceptamos pedidos para hoy, pero no podemos realizar entregas a domicilio. Puedes recoger tu pedido en C. de Barrilero, 20.'
-              : todaySchedule?.hours
-                ? `Hoy: ${todaySchedule.hours}`
-                : 'Cerrado hoy';
+    const statusTitle = isOnVacation
+        ? 'Cerrado por Vacaciones'
+        : isStoreClosed
+          ? settings?.isStoreClosed
+              ? 'Restaurante Cerrado'
+              : 'Fuera de Horario'
+          : isPickupOnly && !isTodayClosed
+            ? 'Solo Recogida'
+            : 'Cerrado para hoy';
+
+    const statusSubtitle = isOnVacation
+        ? `Del ${formatDate(settings!.vacationStartDate!)} al ${formatDate(settings!.vacationEndDate!)}`
+        : isTodayClosed && !isStoreClosed
+          ? 'Solo aceptamos pedidos para mañana u otros días.'
+          : isPickupOnly && !isTodayClosed && !isStoreClosed
+            ? 'Aceptamos pedidos para hoy, pero no podemos realizar entregas a domicilio. Puedes recoger tu pedido en C. de Barrilero, 20.'
+            : todaySchedule?.hours
+              ? `Hoy: ${todaySchedule.hours}`
+              : 'Cerrado hoy';
 
     return (
         <AnimatePresence>
