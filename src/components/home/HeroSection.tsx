@@ -85,7 +85,7 @@ export function HeroSection() {
     }, []);
 
     return (
-        <section className="relative h-screen w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black">
+        <section className="relative h-[100svh] md:h-screen w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black">
             {/* Visual context for SEO */}
             <h1 className="sr-only">
                 Sushi de Maksim: El mejor sushi artesanal a domicilio en Madrid
@@ -108,7 +108,7 @@ export function HeroSection() {
                         loop
                         playsInline
                         preload="auto"
-                        poster="/hero-poster.jpg"
+                        poster="/hero-poster.webp"
                         className="absolute inset-0 w-full h-full object-cover"
                     >
                         <source src="/hero-video.webm" type="video/webm" />
@@ -116,7 +116,9 @@ export function HeroSection() {
                     </video>
                 ) : (
                     <img
-                        src="/hero-poster.jpg"
+                        src="/hero-poster.webp"
+                        srcSet="/hero-poster-mobile.webp 768w, /hero-poster.webp 1920w"
+                        sizes="(max-width: 768px) 768px, 1920px"
                         alt="Sushi background"
                         className="absolute inset-0 w-full h-full object-cover"
                         loading="eager"
