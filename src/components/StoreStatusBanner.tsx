@@ -41,13 +41,29 @@ export default function StoreStatusBanner() {
     }, []);
 
     const todayStr = new Date().toLocaleDateString('sv-SE');
-    const isOnVacation =
-        !!settings?.vacationStartDate &&
-        !!settings?.vacationEndDate &&
-        todayStr >= settings.vacationStartDate &&
-        todayStr <= settings.vacationEndDate;
+    const madridParts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Madrid',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    }).formatToParts(new Date());
+    const h = madridParts.find(p => p.type === 'hour')?.value || '00';
+    const m = madridParts.find(p => p.type === 'minute')?.value || '00';
+    const timeStr = `${h}:${m}`;
 
-    const isStoreClosed = !!settings?.isStoreClosed || isOnVacation;
+    // Find any custom closure active at this moment
+    const activeClosure = (settings?.customClosures || []).find((c: any) => {
+        const { startDate, endDate, startTime, endTime } = c;
+        if (!startDate || !endDate || !startTime || !endTime) return false;
+        if (todayStr < startDate || todayStr > endDate) return false;
+        if (todayStr > startDate && todayStr < endDate) return true;
+        if (startDate === endDate) return timeStr >= startTime && timeStr <= endTime;
+        if (todayStr === startDate) return timeStr >= startTime;
+        if (todayStr === endDate) return timeStr <= endTime;
+        return false;
+    });
+
+    const isStoreClosed = !!settings?.isStoreClosed || !!activeClosure;
     const isTodayClosed = !!settings?.isTodayClosed;
     const isPickupOnly = !!settings?.isPickupOnly;
 
@@ -66,8 +82,8 @@ export default function StoreStatusBanner() {
         return `${d}/${m}/${y}`;
     };
 
-    const statusTitle = isOnVacation
-        ? 'Cerrado por Vacaciones'
+    const statusTitle = activeClosure
+        ? activeClosure.reason || 'Cerrado Temporalmente'
         : isStoreClosed
           ? settings?.isStoreClosed
               ? 'Restaurante Cerrado'
@@ -76,10 +92,12 @@ export default function StoreStatusBanner() {
             ? 'Solo Recogida'
             : 'Cerrado para hoy';
 
-    const statusSubtitle = isOnVacation
-        ? `Del ${formatDate(settings!.vacationStartDate!)} al ${formatDate(settings!.vacationEndDate!)}`
+    const statusSubtitle = activeClosure
+        ? activeClosure.startDate === activeClosure.endDate
+            ? `Cerrado hoy de ${activeClosure.startTime} a ${activeClosure.endTime}`
+            : `Cerrado del ${formatDate(activeClosure.startDate)} al ${formatDate(activeClosure.endDate)}`
         : isTodayClosed && !isStoreClosed
-          ? 'Solo aceptamos pedidos para mañana u otros días.'
+          ? 'Solo aceptamos pedidos para mañana u otros дней.'
           : isPickupOnly && !isTodayClosed && !isStoreClosed
             ? 'Aceptamos pedidos para hoy, pero no podemos realizar entregas a domicilio. Puedes recoger tu pedido en C. de Barrilero, 20.'
             : todaySchedule?.hours

@@ -22,6 +22,7 @@ export interface SiteSettings {
     deliveryFee: number;
     vacationStartDate?: string;
     vacationEndDate?: string;
+    customClosures?: any[];
 }
 
 export function useSettings() {
@@ -65,6 +66,7 @@ export function useSettings() {
                 deliveryFee: deliveryFeeVal !== undefined ? Number(deliveryFeeVal) : 3.5,
                 vacationStartDate: data.vacationStartDate || '',
                 vacationEndDate: data.vacationEndDate || '',
+                customClosures: Array.isArray(data.customClosures) ? data.customClosures : [],
             };
         },
         staleTime: 1000 * 60 * 60, // 1 hour

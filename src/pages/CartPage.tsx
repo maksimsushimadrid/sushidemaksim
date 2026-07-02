@@ -108,14 +108,29 @@ export default function CartPage() {
     const isPickupOnly = siteSettings?.isPickupOnly === true;
     const isOpenNow = isStoreOpen();
 
-    // Check if current date falls within vacation dates range
-    const isOnVacation =
-        !!siteSettings?.vacationStartDate &&
-        !!siteSettings?.vacationEndDate &&
-        todayStr >= siteSettings.vacationStartDate &&
-        todayStr <= siteSettings.vacationEndDate;
+    const madridParts = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Europe/Madrid',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+    }).formatToParts(new Date());
+    const h = madridParts.find(p => p.type === 'hour')?.value || '00';
+    const m = madridParts.find(p => p.type === 'minute')?.value || '00';
+    const timeStr = `${h}:${m}`;
 
-    const isStoreClosed = isManualClosed || !isOpenNow || isTodayClosed || isOnVacation;
+    // Check if current date and time falls within any custom closure period
+    const activeClosure = (siteSettings?.customClosures || []).find((c: any) => {
+        const { startDate, endDate, startTime, endTime } = c;
+        if (!startDate || !endDate || !startTime || !endTime) return false;
+        if (todayStr < startDate || todayStr > endDate) return false;
+        if (todayStr > startDate && todayStr < endDate) return true;
+        if (startDate === endDate) return timeStr >= startTime && timeStr <= endTime;
+        if (todayStr === startDate) return timeStr >= startTime;
+        if (todayStr === endDate) return timeStr <= endTime;
+        return false;
+    });
+
+    const isStoreClosed = isManualClosed || !isOpenNow || isTodayClosed || !!activeClosure;
 
     const methods = useForm<CheckoutInput>({
         resolver: zodResolver(checkoutSchema) as any,
@@ -853,25 +868,27 @@ export default function CartPage() {
                                     <div className="flex items-start gap-3">
                                         <div className="flex-1">
                                             <h3 className="font-black text-orange-900 leading-none mb-1.5 text-[15px] uppercase tracking-wider">
-                                                {isOnVacation
-                                                    ? 'Cerrado por Vacaciones'
+                                                {activeClosure
+                                                    ? activeClosure.reason ||
+                                                      'Cerrado Temporalmente'
                                                     : 'Restaurante Cerrado'}
                                             </h3>
                                             <p className="text-[13px] text-orange-800/80 whitespace-pre-line leading-snug">
-                                                {isOnVacation
-                                                    ? `Estaremos cerrados por vacaciones desde el ${(() => {
-                                                          const [y, m, d] =
-                                                              siteSettings!.vacationStartDate!.split(
-                                                                  '-'
-                                                              );
-                                                          return `${d}/${m}/${y}`;
-                                                      })()} hasta el ${(() => {
-                                                          const [y, m, d] =
-                                                              siteSettings!.vacationEndDate!.split(
-                                                                  '-'
-                                                              );
-                                                          return `${d}/${m}/${y}`;
-                                                      })()} inclusive.`
+                                                {activeClosure
+                                                    ? activeClosure.startDate ===
+                                                      activeClosure.endDate
+                                                        ? `Estaremos cerrados hoy desde las ${activeClosure.startTime} hasta las ${activeClosure.endTime}.`
+                                                        : `Estaremos cerrados por vacaciones desde el ${(() => {
+                                                              const [y, m, d] =
+                                                                  activeClosure.startDate.split(
+                                                                      '-'
+                                                                  );
+                                                              return `${d}/${m}/${y}`;
+                                                          })()} (${activeClosure.startTime}) hasta el ${(() => {
+                                                              const [y, m, d] =
+                                                                  activeClosure.endDate.split('-');
+                                                              return `${d}/${m}/${y}`;
+                                                          })()} (${activeClosure.endTime}) inclusive.`
                                                     : isManualClosed
                                                       ? siteSettings?.closedMessage ||
                                                         'Nuestra cocina está tomando un breve descanso.'

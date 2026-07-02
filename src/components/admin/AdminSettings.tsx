@@ -61,12 +61,16 @@ const SETTINGS_TRANSLATIONS = {
         isReservationsTodayClosed: 'Закрыть резервы на сегодня',
         isReservationsTodayClosedDesc:
             'Если включено, клиенты не смогут забронировать стол на сегодня (все столы заняты), но смогут на будущие даты.',
-        vacationTitle: 'Даты отпуска / закрытия ресторана',
+        vacationTitle: 'Специальные закрытия (Отпуск / Праздники / Раннее закрытие)',
         vacationDesc:
-            'Укажите период, в течение которого ресторан будет полностью закрыт для заказов.',
-        vacationStart: 'Дата начала отпуска',
-        vacationEnd: 'Дата окончания отпуска',
-        clearVacation: 'Сбросить даты отпуска',
+            'Настройте периоды времени, в течение которых ресторан будет закрыт для заказов (например, отпуск или закрытие раньше времени).',
+        vacationStart: 'Дата начала',
+        vacationEnd: 'Дата окончания',
+        clearVacation: 'Удалить этот период',
+        vacationReason: 'Причина / Название',
+        addClosureBtn: 'Добавить период закрытия',
+        noClosures: 'Специальные закрытия не настроены.',
+        reasonPlaceholder: 'например: Отпуск, Санитарный день, Закрытие раньше времени',
     },
     es: {
         title: 'Configuración de Contactos',
@@ -120,12 +124,16 @@ const SETTINGS_TRANSLATIONS = {
         isReservationsTodayClosed: 'Cerrar reservas para hoy',
         isReservationsTodayClosedDesc:
             'Si se activa, los clientes no podrán reservar mesa para hoy, pero sí para fechas futuras.',
-        vacationTitle: 'Fechas de Vacaciones (Cierre del Restaurante)',
+        vacationTitle: 'Cierres Especiales (Vacaciones / Festivos / Cierre Temprano)',
         vacationDesc:
-            'Especifica el período en el que el restaurante estará completamente cerrado.',
+            'Configura rangos de fechas y horas en los que el restaurante estará cerrado (por ejemplo, vacaciones o cierre anticipado).',
         vacationStart: 'Fecha de inicio',
         vacationEnd: 'Fecha de fin',
-        clearVacation: 'Limpiar fechas de vacaciones',
+        clearVacation: 'Eliminar este cierre',
+        vacationReason: 'Motivo / Descripción',
+        addClosureBtn: 'Añadir período de cierre',
+        noClosures: 'No hay cierres especiales configurados.',
+        reasonPlaceholder: 'Ej: Vacaciones, Evento privado, Cierre anticipado',
     },
 } as const;
 
@@ -134,6 +142,52 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
     const [localSettings, setLocalSettings] = useState<any>(null);
     const [saveStatus, setSaveStatus] = useState<null | 'success' | 'error'>(null);
     const [socialToRemove, setSocialToRemove] = useState<number | null>(null);
+    const [newClosure, setNewClosure] = useState({
+        reason: '',
+        startDate: '',
+        startTime: '19:00',
+        endDate: '',
+        endTime: '22:30',
+    });
+
+    const handleAddClosure = () => {
+        if (!localSettings) return;
+        if (
+            !newClosure.startDate ||
+            !newClosure.endDate ||
+            !newClosure.startTime ||
+            !newClosure.endTime
+        ) {
+            return;
+        }
+
+        const closureWithId = {
+            ...newClosure,
+            id: 'closure_' + Math.random().toString(36).substring(2, 9),
+        };
+
+        setLocalSettings({
+            ...localSettings,
+            customClosures: [...(localSettings.customClosures || []), closureWithId],
+        });
+
+        // Reset form to tomorrow's defaults
+        setNewClosure({
+            reason: '',
+            startDate: '',
+            startTime: '19:00',
+            endDate: '',
+            endTime: '22:30',
+        });
+    };
+
+    const handleRemoveClosure = (id: string) => {
+        if (!localSettings) return;
+        setLocalSettings({
+            ...localSettings,
+            customClosures: (localSettings.customClosures || []).filter((c: any) => c.id !== id),
+        });
+    };
 
     const t = SETTINGS_TRANSLATIONS[language];
 
@@ -161,6 +215,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 isReservationsTodayClosed: data.isReservationsTodayClosed === 'true',
                 vacationStartDate: data.vacationStartDate || '',
                 vacationEndDate: data.vacationEndDate || '',
+                customClosures: Array.isArray(data.customClosures) ? data.customClosures : [],
             };
         },
         refetchOnWindowFocus: false,
@@ -365,8 +420,8 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                     </div>
                 </div>
 
-                {/* Vacation Dates Configuration */}
-                <div className="p-6 bg-orange-50/30 rounded-2xl border border-orange-100/50 mb-8 space-y-4">
+                {/* Vacation & Special Closures Configuration */}
+                <div className="p-6 bg-orange-50/30 rounded-2xl border border-orange-100/50 mb-8 space-y-6">
                     <div>
                         <h4 className="text-sm font-black text-orange-900 uppercase tracking-tight mb-1">
                             {t.vacationTitle}
@@ -375,56 +430,199 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                             {t.vacationDesc}
                         </p>
                     </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div className="space-y-1.5">
-                            <label className="block text-[9px] font-black text-orange-800/60 uppercase tracking-wider pl-1">
-                                {t.vacationStart}
-                            </label>
-                            <input
-                                type="date"
-                                value={localSettings.vacationStartDate || ''}
-                                onChange={e =>
-                                    setLocalSettings({
-                                        ...localSettings,
-                                        vacationStartDate: e.target.value,
-                                    })
-                                }
-                                className="w-full bg-white border border-orange-100 rounded-xl px-4 py-3 text-sm font-black text-gray-900 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-50 transition-all cursor-pointer"
-                            />
-                        </div>
-                        <div className="space-y-1.5">
-                            <label className="block text-[9px] font-black text-orange-800/60 uppercase tracking-wider pl-1">
-                                {t.vacationEnd}
-                            </label>
-                            <input
-                                type="date"
-                                value={localSettings.vacationEndDate || ''}
-                                onChange={e =>
-                                    setLocalSettings({
-                                        ...localSettings,
-                                        vacationEndDate: e.target.value,
-                                    })
-                                }
-                                className="w-full bg-white border border-orange-100 rounded-xl px-4 py-3 text-sm font-black text-gray-900 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-50 transition-all cursor-pointer"
-                            />
-                        </div>
+
+                    {/* Active Closures List */}
+                    <div className="space-y-3">
+                        {!localSettings.customClosures ||
+                        localSettings.customClosures.length === 0 ? (
+                            <p className="text-xs text-orange-800/60 font-bold italic pl-1 animate-in fade-in">
+                                {t.noClosures}
+                            </p>
+                        ) : (
+                            <div className="grid grid-cols-1 gap-3">
+                                {localSettings.customClosures.map((closure: any) => (
+                                    <div
+                                        key={closure.id}
+                                        className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-white rounded-xl border border-orange-100 shadow-sm gap-3 animate-in fade-in"
+                                    >
+                                        <div className="space-y-1 text-left">
+                                            <span className="inline-block bg-orange-100 text-orange-800 text-[9px] font-black uppercase px-2 py-0.5 rounded tracking-wide">
+                                                {closure.reason || 'Cierre Especial'}
+                                            </span>
+                                            <div className="text-xs font-black text-gray-900">
+                                                {language === 'ru' ? (
+                                                    closure.startDate === closure.endDate ? (
+                                                        <span>
+                                                            {(() => {
+                                                                const [y, m, d] =
+                                                                    closure.startDate.split('-');
+                                                                return `${d}/${m}/${y}`;
+                                                            })()}{' '}
+                                                            с {closure.startTime} до{' '}
+                                                            {closure.endTime}
+                                                        </span>
+                                                    ) : (
+                                                        <span>
+                                                            с{' '}
+                                                            {(() => {
+                                                                const [y, m, d] =
+                                                                    closure.startDate.split('-');
+                                                                return `${d}/${m}/${y}`;
+                                                            })()}{' '}
+                                                            ({closure.startTime}) по{' '}
+                                                            {(() => {
+                                                                const [y, m, d] =
+                                                                    closure.endDate.split('-');
+                                                                return `${d}/${m}/${y}`;
+                                                            })()}{' '}
+                                                            ({closure.endTime})
+                                                        </span>
+                                                    )
+                                                ) : closure.startDate === closure.endDate ? (
+                                                    <span>
+                                                        {(() => {
+                                                            const [y, m, d] =
+                                                                closure.startDate.split('-');
+                                                            return `${d}/${m}/${y}`;
+                                                        })()}{' '}
+                                                        de {closure.startTime} a {closure.endTime}
+                                                    </span>
+                                                ) : (
+                                                    <span>
+                                                        del{' '}
+                                                        {(() => {
+                                                            const [y, m, d] =
+                                                                closure.startDate.split('-');
+                                                            return `${d}/${m}/${y}`;
+                                                        })()}{' '}
+                                                        ({closure.startTime}) al{' '}
+                                                        {(() => {
+                                                            const [y, m, d] =
+                                                                closure.endDate.split('-');
+                                                            return `${d}/${m}/${y}`;
+                                                        })()}{' '}
+                                                        ({closure.endTime})
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleRemoveClosure(closure.id)}
+                                            className="p-2 text-red-500 hover:text-red-750 hover:bg-red-50 rounded-xl transition-all cursor-pointer border-none bg-transparent"
+                                            title={t.clearVacation}
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
-                    {(localSettings.vacationStartDate || localSettings.vacationEndDate) && (
+
+                    {/* New Closure Form */}
+                    <div className="pt-4 border-t border-orange-200/50 space-y-4 text-left">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Motivo */}
+                            <div className="space-y-1.5 md:col-span-2">
+                                <label className="block text-[9px] font-black text-orange-800/60 uppercase tracking-wider pl-1">
+                                    {t.vacationReason}
+                                </label>
+                                <input
+                                    type="text"
+                                    value={newClosure.reason}
+                                    onChange={e =>
+                                        setNewClosure({
+                                            ...newClosure,
+                                            reason: e.target.value,
+                                        })
+                                    }
+                                    placeholder={t.reasonPlaceholder}
+                                    className="w-full bg-white border border-orange-100 rounded-xl px-4 py-2.5 text-xs font-bold text-gray-900 outline-none focus:border-orange-400 focus:ring-4 focus:ring-orange-50 transition-all"
+                                />
+                            </div>
+
+                            {/* Inicio */}
+                            <div className="space-y-1.5">
+                                <label className="block text-[9px] font-black text-orange-800/60 uppercase tracking-wider pl-1">
+                                    {t.vacationStart}
+                                </label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="date"
+                                        value={newClosure.startDate}
+                                        onChange={e =>
+                                            setNewClosure({
+                                                ...newClosure,
+                                                startDate: e.target.value,
+                                                endDate: newClosure.endDate
+                                                    ? newClosure.endDate
+                                                    : e.target.value, // Auto-populate end date
+                                            })
+                                        }
+                                        className="flex-1 bg-white border border-orange-100 rounded-xl px-3 py-2 text-xs font-bold text-gray-900 outline-none focus:border-orange-400 cursor-pointer"
+                                    />
+                                    <input
+                                        type="time"
+                                        value={newClosure.startTime}
+                                        onChange={e =>
+                                            setNewClosure({
+                                                ...newClosure,
+                                                startTime: e.target.value,
+                                            })
+                                        }
+                                        className="w-24 bg-white border border-orange-100 rounded-xl px-3 py-2 text-xs font-bold text-gray-900 outline-none focus:border-orange-400 cursor-pointer"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* Fin */}
+                            <div className="space-y-1.5">
+                                <label className="block text-[9px] font-black text-orange-800/60 uppercase tracking-wider pl-1">
+                                    {t.vacationEnd}
+                                </label>
+                                <div className="flex gap-2">
+                                    <input
+                                        type="date"
+                                        value={newClosure.endDate}
+                                        onChange={e =>
+                                            setNewClosure({
+                                                ...newClosure,
+                                                endDate: e.target.value,
+                                            })
+                                        }
+                                        className="flex-1 bg-white border border-orange-100 rounded-xl px-3 py-2 text-xs font-bold text-gray-900 outline-none focus:border-orange-400 cursor-pointer"
+                                    />
+                                    <input
+                                        type="time"
+                                        value={newClosure.endTime}
+                                        onChange={e =>
+                                            setNewClosure({
+                                                ...newClosure,
+                                                endTime: e.target.value,
+                                            })
+                                        }
+                                        className="w-24 bg-white border border-orange-100 rounded-xl px-3 py-2 text-xs font-bold text-gray-900 outline-none focus:border-orange-400 cursor-pointer"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
                         <button
                             type="button"
-                            onClick={() =>
-                                setLocalSettings({
-                                    ...localSettings,
-                                    vacationStartDate: '',
-                                    vacationEndDate: '',
-                                })
+                            disabled={
+                                !newClosure.startDate ||
+                                !newClosure.endDate ||
+                                !newClosure.startTime ||
+                                !newClosure.endTime
                             }
-                            className="text-[9px] font-black text-orange-600 hover:text-black uppercase tracking-widest pl-1 transition-colors border-none bg-transparent cursor-pointer flex items-center gap-1.5"
+                            onClick={handleAddClosure}
+                            className="flex items-center justify-center gap-2 bg-orange-600 hover:bg-black text-white px-5 py-3 rounded-xl text-[9px] font-black uppercase tracking-wider transition-all disabled:opacity-40 cursor-pointer border-none"
                         >
-                            <X size={12} strokeWidth={3} />
-                            {t.clearVacation}
+                            <Plus size={14} strokeWidth={2.5} />
+                            {t.addClosureBtn}
                         </button>
-                    )}
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-pretty">
