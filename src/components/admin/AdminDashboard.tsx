@@ -10,6 +10,8 @@ import {
     Info,
     ShoppingBag,
     DollarSign,
+    Users,
+    Eye,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,7 +29,7 @@ interface AdminDashboardProps {
 
 const DASHBOARD_TRANSLATIONS = {
     ru: {
-        summary: 'Сводка за сегодня',
+        summary: 'Сводка показателей',
         viewStore: 'В ресторан',
         refresh: 'Обновить',
         storeParams: 'Параметры заведения',
@@ -35,23 +37,37 @@ const DASHBOARD_TRANSLATIONS = {
         edit: 'ИЗМЕНИТЬ',
         stats: {
             revenue: 'Выручка за сегодня',
+            revenue30: 'Выручка за 30 дней',
             missed: 'Упущенная выручка',
             newOrders: 'Новые заказы',
             pending: 'Ожидающие',
             newUsers: 'Новые клиенты',
+            totalUsers: 'Всего клиентов',
+            visitsToday: 'Посещения сегодня',
+            visits30: 'Посещения за 30 дней',
             revenueDesc: 'Всего получено (Мадрид)',
+            revenue30Desc: 'За последние 30 дней',
             missedDesc: 'Заказы в корзинах',
             ordersDesc: 'Получено сегодня',
             pendingDesc: 'Требуют внимания',
             usersDesc: 'Зарегистрировано сегодня',
+            totalUsersDesc: 'Зарегистрировано всего',
+            visitsTodayDesc: 'Уникальные визиты сегодня',
+            visits30Desc: 'Уникальные визиты за 30 дней',
             revenueHint:
                 'Сумма всех заказов, которые не были отменены (статусы: получен, готовится, в пути, доставлен). Считается от 00:00 текущего дня.',
+            revenue30Hint: 'Сумма всех заказов за последние 30 дней, за исключением отмененных.',
             missedHint:
                 'Оценка выручки от товаров, которые пользователи добавили в корзину сегодня, но не завершили покупку. Данные из логов аналитики брошенных корзин.',
             ordersHint: 'Общее количество новых заказов за сегодня.',
             pendingHint:
                 'Заказы со статусами "Ожидает" и "Получен", которые требуют подтверждения или начала приготовления.',
             usersHint: 'Количество уникальных клиентов, зарегистрировавшихся в системе за сегодня.',
+            totalUsersHint: 'Общее количество клиентов, зарегистрированных в системе.',
+            visitsTodayHint:
+                'Количество уникальных посетителей (сессий), зафиксированных на сайте за сегодня.',
+            visits30Hint:
+                'Количество уникальных посетителей (сессий), зафиксированных на сайте за последние 30 дней.',
         },
         recentOrders: 'Последние заказы',
         viewAll: 'Смотреть все',
@@ -77,7 +93,7 @@ const DASHBOARD_TRANSLATIONS = {
         },
     },
     es: {
-        summary: 'Resumen hoy',
+        summary: 'Resumen de Indicadores',
         viewStore: 'Ver Restaurante',
         refresh: 'Actualizar',
         storeParams: 'Parámetros del Restaurante',
@@ -85,17 +101,27 @@ const DASHBOARD_TRANSLATIONS = {
         edit: 'EDITAR',
         stats: {
             revenue: 'Ingresos de hoy',
+            revenue30: 'Ingresos 30 días',
             missed: 'Ingresos Perdidos',
             newOrders: 'Nuevos Pedidos',
             pending: 'Pedidos Pendientes',
             newUsers: 'Nuevos Clientes',
+            totalUsers: 'Total Clientes',
+            visitsToday: 'Visitas de hoy',
+            visits30: 'Visitas 30 días',
             revenueDesc: 'Total cobrado (Madrid)',
+            revenue30Desc: 'Últimos 30 días',
             missedDesc: 'Pedidos abandonados en carrito',
             ordersDesc: 'Pedidos recibidos hoy',
             pendingDesc: 'Atención inmediata',
             usersDesc: 'Registrados hoy',
+            totalUsersDesc: 'Registrados en total',
+            visitsTodayDesc: 'Visitas únicas hoy',
+            visits30Desc: 'Visitas únicas 30 días',
             revenueHint:
                 'Suma de todos los pedidos no cancelados hoy (estados: recibido, preparando, en camino, entregado). Desde las 00:00.',
+            revenue30Hint:
+                'Suma de todos los pedidos (excluyendo cancelados) en los últimos 30 días.',
             missedHint:
                 'Ingresos estimados de productos que los usuarios añadieron al carrito hoy pero no finalizaron la compra.',
             ordersHint: 'Número total de nuevos pedidos recibidos hoy.',
@@ -103,6 +129,10 @@ const DASHBOARD_TRANSLATIONS = {
                 'Pedidos en estado "Pendiente" o "Recibido" que requieren atención o confirmación inmediata.',
             usersHint:
                 'Número de clientes nuevos registrados en la plataforma durante el día de hoy.',
+            totalUsersHint: 'Número total de clientes registrados en el sistema.',
+            visitsTodayHint: 'Número de visitantes únicos (sesiones) registrados en el sitio hoy.',
+            visits30Hint:
+                'Número de visitantes únicos (sesiones) registrados en el sitio en los últimos 30 días.',
         },
         recentOrders: 'Últimos Pedidos',
         viewAll: 'Ver todos',
@@ -295,8 +325,8 @@ export default function AdminDashboard({
             </div>
 
             {loading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                    {[1, 2, 3, 4, 5].map(i => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => (
                         <div
                             key={i}
                             className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col justify-between h-[140px] animate-pulse"
@@ -313,7 +343,7 @@ export default function AdminDashboard({
                     ))}
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     <StatCard
                         title={t.stats.revenue}
                         value={`${Number(stats?.revenueToday || 0)
@@ -323,6 +353,17 @@ export default function AdminDashboard({
                         colorClass="bg-green-50 text-green-600"
                         desc={t.stats.revenueDesc}
                         hint={t.stats.revenueHint}
+                        t={t}
+                    />
+                    <StatCard
+                        title={t.stats.revenue30}
+                        value={`${Number(stats?.promoStats?.totalRevenue30 || 0)
+                            .toFixed(2)
+                            .replace('.', ',')} €`}
+                        icon={TrendingUp}
+                        colorClass="bg-emerald-50 text-emerald-600"
+                        desc={t.stats.revenue30Desc}
+                        hint={t.stats.revenue30Hint}
                         t={t}
                     />
                     <StatCard
@@ -361,6 +402,33 @@ export default function AdminDashboard({
                         colorClass="bg-purple-50 text-purple-600"
                         desc={t.stats.usersDesc}
                         hint={t.stats.usersHint}
+                        t={t}
+                    />
+                    <StatCard
+                        title={t.stats.totalUsers}
+                        value={stats?.stats?.totalUsers || 0}
+                        icon={Users}
+                        colorClass="bg-indigo-50 text-indigo-600"
+                        desc={t.stats.totalUsersDesc}
+                        hint={t.stats.totalUsersHint}
+                        t={t}
+                    />
+                    <StatCard
+                        title={t.stats.visitsToday}
+                        value={stats?.visitsToday || 0}
+                        icon={Eye}
+                        colorClass="bg-sky-50 text-sky-600"
+                        desc={t.stats.visitsTodayDesc}
+                        hint={t.stats.visitsTodayHint}
+                        t={t}
+                    />
+                    <StatCard
+                        title={t.stats.visits30}
+                        value={stats?.visits30 || 0}
+                        icon={Eye}
+                        colorClass="bg-teal-50 text-teal-600"
+                        desc={t.stats.visits30Desc}
+                        hint={t.stats.visits30Hint}
                         t={t}
                     />
                 </div>

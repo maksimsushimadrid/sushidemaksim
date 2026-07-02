@@ -18,27 +18,26 @@ router.post(
     '/track',
     validateResource(trackEventSchema),
     asyncHandler(async (req: Request, res: Response) => {
-        // Analytics tracking is temporarily disabled by owner request
-        return res.status(200).json({
-            success: true,
-            message: 'Tracking is temporarily disabled',
-        });
-
         const { eventName, sessionId, userId, path, metadata } = req.body;
 
-        // 1. Record in generic site_events table
-        const payload: any = {
-            event_name: eventName,
-            session_id: sessionId,
-            path: path || null,
-            metadata: metadata || {},
-            user_id: userId || null,
-        };
+        // Only save high-value events to keep the database size small and avoid Vercel limits.
+        // We only save 'page_view' to count site visits, and 'order_placed' to track success.
+        // High-frequency interactions like user_idle, clicks, and form focus are discarded.
+        const allowedEvents = ['page_view', 'order_placed'];
+        if (allowedEvents.includes(eventName)) {
+            const payload: any = {
+                event_name: eventName,
+                session_id: sessionId,
+                path: path || null,
+                metadata: metadata || {},
+                user_id: userId || null,
+            };
 
-        const { error: siteError } = await supabase.from('site_events').insert(payload);
+            const { error: siteError } = await supabase.from('site_events').insert(payload);
 
-        if (siteError) {
-            console.error('❌ Supabase Generic Analytics Error:', (siteError as any).message);
+            if (siteError) {
+                console.error('❌ Supabase Generic Analytics Error:', (siteError as any).message);
+            }
         }
 
         // 2. Compatibility: If it's a funnel event, also potentially write to legacy funnel_events table

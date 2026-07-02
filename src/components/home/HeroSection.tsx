@@ -54,6 +54,7 @@ export function HeroSection() {
     const [shouldPlayVideo, setShouldPlayVideo] = useState(false);
 
     useEffect(() => {
+        let timer: NodeJS.Timeout;
         const checkPerformancePrefs = () => {
             const isMobile = window.innerWidth < 768;
             const prefersReducedMotion = window.matchMedia(
@@ -69,11 +70,18 @@ export function HeroSection() {
             }
 
             if (!isMobile && !prefersReducedMotion && !isSlowConnection && !isDataSaver) {
-                setShouldPlayVideo(true);
+                // Defer loading of heavy background video by 2 seconds to optimize LCP.
+                // The lightweight preloaded poster image will render first and serve as the LCP element.
+                timer = setTimeout(() => {
+                    setShouldPlayVideo(true);
+                }, 2000);
             }
         };
 
         checkPerformancePrefs();
+        return () => {
+            if (timer) clearTimeout(timer);
+        };
     }, []);
 
     return (
@@ -112,6 +120,7 @@ export function HeroSection() {
                         alt="Sushi background"
                         className="absolute inset-0 w-full h-full object-cover"
                         loading="eager"
+                        fetchPriority="high"
                     />
                 )}
             </div>
