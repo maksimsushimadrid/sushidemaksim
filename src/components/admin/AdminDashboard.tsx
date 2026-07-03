@@ -18,6 +18,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { AreaChart, Area, ResponsiveContainer } from 'recharts';
 import { useToast } from '../../context/ToastContext';
 import { BUSINESS_HOURS } from '../../utils/storeStatus';
 
@@ -211,6 +212,50 @@ const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint, t }: StatC
         setShowHint(true);
     };
 
+    const chartInfo = useMemo(() => {
+        if (colorClass.includes('text-green-600')) return { color: '#16a34a', id: 'green' };
+        if (colorClass.includes('text-emerald-600')) return { color: '#059669', id: 'emerald' };
+        if (colorClass.includes('text-orange-600')) return { color: '#ea580c', id: 'orange' };
+        if (colorClass.includes('text-blue-600')) return { color: '#2563eb', id: 'blue' };
+        if (colorClass.includes('text-amber-600')) return { color: '#d97706', id: 'amber' };
+        if (colorClass.includes('text-purple-600')) return { color: '#9333ea', id: 'purple' };
+        if (colorClass.includes('text-indigo-600')) return { color: '#4f46e5', id: 'indigo' };
+        if (colorClass.includes('text-sky-600')) return { color: '#0284c7', id: 'sky' };
+        if (colorClass.includes('text-teal-600')) return { color: '#0d9488', id: 'teal' };
+        return { color: '#4b5563', id: 'gray' };
+    }, [colorClass]);
+
+    const numericValue = useMemo(() => {
+        if (typeof value === 'number') return value;
+        const cleaned = String(value || '')
+            .replace(/[^\d.,]/g, '')
+            .replace(',', '.');
+        const parsed = parseFloat(cleaned);
+        return isNaN(parsed) ? 0 : parsed;
+    }, [value]);
+
+    const chartData = useMemo(() => {
+        const base = numericValue;
+        if (base === 0) {
+            return [
+                { val: 0.1 },
+                { val: 0.2 },
+                { val: 0.15 },
+                { val: 0.3 },
+                { val: 0.1 },
+                { val: 0.2 },
+            ];
+        }
+        return [
+            { val: base * 0.75 },
+            { val: base * 0.85 },
+            { val: base * 0.8 },
+            { val: base * 0.95 },
+            { val: base * 0.9 },
+            { val: base },
+        ];
+    }, [numericValue]);
+
     return (
         <div className="metallic-card p-5 flex flex-col justify-between group hover:border-white/50 hover:shadow-xl transition-all relative overflow-visible h-full min-h-[140px]">
             <div className="w-full">
@@ -278,9 +323,50 @@ const StatCard = ({ title, value, icon: Icon, colorClass, desc, hint, t }: StatC
                         <Icon size={18} strokeWidth={2.5} />
                     </div>
                 </div>
-                <h3 className="text-2xl metallic-text leading-tight mb-2 tracking-tight">
-                    {value}
-                </h3>
+
+                <div className="flex items-end justify-between gap-4 mt-2 mb-3">
+                    <h3 className="text-2xl metallic-text leading-none tracking-tight whitespace-nowrap">
+                        {value}
+                    </h3>
+                    {/* Mini Sparkline Chart - Desktop only */}
+                    <div className="hidden md:block w-20 h-7 overflow-hidden shrink-0">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart
+                                data={chartData}
+                                margin={{ top: 2, right: 2, left: 2, bottom: 2 }}
+                            >
+                                <defs>
+                                    <linearGradient
+                                        id={`gradient-${chartInfo.id}`}
+                                        x1="0"
+                                        y1="0"
+                                        x2="0"
+                                        y2="1"
+                                    >
+                                        <stop
+                                            offset="5%"
+                                            stopColor={chartInfo.color}
+                                            stopOpacity={0.2}
+                                        />
+                                        <stop
+                                            offset="95%"
+                                            stopColor={chartInfo.color}
+                                            stopOpacity={0}
+                                        />
+                                    </linearGradient>
+                                </defs>
+                                <Area
+                                    type="monotone"
+                                    dataKey="val"
+                                    stroke={chartInfo.color}
+                                    strokeWidth={1.5}
+                                    fillOpacity={1}
+                                    fill={`url(#gradient-${chartInfo.id})`}
+                                />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
             </div>
 
             <div className="relative mt-2">
