@@ -794,20 +794,20 @@ export default function AdminPage() {
                 <main className="flex-1 min-w-0 md:ml-60 p-3 md:p-4 flex flex-col min-h-screen">
                     <div className="w-full flex-1 flex flex-col">
                         {/* Top Bar */}
-                        <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
-                            <div className="flex items-center gap-4">
+                        <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-6 pb-4 border-b border-gray-100">
+                            <div className="flex items-center gap-3 w-full sm:w-auto">
                                 <button
                                     onClick={() => setIsMobileMenuOpen(true)}
-                                    className="md:hidden p-2 text-slate-600 hover:bg-gray-100 rounded-xl active:scale-95 transition-all"
+                                    className="md:hidden p-2 text-slate-600 hover:bg-gray-100 rounded-xl active:scale-95 transition-all shrink-0"
                                 >
                                     <MenuIcon size={24} strokeWidth={2.5} />
                                 </button>
-                                <h1 className="text-xl md:text-2xl metallic-text flex items-center gap-2 md:gap-3 group">
+                                <h1 className="text-lg sm:text-xl md:text-2xl metallic-text flex items-center gap-2 md:gap-3 group truncate">
                                     <div className="hidden md:block w-1.5 h-6 bg-slate-800 rounded-full group-hover:h-8 transition-all duration-300 shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
                                     {navLinks.find(t_link => t_link.id === activeTab)?.label}
                                 </h1>
                             </div>
-                            <div className="flex items-center gap-2 md:gap-4">
+                            <div className="flex items-center justify-between sm:justify-end gap-2 md:gap-4 w-full sm:w-auto">
                                 {/* Language Switcher */}
                                 <div className="flex p-1 bg-gray-100 rounded-xl border border-gray-200 shadow-inner">
                                     <button
@@ -834,7 +834,7 @@ export default function AdminPage() {
 
                                 <button
                                     onClick={() => setShowHelp(!showHelp)}
-                                    className="flex items-center gap-2 px-4 py-2 metallic-button rounded-xl active:scale-95"
+                                    className="flex items-center gap-2 px-4 py-2 metallic-button rounded-xl active:scale-95 shrink-0"
                                 >
                                     <HelpCircle size={18} strokeWidth={2.5} />
                                     <span className="hidden md:inline uppercase tracking-tight text-[11px] font-black">

@@ -601,10 +601,10 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-2 p-1.5 bg-gray-50 rounded-2xl border border-gray-100">
+                <div className="flex items-center gap-2 p-1.5 bg-gray-50 rounded-2xl border border-gray-100 overflow-x-auto no-scrollbar max-w-full shrink-0">
                     <button
                         onClick={() => setActiveTab('banners')}
-                        className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                        className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 whitespace-nowrap ${
                             activeTab === 'banners'
                                 ? 'bg-white text-gray-900 shadow-sm'
                                 : 'text-gray-400 hover:text-gray-600'
@@ -614,7 +614,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                     </button>
                     <button
                         onClick={() => setActiveTab('loyalty')}
-                        className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                        className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 whitespace-nowrap ${
                             activeTab === 'loyalty'
                                 ? 'bg-white text-gray-900 shadow-sm'
                                 : 'text-gray-400 hover:text-gray-600'
@@ -624,7 +624,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                     </button>
                     <button
                         onClick={() => setActiveTab('promoCodes')}
-                        className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                        className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 whitespace-nowrap ${
                             activeTab === 'promoCodes'
                                 ? 'bg-white text-gray-900 shadow-sm'
                                 : 'text-gray-400 hover:text-gray-600'
@@ -632,10 +632,10 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                     >
                         {t.promoCodesTab}
                     </button>
-                    <div className="w-px h-6 bg-gray-200 mx-2" />
+                    <div className="w-px h-6 bg-gray-200 mx-2 shrink-0" />
                     <button
                         onClick={() => refetch()}
-                        className="p-3 text-gray-400 hover:text-gray-900 bg-white border border-gray-100 rounded-xl transition-all shadow-sm active:scale-95"
+                        className="p-3 text-gray-400 hover:text-gray-900 bg-white border border-gray-100 rounded-xl transition-all shadow-sm active:scale-95 shrink-0"
                         title={t.refresh}
                     >
                         <RefreshCw

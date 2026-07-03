@@ -49,6 +49,7 @@ import {
 } from '../utils/helpers.js';
 import { processImage } from '../utils/imageProcessor.js';
 import { invalidateMenuCache } from './menu.js';
+import { BUSINESS_HOURS } from '../utils/storeStatus.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -1778,8 +1779,14 @@ router.get(
                 .maybeSingle();
 
             if (!existing) {
-                // Generate it now!
-                console.log(`📊 Auto-generating report for ${yesterdayDateStr}...`);
+                // Determine if yesterday was closed
+                const [y, m, d] = yesterdayDateStr.split('-').map(Number);
+                const yesterdayDayOfWeek = new Date(y, m - 1, d).getDay();
+                const isClosed =
+                    !BUSINESS_HOURS[yesterdayDayOfWeek] ||
+                    BUSINESS_HOURS[yesterdayDayOfWeek].length === 0;
+
+                console.log(`📊 Auto-generating report check for ${yesterdayDateStr}...`);
 
                 const [
                     { data: revenueData },
@@ -1832,19 +1839,25 @@ router.get(
                 const revenue = revenueData?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
                 const avg = totalOrders ? revenue / (totalOrders || 1) : 0;
 
-                await supabase.from('daily_reports').upsert(
-                    {
-                        date: yesterdayDateStr,
-                        total_revenue: Math.round(revenue * 100) / 100,
-                        orders_count: totalOrders || 0,
-                        new_users_count: newUsers || 0,
-                        avg_ticket: Math.round(avg * 100) / 100,
-                        cancelled_count: cancelledCount || 0,
-                        late_count: lateCount || 0,
-                        invitations_count: invitationsCount || 0,
-                    },
-                    { onConflict: 'date' }
-                );
+                if (isClosed && !totalOrders) {
+                    console.log(
+                        `📊 Skipping daily report generation for closed day with 0 orders: ${yesterdayDateStr}`
+                    );
+                } else {
+                    await supabase.from('daily_reports').upsert(
+                        {
+                            date: yesterdayDateStr,
+                            total_revenue: Math.round(revenue * 100) / 100,
+                            orders_count: totalOrders || 0,
+                            new_users_count: newUsers || 0,
+                            avg_ticket: Math.round(avg * 100) / 100,
+                            cancelled_count: cancelledCount || 0,
+                            late_count: lateCount || 0,
+                            invitations_count: invitationsCount || 0,
+                        },
+                        { onConflict: 'date' }
+                    );
+                }
             }
         } catch (e) {
             console.error('📊 Error in auto-report check:', e);
@@ -1860,7 +1873,15 @@ router.get(
         if (error) {
             return res.json([]);
         }
-        res.json(reports || []);
+
+        const filteredReports = (reports || []).filter(report => {
+            const [y, m, d] = report.date.split('-').map(Number);
+            const dayOfWeek = new Date(y, m - 1, d).getDay();
+            const isClosed = !BUSINESS_HOURS[dayOfWeek] || BUSINESS_HOURS[dayOfWeek].length === 0;
+            return !(isClosed && report.orders_count === 0);
+        });
+
+        res.json(filteredReports);
     })
 );
 

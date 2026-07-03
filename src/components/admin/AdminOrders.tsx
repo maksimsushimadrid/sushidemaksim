@@ -475,7 +475,7 @@ export default function AdminOrders({
                                 </button>
                             )}
                         </div>
-                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                        <div className="flex items-center gap-3 w-full sm:w-auto overflow-x-auto no-scrollbar max-w-full shrink-0">
                             <button
                                 onClick={() => {
                                     const newVal = !isGlobalSoundEnabled;
@@ -484,7 +484,7 @@ export default function AdminOrders({
                                         onTestSound();
                                     }
                                 }}
-                                className={`flex-1 sm:flex-none flex items-center justify-center p-3 rounded-xl transition-all border shadow-sm active:scale-95 ${
+                                className={`shrink-0 flex-1 sm:flex-none flex items-center justify-center p-3 rounded-xl transition-all border shadow-sm active:scale-95 ${
                                     isGlobalSoundEnabled
                                         ? 'bg-green-50 text-green-600 border-green-100 hover:bg-green-600 hover:text-white'
                                         : 'bg-gray-50 text-gray-400 border-gray-100 hover:bg-gray-200 hover:text-gray-900'
@@ -499,21 +499,21 @@ export default function AdminOrders({
                             </button>
                             <button
                                 onClick={() => onTestSound?.('mesa')}
-                                className="flex-[2] sm:flex-none flex items-center justify-center px-4 py-3 bg-orange-50 text-orange-600 border border-orange-100 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-600 hover:text-white transition-all active:scale-95 shadow-sm whitespace-nowrap"
+                                className="shrink-0 flex-[2] sm:flex-none flex items-center justify-center px-4 py-3 bg-orange-50 text-orange-600 border border-orange-100 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-orange-600 hover:text-white transition-all active:scale-95 shadow-sm whitespace-nowrap"
                                 title="Test: Mesa"
                             >
                                 {t.testSound}
                             </button>
                             <button
                                 onClick={() => onTestSound?.('delivery')}
-                                className="flex-[2] sm:flex-none flex items-center justify-center px-4 py-3 bg-blue-50 text-blue-600 border border-blue-100 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all active:scale-95 shadow-sm whitespace-nowrap"
+                                className="shrink-0 flex-[2] sm:flex-none flex items-center justify-center px-4 py-3 bg-blue-50 text-blue-600 border border-blue-100 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all active:scale-95 shadow-sm whitespace-nowrap"
                                 title="Test: Web/Delivery"
                             >
                                 {t.testSoundWeb}
                             </button>
                             <button
                                 onClick={() => refetch()}
-                                className="flex-1 sm:flex-none flex items-center justify-center p-3 text-gray-500 hover:text-gray-900 bg-gray-50 hover:bg-white border border-gray-100 hover:border-gray-200 rounded-xl transition-all shadow-sm active:scale-95"
+                                className="shrink-0 flex-1 sm:flex-none flex items-center justify-center p-3 text-gray-500 hover:text-gray-900 bg-gray-50 hover:bg-white border border-gray-100 hover:border-gray-200 rounded-xl transition-all shadow-sm active:scale-95"
                                 title={t.refresh}
                             >
                                 <RefreshCw

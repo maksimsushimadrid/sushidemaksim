@@ -12,11 +12,14 @@ import {
     DollarSign,
     Users,
     Eye,
+    Calendar,
+    X,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useToast } from '../../context/ToastContext';
+import { BUSINESS_HOURS } from '../../utils/storeStatus';
 
 interface AdminDashboardProps {
     stats: any;
@@ -76,16 +79,27 @@ const DASHBOARD_TRANSLATIONS = {
         topProducts: 'ТОП-10 товаров за месяц',
         noSales: 'Нет данных о продажах',
         sold: 'прод.',
-        reportHistory: 'История ежедневных отчетов',
+        reportHistory: 'История еженедельных отчетов',
         last30Days: 'История за все время',
         noReports: 'Отчетов пока нет.',
         table: {
-            day: 'День',
+            day: 'Неделя',
             orders: 'Заказы',
             revenue: 'Доход',
             avgTicket: 'Средний чек',
             details: 'Детали',
             ordersLabel: 'зак.',
+        },
+        modal: {
+            title: 'Детали недели',
+            day: 'День',
+            orders: 'Заказы',
+            revenue: 'Выручка',
+            avgTicket: 'Ср. чек',
+            closed: 'Выходной',
+            close: 'Закрыть',
+            totalRevenue: 'Выручка за неделю',
+            totalOrders: 'Заказы за неделю',
         },
         hints: {
             howCalculated: 'Как считается',
@@ -141,16 +155,27 @@ const DASHBOARD_TRANSLATIONS = {
         topProducts: 'TOP 10 Productos Mensuales',
         noSales: 'No hay datos de ventas disponibles',
         sold: 'vend.',
-        reportHistory: 'Historial de Reportes Diarios',
+        reportHistory: 'Historial de Reportes Semanales',
         last30Days: 'Historial completo',
         noReports: 'No hay reportes disponibles todavía.',
         table: {
-            day: 'Día',
+            day: 'Semana',
             orders: 'Pedidos',
             revenue: 'Ingresos',
             avgTicket: 'Ticket Medio',
             details: 'Detalles',
             ordersLabel: 'ped.',
+        },
+        modal: {
+            title: 'Detalles de la Semana',
+            day: 'Día',
+            orders: 'Pedidos',
+            revenue: 'Ingresos',
+            avgTicket: 'T. Medio',
+            closed: 'Cerrado',
+            close: 'Cerrar',
+            totalRevenue: 'Ingresos semanales',
+            totalOrders: 'Pedidos semanales',
         },
         hints: {
             howCalculated: 'Cómo se calcula',
@@ -283,17 +308,100 @@ export default function AdminDashboard({
 
     const [currentPage, setCurrentPage] = useState(1);
     const rowsPerPage = 30;
+    const [selectedWeek, setSelectedWeek] = useState<any>(null);
+
+    const weeklyReports = useMemo(() => {
+        const getWeekKeyAndRange = (dateStr: string) => {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            const date = new Date(y, m - 1, d);
+            const day = date.getDay();
+            const diffToMonday = day === 0 ? -6 : 1 - day;
+
+            const monday = new Date(date);
+            monday.setDate(date.getDate() + diffToMonday);
+            monday.setHours(0, 0, 0, 0);
+
+            const sunday = new Date(monday);
+            sunday.setDate(monday.getDate() + 6);
+            sunday.setHours(23, 59, 59, 999);
+
+            const mondayStr = monday.toLocaleDateString('en-CA');
+            return {
+                key: mondayStr,
+                monday,
+                sunday,
+            };
+        };
+
+        const weeksMap: Record<string, any> = {};
+
+        (reports || []).forEach((report: any) => {
+            const { key, monday, sunday } = getWeekKeyAndRange(report.date);
+
+            if (!weeksMap[key]) {
+                weeksMap[key] = {
+                    weekKey: key,
+                    startDate: monday,
+                    endDate: sunday,
+                    orders_count: 0,
+                    total_revenue: 0,
+                    avg_ticket: 0,
+                    new_users_count: 0,
+                    cancelled_count: 0,
+                    invitations_count: 0,
+                    daily_reports: [],
+                };
+            }
+
+            const week = weeksMap[key];
+            week.orders_count += report.orders_count || 0;
+            week.total_revenue += Number(report.total_revenue || report.total || 0);
+            week.new_users_count += report.new_users_count || 0;
+            week.cancelled_count += report.cancelled_count || 0;
+            week.invitations_count += report.invitations_count || 0;
+            week.daily_reports.push(report);
+        });
+
+        const result = Object.values(weeksMap).map(week => {
+            week.avg_ticket = week.orders_count > 0 ? week.total_revenue / week.orders_count : 0;
+            week.daily_reports.sort((a: any, b: any) => b.date.localeCompare(a.date));
+            return week;
+        });
+
+        result.sort((a, b) => b.weekKey.localeCompare(a.weekKey));
+        return result;
+    }, [reports]);
 
     const paginatedReports = useMemo(() => {
         const startIndex = (currentPage - 1) * rowsPerPage;
-        return (reports || []).slice(startIndex, startIndex + rowsPerPage);
-    }, [reports, currentPage]);
+        return (weeklyReports || []).slice(startIndex, startIndex + rowsPerPage);
+    }, [weeklyReports, currentPage]);
 
-    const totalPages = Math.ceil((reports?.length || 0) / rowsPerPage);
+    const totalPages = Math.ceil((weeklyReports?.length || 0) / rowsPerPage);
 
     useEffect(() => {
         setCurrentPage(1);
-    }, [reports?.length]);
+    }, [weeklyReports?.length]);
+
+    const formatWeekRange = (startDate: Date, endDate: Date) => {
+        const startDay = startDate.getDate();
+        const endDay = endDate.getDate();
+        const startMonth = startDate.toLocaleDateString(dateLocale, { month: 'short' });
+        const endMonth = endDate.toLocaleDateString(dateLocale, { month: 'short' });
+
+        if (startMonth === endMonth) {
+            return `${startDay} - ${endDay} ${startMonth}`;
+        }
+        return `${startDay} ${startMonth} - ${endDay} ${endMonth}`;
+    };
+
+    const getWeekNumber = (date: Date): number => {
+        const tempDate = new Date(date.valueOf());
+        tempDate.setDate(tempDate.getDate() + 4 - (tempDate.getDay() || 7));
+        const yearStart = new Date(tempDate.getFullYear(), 0, 1);
+        const weekNo = Math.ceil(((tempDate.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+        return weekNo;
+    };
 
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -673,39 +781,38 @@ export default function AdminDashboard({
                                 <tbody className="divide-y divide-gray-50">
                                     {paginatedReports.map((report: any) => (
                                         <tr
-                                            key={report.date}
-                                            className="hover:bg-gray-50/80 transition-all group active:scale-[0.99]"
+                                            key={report.weekKey}
+                                            onClick={() => setSelectedWeek(report)}
+                                            className="hover:bg-gray-50/80 transition-all group active:scale-[0.99] cursor-pointer"
                                         >
                                             <td className="px-2.5 md:px-4 py-3 md:py-5">
                                                 <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex flex-col items-center justify-center shadow-sm group-hover:bg-orange-600 group-hover:border-orange-600 transition-colors">
-                                                        <span className="text-[9px] font-black text-gray-400 uppercase leading-none mb-1 group-hover:text-white/80">
-                                                            {new Date(
-                                                                report.date
-                                                            ).toLocaleDateString(dateLocale, {
-                                                                month: 'short',
-                                                            })}
+                                                    <div className="w-12 h-12 rounded-2xl bg-white border border-gray-100 flex flex-col items-center justify-center shadow-sm group-hover:bg-orange-600 group-hover:border-orange-600 transition-colors shrink-0 animate-in fade-in">
+                                                        <Calendar
+                                                            className="text-gray-400 group-hover:text-white"
+                                                            size={18}
+                                                        />
+                                                    </div>
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs font-black text-gray-700 uppercase tracking-tight group-hover:text-orange-600 transition-colors">
+                                                            {formatWeekRange(
+                                                                report.startDate,
+                                                                report.endDate
+                                                            )}
                                                         </span>
-                                                        <span className="text-lg font-black text-gray-900 leading-none group-hover:text-white">
-                                                            {new Date(report.date).getDate()}
+                                                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest mt-1">
+                                                            {language === 'ru'
+                                                                ? 'Неделя'
+                                                                : 'Semana'}{' '}
+                                                            {getWeekNumber(report.startDate)}
                                                         </span>
                                                     </div>
-                                                    <span className="text-xs font-black text-gray-700 uppercase tracking-tight group-hover:text-orange-600 transition-colors">
-                                                        {new Date(report.date).toLocaleDateString(
-                                                            dateLocale,
-                                                            {
-                                                                weekday: 'long',
-                                                            }
-                                                        )}
-                                                    </span>
                                                 </div>
                                             </td>
                                             <td className="px-2.5 md:px-4 py-3 md:py-5">
                                                 <div className="flex items-center gap-2">
                                                     <span className="text-[15px] font-black text-gray-900">
-                                                        {report.orders_count ??
-                                                            report.orderCount ??
-                                                            0}
+                                                        {report.orders_count}
                                                     </span>
                                                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-tight">
                                                         {t.table.ordersLabel}
@@ -714,9 +821,7 @@ export default function AdminDashboard({
                                             </td>
                                             <td className="px-2.5 md:px-4 py-3 md:py-5">
                                                 <span className="text-sm font-black text-green-600 bg-green-50 px-3 py-1.5 rounded-xl border border-green-100 shadow-sm whitespace-nowrap">
-                                                    {Number(
-                                                        report.total_revenue ?? report.total ?? 0
-                                                    )
+                                                    {Number(report.total_revenue)
                                                         .toFixed(2)
                                                         .replace('.', ',')}{' '}
                                                     €
@@ -724,12 +829,7 @@ export default function AdminDashboard({
                                             </td>
                                             <td className="px-2.5 md:px-4 py-3 md:py-5">
                                                 <span className="text-xs font-black text-gray-600 bg-gray-50 px-3 py-1.5 rounded-xl border border-gray-100 uppercase tracking-tight whitespace-nowrap">
-                                                    {Number(
-                                                        report.avg_ticket ??
-                                                            report.average_ticket ??
-                                                            report.avg_price ??
-                                                            0
-                                                    )
+                                                    {Number(report.avg_ticket)
                                                         .toFixed(2)
                                                         .replace('.', ',')}{' '}
                                                     €
@@ -755,18 +855,20 @@ export default function AdminDashboard({
                                 </span>
                                 <div className="flex items-center gap-2">
                                     <button
-                                        onClick={() =>
-                                            setCurrentPage(prev => Math.max(1, prev - 1))
-                                        }
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            setCurrentPage(prev => Math.max(1, prev - 1));
+                                        }}
                                         disabled={currentPage === 1}
                                         className="p-2.5 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-gray-900 active:scale-95 disabled:opacity-40 disabled:pointer-events-none disabled:active:scale-100 transition shadow-sm flex items-center justify-center cursor-pointer"
                                     >
                                         <ChevronLeft size={16} strokeWidth={2.5} />
                                     </button>
                                     <button
-                                        onClick={() =>
-                                            setCurrentPage(prev => Math.min(totalPages, prev + 1))
-                                        }
+                                        onClick={e => {
+                                            e.stopPropagation();
+                                            setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                                        }}
                                         disabled={currentPage === totalPages}
                                         className="p-2.5 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-gray-900 active:scale-95 disabled:opacity-40 disabled:pointer-events-none disabled:active:scale-100 transition shadow-sm flex items-center justify-center cursor-pointer"
                                     >
@@ -778,6 +880,214 @@ export default function AdminDashboard({
                     </>
                 )}
             </div>
+
+            {/* Weekly Details Modal */}
+            <AnimatePresence>
+                {selectedWeek && (
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            transition={{ duration: 0.2 }}
+                            className="bg-white rounded-3xl max-w-2xl w-full border border-gray-100 shadow-2xl overflow-hidden flex flex-col max-h-[85vh]"
+                        >
+                            {/* Modal Header */}
+                            <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-100 animate-in fade-in duration-200">
+                                <div>
+                                    <h4 className="font-black text-gray-900 uppercase tracking-tight text-[15px] sm:text-[16px] flex items-center gap-2">
+                                        <div className="w-1.5 h-5 bg-orange-600 rounded-full" />
+                                        {t.modal.title}
+                                    </h4>
+                                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1">
+                                        {formatWeekRange(
+                                            selectedWeek.startDate,
+                                            selectedWeek.endDate
+                                        )}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedWeek(null)}
+                                    className="p-2 text-gray-400 hover:text-gray-900 rounded-xl hover:bg-gray-50 active:scale-95 transition cursor-pointer"
+                                >
+                                    <X size={20} strokeWidth={2.5} />
+                                </button>
+                            </div>
+
+                            {/* Modal Content */}
+                            <div className="p-4 sm:p-6 overflow-y-auto space-y-6 no-scrollbar flex-1">
+                                {/* Week Summary Stats */}
+                                <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                                    <div className="bg-gray-50/80 border border-gray-100 p-3 sm:p-4 rounded-2xl">
+                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">
+                                            {t.modal.totalRevenue}
+                                        </p>
+                                        <p className="text-lg sm:text-xl font-black text-green-600">
+                                            {Number(selectedWeek.total_revenue)
+                                                .toFixed(2)
+                                                .replace('.', ',')}{' '}
+                                            €
+                                        </p>
+                                    </div>
+                                    <div className="bg-gray-50/80 border border-gray-100 p-3 sm:p-4 rounded-2xl">
+                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">
+                                            {t.modal.totalOrders}
+                                        </p>
+                                        <p className="text-lg sm:text-xl font-black text-gray-900">
+                                            {selectedWeek.orders_count} {t.table.ordersLabel}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Daily Breakdown Title */}
+                                <div>
+                                    <h5 className="font-black text-[11px] text-gray-400 uppercase tracking-[0.15em] mb-4">
+                                        {language === 'ru'
+                                            ? 'РАСПРЕДЕЛЕНИЕ ПО ДНЯМ'
+                                            : 'DESGLOSE DIARIO'}
+                                    </h5>
+
+                                    <div className="overflow-x-auto no-scrollbar">
+                                        <table className="w-full text-left border-collapse">
+                                            <thead>
+                                                <tr className="text-[9px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50">
+                                                    <th className="py-2.5 pr-1">{t.modal.day}</th>
+                                                    <th className="py-2.5 pr-1">
+                                                        {t.modal.orders}
+                                                    </th>
+                                                    <th className="py-2.5 pr-1">
+                                                        {t.modal.revenue}
+                                                    </th>
+                                                    <th className="py-2.5 text-right">
+                                                        {t.modal.avgTicket}
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-50">
+                                                {selectedWeek.daily_reports.map(
+                                                    (dayReport: any) => {
+                                                        const [y, m, d] = dayReport.date
+                                                            .split('-')
+                                                            .map(Number);
+                                                        const dayOfWeek = new Date(
+                                                            y,
+                                                            m - 1,
+                                                            d
+                                                        ).getDay();
+                                                        const isClosed =
+                                                            !BUSINESS_HOURS[dayOfWeek] ||
+                                                            BUSINESS_HOURS[dayOfWeek].length === 0;
+
+                                                        return (
+                                                            <tr
+                                                                key={dayReport.date}
+                                                                className="hover:bg-gray-50/30 transition-colors"
+                                                            >
+                                                                <td className="py-3 pr-1 md:pr-2">
+                                                                    <div className="flex flex-col">
+                                                                        <span className="text-xs font-black text-gray-700 uppercase tracking-tight md:hidden">
+                                                                            {new Date(
+                                                                                dayReport.date
+                                                                            ).toLocaleDateString(
+                                                                                dateLocale,
+                                                                                {
+                                                                                    weekday:
+                                                                                        'short',
+                                                                                }
+                                                                            )}
+                                                                        </span>
+                                                                        <span className="text-xs font-black text-gray-700 uppercase tracking-tight hidden md:inline">
+                                                                            {new Date(
+                                                                                dayReport.date
+                                                                            ).toLocaleDateString(
+                                                                                dateLocale,
+                                                                                {
+                                                                                    weekday: 'long',
+                                                                                }
+                                                                            )}
+                                                                        </span>
+                                                                        <span className="text-[10px] font-bold text-gray-400 mt-0.5 md:hidden">
+                                                                            {new Date(
+                                                                                dayReport.date
+                                                                            ).toLocaleDateString(
+                                                                                dateLocale,
+                                                                                {
+                                                                                    day: 'numeric',
+                                                                                    month: 'short',
+                                                                                }
+                                                                            )}
+                                                                        </span>
+                                                                        <span className="text-[10px] font-bold text-gray-400 mt-0.5 hidden md:block">
+                                                                            {new Date(
+                                                                                dayReport.date
+                                                                            ).toLocaleDateString(
+                                                                                dateLocale,
+                                                                                {
+                                                                                    day: 'numeric',
+                                                                                    month: 'long',
+                                                                                }
+                                                                            )}
+                                                                        </span>
+                                                                    </div>
+                                                                </td>
+                                                                <td className="py-3 pr-1 md:pr-2">
+                                                                    <div className="flex items-center gap-1">
+                                                                        <span className="text-xs font-black text-gray-900">
+                                                                            {dayReport.orders_count}
+                                                                        </span>
+                                                                        <span className="text-[9px] font-black text-gray-400 uppercase">
+                                                                            {t.table.ordersLabel}
+                                                                        </span>
+                                                                    </div>
+                                                                </td>
+                                                                <td className="py-3 pr-1 md:pr-2">
+                                                                    {isClosed &&
+                                                                    dayReport.orders_count === 0 ? (
+                                                                        <span className="text-[9px] font-black text-gray-400 bg-gray-50 border border-gray-100 px-2 py-0.5 rounded-md uppercase tracking-wider whitespace-nowrap">
+                                                                            {t.modal.closed}
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span className="text-xs font-black text-green-600 whitespace-nowrap">
+                                                                            {Number(
+                                                                                dayReport.total_revenue
+                                                                            )
+                                                                                .toFixed(2)
+                                                                                .replace(
+                                                                                    '.',
+                                                                                    ','
+                                                                                )}{' '}
+                                                                            €
+                                                                        </span>
+                                                                    )}
+                                                                </td>
+                                                                <td className="py-3 text-right font-black text-xs text-gray-600 whitespace-nowrap">
+                                                                    {dayReport.orders_count > 0
+                                                                        ? `${Number(dayReport.avg_ticket).toFixed(2).replace('.', ',')} €`
+                                                                        : '—'}
+                                                                </td>
+                                                            </tr>
+                                                        );
+                                                    }
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Modal Footer */}
+                            <div className="p-4 sm:p-6 border-t border-gray-100 flex justify-end">
+                                <button
+                                    onClick={() => setSelectedWeek(null)}
+                                    className="px-6 py-3 bg-gray-900 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest hover:bg-gray-800 active:scale-95 transition cursor-pointer"
+                                >
+                                    {t.modal.close}
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

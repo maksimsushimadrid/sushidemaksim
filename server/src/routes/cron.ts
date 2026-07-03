@@ -4,6 +4,7 @@ import { supabase } from '../db/supabase.js';
 import { config } from '../config.js';
 import { getMadridStartOfDay, getMadridYesterdayStartOfDay } from '../utils/helpers.js';
 import { sendBirthdayGiftEmail, sendUnconfirmedReminderEmail } from '../utils/email.js';
+import { BUSINESS_HOURS } from '../utils/storeStatus.js';
 
 const router = Router();
 
@@ -175,25 +176,45 @@ router.post('/generate-daily-report', async (req, res) => {
         const reportDate = startOfYesterday.toLocaleDateString('en-CA', {
             timeZone: 'Europe/Madrid',
         });
-        const { error: reportError } = await supabase.from('daily_reports').upsert(
-            {
+
+        const [y, m, d] = reportDate.split('-').map(Number);
+        const yesterdayDayOfWeek = new Date(y, m - 1, d).getDay();
+        const isClosed =
+            !BUSINESS_HOURS[yesterdayDayOfWeek] || BUSINESS_HOURS[yesterdayDayOfWeek].length === 0;
+
+        if (isClosed && !totalOrders) {
+            console.log(
+                `📊 Skipping daily report CRON for closed day with 0 orders: ${reportDate}`
+            );
+            res.json({
+                success: true,
                 date: reportDate,
-                total_revenue: Math.round(revenue * 100) / 100,
-                orders_count: totalOrders || 0,
-                new_users_count: newUsers || 0,
-                avg_ticket: Math.round(avg * 100) / 100,
-                cancelled_count: cancelledCount || 0,
-                invitations_count: invitationsCount || 0,
-            },
-            { onConflict: 'date' }
-        );
+                skipped: true,
+                reason: 'Closed day with 0 orders',
+            });
+        } else {
+            const { error: reportError } = await supabase.from('daily_reports').upsert(
+                {
+                    date: reportDate,
+                    total_revenue: Math.round(revenue * 100) / 100,
+                    orders_count: totalOrders || 0,
+                    new_users_count: newUsers || 0,
+                    avg_ticket: Math.round(avg * 100) / 100,
+                    cancelled_count: cancelledCount || 0,
+                    invitations_count: invitationsCount || 0,
+                },
+                { onConflict: 'date' }
+            );
 
-        if (reportError) {
-            // If table doesn't exist yet, we catch it but don't crash
-            console.warn('⚠️ Could not save daily report - check if table "daily_reports" exists.');
+            if (reportError) {
+                // If table doesn't exist yet, we catch it but don't crash
+                console.warn(
+                    '⚠️ Could not save daily report - check if table "daily_reports" exists.'
+                );
+            }
+
+            res.json({ success: true, date: reportDate, revenue, orders: totalOrders });
         }
-
-        res.json({ success: true, date: reportDate, revenue, orders: totalOrders });
     } catch (e: any) {
         console.error('❌ Daily report cron error:', e);
         res.status(500).json({ error: e.message });
