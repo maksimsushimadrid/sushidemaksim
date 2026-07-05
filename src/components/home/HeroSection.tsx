@@ -101,29 +101,35 @@ export function HeroSection() {
                             'linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.55) 40%, rgba(0,0,0,0.75) 100%)',
                     }}
                 />
-                {shouldPlayVideo ? (
+                {/* Background Image is ALWAYS mounted to serve as the stable LCP element */}
+                <img
+                    src="/hero-poster.webp"
+                    srcSet="/hero-poster-mobile.webp 768w, /hero-poster.webp 1920w"
+                    sizes="(max-width: 768px) 768px, 1920px"
+                    alt="Sushi background"
+                    className="absolute inset-0 w-full h-full object-cover"
+                    loading="eager"
+                    fetchPriority="high"
+                />
+
+                {/* Video loads on top and fades in smoothly once playing to avoid flash */}
+                {shouldPlayVideo && (
                     <video
                         autoPlay
                         muted
                         loop
                         playsInline
                         preload="auto"
-                        poster="/hero-poster.webp"
+                        onPlay={e => {
+                            const video = e.currentTarget;
+                            video.style.opacity = '1';
+                        }}
+                        style={{ opacity: 0, transition: 'opacity 1s ease-in-out' }}
                         className="absolute inset-0 w-full h-full object-cover"
                     >
                         <source src="/hero-video.webm" type="video/webm" />
                         <source src="/hero-video.mp4" type="video/mp4" />
                     </video>
-                ) : (
-                    <img
-                        src="/hero-poster.webp"
-                        srcSet="/hero-poster-mobile.webp 768w, /hero-poster.webp 1920w"
-                        sizes="(max-width: 768px) 768px, 1920px"
-                        alt="Sushi background"
-                        className="absolute inset-0 w-full h-full object-cover"
-                        loading="eager"
-                        fetchPriority="high"
-                    />
                 )}
             </div>
 

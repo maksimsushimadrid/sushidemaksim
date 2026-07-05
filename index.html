@@ -51,7 +51,15 @@
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
         <link rel="dns-prefetch" href="https://lmuytpvktanykcubpodh.supabase.co" />
 
-
+        <!-- Preload critical Hero Image for LCP optimization -->
+        <link
+            rel="preload"
+            as="image"
+            href="/hero-poster.webp"
+            imagesrcset="/hero-poster-mobile.webp 768w, /hero-poster.webp 1920w"
+            imagesizes="(max-width: 768px) 768px, 1920px"
+            fetchpriority="high"
+        />
 
         <!-- SEO -->
         <title>Sushi de Maksim — Auténtica cocina japonesa</title>
