@@ -127,7 +127,7 @@
             ]
         },
         {
-            "source": "/(assets|images|fonts|icons)/(.*)",
+            "source": "/(assets|images|fonts|icons|sushidemaksim_black_style_photos)/(.*)",
             "headers": [
                 {
                     "key": "Cache-Control",
@@ -136,7 +136,7 @@
             ]
         },
         {
-            "source": "/(.*).(jpg|jpeg|png|webp|avif|gif|svg|ico|woff|woff2|ttf|otf)",
+            "source": "/(.*).(jpg|jpeg|png|webp|avif|gif|svg|ico|woff|woff2|ttf|otf|mp3|mp4|webm)",
             "headers": [
                 {
                     "key": "Cache-Control",

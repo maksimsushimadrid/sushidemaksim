@@ -62,7 +62,22 @@ export default defineConfig({
                 importScripts: ['/notifications-sw.js'],
                 maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // 6 MB to fit 5.1MB sound file
                 globPatterns: ['**/*.{js,css,html,ico,svg,webp,mp3}'],
+                globIgnores: ['**/sushidemaksim_black_style_photos/**/*'],
                 runtimeCaching: [
+                    {
+                        urlPattern: /\/sushidemaksim_black_style_photos\/.*\.(webp|png|jpg|jpeg)$/i,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'menu-images-cache',
+                            expiration: {
+                                maxEntries: 120,
+                                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                            },
+                            cacheableResponse: {
+                                statuses: [0, 200],
+                            },
+                        },
+                    },
                     {
                         urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
                         handler: 'CacheFirst',
