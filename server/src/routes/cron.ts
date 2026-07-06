@@ -221,7 +221,7 @@ router.post('/generate-daily-report', async (req, res) => {
     }
 });
 
-// CRON job to permanently delete accounts marked for deletion > 30 days ago
+// CRON job to permanently delete accounts marked for deletion > 30 days ago and prune old analytics logs
 router.post('/cleanup-deleted-users', async (req, res) => {
     const cronSecret = req.headers['x-cron-secret'];
     const authHeader = req.headers['authorization'];
@@ -258,7 +258,31 @@ router.post('/cleanup-deleted-users', async (req, res) => {
             }
         }
 
-        res.json({ success: true, permanentlyDeleted: results.length, ids: results });
+        // 2. Clean up old analytics events to protect Supabase 500MB storage limit
+        const { error: siteEventsCleanError } = await supabase
+            .from('site_events')
+            .delete()
+            .lt('created_at', thirtyDaysAgo);
+
+        if (siteEventsCleanError) {
+            console.error('❌ CRON (Cleanup): Failed to clear old site_events:', siteEventsCleanError.message);
+        }
+
+        const { error: funnelEventsCleanError } = await supabase
+            .from('funnel_events')
+            .delete()
+            .lt('created_at', thirtyDaysAgo);
+
+        if (funnelEventsCleanError) {
+            console.error('❌ CRON (Cleanup): Failed to clear old funnel_events:', funnelEventsCleanError.message);
+        }
+
+        res.json({
+            success: true,
+            permanentlyDeleted: results.length,
+            ids: results,
+            analyticsPruned: !siteEventsCleanError && !funnelEventsCleanError,
+        });
     } catch (e: any) {
         res.status(500).json({ error: e.message });
     }
