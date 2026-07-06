@@ -265,7 +265,10 @@ router.post('/cleanup-deleted-users', async (req, res) => {
             .lt('created_at', thirtyDaysAgo);
 
         if (siteEventsCleanError) {
-            console.error('❌ CRON (Cleanup): Failed to clear old site_events:', siteEventsCleanError.message);
+            console.error(
+                '❌ CRON (Cleanup): Failed to clear old site_events:',
+                siteEventsCleanError.message
+            );
         }
 
         const { error: funnelEventsCleanError } = await supabase
@@ -274,7 +277,10 @@ router.post('/cleanup-deleted-users', async (req, res) => {
             .lt('created_at', thirtyDaysAgo);
 
         if (funnelEventsCleanError) {
-            console.error('❌ CRON (Cleanup): Failed to clear old funnel_events:', funnelEventsCleanError.message);
+            console.error(
+                '❌ CRON (Cleanup): Failed to clear old funnel_events:',
+                funnelEventsCleanError.message
+            );
         }
 
         res.json({
