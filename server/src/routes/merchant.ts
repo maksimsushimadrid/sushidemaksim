@@ -13,7 +13,9 @@ router.get(
     ['/', '/feed.xml'],
     asyncHandler(async (_req: Request, res: Response) => {
         try {
-            const baseUrl = config.frontendUrl || 'https://www.sushidemaksim.com';
+            const baseUrl = config.isDev
+                ? config.frontendUrl || 'http://localhost:5173'
+                : 'https://www.sushidemaksim.com';
             const storageBase = `${config.supabase.url}/storage/v1/object/public/images/menu`;
 
             // 1. Fetch all active menu items

@@ -18,7 +18,9 @@ const STATIC_ROUTES = [
 
 router.get('/', async (req: Request, res: Response) => {
     try {
-        const baseUrl = config.frontendUrl || 'https://www.sushidemaksim.com';
+        const baseUrl = config.isDev
+            ? config.frontendUrl || 'http://localhost:5173'
+            : 'https://www.sushidemaksim.com';
         const today = new Date().toISOString().split('T')[0];
 
         // 1. Static Routes
