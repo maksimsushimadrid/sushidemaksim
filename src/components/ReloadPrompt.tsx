@@ -43,20 +43,30 @@ export default function ReloadPrompt() {
 
         console.log('[PWA] User triggered update, starting...');
 
-        // Fallback: if SW update doesn't reload the page within 5 seconds,
-        // force a hard reload. This fixes the issue on mobile browsers where
+        // Fallback: if SW update doesn't reload the page within 4 seconds,
+        // force a hard reload with a cache-busting parameter. This fixes the issue on mobile browsers where
         // updateServiceWorker(true) can hang indefinitely.
         const fallbackTimer = setTimeout(() => {
-            console.warn('[PWA] SW update timed out after 5s, forcing hard reload');
-            window.location.reload();
-        }, 5000);
+            console.warn('[PWA] SW update timed out, forcing hard reload with cache bust');
+            const url = new URL(window.location.href);
+            url.searchParams.set('v', Date.now().toString());
+            window.location.replace(url.href);
+        }, 4000);
 
-        updateServiceWorker(true).catch(err => {
-            console.error('[PWA] updateServiceWorker failed:', err);
-            clearTimeout(fallbackTimer);
-            // On error, force reload as well
-            window.location.reload();
-        });
+        updateServiceWorker(true)
+            .then(() => {
+                // If it resolves, immediately reload with a cache-busting parameter
+                const url = new URL(window.location.href);
+                url.searchParams.set('v', Date.now().toString());
+                window.location.replace(url.href);
+            })
+            .catch(err => {
+                console.error('[PWA] updateServiceWorker failed:', err);
+                clearTimeout(fallbackTimer);
+                const url = new URL(window.location.href);
+                url.searchParams.set('v', Date.now().toString());
+                window.location.replace(url.href);
+            });
     }, [isUpdating, updateServiceWorker]);
 
     // Dismiss the banner (e.g. if update is stuck)
@@ -67,6 +77,13 @@ export default function ReloadPrompt() {
     }, [setNeedRefresh, setOfflineReady]);
 
     useEffect(() => {
+        // Clean up the cache-busting query parameter from the URL if present so the browser history stays clean
+        if (typeof window !== 'undefined' && window.location.search.includes('v=')) {
+            const url = new URL(window.location.href);
+            url.searchParams.delete('v');
+            window.history.replaceState({}, '', url.pathname + url.search + url.hash);
+        }
+
         const checkVersion = async () => {
             // Skip check in development
             if (window.location.hostname === 'localhost') return;
