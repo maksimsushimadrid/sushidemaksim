@@ -133,7 +133,56 @@
     </head>
 
     <body>
-        <div id="root"></div>
+        <div id="root">
+            <!-- Critical paint placeholder for LCP optimization (only visible on homepage /) -->
+            <div
+                id="lcp-background-placeholder"
+                style="
+                    position: fixed;
+                    inset: 0;
+                    background-color: #0d0d0d;
+                    z-index: 0;
+                    display: none;
+                    width: 100vw;
+                    height: 100vh;
+                    overflow: hidden;
+                    pointer-events: none;
+                "
+            >
+                <div
+                    style="
+                        position: absolute;
+                        inset: 0;
+                        z-index: 10;
+                        background: linear-gradient(
+                            to bottom,
+                            rgba(0, 0, 0, 0.7) 0%,
+                            rgba(0, 0, 0, 0.55) 40%,
+                            rgba(0, 0, 0, 0.75) 100%
+                        );
+                    "
+                ></div>
+                <picture>
+                    <source media="(max-width: 768px)" srcset="/hero-poster-mobile.webp" />
+                    <img
+                        src="/hero-poster.webp"
+                        style="
+                            position: absolute;
+                            inset: 0;
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                        "
+                        alt="Sushi background"
+                    />
+                </picture>
+            </div>
+            <script>
+                if (window.location.pathname === '/' || window.location.pathname === '') {
+                    document.getElementById('lcp-background-placeholder').style.display = 'block';
+                }
+            </script>
+        </div>
         <script type="module" src="/src/main.tsx"></script>
     </body>
 </html>

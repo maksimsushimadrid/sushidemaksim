@@ -1,10 +1,8 @@
-import { useState, useMemo } from 'react';
+import { lazy, Suspense, useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import SEO from '../components/SEO';
-import Newsletter from '../components/Newsletter';
 import RatingsBanner from '../components/RatingsBanner';
-import ReviewsSEO from '../components/ReviewsSEO';
 import { useCart } from '../hooks/useCart';
 import { usePopularItems, useCategories, MenuItem } from '../hooks/queries/useMenu';
 import ShareModal from '../components/menu/ShareModal';
@@ -13,14 +11,28 @@ import { useSettings } from '../hooks/queries/useSettings';
 import { api } from '../utils/api';
 import { SITE_URL } from '../constants/config';
 
-// Home page sections
+// Home page sections (synchronous critical first paint)
 import { HeroSection } from '../components/home/HeroSection';
 import { Marquee } from '../components/home/Marquee';
-import { PressSection } from '../components/home/PressSection';
-import { CategoriesGrid } from '../components/home/CategoriesGrid';
-import { PromosSection } from '../components/home/PromosSection';
-import { PopularItems } from '../components/home/PopularItems';
-import { AboutSection } from '../components/home/AboutSection';
+
+// Lazy loaded below-the-fold sections for startup optimization
+const PressSection = lazy(() =>
+    import('../components/home/PressSection').then(m => ({ default: m.PressSection }))
+);
+const CategoriesGrid = lazy(() =>
+    import('../components/home/CategoriesGrid').then(m => ({ default: m.CategoriesGrid }))
+);
+const PromosSection = lazy(() =>
+    import('../components/home/PromosSection').then(m => ({ default: m.PromosSection }))
+);
+const PopularItems = lazy(() =>
+    import('../components/home/PopularItems').then(m => ({ default: m.PopularItems }))
+);
+const AboutSection = lazy(() =>
+    import('../components/home/AboutSection').then(m => ({ default: m.AboutSection }))
+);
+const Newsletter = lazy(() => import('../components/Newsletter'));
+const ReviewsSEO = lazy(() => import('../components/ReviewsSEO'));
 
 export default function HomePage() {
     const { items, addItem } = useCart();
@@ -263,25 +275,39 @@ export default function HomePage() {
             </div>
 
             <RatingsBanner />
-            <PressSection />
-            <CategoriesGrid
-                categoryList={categoryList}
-                hasCategories={categoriesWithImages.length > 0}
-                isLoading={catsLoading}
-            />
-            <PromosSection activePromos={activePromos} />
+            <Suspense fallback={null}>
+                <PressSection />
+            </Suspense>
+            <Suspense fallback={null}>
+                <CategoriesGrid
+                    categoryList={categoryList}
+                    hasCategories={categoriesWithImages.length > 0}
+                    isLoading={catsLoading}
+                />
+            </Suspense>
+            <Suspense fallback={null}>
+                <PromosSection activePromos={activePromos} />
+            </Suspense>
 
-            <PopularItems
-                popularItems={popularItems}
-                cartItemIds={cartItemIds}
-                onShare={handleShare}
-                onAddToCart={handleAddToCart}
-                isLoading={itemsLoading}
-            />
+            <Suspense fallback={null}>
+                <PopularItems
+                    popularItems={popularItems}
+                    cartItemIds={cartItemIds}
+                    onShare={handleShare}
+                    onAddToCart={handleAddToCart}
+                    isLoading={itemsLoading}
+                />
+            </Suspense>
 
-            <ReviewsSEO />
-            <AboutSection />
-            <Newsletter />
+            <Suspense fallback={null}>
+                <ReviewsSEO />
+            </Suspense>
+            <Suspense fallback={null}>
+                <AboutSection />
+            </Suspense>
+            <Suspense fallback={null}>
+                <Newsletter />
+            </Suspense>
 
             {sharingItem && (
                 <ShareModal
