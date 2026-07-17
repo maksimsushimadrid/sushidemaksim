@@ -65,43 +65,9 @@ class AnalyticsTracker {
             metadata?: Record<string, any>;
         } = {}
     ) {
-        // Only send events that are actually stored in the backend (page_view, order_placed)
-        // to reduce serverless request count and save Vercel Hobby plan execution limits.
-        const allowedEvents = ['page_view', 'order_placed'];
-        if (!allowedEvents.includes(eventName)) {
-            return;
-        }
-
-        try {
-            // Avoid blocking the UI
-            (async () => {
-                try {
-                    await api.post('/analytics/track', {
-                        eventName,
-                        sessionId: this.sessionId,
-                        userId: data.userId,
-                        path: window.location.pathname,
-                        metadata: {
-                            ...data.metadata,
-                            is_test:
-                                typeof window !== 'undefined' &&
-                                ((window.location?.hostname || '') === 'localhost' ||
-                                    (window.location?.hostname || '').includes('127.0.0.1') ||
-                                    navigator?.webdriver ||
-                                    localStorage?.getItem('is_test_mode') === 'true'),
-                            utmSource: this.utmSource,
-                            timestamp: new Date().toISOString(),
-                            userAgent: navigator.userAgent,
-                            screen: `${window.innerWidth}x${window.innerHeight}`,
-                        },
-                    });
-                } catch (err) {
-                    console.warn('Analytics tracking failed:', err);
-                }
-            })();
-        } catch (err) {
-            console.warn('Analytics tracker exception:', err);
-        }
+        // Completely disabled on the frontend to eliminate Vercel Serverless request usage
+        // and keep function execution limits safe under the free Hobby tier.
+        return;
     }
 
     /**
