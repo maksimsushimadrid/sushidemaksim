@@ -797,7 +797,7 @@ export default function CartPage() {
                     (deliveryType === 'delivery' ? deliveryCost : 0) +
                     tipAmount;
                 (window as any).gtag('event', 'conversion', {
-                    send_to: 'AW-18177084522/Ih_mCNHA4rUCEOGYwdTD',
+                    send_to: 'AW-18147561987/QjDICNOphtcZEIOkt81D',
                     value: finalTotal,
                     currency: 'EUR',
                     transaction_id: dataRes.order.id,
