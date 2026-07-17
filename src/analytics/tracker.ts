@@ -65,8 +65,12 @@ class AnalyticsTracker {
             metadata?: Record<string, any>;
         } = {}
     ) {
-        // Deduplicate common events within seconds if needed (optional)
-        // For now, let's keep it simple.
+        // Only send events that are actually stored in the backend (page_view, order_placed)
+        // to reduce serverless request count and save Vercel Hobby plan execution limits.
+        const allowedEvents = ['page_view', 'order_placed'];
+        if (!allowedEvents.includes(eventName)) {
+            return;
+        }
 
         try {
             // Avoid blocking the UI
