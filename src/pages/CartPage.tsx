@@ -224,13 +224,17 @@ export default function CartPage() {
 
             const computedZone = res.zone || detectZone(finalLat, finalLon, deliveryZones, pCode);
 
-            methods.setValue('address', res.address || res.street || '');
-            methods.setValue('house', res.house || '');
-            methods.setValue('apartment', res.apartment || '');
-            methods.setValue('postalCode', pCode);
-            methods.setValue('selectedZone', computedZone);
-            methods.setValue('lat', finalLat ? Number(finalLat) : undefined);
-            methods.setValue('lon', finalLon ? Number(finalLon) : undefined);
+            methods.setValue('address', res.address || res.street || '', { shouldValidate: true });
+            methods.setValue('house', res.house || '', { shouldValidate: true });
+            methods.setValue('apartment', res.apartment || '', { shouldValidate: true });
+            methods.setValue('postalCode', pCode, { shouldValidate: true });
+            methods.setValue('selectedZone', computedZone, { shouldValidate: true });
+            methods.setValue('lat', finalLat ? Number(finalLat) : undefined, {
+                shouldValidate: true,
+            });
+            methods.setValue('lon', finalLon ? Number(finalLon) : undefined, {
+                shouldValidate: true,
+            });
 
             // Sync refs
             if (addressRef.current) addressRef.current.value = res.address || res.street || '';
