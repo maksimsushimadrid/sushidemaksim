@@ -10,7 +10,12 @@ import {
     Minus,
     Plus,
     CheckCircle2,
+    Search,
+    Loader2,
+    X,
 } from 'lucide-react';
+import { api } from '../../utils/api';
+import { useCart } from '../../hooks/useCart';
 import { triggerHaptic } from '../../utils/haptics';
 import { tracker } from '../../analytics/tracker';
 import { detectZone } from '../../utils/delivery';
@@ -60,6 +65,105 @@ export default function DeliveryForm({
         watch,
         formState: { errors },
     } = useFormContext<CheckoutInput>();
+
+    const { updateDeliveryDetails } = useCart();
+    const [searchQuery, setSearchQuery] = React.useState('');
+    const [searchResults, setSearchResults] = React.useState<any[]>([]);
+    const [isSearching, setIsSearching] = React.useState(false);
+
+    React.useEffect(() => {
+        if (!searchQuery || searchQuery.trim().length < 3) {
+            setSearchResults([]);
+            return;
+        }
+
+        const delayDebounce = setTimeout(async () => {
+            setIsSearching(true);
+            try {
+                const data = await api.get(
+                    `/delivery-zones/search?q=${encodeURIComponent(searchQuery.trim())}`
+                );
+                setSearchResults(data || []);
+            } catch (err) {
+                console.error('Search failed', err);
+            } finally {
+                setIsSearching(false);
+            }
+        }, 400);
+
+        return () => clearTimeout(delayDebounce);
+    }, [searchQuery]);
+
+    const selectAutocompleteResult = (res: any, queryHint: string) => {
+        const lat = parseFloat(res.lat);
+        const lon = parseFloat(res.lon);
+        if (isNaN(lat) || isNaN(lon)) return;
+
+        let street =
+            res.address?.road || res.address?.pedestrian || res.display_name?.split(',')[0] || '';
+        let houseNum = res.address?.house_number || '';
+
+        if (!houseNum && res.display_name) {
+            const displayNameParts = res.display_name.split(',');
+            const firstPart = displayNameParts[0]?.trim() || '';
+
+            if (/^\d+[a-zA-Z]?$/.test(firstPart)) {
+                houseNum = firstPart;
+                street = displayNameParts[1]?.trim() || street;
+            } else {
+                const match = firstPart.match(/(.+?)\s+(\d+[a-zA-Z]?)$/);
+                if (match) {
+                    street = match[1].trim();
+                    houseNum = match[2];
+                }
+            }
+        }
+
+        const pc = res.address?.postcode || res.display_name?.match(/\b\d{5}\b/)?.[0] || '';
+
+        if (queryHint) {
+            const numInQuery = queryHint.match(/\b\d+[a-zA-Z]?\b/)?.[0];
+            if (numInQuery && (!houseNum || houseNum !== numInQuery)) {
+                houseNum = numInQuery;
+            }
+        }
+
+        setValue('address', street, { shouldValidate: true });
+        setValue('house', houseNum, { shouldValidate: true });
+        setValue('postalCode', pc, { shouldValidate: true });
+        setValue('apartment', '');
+
+        const zone = detectZone(lat, lon, deliveryZones, pc);
+        setValue('selectedZone', zone);
+
+        // Also save coordinate details for precision
+        setValue('lat', lat as any);
+        setValue('lon', lon as any);
+
+        updateDeliveryDetails({
+            address: street,
+            house: houseNum,
+            postalCode: pc,
+            apartment: '',
+            selectedZone: zone,
+            lat,
+            lon,
+        });
+
+        if (onSavedAddressSelect) {
+            onSavedAddressSelect({
+                street,
+                house: houseNum,
+                postalCode: pc,
+                lat,
+                lon,
+                label: 'Dirección seleccionada',
+            });
+        }
+
+        setSearchQuery('');
+        setSearchResults([]);
+    };
 
     const closedDays = getClosedDays();
 
@@ -443,66 +547,165 @@ export default function DeliveryForm({
 
                             <div className="w-full">
                                 {!address ? (
-                                    <button
-                                        type="button"
-                                        onClick={handleAddressClick}
-                                        data-testid="address-input"
-                                        className="w-full bg-white border-2 border-orange-50 rounded-[24px] p-6 md:p-10 text-center hover:border-orange-500 hover:bg-orange-50/10 transition-all group mb-4 shadow-sm active:scale-95 duration-200 cursor-pointer flex flex-col items-center gap-3 md:gap-4"
-                                    >
-                                        <div className="w-14 h-14 md:w-20 md:h-20 bg-orange-50 rounded-2xl md:rounded-[28px] flex items-center justify-center group-hover:scale-110 transition duration-500 shadow-inner group-hover:shadow-[0_10px_30px_-10px_rgba(242,101,34,0.3)]">
-                                            <MapPin className="text-orange-500 w-8 h-8 md:w-12 md:h-12" />
+                                    <div className="space-y-4 mb-4">
+                                        <div className="relative">
+                                            <div className="absolute left-4 top-1/2 -translate-y-1/2 text-orange-500 z-10">
+                                                {isSearching ? (
+                                                    <Loader2 size={18} className="animate-spin" />
+                                                ) : (
+                                                    <Search size={18} strokeWidth={2.5} />
+                                                )}
+                                            </div>
+                                            <input
+                                                type="text"
+                                                value={searchQuery}
+                                                onChange={e => setSearchQuery(e.target.value)}
+                                                placeholder="Introduce tu dirección (Calle y número)..."
+                                                className="w-full bg-gray-50 border border-gray-200 rounded-[20px] pl-12 pr-12 py-3.5 text-sm font-bold outline-none focus:border-orange-400 focus:bg-white focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition-all placeholder:text-gray-400 placeholder:font-normal"
+                                            />
+                                            {searchQuery && (
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        setSearchQuery('');
+                                                        setSearchResults([]);
+                                                    }}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 w-6 h-6 bg-gray-200 hover:bg-gray-300 rounded-full flex items-center justify-center text-gray-500 transition-colors z-10 border-none cursor-pointer"
+                                                >
+                                                    <X size={12} strokeWidth={3} />
+                                                </button>
+                                            )}
                                         </div>
-                                        <div className="space-y-1">
-                                            <p className="font-black text-lg md:text-2xl text-gray-900 tracking-tight">
-                                                ¿Dónde entregamos el pedido?
-                                            </p>
-                                            <p className="text-xs md:text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center justify-center gap-2">
-                                                Indica tu dirección y descubre nuestras zonas
-                                            </p>
-                                        </div>
-                                    </button>
-                                ) : (
-                                    <div className="flex flex-col gap-4">
+
+                                        {/* Suggestions Dropdown */}
+                                        <AnimatePresence>
+                                            {searchResults.length > 0 && (
+                                                <motion.div
+                                                    initial={{ opacity: 0, y: -10 }}
+                                                    animate={{ opacity: 1, y: 0 }}
+                                                    exit={{ opacity: 0, y: -10 }}
+                                                    className="border border-gray-100 rounded-2xl bg-white shadow-xl overflow-hidden divide-y divide-gray-50 max-h-[220px] overflow-y-auto z-50 relative"
+                                                >
+                                                    {searchResults.map((res, i) => (
+                                                        <button
+                                                            key={i}
+                                                            type="button"
+                                                            onClick={() =>
+                                                                selectAutocompleteResult(
+                                                                    res,
+                                                                    searchQuery
+                                                                )
+                                                            }
+                                                            className="w-full px-4 py-3 text-left hover:bg-orange-50 transition flex items-center gap-3 border-none bg-transparent cursor-pointer group"
+                                                        >
+                                                            <div className="w-8 h-8 rounded-lg bg-gray-50 group-hover:bg-orange-100 flex items-center justify-center shrink-0 transition-colors">
+                                                                <MapPin
+                                                                    size={16}
+                                                                    className="text-gray-400 group-hover:text-orange-600"
+                                                                />
+                                                            </div>
+                                                            <div className="flex-1 min-w-0 text-left">
+                                                                <p className="text-xs font-black text-gray-900 truncate">
+                                                                    {
+                                                                        res.display_name?.split(
+                                                                            ','
+                                                                        )[0]
+                                                                    }
+                                                                </p>
+                                                                <p className="text-[10px] text-gray-400 truncate mt-0.5 leading-tight">
+                                                                    {res.display_name}
+                                                                </p>
+                                                            </div>
+                                                        </button>
+                                                    ))}
+                                                </motion.div>
+                                            )}
+                                        </AnimatePresence>
+
+                                        {/* Map Fallback Button */}
                                         <button
                                             type="button"
                                             onClick={handleAddressClick}
-                                            data-testid="address-display"
-                                            className="bg-gray-50/80 backdrop-blur-sm rounded-[24px] md:rounded-[32px] p-3.5 md:p-6 border border-gray-100 flex items-center justify-between group hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500"
+                                            data-testid="address-input"
+                                            className="w-full py-3.5 bg-white border-2 border-dashed border-gray-200 hover:border-orange-500 hover:bg-orange-50/10 text-gray-600 rounded-[20px] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-[0.98]"
                                         >
-                                            <div className="flex items-center gap-3 md:gap-6 overflow-hidden">
-                                                <div className="shrink-0 group-hover:scale-110 transition-all duration-500">
-                                                    <MapPin className="text-orange-500 w-6 h-6 md:w-10 md:h-10" />
-                                                </div>
-                                                <div className="flex-1 min-w-0 text-left">
-                                                    <p className="text-xl md:text-3xl font-black text-gray-900 tracking-tight leading-none mb-1">
-                                                        {address}
-                                                        {house ? ` ${house}` : ''}
-                                                        {apartment ? `, ${apartment}` : ''}
-                                                    </p>
-                                                    <div className="flex flex-wrap items-center gap-1.5 md:gap-3 mt-1 md:mt-1.5">
-                                                        <div className="flex items-center gap-1.5 bg-white/80 px-2.5 py-1 md:px-4 md:py-2 rounded-xl md:rounded-2xl shadow-sm border border-gray-100 max-w-full">
-                                                            <div
-                                                                className="w-1.5 h-1.5 rounded-full shrink-0"
-                                                                style={{
-                                                                    backgroundColor:
-                                                                        selectedZone?.color ||
-                                                                        '#EF4444',
-                                                                }}
-                                                            />
-                                                            <span className="text-[9px] md:text-xs font-black text-gray-900 uppercase tracking-widest whitespace-nowrap">
-                                                                {selectedZone?.name ||
-                                                                    'Zona no detectada'}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex items-center gap-1.5 bg-gray-100/50 px-2 py-1 md:px-3 md:py-1.5 rounded-xl md:rounded-2xl border border-gray-100">
-                                                            <span className="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">
-                                                                CP {postalCode}
-                                                            </span>
+                                            <MapPin size={14} className="text-orange-500" />O
+                                            seleccionar en el mapa
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col gap-4">
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                type="button"
+                                                onClick={handleAddressClick}
+                                                data-testid="address-display"
+                                                className="flex-1 bg-gray-50/80 backdrop-blur-sm rounded-[24px] md:rounded-[32px] p-3.5 md:p-6 border border-gray-100 flex items-center justify-between group hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500"
+                                            >
+                                                <div className="flex items-center gap-3 md:gap-6 overflow-hidden">
+                                                    <div className="shrink-0 group-hover:scale-110 transition-all duration-500">
+                                                        <MapPin className="text-orange-500 w-6 h-6 md:w-10 md:h-10" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0 text-left">
+                                                        <p className="text-xl md:text-3xl font-black text-gray-900 tracking-tight leading-none mb-1">
+                                                            {address}
+                                                            {house ? ` ${house}` : ''}
+                                                            {apartment ? `, ${apartment}` : ''}
+                                                        </p>
+                                                        <div className="flex flex-wrap items-center gap-1.5 md:gap-3 mt-1 md:mt-1.5">
+                                                            <div className="flex items-center gap-1.5 bg-white/80 px-2.5 py-1 md:px-4 md:py-2 rounded-xl md:rounded-2xl shadow-sm border border-gray-100 max-w-full">
+                                                                <div
+                                                                    className="w-1.5 h-1.5 rounded-full shrink-0"
+                                                                    style={{
+                                                                        backgroundColor:
+                                                                            selectedZone?.color ||
+                                                                            '#EF4444',
+                                                                    }}
+                                                                />
+                                                                <span className="text-[9px] md:text-xs font-black text-gray-900 uppercase tracking-widest whitespace-nowrap">
+                                                                    {selectedZone?.name ||
+                                                                        'Zona no detectada'}
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex items-center gap-1.5 bg-gray-100/50 px-2 py-1 md:px-3 md:py-1.5 rounded-xl md:rounded-2xl border border-gray-100">
+                                                                <span className="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">
+                                                                    CP {postalCode}
+                                                                </span>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </button>
+                                            </button>
+
+                                            {/* Clear / Edit Address Button */}
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setValue('address', '', {
+                                                        shouldValidate: true,
+                                                    });
+                                                    setValue('house', '', { shouldValidate: true });
+                                                    setValue('postalCode', '', {
+                                                        shouldValidate: true,
+                                                    });
+                                                    setValue('apartment', '', {
+                                                        shouldValidate: true,
+                                                    });
+                                                    setValue('selectedZone', null);
+                                                    updateDeliveryDetails({
+                                                        address: '',
+                                                        house: '',
+                                                        postalCode: '',
+                                                        apartment: '',
+                                                        selectedZone: null,
+                                                    });
+                                                }}
+                                                className="w-12 h-12 md:w-16 md:h-16 rounded-[20px] md:rounded-[28px] bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center shadow-sm hover:shadow transition-all shrink-0 cursor-pointer border-none"
+                                                title="Cambiar dirección"
+                                            >
+                                                <X size={20} strokeWidth={2.5} />
+                                            </button>
+                                        </div>
 
                                         {isAuthenticated && (
                                             <div className="px-2 mt-2">

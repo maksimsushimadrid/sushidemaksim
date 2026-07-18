@@ -18,6 +18,7 @@ import AddressModal from '../components/AddressModal';
 import { useForm, FormProvider } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { checkoutSchema, type CheckoutInput } from '../schemas/checkout.schema';
+import { Clock } from 'lucide-react';
 
 // Modular Components
 import CartItemList from '../components/cart/CartItemList';
@@ -863,72 +864,82 @@ export default function CartPage() {
                 <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-6 py-4 sm:py-8">
                     <FormProvider {...methods}>
                         {isStoreClosed && (
-                            <div className="mb-6">
-                                <div className="bg-orange-50 border border-orange-100 rounded-2xl p-4 md:p-5 shadow-sm">
-                                    <div className="flex items-start gap-3">
-                                        <div className="flex-1">
-                                            <h3 className="font-black text-orange-900 leading-none mb-1.5 text-[15px] uppercase tracking-wider">
-                                                {activeClosure
-                                                    ? activeClosure.reason ||
-                                                      'Cerrado Temporalmente'
-                                                    : 'Restaurante Cerrado'}
-                                            </h3>
-                                            <p className="text-[13px] text-orange-800/80 whitespace-pre-line leading-snug">
-                                                {activeClosure
-                                                    ? activeClosure.startDate ===
-                                                      activeClosure.endDate
-                                                        ? `Estaremos cerrados hoy desde las ${activeClosure.startTime} hasta las ${activeClosure.endTime}.`
-                                                        : `Estaremos cerrados por vacaciones desde el ${(() => {
-                                                              const [y, m, d] =
-                                                                  activeClosure.startDate.split(
-                                                                      '-'
-                                                                  );
-                                                              return `${d}/${m}/${y}`;
-                                                          })()} (${activeClosure.startTime}) hasta el ${(() => {
-                                                              const [y, m, d] =
-                                                                  activeClosure.endDate.split('-');
-                                                              return `${d}/${m}/${y}`;
-                                                          })()} (${activeClosure.endTime}) inclusive.`
-                                                    : isManualClosed
-                                                      ? siteSettings?.closedMessage ||
-                                                        'Nuestra cocina está tomando un breve descanso.'
-                                                      : 'Actualmente nuestra cocina está fuera de servicio.'}
-                                            </p>
-                                            <div className="mt-3 pt-3 border-t border-orange-200/50">
-                                                <p className="text-[11px] font-bold text-orange-900/40 uppercase tracking-widest mb-1.5">
-                                                    Horario de Servicio:
-                                                </p>
-                                                <div className="flex flex-col gap-1.5 text-[12px] text-orange-800/80 font-medium max-w-[280px]">
-                                                    <div className="flex justify-between items-center bg-orange-50/50 px-3 py-1.5 rounded-xl border border-orange-100/30">
-                                                        <span className="opacity-60">
-                                                            Miércoles – Viernes
-                                                        </span>
-                                                        <span className="font-black text-orange-950">
-                                                            19:00 – 22:30
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex justify-between items-center bg-orange-50/50 px-3 py-1.5 rounded-xl border border-orange-100/30">
-                                                        <span className="opacity-60">
-                                                            Sábado – Domingo
-                                                        </span>
-                                                        <span className="font-black text-orange-950 text-right">
-                                                            14:00 – 16:00, 19:00 – 22:30
-                                                        </span>
-                                                    </div>
-                                                    <div className="flex justify-between items-center bg-orange-950/5 px-3 py-1.5 rounded-xl border border-orange-950/5">
-                                                        <span className="opacity-40 uppercase text-[10px] tracking-wider">
-                                                            Lunes – Martes
-                                                        </span>
-                                                        <span className="font-black text-orange-950/30 uppercase text-[10px]">
-                                                            Cerrado
-                                                        </span>
-                                                    </div>
+                            <div className="mb-6 animate-in fade-in slide-in-from-top-4 duration-300">
+                                <div className="bg-red-50/40 border border-red-100 rounded-2xl p-4 md:p-5 shadow-sm">
+                                    <div className="flex flex-col gap-4">
+                                        {/* Header Row */}
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                            <div className="flex items-start sm:items-center gap-3">
+                                                <div className="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center shrink-0 shadow-inner">
+                                                    <Clock
+                                                        size={20}
+                                                        strokeWidth={2.5}
+                                                        className="animate-pulse"
+                                                    />
                                                 </div>
-                                                <div className="mt-4 text-center">
-                                                    <p className="text-[13px] bg-orange-100/50 px-4 py-2 rounded-xl text-orange-900 font-bold inline-block m-0">
-                                                        🚀 Aceptamos pedidos programados
+                                                <div>
+                                                    <h3 className="font-black text-red-950 leading-tight text-[15px] md:text-[16px] uppercase tracking-wider mb-0.5 m-0">
+                                                        {activeClosure
+                                                            ? activeClosure.reason ||
+                                                              'Cerrado Temporalmente'
+                                                            : 'Restaurante Cerrado'}
+                                                    </h3>
+                                                    <p className="text-[12px] md:text-[13px] font-semibold text-red-800/80 m-0">
+                                                        {activeClosure
+                                                            ? activeClosure.startDate ===
+                                                              activeClosure.endDate
+                                                                ? `Estaremos cerrados hoy de ${activeClosure.startTime} a ${activeClosure.endTime}.`
+                                                                : `Estaremos cerrados por vacaciones del ${(() => {
+                                                                      const [y, m, d] =
+                                                                          activeClosure.startDate.split(
+                                                                              '-'
+                                                                          );
+                                                                      return `${d}/${m}/${y}`;
+                                                                  })()} (${activeClosure.startTime}) al ${(() => {
+                                                                      const [y, m, d] =
+                                                                          activeClosure.endDate.split(
+                                                                              '-'
+                                                                          );
+                                                                      return `${d}/${m}/${y}`;
+                                                                  })()} (${activeClosure.endTime}) inclusive.`
+                                                            : isManualClosed
+                                                              ? siteSettings?.closedMessage ||
+                                                                'Nuestra cocina está tomando un breve descanso.'
+                                                              : 'Actualmente nuestra cocina está fuera de servicio.'}
                                                     </p>
                                                 </div>
+                                            </div>
+
+                                            {/* Pre-order active badge */}
+                                            <div className="self-start sm:self-center shrink-0">
+                                                <span className="inline-flex items-center gap-1.5 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest px-3.5 py-2 rounded-full shadow-sm hover:shadow transition-all duration-300">
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
+                                                    🚀 Pedidos Programados Activos
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Schedule Row */}
+                                        <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-red-100/50">
+                                            <span className="text-[10px] font-black text-red-900/40 uppercase tracking-widest mr-1">
+                                                Horario:
+                                            </span>
+                                            <div className="flex flex-wrap gap-2">
+                                                <span className="text-[11px] font-bold bg-white text-red-900 border border-red-100/50 px-2.5 py-1 rounded-xl shadow-xs">
+                                                    Miércoles – Viernes:{' '}
+                                                    <span className="font-black text-red-700">
+                                                        19:00 – 22:30
+                                                    </span>
+                                                </span>
+                                                <span className="text-[11px] font-bold bg-white text-red-900 border border-red-100/50 px-2.5 py-1 rounded-xl shadow-xs">
+                                                    Sábado – Domingo:{' '}
+                                                    <span className="font-black text-red-700">
+                                                        14:00 – 16:00, 19:00 – 22:30
+                                                    </span>
+                                                </span>
+                                                <span className="text-[11px] font-bold bg-red-100/30 text-red-900/40 px-2.5 py-1 rounded-xl uppercase tracking-tighter">
+                                                    Lunes – Martes: Cerrado
+                                                </span>
                                             </div>
                                         </div>
                                     </div>

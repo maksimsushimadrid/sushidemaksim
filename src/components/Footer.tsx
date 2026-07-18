@@ -176,12 +176,22 @@ export default function Footer() {
                     <div className="flex items-center gap-1.5 order-2 md:order-1">
                         <span>
                             © 2026{' '}
-                            <a
-                                href="mailto:alekseevpo@gmail.com"
-                                className="hover:text-orange-600 transition-colors"
-                            >
-                                DESARROLLADO POR SELENIT
-                            </a>
+                            <span className="relative group inline-block">
+                                <a
+                                    href="https://wa.me/34624682795"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hover:text-orange-600 transition-colors"
+                                >
+                                    DESARROLLADO POR SELENIT
+                                </a>
+                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 w-56 bg-gray-900 text-white text-[10px] font-bold py-2.5 px-3 rounded-xl shadow-xl opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 pointer-events-none transition-all duration-200 z-[1000] text-center tracking-normal normal-case leading-normal">
+                                    ¿Quieres escribir al desarrollador de la aplicación? Haz clic
+                                    para iniciar una conversación
+                                    {/* Arrow */}
+                                    <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
+                                </span>
+                            </span>
                         </span>
                         <motion.div
                             animate={{

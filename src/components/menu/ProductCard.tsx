@@ -6,6 +6,7 @@ import { slugify } from '../../utils/formatters';
 import SafeImage from '../common/SafeImage';
 import { MenuItem } from '../../hooks/queries/useMenu';
 import { User } from '../../types';
+import { triggerHaptic } from '../../utils/haptics';
 
 import { getAllergenInfo } from '../../utils/allergens';
 
@@ -17,6 +18,16 @@ interface ProductCardProps {
     onShare: (item: MenuItem, e: React.MouseEvent) => void;
     onAddToCart: (item: MenuItem, e: React.MouseEvent<HTMLButtonElement>, quantity: number) => void;
     isAdded: boolean;
+    cartQuantity?: number;
+    cartItemId?: number;
+    cartSelectedOption?: string;
+    onUpdateQuantity?: (
+        id: string,
+        quantity: number,
+        cartItemId?: number,
+        selectedOption?: string
+    ) => void;
+    onRemoveItem?: (id: string, cartItemId?: number) => void;
     isPriority?: boolean;
     isHighlighted?: boolean;
     isZoomed?: boolean;
@@ -31,6 +42,11 @@ const ProductCard = React.memo(function ProductCard({
     onShare,
     onAddToCart,
     isAdded,
+    cartQuantity,
+    cartItemId,
+    cartSelectedOption,
+    onUpdateQuantity,
+    onRemoveItem,
     isPriority,
     isHighlighted,
     isZoomed,
@@ -209,43 +225,106 @@ const ProductCard = React.memo(function ProductCard({
                             </div>
                         )}
                     </div>
-                    <button
-                        aria-label="Añadir"
-                        data-testid="add-to-cart-button"
-                        disabled={isAdded}
-                        onClick={e => onAddToCart(item, e, quantity)}
-                        className={`h-9 w-9 md:h-10 md:w-10 rounded-xl md:rounded-2xl font-black transition-all duration-500 flex items-center justify-center border-none cursor-pointer flex-shrink-0 relative overflow-hidden ${
-                            isAdded
-                                ? 'bg-green-500 text-white cursor-default'
-                                : 'bg-gray-900 text-white hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200 active:scale-95'
-                        }`}
-                    >
-                        <AnimatePresence mode="wait" initial={false}>
-                            {isAdded ? (
-                                <motion.div
-                                    key="added"
-                                    initial={{ opacity: 0, scale: 0.5 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.5 }}
-                                    transition={{ duration: 0.3, ease: 'easeOut' }}
-                                    className="flex items-center justify-center w-full"
+                    <AnimatePresence mode="wait" initial={false}>
+                        {cartQuantity && cartQuantity > 0 && !isAdded ? (
+                            <motion.div
+                                key="stepper"
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.8 }}
+                                transition={{ duration: 0.15 }}
+                                className="flex items-center bg-gray-100 rounded-xl px-0.5 py-0.5 border border-gray-200 shadow-sm"
+                            >
+                                <button
+                                    onClick={e => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        triggerHaptic();
+                                        if (cartQuantity > 1) {
+                                            onUpdateQuantity?.(
+                                                String(item.id),
+                                                cartQuantity - 1,
+                                                cartItemId,
+                                                cartSelectedOption
+                                            );
+                                        } else {
+                                            onRemoveItem?.(String(item.id), cartItemId);
+                                        }
+                                    }}
+                                    className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-orange-600 transition-colors bg-white rounded-lg shadow-sm border-none cursor-pointer"
+                                    aria-label="Disminuir cantidad"
                                 >
-                                    <Check size={18} strokeWidth={3} />
-                                </motion.div>
-                            ) : (
-                                <motion.div
-                                    key="add"
-                                    initial={{ opacity: 0, scale: 0.5 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.5 }}
-                                    transition={{ duration: 0.3, ease: 'easeOut' }}
-                                    className="flex items-center justify-center w-full"
+                                    <Minus size={10} strokeWidth={3} />
+                                </button>
+                                <span className="w-5 text-center text-xs font-black text-gray-900 select-none">
+                                    {cartQuantity}
+                                </span>
+                                <button
+                                    onClick={e => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        triggerHaptic();
+                                        onUpdateQuantity?.(
+                                            String(item.id),
+                                            cartQuantity + 1,
+                                            cartItemId,
+                                            cartSelectedOption
+                                        );
+                                    }}
+                                    className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-orange-600 transition-colors bg-white rounded-lg shadow-sm border-none cursor-pointer"
+                                    aria-label="Aumentar cantidad"
                                 >
-                                    <Plus size={18} strokeWidth={3} />
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </button>
+                                    <Plus size={10} strokeWidth={3} />
+                                </button>
+                            </motion.div>
+                        ) : (
+                            <motion.button
+                                key="add-btn"
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.8 }}
+                                transition={{ duration: 0.15 }}
+                                aria-label="Añadir"
+                                data-testid="add-to-cart-button"
+                                disabled={isAdded}
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    onAddToCart(item, e, quantity);
+                                }}
+                                className={`h-9 w-9 md:h-10 md:w-10 rounded-xl md:rounded-2xl font-black transition-all duration-500 flex items-center justify-center border-none cursor-pointer flex-shrink-0 relative overflow-hidden ${
+                                    isAdded
+                                        ? 'bg-green-500 text-white cursor-default'
+                                        : 'bg-gray-900 text-white hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200 active:scale-95'
+                                }`}
+                            >
+                                <AnimatePresence mode="wait" initial={false}>
+                                    {isAdded ? (
+                                        <motion.div
+                                            key="added"
+                                            initial={{ opacity: 0, scale: 0.5 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.5 }}
+                                            transition={{ duration: 0.3, ease: 'easeOut' }}
+                                            className="flex items-center justify-center w-full"
+                                        >
+                                            <Check size={18} strokeWidth={3} />
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div
+                                            key="add"
+                                            initial={{ opacity: 0, scale: 0.5 }}
+                                            animate={{ opacity: 1, scale: 1 }}
+                                            exit={{ opacity: 0, scale: 0.5 }}
+                                            transition={{ duration: 0.3, ease: 'easeOut' }}
+                                            className="flex items-center justify-center w-full"
+                                        >
+                                            <Plus size={18} strokeWidth={3} />
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </motion.button>
+                        )}
+                    </AnimatePresence>
                 </div>
             </div>
         </div>

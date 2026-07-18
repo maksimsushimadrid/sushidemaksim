@@ -20,7 +20,7 @@ export default function MenuPage() {
     const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
     const [search, setSearch] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState(search);
-    const { addItem } = useCart();
+    const { addItem, items: cartItems, updateQuantity, removeItem } = useCart();
     const { user } = useAuth();
     const [addedItems, setAddedItems] = useState<Set<number>>(new Set());
     const [flyingItems, setFlyingItems] = useState<FlyingItem[]>([]);
@@ -69,8 +69,13 @@ export default function MenuPage() {
 
             const intersectingEntry = entries.find(entry => entry.isIntersecting);
             if (intersectingEntry) {
-                const id = intersectingEntry.target.id.replace('section-', '');
-                setActiveCategory(id);
+                const targetId = intersectingEntry.target.id;
+                if (targetId === 'menu-top-sentinel') {
+                    setActiveCategory(CATEGORIES[0]?.id || 'entrantes');
+                } else {
+                    const id = targetId.replace('section-', '');
+                    setActiveCategory(id);
+                }
             }
         };
 
@@ -455,6 +460,9 @@ export default function MenuPage() {
                                 onShare={handleShare}
                                 onAddToCart={handleAddToCart}
                                 addedItems={addedItems}
+                                cartItems={cartItems}
+                                onUpdateQuantity={updateQuantity}
+                                onRemoveItem={removeItem}
                                 highlightedItemId={highlightedItemId}
                             />
                         </div>

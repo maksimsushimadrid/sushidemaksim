@@ -3,6 +3,8 @@ import { CATEGORIES } from '../../constants/menu';
 import ProductCard from './ProductCard';
 import React from 'react';
 
+import { CartItem } from '../../types';
+
 interface ProductGridProps {
     items: MenuItem[];
     selectedCategory: string;
@@ -15,6 +17,14 @@ interface ProductGridProps {
     onShare: (item: MenuItem, e: React.MouseEvent) => void;
     onAddToCart: (item: MenuItem, e: React.MouseEvent<HTMLButtonElement>, quantity: number) => void;
     addedItems: Set<number>;
+    cartItems: CartItem[];
+    onUpdateQuantity: (
+        id: string,
+        quantity: number,
+        cartItemId?: number,
+        selectedOption?: string
+    ) => void;
+    onRemoveItem: (id: string, cartItemId?: number) => void;
     highlightedItemId?: string | null;
 }
 
@@ -30,6 +40,9 @@ export default function ProductGrid({
     onShare,
     onAddToCart,
     addedItems,
+    cartItems,
+    onUpdateQuantity,
+    onRemoveItem,
     highlightedItemId,
 }: ProductGridProps) {
     const [activeItemId, setActiveItemId] = React.useState<number | null>(null);
@@ -110,21 +123,32 @@ export default function ProductGrid({
                             </div>
                         )}
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 md:gap-4">
-                            {sectionItems.map(item => (
-                                <ProductCard
-                                    key={item.id}
-                                    item={item}
-                                    user={user}
-                                    isFavorite={favorites.has(item.id)}
-                                    onToggleFavorite={onToggleFavorite}
-                                    onShare={onShare}
-                                    onAddToCart={onAddToCart}
-                                    isAdded={addedItems.has(item.id)}
-                                    isHighlighted={String(item.id) === highlightedItemId}
-                                    isZoomed={activeItemId === item.id}
-                                    onZoom={() => setActiveItemId(item.id)}
-                                />
-                            ))}
+                            {sectionItems.map(item => {
+                                const cartItem = cartItems?.find(
+                                    i =>
+                                        Number(i.id) === item.id || Number(i.menuItemId) === item.id
+                                );
+                                return (
+                                    <ProductCard
+                                        key={item.id}
+                                        item={item}
+                                        user={user}
+                                        isFavorite={favorites.has(item.id)}
+                                        onToggleFavorite={onToggleFavorite}
+                                        onShare={onShare}
+                                        onAddToCart={onAddToCart}
+                                        isAdded={addedItems.has(item.id)}
+                                        cartQuantity={cartItem?.quantity}
+                                        cartItemId={cartItem?.cartItemId}
+                                        cartSelectedOption={cartItem?.selectedOption}
+                                        onUpdateQuantity={onUpdateQuantity}
+                                        onRemoveItem={onRemoveItem}
+                                        isHighlighted={String(item.id) === highlightedItemId}
+                                        isZoomed={activeItemId === item.id}
+                                        onZoom={() => setActiveItemId(item.id)}
+                                    />
+                                );
+                            })}
                         </div>
                     </div>
                 );

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
-import { RefreshCcw, ShieldAlert, Clock, CheckCircle2, Phone } from 'lucide-react';
+import { RefreshCcw, ShieldAlert, Clock, CheckCircle2, Phone, ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 export default function RefundPolicyPage() {
     return (
@@ -101,8 +102,8 @@ export default function RefundPolicyPage() {
                                 </p>
                             </section>
 
-                            <div className="pt-8 border-t border-gray-100 mt-12">
-                                <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                            <div className="pt-8 border-t border-gray-100 mt-12 flex flex-col items-center gap-6">
+                                <div className="flex flex-col md:flex-row items-center justify-between gap-6 w-full">
                                     <div>
                                         <h3 className="font-bold text-gray-900 mb-1">
                                             ¿Necesitas ayuda inmediata?
@@ -114,11 +115,20 @@ export default function RefundPolicyPage() {
                                     </div>
                                     <a
                                         href="tel:+34631920312"
-                                        className="flex items-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-2xl font-bold hover:bg-orange-700 transition-all shadow-lg shadow-orange-600/20 active:scale-95"
+                                        className="flex items-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-2xl font-bold hover:bg-orange-700 transition-all shadow-lg shadow-orange-600/20 active:scale-95 whitespace-nowrap"
                                     >
                                         <Phone size={18} />
                                         +34 631 920 312
                                     </a>
+                                </div>
+                                <div className="pt-6 border-t border-gray-100 w-full flex justify-center">
+                                    <Link
+                                        to="/"
+                                        className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-gray-900 text-white rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200 transition-all duration-300 active:scale-95"
+                                    >
+                                        <ArrowLeft size={14} strokeWidth={2.5} />
+                                        Volver al Inicio
+                                    </Link>
                                 </div>
                             </div>
                         </div>

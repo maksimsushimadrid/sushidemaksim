@@ -1,6 +1,5 @@
 import { motion, LayoutGroup } from 'framer-motion';
 import { useEffect, useCallback } from 'react';
-import { Sparkles } from 'lucide-react';
 import { CATEGORIES } from '../../constants/menu';
 
 interface MenuCategoryBarProps {
@@ -87,19 +86,6 @@ export default function MenuCategoryBar({
                             data-lenis-prevent-touch
                         >
                             <div className="flex gap-2 flex-nowrap px-4 w-max relative">
-                                {/* TODOS Button */}
-                                <button
-                                    id="cat-btn-all"
-                                    onClick={() => onCategoryClick('all')}
-                                    className={`relative transform-gpu backface-hidden whitespace-nowrap px-6 py-2.5 rounded-2xl font-black cursor-pointer text-[12px] uppercase tracking-wider snap-center border transition-all duration-300 shadow-sm hover:shadow-md ${
-                                        activeCategory === 'all'
-                                            ? 'bg-orange-600 text-white shadow-lg shadow-orange-600/20 border-transparent z-10'
-                                            : 'bg-white text-gray-500 border-gray-100'
-                                    }`}
-                                >
-                                    <span className="relative z-10">Todos</span>
-                                </button>
-
                                 {/* CATEGORY Buttons */}
                                 {CATEGORIES.map(cat => (
                                     <button
@@ -141,29 +127,6 @@ export default function MenuCategoryBar({
             >
                 <LayoutGroup id="sidebar-katana">
                     <nav className="flex flex-col py-4 px-2 relative z-10">
-                        <button
-                            onClick={() => onCategoryClick('all')}
-                            className={`relative w-full text-left px-4 py-4 transition-all duration-300 flex items-center gap-3 border-none cursor-pointer group rounded-xl ${
-                                activeCategory === 'all'
-                                    ? 'text-white'
-                                    : 'text-white/40 hover:text-white'
-                            }`}
-                        >
-                            <Sparkles
-                                size={20}
-                                strokeWidth={activeCategory === 'all' ? 2.5 : 2}
-                                className={`relative z-10 transition-transform duration-300 ${
-                                    activeCategory === 'all'
-                                        ? 'stroke-current scale-110'
-                                        : 'group-hover:scale-110'
-                                }`}
-                            />
-                            <span className="text-sm relative z-10 font-bold tracking-wide">
-                                Todos
-                            </span>
-                            {activeCategory === 'all' && <KatanaUnderline />}
-                        </button>
-
                         {CATEGORIES.map(cat => (
                             <button
                                 key={cat.id}

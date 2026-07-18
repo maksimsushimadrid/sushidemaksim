@@ -36,6 +36,12 @@ vi.mock('../../analytics/tracker', () => ({
     },
 }));
 
+vi.mock('../../hooks/useCart', () => ({
+    useCart: () => ({
+        updateDeliveryDetails: vi.fn(),
+    }),
+}));
+
 const TestWrapper = ({
     children,
     defaultValues = {},
@@ -101,7 +107,7 @@ describe('DeliveryForm', () => {
         expect(screen.getAllByText(/Entrega/i).length).toBeGreaterThan(0);
         expect(screen.getByText(/Domicilio/i)).toBeInTheDocument();
         expect(screen.getByText(/Recogida/i)).toBeInTheDocument();
-        expect(screen.getByText(/¿Dónde entregamos el pedido\?/i)).toBeInTheDocument();
+        expect(screen.getByText(/O seleccionar en el mapa/i)).toBeInTheDocument();
     });
 
     it('switches between delivery types', async () => {

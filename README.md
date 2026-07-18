@@ -19,7 +19,9 @@ A premium gastronomy e-commerce platform offering real-time delivery and pick-up
 ## ✨ Features
 
 ### 🍱 E-Commerce & Customer Client
-- **Interactive Menu** — Over 58 gourmet dishes grouped by categories (Rolls, Nigiri, Sets, Starters, Soups, Desserts, Drinks) featuring sticky sub-navigation and instant search.
+- **Interactive Menu & Category Navigation** — Over 58 gourmet dishes grouped by categories (Rolls, Nigiri, Sets, Starters, Soups, Desserts, Drinks) featuring sticky sub-navigation, instant search, and an intelligent scroll spy that highlights the active section.
+- **Catalog Quantity Controls** — Add to cart directly from the grid using a persistent stepper (`[- Qty +]`) with micro-haptic transitions (Framer Motion) between standard CTA and stepper views.
+- **Direct Address Autocomplete** — Instant location geosearch suggestion panel powered by OpenStreetMap Nominatim API, allowing clients to input their address directly without requiring a map modal.
 - **Dynamic Pricing & Delivery Calculations** — Transparent delivery fee auto-calculations (with default free checkout state until delivery zone is selected) and unit price transparency (`€/ud`) for multi-item rows.
 - **Real-Time Shopping Cart** — Fully interactive cart with dynamic addition of extras (chopsticks, wasabi, ginger), customizable options, and validation with Zod.
 - **Guest-Count Customization** — Tailored guest count selection (minimum 1 guest) mapped to automated email notifications and order tracking notes.
