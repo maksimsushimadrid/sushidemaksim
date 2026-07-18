@@ -576,15 +576,15 @@ export default function ContactsPage() {
                         >
                             <div className="w-full h-full relative z-10">
                                 <MapContainer
-                                    center={[40.397042, -3.67464]}
-                                    zoom={15}
+                                    center={[40.397042, -3.672449]}
+                                    zoom={16}
                                     style={{ width: '100%', height: '100%' }}
                                     zoomControl={false}
                                 >
                                     <MapResizer />
                                     <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
                                     <Marker
-                                        position={[40.397042, -3.67464]}
+                                        position={[40.397042, -3.672449]}
                                         icon={SushiRestaurantIcon}
                                     >
                                         <Popup>
