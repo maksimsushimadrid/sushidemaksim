@@ -127,13 +127,13 @@ test.describe('Guest Checkout - Address Selection', () => {
 
         // Open address modal
         await page.getByTestId('address-input').click({ force: true });
-        await expect(page.getByPlaceholder(/calle.*número/i)).toBeVisible();
+        await expect(page.getByPlaceholder('Escribe tu calle y número...')).toBeVisible();
 
         // Search address
         const searchPromise = page.waitForResponse(
             r => r.url().includes('/api/delivery-zones/search') && r.status() === 200
         );
-        await page.getByPlaceholder(/calle.*número/i).fill('Gran Via 1');
+        await page.getByPlaceholder('Escribe tu calle y número...').fill('Gran Via 1');
         await searchPromise;
 
         // Wait for results - check the list
