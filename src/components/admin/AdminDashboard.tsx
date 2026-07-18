@@ -50,7 +50,7 @@ const DASHBOARD_TRANSLATIONS = {
         stats: {
             revenue: 'Выручка за сегодня',
             revenue30: 'Выручка за 30 дней',
-            missed: 'Упущенная выручка',
+            missed: 'Конверсия клиентов',
             newOrders: 'Новые заказы',
             pending: 'Ожидающие',
             newUsers: 'Новые клиенты',
@@ -59,7 +59,7 @@ const DASHBOARD_TRANSLATIONS = {
             visits30: 'Посещения за 30 дней',
             revenueDesc: 'Всего получено (Мадрид)',
             revenue30Desc: 'За последние 30 дней',
-            missedDesc: 'Заказы в корзинах',
+            missedDesc: 'С заказом / Без заказа',
             ordersDesc: 'Получено сегодня',
             pendingDesc: 'Требуют внимания',
             usersDesc: 'Зарегистрировано сегодня',
@@ -70,7 +70,7 @@ const DASHBOARD_TRANSLATIONS = {
                 'Сумма всех заказов, которые не были отменены (статусы: получен, готовится, в пути, доставлен). Считается от 00:00 текущего дня.',
             revenue30Hint: 'Сумма всех заказов за последние 30 дней, за исключением отмененных.',
             missedHint:
-                'Оценка выручки от товаров, которые пользователи добавили в корзину сегодня, но не завершили покупку. Данные из логов аналитики брошенных корзин.',
+                'Процент зарегистрированных пользователей (роль user), которые сделали хотя бы один заказ в системе. Внизу показано распределение.',
             ordersHint: 'Общее количество новых заказов за сегодня.',
             pendingHint:
                 'Заказы со статусами "Ожидает" и "Получен", которые требуют подтверждения или начала приготовления.',
@@ -125,7 +125,7 @@ const DASHBOARD_TRANSLATIONS = {
         stats: {
             revenue: 'Ingresos de hoy',
             revenue30: 'Ingresos 30 días',
-            missed: 'Ingresos Perdidos',
+            missed: 'Conversión de Clientes',
             newOrders: 'Nuevos Pedidos',
             pending: 'Pedidos Pendientes',
             newUsers: 'Nuevos Clientes',
@@ -134,7 +134,7 @@ const DASHBOARD_TRANSLATIONS = {
             visits30: 'Visitas 30 días',
             revenueDesc: 'Total cobrado (Madrid)',
             revenue30Desc: 'Últimos 30 días',
-            missedDesc: 'Pedidos abandonados en carrito',
+            missedDesc: 'Con pedido / Sin pedido',
             ordersDesc: 'Pedidos recibidos hoy',
             pendingDesc: 'Atención inmediata',
             usersDesc: 'Registrados hoy',
@@ -146,7 +146,7 @@ const DASHBOARD_TRANSLATIONS = {
             revenue30Hint:
                 'Suma de todos los pedidos (excluyendo cancelados) en los últimos 30 días.',
             missedHint:
-                'Ingresos estimados de productos que los usuarios añadieron al carrito hoy pero no finalizaron la compra.',
+                'Porcentaje de usuarios registrados (con rol user) que han realizado al menos un pedido en el sistema. Abajo se detalla la distribución.',
             ordersHint: 'Número total de nuevos pedidos recibidos hoy.',
             pendingHint:
                 'Pedidos en estado "Pendiente" o "Recibido" que requieren atención o confirmación inmediata.',
@@ -828,12 +828,22 @@ export default function AdminDashboard({
                     />
                     <StatCard
                         title={t.stats.missed}
-                        value={`${Number(stats?.missedRevenueToday || 0)
-                            .toFixed(2)
-                            .replace('.', ',')} €`}
-                        icon={AlertTriangle}
+                        value={
+                            stats?.userStats?.total > 0
+                                ? `${Math.round(
+                                      ((stats?.userStats?.withOrders || 0) /
+                                          (stats?.userStats?.total || 1)) *
+                                          100
+                                  )}%`
+                                : '0%'
+                        }
+                        icon={Users}
                         colorClass="bg-orange-50 text-orange-600"
-                        desc={t.stats.missedDesc}
+                        desc={
+                            language === 'ru'
+                                ? `С заказом: ${stats?.userStats?.withOrders || 0} | Без: ${stats?.userStats?.withoutOrders || 0}`
+                                : `Con pedido: ${stats?.userStats?.withOrders || 0} | Sin: ${stats?.userStats?.withoutOrders || 0}`
+                        }
                         hint={t.stats.missedHint}
                         t={t}
                         metricId="missed"

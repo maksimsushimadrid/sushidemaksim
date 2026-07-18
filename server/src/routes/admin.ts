@@ -1088,12 +1088,12 @@ router.get(
     asyncHandler(async (_req: Request, res: Response) => {
         // 1. Basic counts
         const [
-            { count: totalUsers },
+            { data: allUsersForStats },
             { count: totalOrders },
             { data: revenueData },
             { count: menuItems },
         ] = await Promise.all([
-            supabase.from('users').select('*', { count: 'exact', head: true }).eq('role', 'user'),
+            supabase.from('users').select('id, orders(id)').eq('role', 'user'),
             supabase
                 .from('orders')
                 .select('*', { count: 'exact', head: true })
@@ -1105,6 +1105,11 @@ router.get(
                 .eq('is_archived', false),
             supabase.from('menu_items').select('*', { count: 'exact', head: true }),
         ]);
+
+        const totalUsers = allUsersForStats?.length || 0;
+        const usersWithOrders =
+            allUsersForStats?.filter(u => u.orders && u.orders.length > 0).length || 0;
+        const usersWithoutOrders = totalUsers - usersWithOrders;
 
         const revenue =
             Math.round((revenueData?.reduce((sum, o) => sum + Number(o.total), 0) || 0) * 100) /
@@ -1561,6 +1566,11 @@ router.get(
             visits30,
             topFavorited,
             topShared,
+            userStats: {
+                total: totalUsers,
+                withOrders: usersWithOrders,
+                withoutOrders: usersWithoutOrders,
+            },
             stats: {
                 totalUsers,
                 totalOrders,
