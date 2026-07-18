@@ -358,11 +358,23 @@ router.post(
             ),
         ].slice(0, 3);
 
+        // Generate title and slug to satisfy NOT NULL constraints in DB
+        const title = message.trim().slice(0, 50) + (message.trim().length > 50 ? '...' : '');
+        const slug =
+            title
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '-')
+                .replace(/(^-|-$)+/g, '') || 'post';
+        const randomId = Math.random().toString(36).substring(2, 10);
+        const uniqueSlug = `${slug}-${randomId}`;
+
         const { data: post, error } = await supabase
             .from('tablon_posts')
             .insert({
                 user_id: req.userId,
                 category_id: categoryId,
+                title,
+                slug: uniqueSlug,
                 tags: cleanTags,
                 message: message.trim(),
                 whatsapp_phone: whatsappPhone.trim(),
