@@ -1,5 +1,3 @@
-import { api } from '../utils/api';
-
 /**
  * Types of events we track on the site.
  */
@@ -60,7 +58,7 @@ class AnalyticsTracker {
      */
     async track(
         eventName: EventName,
-        data: {
+        _data: {
             userId?: string | number | null;
             metadata?: Record<string, any>;
         } = {}

@@ -5,7 +5,6 @@ import {
     TrendingUp,
     ChevronRight,
     ChevronLeft,
-    AlertTriangle,
     HelpCircle,
     Info,
     ShoppingBag,
