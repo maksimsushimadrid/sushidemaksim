@@ -23,6 +23,28 @@ import SEO from '../components/SEO';
 import { Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import { getOptimizedImageUrl } from '../utils/images';
+import L from 'leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+
+// Premium Pin Icon for the restaurant (Red)
+const SushiRestaurantIcon = L.divIcon({
+    html: `
+        <div class="relative flex flex-col-reverse items-center group">
+            <div class="filter drop-shadow-lg transform transition-transform group-hover:scale-110">
+                <svg width="40" height="50" viewBox="0 0 40 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 0C8.954 0 0 8.954 0 20C0 35 20 50 20 50C20 50 40 35 40 20C40 8.954 31.046 0 20 0ZM20 28C15.582 28 12 24.418 12 20C12 15.582 15.582 12 20 12C24.418 12 28 15.582 28 20C28 24.418 24.418 28 20 28Z" fill="#F26522"/>
+                    <circle cx="20" cy="20" r="6" fill="white" />
+                </svg>
+            </div>
+            <div class="mb-1.5 px-3 py-1.5 bg-orange-600 text-white text-[10px] font-black rounded-xl shadow-xl whitespace-nowrap animate-in fade-in zoom-in duration-500 ring-4 ring-white/20">
+                ¡Estamos aquí!
+            </div>
+        </div>
+    `,
+    className: '',
+    iconSize: [40, 70],
+    iconAnchor: [20, 65],
+});
 import { api } from '../utils/api';
 import { SITE_URL } from '../constants/config';
 
@@ -537,18 +559,28 @@ export default function ContactsPage() {
                             initial={{ opacity: 0, scale: 0.98 }}
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
-                            className="bg-white rounded-[2rem] overflow-hidden border border-gray-100 h-[300px] md:h-[450px] shadow-sm relative group"
+                            className="bg-white rounded-[2rem] overflow-hidden border border-gray-100 h-[300px] md:h-[450px] shadow-sm relative group z-10"
                         >
-                            <iframe
-                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3038.563914856037!2d-3.674640123441!3d40.397042071442!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd42272e4ed3b2e5%3A0xe719cdfe984d9b8!2sSushi%20de%20Maksim!5e0!3m2!1ses!2ses!4v1709700000000!5m2!1ses!2ses"
-                                width="100%"
-                                height="100%"
-                                style={{ border: 0 }}
-                                allowFullScreen
-                                loading="lazy"
-                                title="Ubicación"
-                                className="group-hover:scale-105 transition-transform duration-1000"
-                            ></iframe>
+                            <div className="w-full h-full relative z-10">
+                                <MapContainer
+                                    center={[40.397042, -3.67464]}
+                                    zoom={15}
+                                    style={{ width: '100%', height: '100%' }}
+                                    zoomControl={false}
+                                >
+                                    <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
+                                    <Marker
+                                        position={[40.397042, -3.67464]}
+                                        icon={SushiRestaurantIcon}
+                                    >
+                                        <Popup>
+                                            <div className="text-center font-black text-xs uppercase tracking-wide">
+                                                Sushi de Maksim
+                                            </div>
+                                        </Popup>
+                                    </Marker>
+                                </MapContainer>
+                            </div>
                         </motion.div>
 
                         <motion.div
