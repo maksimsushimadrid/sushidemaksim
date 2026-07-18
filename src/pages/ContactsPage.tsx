@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
     MapPin,
     Phone,
@@ -24,7 +24,8 @@ import { Link } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 import { getOptimizedImageUrl } from '../utils/images';
 import L from 'leaflet';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 
 // Premium Pin Icon for the restaurant (Red)
 const SushiRestaurantIcon = L.divIcon({
@@ -45,6 +46,18 @@ const SushiRestaurantIcon = L.divIcon({
     iconSize: [40, 70],
     iconAnchor: [20, 65],
 });
+
+// Fix Leaflet sizing bug on initial render
+const MapResizer = () => {
+    const map = useMap();
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            map.invalidateSize();
+        }, 150);
+        return () => clearTimeout(timer);
+    }, [map]);
+    return null;
+};
 import { api } from '../utils/api';
 import { SITE_URL } from '../constants/config';
 
@@ -568,6 +581,7 @@ export default function ContactsPage() {
                                     style={{ width: '100%', height: '100%' }}
                                     zoomControl={false}
                                 >
+                                    <MapResizer />
                                     <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
                                     <Marker
                                         position={[40.397042, -3.67464]}
