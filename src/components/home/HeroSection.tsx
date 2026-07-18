@@ -109,7 +109,7 @@ export function HeroSection() {
                     alt="Sushi background"
                     className="absolute inset-0 w-full h-full object-cover"
                     loading="eager"
-                    fetchPriority="high"
+                    {...({ fetchpriority: 'high' } as any)}
                 />
 
                 {/* Video loads on top and fades in smoothly once playing to avoid flash */}

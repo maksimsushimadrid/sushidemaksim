@@ -194,7 +194,7 @@ export default function HomePage() {
                     rel="preload"
                     href="/hero-poster.webp"
                     as="image"
-                    fetchPriority="high"
+                    {...({ fetchpriority: 'high' } as any)}
                     imageSrcSet="/hero-poster-mobile.webp 768w, /hero-poster.webp 1920w"
                     imageSizes="(max-width: 768px) 768px, 1920px"
                 />
