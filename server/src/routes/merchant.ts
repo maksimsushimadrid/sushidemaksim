@@ -11,11 +11,13 @@ const router = Router();
  */
 router.get(
     ['/', '/feed.xml'],
-    asyncHandler(async (_req: Request, res: Response) => {
+    asyncHandler(async (req: Request, res: Response) => {
         try {
+            const hostHeader = req.get('host') || 'www.sushidemaksim.com';
+            const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
             const baseUrl = config.isDev
                 ? config.frontendUrl || 'http://localhost:5173'
-                : 'https://www.sushidemaksim.com';
+                : `${protocol}://${hostHeader}`;
             const storageBase = `${config.supabase.url}/storage/v1/object/public/images/menu`;
 
             // 1. Fetch all active menu items
