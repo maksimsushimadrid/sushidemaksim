@@ -212,6 +212,14 @@ function App() {
                                                 }
                                             />
                                             <Route
+                                                path="/reserva"
+                                                element={
+                                                    <PageWrapper skeleton={<GenericSkeleton />}>
+                                                        <ReservationPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
                                                 path="/"
                                                 element={
                                                     <PageWrapper
@@ -224,6 +232,14 @@ function App() {
                                             />
                                             <Route
                                                 path="/menu"
+                                                element={
+                                                    <PageWrapper skeleton={<MenuSkeleton />}>
+                                                        <MenuPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/carta"
                                                 element={
                                                     <PageWrapper skeleton={<MenuSkeleton />}>
                                                         <MenuPage />
