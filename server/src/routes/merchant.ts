@@ -50,6 +50,7 @@ router.get(
       <g:availability>in_stock</g:availability>
       <g:price>${price}</g:price>
       <g:brand>Sushi de Maksim</g:brand>
+      <g:identifier_exists>no</g:identifier_exists>
       <g:google_product_category>Food, Beverages &amp; Tobacco &gt; Food Items &gt; Prepared Foods</g:google_product_category>
     </item>`;
                 })
