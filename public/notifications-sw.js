@@ -1,3 +1,5 @@
+self.__WB_DISABLE_DEV_LOGS = true;
+
 self.addEventListener('push', function (event) {
     if (!event.data) return;
 
