@@ -1,3 +1,5 @@
+/* eslint-env serviceworker */
+/* global self */
 self.__WB_DISABLE_DEV_LOGS = true;
 
 self.addEventListener('push', function (event) {
@@ -5,15 +7,15 @@ self.addEventListener('push', function (event) {
 
     try {
         const data = event.data.json();
-        
+
         const title = data.title || 'Sushi de Maksim';
         const options = {
             body: data.body || 'Tienes una actualización sobre tu pedido.',
             icon: data.icon || '/pwa-192.png',
             badge: data.badge || '/maskable-icon.png',
             data: {
-                url: data.url || '/'
-            }
+                url: data.url || '/',
+            },
         };
 
         event.waitUntil(self.registration.showNotification(title, options));
@@ -24,10 +26,10 @@ self.addEventListener('push', function (event) {
 
 self.addEventListener('notificationclick', function (event) {
     event.notification.close();
-    
+
     if (event.notification.data && event.notification.data.url) {
         event.waitUntil(
-            clients.matchAll({ type: 'window' }).then(function (windowClients) {
+            self.clients.matchAll({ type: 'window' }).then(function (windowClients) {
                 // Check if there is already a window/tab open with the target URL
                 for (let i = 0; i < windowClients.length; i++) {
                     const client = windowClients[i];
@@ -37,8 +39,8 @@ self.addEventListener('notificationclick', function (event) {
                     }
                 }
                 // If not, then open the target URL in a new window/tab.
-                if (clients.openWindow) {
-                    return clients.openWindow(event.notification.data.url);
+                if (self.clients.openWindow) {
+                    return self.clients.openWindow(event.notification.data.url);
                 }
             })
         );
