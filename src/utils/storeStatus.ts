@@ -116,8 +116,10 @@ export function formatTimeLeft(diff: number): string {
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
+    const pad = (n: number) => String(n).padStart(2, '0');
+
     let format = '';
     if (hours > 0) format += `${hours}h `;
-    format += `${minutes}m ${seconds}s`;
+    format += `${pad(minutes)}m ${pad(seconds)}s`;
     return format;
 }

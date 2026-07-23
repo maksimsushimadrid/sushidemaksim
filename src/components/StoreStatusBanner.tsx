@@ -138,14 +138,14 @@ export default function StoreStatusBanner() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3 w-full md:w-auto">
+                            <div className="flex items-center gap-3 w-full md:w-auto shrink-0">
                                 {timeLeftDisplay && (
-                                    <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-xl border border-white/10 decoration-orange-500">
-                                        <Timer size={14} className="text-orange-500" />
-                                        <span className="text-[10px] uppercase font-black text-gray-400 tracking-wider">
+                                    <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-xl border border-white/10 shrink-0 whitespace-nowrap">
+                                        <Timer size={14} className="text-orange-500 shrink-0" />
+                                        <span className="text-[10px] uppercase font-black text-gray-400 tracking-wider whitespace-nowrap">
                                             Abrimos en:
                                         </span>
-                                        <span className="text-[12px] font-black text-white tabular-nums">
+                                        <span className="text-[12px] font-black text-white tabular-nums tracking-tight whitespace-nowrap">
                                             {timeLeftDisplay}
                                         </span>
                                     </div>
@@ -162,7 +162,7 @@ export default function StoreStatusBanner() {
                                                 Se procesarán al abrir.
                                             </p>
                                             {timeLeftDisplay && (
-                                                <p className="lg:hidden text-[8px] text-orange-400 font-black leading-none">
+                                                <p className="lg:hidden text-[8px] text-orange-400 font-black leading-none whitespace-nowrap tabular-nums shrink-0">
                                                     ● {timeLeftDisplay}
                                                 </p>
                                             )}

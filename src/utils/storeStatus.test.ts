@@ -80,8 +80,8 @@ describe('storeStatus Utility', () => {
 
     describe('formatTimeLeft', () => {
         it('formats hours and minutes', () => {
-            const diff = 1000 * 60 * 60 * 2 + 1000 * 60 * 5 + 1000; // 2h 5m 1s
-            expect(formatTimeLeft(diff)).toBe('2h 5m 1s');
+            const diff = 1000 * 60 * 60 * 2 + 1000 * 60 * 5 + 1000; // 2h 05m 01s
+            expect(formatTimeLeft(diff)).toBe('2h 05m 01s');
         });
 
         it('formats only minutes and seconds when hours is 0', () => {
