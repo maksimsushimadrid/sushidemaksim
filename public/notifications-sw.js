@@ -1,5 +1,4 @@
 /* eslint-env serviceworker */
-/* global self */
 self.__WB_DISABLE_DEV_LOGS = true;
 
 self.addEventListener('push', function (event) {
