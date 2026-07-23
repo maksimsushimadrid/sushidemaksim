@@ -220,7 +220,17 @@ const StatCard = ({
     const [showHint, setShowHint] = useState(false);
     const [alignRight, setAlignRight] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDesktop, setIsDesktop] = useState(false);
     const iconRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const checkDesktop = () => {
+            setIsDesktop(window.innerWidth >= 768);
+        };
+        checkDesktop();
+        window.addEventListener('resize', checkDesktop);
+        return () => window.removeEventListener('resize', checkDesktop);
+    }, []);
 
     const handleMouseEnter = () => {
         if (iconRef.current) {
@@ -410,51 +420,58 @@ const StatCard = ({
                             {value}
                         </h3>
                         {/* Mini Sparkline Chart - Desktop only (Clickable) */}
-                        <div
-                            onClick={() => setIsModalOpen(true)}
-                            className="hidden md:block w-20 h-7 overflow-hidden shrink-0 cursor-zoom-in hover:scale-105 active:scale-95 transition-all rounded hover:opacity-85"
-                            title={
-                                language === 'ru'
-                                    ? 'Кликните, чтобы развернуть график'
-                                    : 'Clic para expandir el gráfico'
-                            }
-                        >
-                            <ResponsiveContainer width="100%" height="100%">
-                                <AreaChart
-                                    data={chartData}
-                                    margin={{ top: 2, right: 2, left: 2, bottom: 2 }}
+                        {isDesktop && (
+                            <div
+                                onClick={() => setIsModalOpen(true)}
+                                className="hidden md:block w-20 h-7 overflow-hidden shrink-0 cursor-zoom-in hover:scale-105 active:scale-95 transition-all rounded hover:opacity-85"
+                                title={
+                                    language === 'ru'
+                                        ? 'Кликните, чтобы развернуть график'
+                                        : 'Clic para expandir el gráfico'
+                                }
+                            >
+                                <ResponsiveContainer
+                                    width="100%"
+                                    height="100%"
+                                    minWidth={0}
+                                    minHeight={0}
                                 >
-                                    <defs>
-                                        <linearGradient
-                                            id={`gradient-${chartInfo.id}`}
-                                            x1="0"
-                                            y1="0"
-                                            x2="0"
-                                            y2="1"
-                                        >
-                                            <stop
-                                                offset="5%"
-                                                stopColor={chartInfo.color}
-                                                stopOpacity={0.2}
-                                            />
-                                            <stop
-                                                offset="95%"
-                                                stopColor={chartInfo.color}
-                                                stopOpacity={0}
-                                            />
-                                        </linearGradient>
-                                    </defs>
-                                    <Area
-                                        type="monotone"
-                                        dataKey="val"
-                                        stroke={chartInfo.color}
-                                        strokeWidth={1.5}
-                                        fillOpacity={1}
-                                        fill={`url(#gradient-${chartInfo.id})`}
-                                    />
-                                </AreaChart>
-                            </ResponsiveContainer>
-                        </div>
+                                    <AreaChart
+                                        data={chartData}
+                                        margin={{ top: 2, right: 2, left: 2, bottom: 2 }}
+                                    >
+                                        <defs>
+                                            <linearGradient
+                                                id={`gradient-${chartInfo.id}`}
+                                                x1="0"
+                                                y1="0"
+                                                x2="0"
+                                                y2="1"
+                                            >
+                                                <stop
+                                                    offset="5%"
+                                                    stopColor={chartInfo.color}
+                                                    stopOpacity={0.2}
+                                                />
+                                                <stop
+                                                    offset="95%"
+                                                    stopColor={chartInfo.color}
+                                                    stopOpacity={0}
+                                                />
+                                            </linearGradient>
+                                        </defs>
+                                        <Area
+                                            type="monotone"
+                                            dataKey="val"
+                                            stroke={chartInfo.color}
+                                            strokeWidth={1.5}
+                                            fillOpacity={1}
+                                            fill={`url(#gradient-${chartInfo.id})`}
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -516,7 +533,12 @@ const StatCard = ({
                                 </p>
 
                                 <div className="w-full h-64 mt-4">
-                                    <ResponsiveContainer width="100%" height="100%">
+                                    <ResponsiveContainer
+                                        width="100%"
+                                        height="100%"
+                                        minWidth={0}
+                                        minHeight={0}
+                                    >
                                         <AreaChart
                                             data={detailedData}
                                             margin={{ top: 10, right: 10, left: -20, bottom: 0 }}

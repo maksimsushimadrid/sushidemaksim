@@ -65,6 +65,34 @@ export default defineConfig({
                 globIgnores: ['**/sushidemaksim_black_style_photos/**/*'],
                 runtimeCaching: [
                     {
+                        urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/v1\/object\/public\/.*/i,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'supabase-storage-cache',
+                            expiration: {
+                                maxEntries: 250,
+                                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                            },
+                            cacheableResponse: {
+                                statuses: [0, 200],
+                            },
+                        },
+                    },
+                    {
+                        urlPattern: /\/_vercel\/image\?.*/i,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'vercel-image-cache',
+                            expiration: {
+                                maxEntries: 250,
+                                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                            },
+                            cacheableResponse: {
+                                statuses: [0, 200],
+                            },
+                        },
+                    },
+                    {
                         urlPattern: /\/sushidemaksim_black_style_photos\/.*\.(webp|png|jpg|jpeg)$/i,
                         handler: 'CacheFirst',
                         options: {
