@@ -10,6 +10,8 @@ import { triggerHaptic } from '../../utils/haptics';
 
 import { getAllergenInfo } from '../../utils/allergens';
 
+import ProductDetailModal from './ProductDetailModal';
+
 interface ProductCardProps {
     item: MenuItem;
     user: User | null;
@@ -49,20 +51,29 @@ const ProductCard = React.memo(function ProductCard({
     onRemoveItem,
     isPriority,
     isHighlighted,
-    isZoomed,
+    isZoomed: _isZoomed,
     onZoom,
 }: ProductCardProps) {
     const [quantity, setQuantity] = useState(1);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const isExtra = item.category === 'extras';
+
+    const handleOpenDetails = (e?: React.MouseEvent) => {
+        if (e) {
+            e.preventDefault();
+        }
+        onZoom?.();
+        setIsModalOpen(true);
+    };
 
     return (
         <div
             id={`item-${item.id}`}
-            onClick={() => onZoom?.()}
+            onClick={handleOpenDetails}
             className={`premium-card group relative flex flex-col h-full rounded-[24px] md:rounded-[32px] overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgba(249,115,22,0.15)] ${
                 isHighlighted ? 'highlight-item' : ''
-            } ${isZoomed ? 'ring-2 ring-orange-500/20 shadow-2xl' : ''}`}
+            }`}
         >
             {/* Action Buttons */}
             <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10">
@@ -95,7 +106,10 @@ const ProductCard = React.memo(function ProductCard({
             )}
 
             {/* Image Container */}
-            <div className="aspect-[4/3] md:h-56 bg-gray-50 overflow-hidden relative group/img">
+            <div
+                onClick={handleOpenDetails}
+                className="aspect-[4/3] md:h-56 bg-gray-50 overflow-hidden relative group/img cursor-pointer"
+            >
                 <SafeImage
                     src={item.image}
                     loading={isPriority ? 'eager' : 'lazy'}
@@ -104,9 +118,7 @@ const ProductCard = React.memo(function ProductCard({
                         getOptimizedImageUrl(url, 640, 80, slugify(item.name))
                     }
                     {...({ fetchpriority: isPriority ? 'high' : 'auto' } as any)}
-                    className={`w-full h-full object-cover transition-transform duration-700 ease-out ${
-                        isZoomed ? 'scale-[1.3] shadow-inner' : 'group-hover:scale-125'
-                    }`}
+                    className="w-full h-full object-cover transition-transform duration-500 ease-out md:group-hover:scale-110"
                     alt={`${item.name} — ${item.category} | Menú de Sushi de Maksim Madrid`}
                     title={`${item.name} — ${item.description}`}
                     fallbackContent={null}
@@ -327,6 +339,27 @@ const ProductCard = React.memo(function ProductCard({
                     </AnimatePresence>
                 </div>
             </div>
+
+            {/* Bottom Sheet Detail Modal */}
+            <AnimatePresence>
+                {isModalOpen && (
+                    <ProductDetailModal
+                        item={item}
+                        onClose={() => setIsModalOpen(false)}
+                        user={user}
+                        isFavorite={isFavorite}
+                        onToggleFavorite={onToggleFavorite}
+                        onShare={onShare}
+                        onAddToCart={onAddToCart}
+                        isAdded={isAdded}
+                        cartQuantity={cartQuantity}
+                        cartItemId={cartItemId}
+                        cartSelectedOption={cartSelectedOption}
+                        onUpdateQuantity={onUpdateQuantity}
+                        onRemoveItem={onRemoveItem}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 });

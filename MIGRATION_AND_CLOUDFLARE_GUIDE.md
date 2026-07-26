@@ -72,37 +72,48 @@ GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO service_role;
 
 ---
 
-## Шаг 3. Делегирование DNS и настройка Cloudflare
+## Шаг 3. Включение Cloudflare Proxy и настройка SSL/TLS
 
-### 1. Подключение домена
+> [!NOTE]
+> DNS-серверы уже успешно делегированы на Cloudflare (`DNS Setup: Full`), записи A и CNAME для Vercel настроены.
 
-1. Зарегистрируйтесь на [Cloudflare](https://www.cloudflare.com/) и добавьте ваш домен `sushidemaksim.com`.
-2. Скопируйте предоставленные Cloudflare NS-серверы (например, `xxx.ns.cloudflare.com`).
-3. Зайдите в панель регистратора вашего домена и обновите DNS-серверы (NS-записи), заменив старые на новые серверы Cloudflare.
+### 1. Переключение в режим Проксирования (Оранжевое облако 🧡)
 
-### 2. Настройка SSL/TLS (Важнейший шаг)
+Сейчас у вас включен режим **DNS only** (серое облако). Чтобы активировать защиту от DDoS, CDN и кэширование Cloudflare:
 
-- В панели Cloudflare перейдите в раздел **SSL/TLS** -> **Overview**.
+1. Зайдите в панель Cloudflare -> раздел **DNS** -> **Records**.
+2. Найдите запись `A` | `sushidemaksim.com` -> нажмите **Edit** -> переключите `Proxy status` на **Proxied** (оранжевое облако 🧡).
+3. Найдите запись `CNAME` | `www.sushidemaksim.com` -> нажмите **Edit** -> переключите `Proxy status` на **Proxied** (оранжевое облако 🧡).
+
+---
+
+### 2. Проверка режима SSL/TLS (Обязательно перед включением Proxy!)
+
+- В панели Cloudflare откройте **SSL/TLS** -> **Overview**.
 - Измените режим шифрования на **Full** или **Full (strict)**.
-- _Если оставить режим Flexible, сайт уйдет в циклическую переадресацию (Error 310)._
+- _При режиме Flexible включение оранжевого облака приведет к ошибке циклического редиректа (Error 310)._
 
-### 3. DNS-записи в Cloudflare для Vercel
+---
 
-В разделе **DNS** -> **Records** добавьте две записи:
+### 3. DNS-записи в Cloudflare для Vercel / Нового хостинга
+
+В разделе **DNS** -> **Records** добавьте/проверьте записи:
 
 1. **Тип**: `A`, **Имя**: `@` (или `sushidemaksim.com`), **Target**: `76.76.21.21`, **Proxy status**: `Proxied` (Оранжевое облако).
 2. **Тип**: `CNAME`, **Имя**: `www`, **Target**: `cname.vercel-dns.com`, **Proxy status**: `Proxied` (Оранжевое облако).
 
-### 4. Создание правил Cache Rules
+---
 
-Для сниженияEdge-запросов к Vercel перейдите в **Caching** -> **Cache Rules** и добавьте два правила:
+### 4. Создание правил Cache Rules в Cloudflare
+
+Для снижения Edge-запросов к Vercel перейдите в **Caching** -> **Cache Rules** и добавьте два правила:
 
 #### Правило №1: Кэширование статических ресурсов
 
 - **Имя**: `Cache Static Assets`
 - **Условие (If...)**:
-    - Поле: `URI Path` -> Оператор: `starts with` -> Значение: `/assets/`
-    - _ИЛИ_ Поле: `URI Path` -> Оператор: `starts with` -> Значение: `/sounds/`
+    - `URI Path` `starts with` `/assets/`
+    - _OR_ `URI Path` `starts with` `/sounds/`
 - **Действие (Then...)**:
     - Cache eligibility: **Eligible for cache**
     - Edge Cache TTL: **Respect origin headers** или **Override to 1 month**
@@ -111,13 +122,30 @@ GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA public TO service_role;
 
 - **Имя**: `Bypass API Cache`
 - **Условие (If...)**:
-    - Поле: `URI Path` -> Оператор: `starts with` -> Значение: `/api/`
+    - `URI Path` `starts with` `/api/`
 - **Действие (Then...)**:
-    - Cache eligibility: **Bypass cache** (это гарантирует актуальность заказов и статусов).
+    - Cache eligibility: **Bypass cache**
 
 ---
 
-## Шаг 4. Настройка секретов в GitHub (для CI/CD)
+## Шаг 4. Настройка домена (Перенос с Bluehost)
+
+### 1. Электронная почта
+
+> [!NOTE]
+> Перенос почты **не требуется** (почта на домене не используется). Если при автоматическом импорте в Cloudflare подтянутся старые MX-записи от Bluehost, их можно просто удалить в разделе **DNS -> Records**.
+
+### 2. Перенос Регистратора Домена в Cloudflare Registrar (Опционально)
+
+Для продления домена по оптовой себестоимости:
+
+1. В панели Bluehost: **Domains** -> **Transfer / Security** -> снимите **Domain Lock** (Unlock) и отключите **Privacy Protection**.
+2. Запросите **Auth / EPP Code** в Bluehost.
+3. В Cloudflare: **Domain Registration** -> **Transfer Domains**, введите Auth-код и подтвердите переезд.
+
+---
+
+## Шаг 5. Настройка секретов в GitHub (для CI/CD)
 
 Если у вас настроены автоматические тесты (GitHub Actions), запуск Playwright тестов (E2E) завершится ошибкой, пока вы не добавите секреты в ваш новый репозиторий GitHub.
 
