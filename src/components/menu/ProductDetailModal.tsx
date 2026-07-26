@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Heart, Share2, Plus, Minus, Check, Flame, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -99,12 +99,28 @@ export default function ProductDetailModal({
         }
     };
 
+    const videoRef = useRef<HTMLVideoElement>(null);
+
     const videoSources =
         (item.video as any) ||
         PRODUCT_VIDEO_OVERRIDES[String(item.id)] ||
         (item.name?.toLowerCase().includes('alaska')
             ? { mp4: '/alaska-roll.mp4', webm: '/alaska-roll.webm' }
             : null);
+
+    // Programmatic play trigger for iOS Safari and mobile browsers
+    useEffect(() => {
+        if (videoSources && videoRef.current) {
+            videoRef.current.defaultMuted = true;
+            videoRef.current.muted = true;
+            const playPromise = videoRef.current.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log('Mobile video autoplay prevented:', error);
+                });
+            }
+        }
+    }, [videoSources]);
 
     const totalPrice = (item.price * quantity).toFixed(2).replace('.', ',');
 
@@ -147,17 +163,19 @@ export default function ProductDetailModal({
                 <div className="relative aspect-[4/3] sm:aspect-[16/10] w-full bg-gray-100 shrink-0 overflow-hidden">
                     {videoSources ? (
                         <video
+                            ref={videoRef}
                             autoPlay
                             loop
                             muted
                             playsInline
+                            {...({ 'webkit-playsinline': 'true' } as any)}
                             poster={getOptimizedImageUrl(item.image, 800, 85, slugify(item.name))}
                             className="w-full h-full object-cover pointer-events-none"
                         >
+                            {videoSources.mp4 && <source src={videoSources.mp4} type="video/mp4" />}
                             {videoSources.webm && (
                                 <source src={videoSources.webm} type="video/webm" />
                             )}
-                            {videoSources.mp4 && <source src={videoSources.mp4} type="video/mp4" />}
                         </video>
                     ) : (
                         <SafeImage

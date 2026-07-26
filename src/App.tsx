@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from 'react';
+import { lazy, Suspense, useEffect, useRef } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -89,18 +89,20 @@ const PageWrapper = ({
     const isWaiterRoute = location.pathname.startsWith('/waiter');
     const isTablonRoute = location.pathname.startsWith('/tablon');
 
+    const prevPathname = useRef(location.pathname);
+
     useEffect(() => {
-        // Scroll to top on pathname change, regardless of search params.
-        // We keep hash check to respect anchor links.
-        // Skip auto-scroll when navigating with a category param (e.g. /menu?category=sopas)
-        // — the target page will handle scrolling to the correct section.
-        const hasCategory = new URLSearchParams(location.search).has('category');
-        if (!location.hash && !hasCategory) {
-            // Use requestAnimationFrame to ensure it wins against browser native restoration
-            requestAnimationFrame(() => {
-                window.scrollTo(0, 0);
-                (window as any).lenis?.scrollTo(0, { immediate: true });
-            });
+        // Scroll to top only on actual page (pathname) navigation.
+        // Prevents jumpy scrolling when toggling tabs or search params (e.g. /profile?tab=addresses).
+        if (prevPathname.current !== location.pathname) {
+            prevPathname.current = location.pathname;
+            const hasCategory = new URLSearchParams(location.search).has('category');
+            if (!location.hash && !hasCategory) {
+                requestAnimationFrame(() => {
+                    window.scrollTo(0, 0);
+                    (window as any).lenis?.scrollTo(0, { immediate: true });
+                });
+            }
         }
     }, [location.pathname, location.hash, location.search]);
 

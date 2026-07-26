@@ -113,7 +113,7 @@ export default function ProfilePage() {
         return () => clearTimeout(timer);
     }, []);
 
-    // Scroll active tab into view on mobile
+    // Scroll active tab into view on mobile horizontal bar
     useEffect(() => {
         if (isFirstMount.current) return;
         const activeElement = document.getElementById(`tab-${activeTab}`);
@@ -123,26 +123,6 @@ export default function ProfilePage() {
                 inline: 'center',
                 block: 'nearest',
             });
-        }
-    }, [activeTab]);
-
-    // Scroll to content when tab changes (especially on mobile)
-    // Removed isFirstMount from here because PageWrapper handles initial scroll
-    useEffect(() => {
-        if (isFirstMount.current) return;
-        if (activeTab) {
-            const contentElement = document.getElementById('profile-content');
-            if (contentElement && typeof contentElement.scrollIntoView === 'function') {
-                const headerOffset = window.innerWidth < 768 ? 190 : 150;
-                const elementPosition = contentElement.getBoundingClientRect().top;
-                const offsetPosition =
-                    elementPosition + (window.scrollY || window.pageYOffset) - headerOffset;
-
-                window.scrollTo({
-                    top: offsetPosition,
-                    behavior: 'smooth',
-                });
-            }
         }
     }, [activeTab]);
 
