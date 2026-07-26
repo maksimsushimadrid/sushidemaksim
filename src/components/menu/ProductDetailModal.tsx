@@ -111,12 +111,14 @@ export default function ProductDetailModal({
         [item.video, item.id, item.name]
     );
 
-    // Programmatic play trigger for iOS Safari and mobile browsers
+    // Programmatic play trigger for iOS Safari and mobile browsers for zero-delay start
     useEffect(() => {
-        if (videoSources && videoRef.current) {
-            videoRef.current.defaultMuted = true;
-            videoRef.current.muted = true;
-            const playPromise = videoRef.current.play();
+        const el = videoRef.current;
+        if (videoSources && el) {
+            el.defaultMuted = true;
+            el.muted = true;
+            el.currentTime = 0;
+            const playPromise = el.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
                     console.log('Mobile video autoplay prevented:', error);
@@ -173,7 +175,10 @@ export default function ProductDetailModal({
                             playsInline
                             preload="auto"
                             {...({ 'webkit-playsinline': 'true' } as any)}
-                            poster={getOptimizedImageUrl(item.image, 800, 85, slugify(item.name))}
+                            onCanPlay={e => {
+                                e.currentTarget.muted = true;
+                                e.currentTarget.play().catch(() => {});
+                            }}
                             className="w-full h-full object-cover pointer-events-none"
                         >
                             {videoSources.mp4 && <source src={videoSources.mp4} type="video/mp4" />}
