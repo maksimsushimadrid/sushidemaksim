@@ -11,6 +11,8 @@ import { User } from '../../types';
 import { triggerHaptic } from '../../utils/haptics';
 import { useScrollLock } from '../../hooks/useScrollLock';
 
+import { PRODUCT_VIDEO_OVERRIDES } from '../../constants/tableOverrides';
+
 interface ProductDetailModalProps {
     item: MenuItem;
     onClose: () => void;
@@ -97,6 +99,13 @@ export default function ProductDetailModal({
         }
     };
 
+    const videoSources =
+        (item.video as any) ||
+        PRODUCT_VIDEO_OVERRIDES[String(item.id)] ||
+        (item.name?.toLowerCase().includes('alaska')
+            ? { mp4: '/alaska-roll.mp4', webm: '/alaska-roll.webm' }
+            : null);
+
     const totalPrice = (item.price * quantity).toFixed(2).replace('.', ',');
 
     const modalContent = (
@@ -134,17 +143,33 @@ export default function ProductDetailModal({
                 {/* Pull Indicator (Mobile) */}
                 <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto my-2.5 sm:hidden shrink-0" />
 
-                {/* Large Image Header */}
+                {/* Large Media Header (Video Animation or Image) */}
                 <div className="relative aspect-[4/3] sm:aspect-[16/10] w-full bg-gray-100 shrink-0 overflow-hidden">
-                    <SafeImage
-                        src={item.image}
-                        getOptimizedUrl={(url: string) =>
-                            getOptimizedImageUrl(url, 800, 85, slugify(item.name))
-                        }
-                        className="w-full h-full object-cover"
-                        alt={item.name}
-                        fallbackContent={null}
-                    />
+                    {videoSources ? (
+                        <video
+                            autoPlay
+                            loop
+                            muted
+                            playsInline
+                            poster={getOptimizedImageUrl(item.image, 800, 85, slugify(item.name))}
+                            className="w-full h-full object-cover pointer-events-none"
+                        >
+                            {videoSources.webm && (
+                                <source src={videoSources.webm} type="video/webm" />
+                            )}
+                            {videoSources.mp4 && <source src={videoSources.mp4} type="video/mp4" />}
+                        </video>
+                    ) : (
+                        <SafeImage
+                            src={item.image}
+                            getOptimizedUrl={(url: string) =>
+                                getOptimizedImageUrl(url, 800, 85, slugify(item.name))
+                            }
+                            className="w-full h-full object-cover"
+                            alt={item.name}
+                            fallbackContent={null}
+                        />
+                    )}
 
                     {/* Top Floating Control Buttons */}
                     <div className="absolute top-3 right-3 flex items-center gap-2 z-10">

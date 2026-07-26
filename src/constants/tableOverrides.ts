@@ -51,3 +51,10 @@ export const TABLE_IMAGE_OVERRIDES: Record<string, string> = {
     '106': '/sushidemaksim_black_style_photos/Mochi_artesano_sushidemaksim_black.webp',
     '107': '/sushidemaksim_black_style_photos/Sopa_cremosa_de_salmon_sushidemaksim_black.webp',
 };
+
+export const PRODUCT_VIDEO_OVERRIDES: Record<string, { mp4?: string; webm?: string }> = {
+    '95': {
+        mp4: '/alaska-roll.mp4',
+        webm: '/alaska-roll.webm',
+    },
+};
