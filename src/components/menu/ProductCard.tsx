@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, Share2, Flame, Check, Plus, Minus } from 'lucide-react';
+import { Heart, Share2, Flame, Plus, Minus } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { getOptimizedImageUrl } from '../../utils/images';
 import { slugify } from '../../utils/formatters';
@@ -298,42 +298,14 @@ const ProductCard = React.memo(function ProductCard({
                                 transition={{ duration: 0.15 }}
                                 aria-label="Añadir"
                                 data-testid="add-to-cart-button"
-                                disabled={isAdded}
                                 onClick={e => {
                                     e.stopPropagation();
+                                    triggerHaptic();
                                     onAddToCart(item, e, quantity);
                                 }}
-                                className={`h-9 w-9 md:h-10 md:w-10 rounded-xl md:rounded-2xl font-black transition-all duration-500 flex items-center justify-center border-none cursor-pointer flex-shrink-0 relative overflow-hidden ${
-                                    isAdded
-                                        ? 'bg-green-500 text-white cursor-default'
-                                        : 'bg-gray-900 text-white hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200 active:scale-95'
-                                }`}
+                                className="h-9 w-9 md:h-10 md:w-10 rounded-xl md:rounded-2xl font-black transition-all duration-300 flex items-center justify-center border-none cursor-pointer flex-shrink-0 relative overflow-hidden bg-gray-900 text-white hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200 active:scale-95"
                             >
-                                <AnimatePresence mode="wait" initial={false}>
-                                    {isAdded ? (
-                                        <motion.div
-                                            key="added"
-                                            initial={{ opacity: 0, scale: 0.5 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.5 }}
-                                            transition={{ duration: 0.3, ease: 'easeOut' }}
-                                            className="flex items-center justify-center w-full"
-                                        >
-                                            <Check size={18} strokeWidth={3} />
-                                        </motion.div>
-                                    ) : (
-                                        <motion.div
-                                            key="add"
-                                            initial={{ opacity: 0, scale: 0.5 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            exit={{ opacity: 0, scale: 0.5 }}
-                                            transition={{ duration: 0.3, ease: 'easeOut' }}
-                                            className="flex items-center justify-center w-full"
-                                        >
-                                            <Plus size={18} strokeWidth={3} />
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
+                                <Plus size={18} strokeWidth={3} />
                             </motion.button>
                         )}
                     </AnimatePresence>
