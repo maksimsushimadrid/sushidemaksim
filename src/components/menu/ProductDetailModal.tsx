@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Heart, Share2, Plus, Minus, Check, Flame, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -101,12 +101,15 @@ export default function ProductDetailModal({
 
     const videoRef = useRef<HTMLVideoElement>(null);
 
-    const videoSources =
-        (item.video as any) ||
-        PRODUCT_VIDEO_OVERRIDES[String(item.id)] ||
-        (item.name?.toLowerCase().includes('alaska')
-            ? { mp4: '/alaska-roll.mp4', webm: '/alaska-roll.webm' }
-            : null);
+    const videoSources = useMemo(
+        () =>
+            (item.video as any) ||
+            PRODUCT_VIDEO_OVERRIDES[String(item.id)] ||
+            (item.name?.toLowerCase().includes('alaska')
+                ? { mp4: '/alaska-roll.mp4', webm: '/alaska-roll.webm' }
+                : null),
+        [item.video, item.id, item.name]
+    );
 
     // Programmatic play trigger for iOS Safari and mobile browsers
     useEffect(() => {
