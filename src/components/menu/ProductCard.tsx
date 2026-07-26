@@ -237,78 +237,64 @@ const ProductCard = React.memo(function ProductCard({
                             </div>
                         )}
                     </div>
-                    <AnimatePresence mode="wait" initial={false}>
-                        {cartQuantity && cartQuantity > 0 ? (
-                            <motion.div
-                                key="stepper"
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.8 }}
-                                transition={{ duration: 0.15 }}
-                                className="flex items-center bg-gray-100 rounded-xl px-0.5 py-0.5 border border-gray-200 shadow-sm"
-                            >
-                                <button
-                                    onClick={e => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        triggerHaptic();
-                                        if (cartQuantity > 1) {
-                                            onUpdateQuantity?.(
-                                                String(item.id),
-                                                cartQuantity - 1,
-                                                cartItemId,
-                                                cartSelectedOption
-                                            );
-                                        } else {
-                                            onRemoveItem?.(String(item.id), cartItemId);
-                                        }
-                                    }}
-                                    className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-orange-600 transition-colors bg-white rounded-lg shadow-sm border-none cursor-pointer"
-                                    aria-label="Disminuir cantidad"
-                                >
-                                    <Minus size={10} strokeWidth={3} />
-                                </button>
-                                <span className="w-5 text-center text-xs font-black text-gray-900 select-none">
-                                    {cartQuantity}
-                                </span>
-                                <button
-                                    onClick={e => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        triggerHaptic();
+                    {cartQuantity && cartQuantity > 0 ? (
+                        <div className="flex items-center bg-gray-100 rounded-xl px-0.5 py-0.5 border border-gray-200 shadow-sm transition-all duration-200">
+                            <button
+                                onClick={e => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    triggerHaptic();
+                                    if (cartQuantity > 1) {
                                         onUpdateQuantity?.(
                                             String(item.id),
-                                            cartQuantity + 1,
+                                            cartQuantity - 1,
                                             cartItemId,
                                             cartSelectedOption
                                         );
-                                    }}
-                                    className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-orange-600 transition-colors bg-white rounded-lg shadow-sm border-none cursor-pointer"
-                                    aria-label="Aumentar cantidad"
-                                >
-                                    <Plus size={10} strokeWidth={3} />
-                                </button>
-                            </motion.div>
-                        ) : (
-                            <motion.button
-                                key="add-btn"
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.8 }}
-                                transition={{ duration: 0.15 }}
-                                aria-label="Añadir"
-                                data-testid="add-to-cart-button"
+                                    } else {
+                                        onRemoveItem?.(String(item.id), cartItemId);
+                                    }
+                                }}
+                                className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-orange-600 transition-colors bg-white rounded-lg shadow-sm border-none cursor-pointer"
+                                aria-label="Disminuir cantidad"
+                            >
+                                <Minus size={10} strokeWidth={3} />
+                            </button>
+                            <span className="w-5 text-center text-xs font-black text-gray-900 select-none">
+                                {cartQuantity}
+                            </span>
+                            <button
                                 onClick={e => {
+                                    e.preventDefault();
                                     e.stopPropagation();
                                     triggerHaptic();
-                                    onAddToCart(item, e, quantity);
+                                    onUpdateQuantity?.(
+                                        String(item.id),
+                                        cartQuantity + 1,
+                                        cartItemId,
+                                        cartSelectedOption
+                                    );
                                 }}
-                                className="h-9 w-9 md:h-10 md:w-10 rounded-xl md:rounded-2xl font-black transition-all duration-300 flex items-center justify-center border-none cursor-pointer flex-shrink-0 relative overflow-hidden bg-gray-900 text-white hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200 active:scale-95"
+                                className="w-7 h-7 flex items-center justify-center text-gray-500 hover:text-orange-600 transition-colors bg-white rounded-lg shadow-sm border-none cursor-pointer"
+                                aria-label="Aumentar cantidad"
                             >
-                                <Plus size={18} strokeWidth={3} />
-                            </motion.button>
-                        )}
-                    </AnimatePresence>
+                                <Plus size={10} strokeWidth={3} />
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            aria-label="Añadir"
+                            data-testid="add-to-cart-button"
+                            onClick={e => {
+                                e.stopPropagation();
+                                triggerHaptic();
+                                onAddToCart(item, e, quantity);
+                            }}
+                            className="h-9 w-9 md:h-10 md:w-10 rounded-xl md:rounded-2xl font-black transition-all duration-200 flex items-center justify-center border-none cursor-pointer flex-shrink-0 relative overflow-hidden bg-gray-900 text-white hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-200 active:scale-95"
+                        >
+                            <Plus size={18} strokeWidth={3} />
+                        </button>
+                    )}
                 </div>
             </div>
 
