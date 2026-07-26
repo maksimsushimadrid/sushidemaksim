@@ -103,7 +103,7 @@ export default function ProductDetailModal({
 
     const videoSources = useMemo(
         () =>
-            (item.video as any) ||
+            (typeof item.video === 'object' ? item.video : null) ||
             PRODUCT_VIDEO_OVERRIDES[String(item.id)] ||
             (item.name?.toLowerCase().includes('alaska')
                 ? { mp4: '/alaska-roll.mp4', webm: '/alaska-roll.webm' }

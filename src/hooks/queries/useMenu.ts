@@ -16,6 +16,7 @@ export interface MenuItem {
     isChefChoice?: boolean;
     isNew?: boolean;
     allergens?: string[];
+    video?: { mp4?: string; webm?: string } | string;
 }
 
 export const useMenu = (category: string, search: string) => {
