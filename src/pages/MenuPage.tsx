@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
@@ -203,10 +203,10 @@ export default function MenuPage() {
         }
     }, [isLoading, items.length, initialCategory, initialScrollDone]);
 
-    const handleShare = (item: MenuItem, e: React.MouseEvent) => {
+    const handleShare = useCallback((item: MenuItem, e: React.MouseEvent) => {
         e.stopPropagation();
         setSharingItem(item);
-    };
+    }, []);
 
     const copyToClipboard = async (text: string) => {
         try {
@@ -218,96 +218,95 @@ export default function MenuPage() {
         }
     };
 
-    const handleAddToCart = (
-        item: MenuItem,
-        e: React.MouseEvent<HTMLButtonElement>,
-        quantity: number = 1
-    ) => {
-        try {
-            // Determine start and end coordinates for animation
-            const cartIcon = document.getElementById('cart-icon');
-            let endX = window.innerWidth - 40; // Fallback x
-            let endY = 40; // Fallback y
+    const handleAddToCart = useCallback(
+        (item: MenuItem, e: React.MouseEvent<HTMLButtonElement>, quantity: number = 1) => {
+            try {
+                // Determine start and end coordinates for animation
+                const cartIcon = document.getElementById('cart-icon');
+                let endX = window.innerWidth - 40; // Fallback x
+                let endY = 40; // Fallback y
 
-            if (cartIcon) {
-                const rect = cartIcon.getBoundingClientRect();
-                endX = rect.left + rect.width / 2;
-                endY = rect.top + rect.height / 2;
+                if (cartIcon) {
+                    const rect = cartIcon.getBoundingClientRect();
+                    endX = rect.left + rect.width / 2;
+                    endY = rect.top + rect.height / 2;
+                }
+
+                const startX = e.clientX || 0;
+                const startY = e.clientY || 0;
+
+                const animId = Date.now().toString() + Math.random().toString();
+                const hasImage = !!item.image;
+
+                // Spawn the flying element
+                setFlyingItems(prev => [
+                    ...prev,
+                    {
+                        id: animId,
+                        startX,
+                        startY,
+                        endX,
+                        endY,
+                        image: hasImage ? item.image : undefined,
+                        emoji: hasImage ? undefined : EMOJI[item.category] || '🍱',
+                    },
+                ]);
+
+                // Remove flying element after animation finishes
+                setTimeout(() => {
+                    setFlyingItems(prev => prev.filter(f => f.id !== animId));
+                }, 1000);
+            } catch (err) {
+                console.error('Animation error:', err);
             }
 
-            const startX = e.clientX || 0;
-            const startY = e.clientY || 0;
+            // Haptic feedback
+            if (typeof navigator !== 'undefined' && navigator.vibrate) {
+                navigator.vibrate(10);
+            }
 
-            const animId = Date.now().toString() + Math.random().toString();
-            const hasImage = !!item.image;
-
-            // Spawn the flying element
-            setFlyingItems(prev => [
-                ...prev,
+            // Add to real cart
+            addItem(
                 {
-                    id: animId,
-                    startX,
-                    startY,
-                    endX,
-                    endY,
-                    image: hasImage ? item.image : undefined,
-                    emoji: hasImage ? undefined : EMOJI[item.category] || '🍱',
+                    id: String(item.id),
+                    name: item.name,
+                    description: item.description,
+                    price: item.price,
+                    image: item.image,
+                    category: item.category as any,
+                    pieces: item.pieces,
+                    spicy: item.spicy,
+                    vegetarian: item.vegetarian,
+                    isPromo: item.isPromo,
                 },
-            ]);
+                quantity
+            );
 
-            // Remove flying element after animation finishes
-            setTimeout(() => {
-                setFlyingItems(prev => prev.filter(f => f.id !== animId));
-            }, 1000);
-        } catch (err) {
-            console.error('Animation error:', err);
-        }
-
-        // Haptic feedback
-        if (typeof navigator !== 'undefined' && navigator.vibrate) {
-            navigator.vibrate(10);
-        }
-
-        // Add to real cart
-        addItem(
-            {
-                id: String(item.id),
-                name: item.name,
-                description: item.description,
-                price: item.price,
-                image: item.image,
-                category: item.category as any,
-                pieces: item.pieces,
-                spicy: item.spicy,
-                vegetarian: item.vegetarian,
-                isPromo: item.isPromo,
-            },
-            quantity
-        );
-
-        tracker.track('add_to_cart', {
-            metadata: {
-                productId: item.id,
-                productName: item.name,
-                category: item.category,
-                price: item.price,
-                quantity,
-            },
-            userId: user?.id,
-        });
-
-        const itemId = item.id;
-        setAddedItems(prev => new Set(prev).add(itemId));
-
-        // Use a unique timeout per item to avoid race conditions
-        setTimeout(() => {
-            setAddedItems(prev => {
-                const n = new Set(prev);
-                n.delete(itemId);
-                return n;
+            tracker.track('add_to_cart', {
+                metadata: {
+                    productId: item.id,
+                    productName: item.name,
+                    category: item.category,
+                    price: item.price,
+                    quantity,
+                },
+                userId: user?.id,
             });
-        }, 1600);
-    };
+
+            const itemId = item.id;
+            setAddedItems(prev => new Set(prev).add(itemId));
+
+            // Use a unique timeout per item to avoid race conditions
+            setTimeout(() => {
+                setAddedItems(prev => {
+                    const n = new Set(prev);
+                    n.delete(itemId);
+                    return n;
+                });
+            }, 1600);
+        },
+        [addItem, user?.id]
+    );
 
     const menuSchema = {
         '@context': 'https://schema.org',

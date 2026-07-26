@@ -33,7 +33,7 @@ interface ProductCardProps {
     isPriority?: boolean;
     isHighlighted?: boolean;
     isZoomed?: boolean;
-    onZoom?: () => void;
+    onZoom?: (id: number) => void;
 }
 
 const ProductCard = React.memo(function ProductCard({
@@ -43,7 +43,7 @@ const ProductCard = React.memo(function ProductCard({
     onToggleFavorite,
     onShare,
     onAddToCart,
-    isAdded,
+    isAdded = false,
     cartQuantity,
     cartItemId,
     cartSelectedOption,
@@ -63,7 +63,7 @@ const ProductCard = React.memo(function ProductCard({
         if (e) {
             e.preventDefault();
         }
-        onZoom?.();
+        onZoom?.(item.id);
         setIsModalOpen(true);
     };
 

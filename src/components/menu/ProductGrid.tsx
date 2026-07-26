@@ -145,7 +145,7 @@ export default function ProductGrid({
                                         onRemoveItem={onRemoveItem}
                                         isHighlighted={String(item.id) === highlightedItemId}
                                         isZoomed={activeItemId === item.id}
-                                        onZoom={() => setActiveItemId(item.id)}
+                                        onZoom={setActiveItemId}
                                     />
                                 );
                             })}
