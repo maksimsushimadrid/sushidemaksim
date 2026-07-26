@@ -131,7 +131,7 @@ export default function ProductDetailModal({
 
     const modalContent = (
         <div
-            className="fixed inset-0 z-[95] flex items-end sm:items-center justify-center"
+            className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center"
             onClick={e => e.stopPropagation()}
         >
             {/* Backdrop Fade */}
@@ -159,7 +159,7 @@ export default function ProductDetailModal({
                         handleClose();
                     }
                 }}
-                className="relative bg-white w-full sm:max-w-lg rounded-t-[32px] sm:rounded-[32px] max-h-[90vh] sm:max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-gray-100 z-[96] pointer-events-auto"
+                className="relative bg-white w-full sm:max-w-lg rounded-t-[32px] sm:rounded-[32px] max-h-[85vh] sm:max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-gray-100 z-[1001] pointer-events-auto"
             >
                 {/* Pull Indicator (Mobile) */}
                 <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto my-2.5 sm:hidden shrink-0" />
@@ -199,7 +199,7 @@ export default function ProductDetailModal({
                     )}
 
                     {/* Top Floating Control Buttons */}
-                    <div className="absolute top-3 right-3 flex items-center gap-2 z-10">
+                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 flex items-center gap-2 z-20">
                         <button
                             onClick={handleShareClick}
                             className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-md shadow-md flex items-center justify-center text-gray-700 hover:text-gray-900 hover:bg-white transition-transform active:scale-90 border-none cursor-pointer"
