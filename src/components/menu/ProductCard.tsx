@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, Share2, Flame, Plus, Minus } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { getOptimizedImageUrl } from '../../utils/images';
 import { slugify } from '../../utils/formatters';
 import SafeImage from '../common/SafeImage';
