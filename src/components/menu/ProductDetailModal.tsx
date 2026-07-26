@@ -171,6 +171,7 @@ export default function ProductDetailModal({
                             loop
                             muted
                             playsInline
+                            preload="auto"
                             {...({ 'webkit-playsinline': 'true' } as any)}
                             poster={getOptimizedImageUrl(item.image, 800, 85, slugify(item.name))}
                             className="w-full h-full object-cover pointer-events-none"
