@@ -1,38 +1,30 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 
 /**
  * Bulletproof Scroll Lock for iOS Safari, Android, and Desktop.
- * Prevents background scrolling when modals / overlays are open.
+ * Prevents background scrolling when modals / overlays are open
+ * WITHOUT mutating body position or pushing headers off-screen.
  */
 export const useScrollLock = (isLocked: boolean) => {
-    const scrollYRef = useRef(0);
-
     useEffect(() => {
         const lenis = (window as any).lenis;
 
         if (isLocked) {
-            // Save current scroll position
-            scrollYRef.current = window.scrollY || window.pageYOffset || 0;
-
-            // Prevent Lenis smooth scroll
+            // Stop Lenis smooth scrolling engine immediately
             if (lenis && typeof lenis.stop === 'function') {
                 lenis.stop();
             }
 
-            // Bulletproof iOS + Desktop CSS lock
-            document.body.style.position = 'fixed';
-            document.body.style.top = `-${scrollYRef.current}px`;
-            document.body.style.width = '100%';
+            // Standard overflow lock
             document.body.style.overflow = 'hidden';
             document.body.style.paddingRight = 'var(--scrollbar-width, 0px)';
             document.documentElement.style.overflow = 'hidden';
 
-            // iOS Touchmove prevention on document level
+            // Prevent touch dragging background on iOS Safari
             const preventTouchMove = (e: TouchEvent) => {
                 const target = e.target as HTMLElement | null;
-                // Allow scrolling ONLY if inside a scrollable container within modal
                 if (target && target.closest('.allow-modal-scroll')) {
-                    return;
+                    return; // Allow scroll inside modal scrollable container
                 }
                 if (e.cancelable) {
                     e.preventDefault();
@@ -44,28 +36,16 @@ export const useScrollLock = (isLocked: boolean) => {
             return () => {
                 document.removeEventListener('touchmove', preventTouchMove);
 
-                // Restore styles
-                const scrollY =
-                    Math.abs(parseInt(document.body.style.top || '0', 10)) || scrollYRef.current;
-                document.body.style.position = '';
-                document.body.style.top = '';
-                document.body.style.width = '';
                 document.body.style.overflow = '';
                 document.body.style.paddingRight = '';
                 document.documentElement.style.overflow = '';
-
-                // Restore scroll position
-                window.scrollTo(0, scrollY);
 
                 if (lenis && typeof lenis.start === 'function') {
                     lenis.start();
                 }
             };
         } else {
-            // Release locks if not locked
-            document.body.style.position = '';
-            document.body.style.top = '';
-            document.body.style.width = '';
+            // Ensure locks are released
             document.body.style.overflow = '';
             document.body.style.paddingRight = '';
             document.documentElement.style.overflow = '';
