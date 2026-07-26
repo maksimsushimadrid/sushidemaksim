@@ -46,6 +46,8 @@ router.get(
       <g:description>${description}</g:description>
       <g:link>${link}</g:link>
       <g:image_link>${imageLink}</g:image_link>
+      <g:target_country>ES</g:target_country>
+      <g:content_language>es</g:content_language>
       <g:condition>new</g:condition>
       <g:availability>in_stock</g:availability>
       <g:price>${price}</g:price>
@@ -63,6 +65,7 @@ router.get(
     <title>Sushi de Maksim - Menú Online</title>
     <link>${baseUrl}</link>
     <description>Auténtica experiencia japonesa en el corazón de Madrid. Frescura, tradición y calidad en cada pieza.</description>
+    <language>es</language>
 ${xmlItems}
   </channel>
 </rss>`;
