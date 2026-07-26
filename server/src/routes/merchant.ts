@@ -13,11 +13,9 @@ router.get(
     ['/', '/feed.xml'],
     asyncHandler(async (req: Request, res: Response) => {
         try {
-            const hostHeader = req.get('host') || 'www.sushidemaksim.com';
-            const protocol = req.get('x-forwarded-proto') || req.protocol || 'https';
             const baseUrl = config.isDev
                 ? config.frontendUrl || 'http://localhost:5173'
-                : `${protocol}://${hostHeader}`;
+                : 'https://sushidemaksim.com';
             const storageBase = `${config.supabase.url}/storage/v1/object/public/images/menu`;
 
             // 1. Fetch all active menu items
@@ -34,7 +32,7 @@ router.get(
                 .map(item => {
                     const title = escapeXml(item.name);
                     const description = escapeXml(item.description || item.name);
-                    const link = `${baseUrl}/menu?category=${item.category}`;
+                    const link = `${baseUrl}/menu#item-${item.id}`;
                     const imageLink = item.image
                         ? item.image.startsWith('http')
                             ? item.image
