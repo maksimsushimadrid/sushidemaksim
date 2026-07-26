@@ -238,7 +238,7 @@ const ProductCard = React.memo(function ProductCard({
                         )}
                     </div>
                     <AnimatePresence mode="wait" initial={false}>
-                        {cartQuantity && cartQuantity > 0 && !isAdded ? (
+                        {cartQuantity && cartQuantity > 0 ? (
                             <motion.div
                                 key="stepper"
                                 initial={{ opacity: 0, scale: 0.8 }}

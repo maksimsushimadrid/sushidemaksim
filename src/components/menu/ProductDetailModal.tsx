@@ -271,7 +271,7 @@ export default function ProductDetailModal({
                 </div>
 
                 {/* Scrollable Content Body */}
-                <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4 no-scrollbar">
+                <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4 no-scrollbar allow-modal-scroll">
                     {/* Title & Price */}
                     <div className="flex items-start justify-between gap-4 border-b border-gray-100 pb-4">
                         <div>
