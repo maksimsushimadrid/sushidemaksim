@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { X, Heart, Share2, Plus, Minus, Check, Flame, Info } from 'lucide-react';
+import { X, Heart, Share2, Plus, Minus, Check, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
 import SafeImage from '../common/SafeImage';
 import { getOptimizedImageUrl } from '../../utils/images';
@@ -246,8 +246,7 @@ export default function ProductDetailModal({
                     {/* Image Badges */}
                     <div className="absolute bottom-3 right-3 flex flex-wrap justify-end gap-1.5 max-w-[90%] z-10">
                         {item.isPopular && (
-                            <div className="px-2.5 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full flex items-center gap-1 shadow-md text-xs font-black uppercase tracking-wider">
-                                <Flame size={14} className="fill-white/30" />
+                            <div className="px-2.5 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full flex items-center justify-center shadow-md text-xs font-black uppercase tracking-wider">
                                 <span>TOP</span>
                             </div>
                         )}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, Share2, Flame, Plus, Minus } from 'lucide-react';
+import { Heart, Share2, Plus, Minus } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { getOptimizedImageUrl } from '../../utils/images';
 import { slugify } from '../../utils/formatters';
@@ -126,11 +126,10 @@ const ProductCard = React.memo(function ProductCard({
                 <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 flex flex-wrap justify-end gap-1.5 max-w-[90%]">
                     {item.isPopular && (
                         <div
-                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full flex items-center gap-1 shadow-md shadow-orange-500/20 text-[9px] md:text-[10px] font-black uppercase tracking-wider hover:scale-105 transition-transform duration-300 cursor-default shrink-0"
+                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full flex items-center justify-center shadow-md shadow-orange-500/20 text-[9px] md:text-[10px] font-black uppercase tracking-wider hover:scale-105 transition-transform duration-300 cursor-default shrink-0"
                             title="Top Popular"
                         >
-                            <Flame size={12} className="fill-white/30" />
-                            <span>TOP</span>
+                            TOP
                         </div>
                     )}
                     {item.isNew && (
