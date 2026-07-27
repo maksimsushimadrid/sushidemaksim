@@ -10,6 +10,7 @@ import { MenuItem } from '../../hooks/queries/useMenu';
 import { User } from '../../types';
 import { triggerHaptic } from '../../utils/haptics';
 import { useScrollLock } from '../../hooks/useScrollLock';
+import { Link } from 'react-router-dom';
 
 import { PRODUCT_VIDEO_OVERRIDES } from '../../constants/tableOverrides';
 
@@ -353,6 +354,16 @@ export default function ProductDetailModal({
                                 <span>Sin alérgenos declarados</span>
                             </div>
                         )}
+                        <div className="mt-3">
+                            <Link
+                                to="/alergenos"
+                                onClick={handleClose}
+                                className="inline-flex items-center gap-1.5 text-xs font-black text-orange-600 hover:text-orange-700 transition-colors no-underline"
+                            >
+                                <span>Ver guía completa de alérgenos</span>
+                                <span>→</span>
+                            </Link>
+                        </div>
                     </div>
                 </div>
 

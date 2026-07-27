@@ -209,6 +209,9 @@ export default function Footer() {
                     </div>
 
                     <div className="flex flex-wrap items-center justify-center gap-6 order-1 md:order-2">
+                        <Link to="/alergenos" className="hover:text-orange-600 transition-colors">
+                            Información de Alérgenos
+                        </Link>
                         <Link
                             to="/refund-policy"
                             className="hover:text-orange-600 transition-colors"

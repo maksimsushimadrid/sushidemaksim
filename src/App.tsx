@@ -70,6 +70,7 @@ const TableMenuPage = lazyRetry(() => import('./pages/HallMenuPage'));
 const PartnersPage = lazyRetry(() => import('./pages/PartnersPage'));
 const RefundPolicyPage = lazyRetry(() => import('./pages/RefundPolicyPage'));
 const PrivacyPage = lazyRetry(() => import('./pages/PrivacyPage'));
+const AllergensPage = lazyRetry(() => import('./pages/AllergensPage'));
 const NotFoundPage = lazyRetry(() => import('./pages/NotFoundPage'));
 
 // Page Wrapper for consistent transitions
@@ -407,6 +408,22 @@ function App() {
                                                 element={
                                                     <PageWrapper skeleton={<GenericSkeleton />}>
                                                         <PrivacyPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/alergenos"
+                                                element={
+                                                    <PageWrapper skeleton={<GenericSkeleton />}>
+                                                        <AllergensPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
+                                                path="/allergens"
+                                                element={
+                                                    <PageWrapper skeleton={<GenericSkeleton />}>
+                                                        <AllergensPage />
                                                     </PageWrapper>
                                                 }
                                             />
