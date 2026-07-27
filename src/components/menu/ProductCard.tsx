@@ -126,7 +126,7 @@ const ProductCard = React.memo(function ProductCard({
                 <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 flex flex-wrap justify-end gap-1.5 max-w-[90%]">
                     {item.isPopular && (
                         <div
-                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full flex items-center justify-center shadow-md shadow-orange-500/20 text-[9px] md:text-[10px] font-black uppercase tracking-wider hover:scale-105 transition-transform duration-300 cursor-default shrink-0"
+                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-amber-500 text-white rounded-full flex items-center justify-center shadow-md text-[9px] md:text-[10px] font-black uppercase tracking-wider shrink-0 cursor-default"
                             title="Top Popular"
                         >
                             TOP
@@ -134,34 +134,34 @@ const ProductCard = React.memo(function ProductCard({
                     )}
                     {item.isNew && (
                         <div
-                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-md shadow-blue-500/20 text-[9px] md:text-[10px] font-black uppercase tracking-wider hover:scale-105 transition-transform duration-300 cursor-default shrink-0"
-                            title="Nuevo / Novedad"
+                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-md text-[9px] md:text-[10px] font-black uppercase tracking-wider shrink-0 cursor-default"
+                            title="Nuevo"
                         >
                             NEW
                         </div>
                     )}
                     {item.isChefChoice && (
                         <div
-                            className="h-5 w-5 md:h-8 md:w-8 bg-purple-50 text-purple-700 border border-purple-100 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:-rotate-6 transition-transform duration-300 cursor-default"
+                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-purple-600 text-white rounded-full flex items-center justify-center shadow-md text-[9px] md:text-[10px] font-black uppercase tracking-wider shrink-0 cursor-default"
                             title="Sugerencia del Chef"
                         >
-                            <span className="text-[10px] md:text-[18px] flex-shrink-0">👨‍🍳</span>
+                            CHEF
                         </div>
                     )}
                     {item.spicy && (
                         <div
-                            className="h-5 w-5 md:h-8 md:w-8 bg-red-50 text-red-600 border border-red-100 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:rotate-12 transition-transform duration-300 cursor-default animate-pulse"
+                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-red-600 text-white rounded-full flex items-center justify-center shadow-md text-[9px] md:text-[10px] font-black uppercase tracking-wider shrink-0 cursor-default"
                             title="Picante"
                         >
-                            <span className="text-[10px] md:text-[18px]">🌶️</span>
+                            HOT
                         </div>
                     )}
                     {item.vegetarian && (
                         <div
-                            className="h-5 w-5 md:h-8 md:w-8 bg-green-50 text-green-700 border border-green-100 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:-rotate-12 transition-transform duration-300 cursor-default"
+                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-md text-[9px] md:text-[10px] font-black uppercase tracking-wider shrink-0 cursor-default"
                             title="Vegetariano"
                         >
-                            <span className="text-[10px] md:text-[18px]">🥬</span>
+                            VEG
                         </div>
                     )}
                 </div>

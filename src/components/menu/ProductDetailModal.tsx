@@ -244,43 +244,43 @@ export default function ProductDetailModal({
                     </div>
 
                     {/* Image Badges */}
-                    <div className="absolute bottom-3 right-3 flex flex-wrap justify-end gap-1.5 max-w-[90%] z-10">
+                    <div className="absolute bottom-3 right-3 flex flex-wrap justify-end items-center gap-1.5 max-w-[90%] z-10">
                         {item.isPopular && (
-                            <div className="px-2.5 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full flex items-center justify-center shadow-md text-xs font-black uppercase tracking-wider">
+                            <div className="px-2.5 py-1 bg-amber-500 text-white rounded-full flex items-center justify-center shadow-md text-xs font-black uppercase tracking-wider">
                                 <span>TOP</span>
                             </div>
                         )}
                         {item.isNew && (
-                            <div className="px-2.5 py-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full flex items-center gap-1 shadow-md text-xs font-black uppercase tracking-wider">
+                            <div className="px-2.5 py-1 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-md text-xs font-black uppercase tracking-wider">
                                 <span>NEW</span>
                             </div>
                         )}
                         {item.isChefChoice && (
-                            <div className="px-2.5 py-1 bg-purple-50 text-purple-700 border border-purple-100 rounded-full flex items-center gap-1 shadow-md text-xs font-black">
-                                <span>👨‍🍳 Chef</span>
+                            <div className="px-2.5 py-1 bg-purple-600 text-white rounded-full flex items-center justify-center shadow-md text-xs font-black uppercase tracking-wider">
+                                <span>CHEF</span>
                             </div>
                         )}
                         {item.spicy && (
-                            <div className="px-2.5 py-1 bg-red-50 text-red-600 border border-red-100 rounded-full flex items-center gap-1 shadow-md text-xs font-black">
-                                <span>🌶️ Picante</span>
+                            <div className="px-2.5 py-1 bg-red-600 text-white rounded-full flex items-center justify-center shadow-md text-xs font-black uppercase tracking-wider">
+                                <span>HOT</span>
                             </div>
                         )}
                         {item.vegetarian && (
-                            <div className="px-2.5 py-1 bg-green-50 text-green-700 border border-green-100 rounded-full flex items-center gap-1 shadow-md text-xs font-black">
-                                <span>🥬 Vegetariano</span>
+                            <div className="px-2.5 py-1 bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-md text-xs font-black uppercase tracking-wider">
+                                <span>VEG</span>
                             </div>
                         )}
                         {item.pieces && (
-                            <div className="px-2.5 py-1 bg-gray-900/80 backdrop-blur-md text-white rounded-full flex items-center shadow-md text-xs font-black">
-                                <span>{item.pieces} Unidades</span>
+                            <div className="px-2.5 py-1 bg-gray-900/85 backdrop-blur-md text-white border border-white/10 rounded-full flex items-center justify-center shadow-md text-xs font-black uppercase tracking-wider">
+                                <span>{item.pieces} UDS</span>
                             </div>
                         )}
                         {item.weight && Boolean(String(item.weight).trim()) && (
-                            <div className="px-2.5 py-1 bg-gray-900/80 backdrop-blur-md text-white rounded-full flex items-center shadow-md text-xs font-black">
+                            <div className="px-2.5 py-1 bg-gray-900/85 backdrop-blur-md text-white border border-white/10 rounded-full flex items-center justify-center shadow-md text-xs font-black uppercase tracking-wider">
                                 <span>
                                     {String(item.weight).toLowerCase().includes('g')
                                         ? item.weight
-                                        : `${item.weight} g`}
+                                        : `${item.weight} G`}
                                 </span>
                             </div>
                         )}
