@@ -271,12 +271,12 @@ export default function ProductDetailModal({
                             </div>
                         )}
                         {item.pieces && (
-                            <div className="px-2.5 py-1 bg-gray-900/85 backdrop-blur-md text-white border border-white/10 rounded-full flex items-center justify-center shadow-md text-xs font-black uppercase tracking-wider">
+                            <div className="px-2.5 py-1 bg-gray-900 text-white rounded-full flex items-center justify-center shadow-md text-xs font-black uppercase tracking-wider">
                                 <span>{item.pieces} UDS</span>
                             </div>
                         )}
                         {item.weight && Boolean(String(item.weight).trim()) && (
-                            <div className="px-2.5 py-1 bg-gray-900/85 backdrop-blur-md text-white border border-white/10 rounded-full flex items-center justify-center shadow-md text-xs font-black uppercase tracking-wider">
+                            <div className="px-2.5 py-1 bg-gray-900 text-white rounded-full flex items-center justify-center shadow-md text-xs font-black uppercase tracking-wider">
                                 <span>
                                     {String(item.weight).toLowerCase().includes('g')
                                         ? item.weight
