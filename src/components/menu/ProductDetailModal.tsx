@@ -244,7 +244,7 @@ export default function ProductDetailModal({
                     </div>
 
                     {/* Image Badges */}
-                    <div className="absolute bottom-3 left-3 flex flex-wrap gap-1.5 max-w-[90%] z-10">
+                    <div className="absolute bottom-3 right-3 flex flex-wrap justify-end gap-1.5 max-w-[90%] z-10">
                         {item.isPopular && (
                             <div className="px-2.5 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full flex items-center gap-1 shadow-md text-xs font-black uppercase tracking-wider">
                                 <Flame size={14} className="fill-white/30" />
