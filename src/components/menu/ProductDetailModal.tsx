@@ -252,8 +252,8 @@ export default function ProductDetailModal({
                             </div>
                         )}
                         {item.isNew && (
-                            <div className="px-2.5 py-1 bg-blue-50 text-blue-700 border border-blue-100 rounded-full flex items-center gap-1 shadow-md text-xs font-black">
-                                <span>✨ Nuevo</span>
+                            <div className="px-2.5 py-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full flex items-center gap-1 shadow-md text-xs font-black uppercase tracking-wider">
+                                <span>NEW</span>
                             </div>
                         )}
                         {item.isChefChoice && (

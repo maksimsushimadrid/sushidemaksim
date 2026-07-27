@@ -143,10 +143,10 @@ const ProductCard = React.memo(function ProductCard({
                     )}
                     {item.isNew && (
                         <div
-                            className="h-5 w-5 md:h-8 md:w-8 bg-blue-50 text-blue-700 border border-blue-100 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:rotate-12 transition-transform duration-300 cursor-default"
-                            title="Nuevo"
+                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full flex items-center justify-center shadow-md shadow-blue-500/20 text-[9px] md:text-[10px] font-black uppercase tracking-wider hover:scale-105 transition-transform duration-300 cursor-default shrink-0"
+                            title="Nuevo / Novedad"
                         >
-                            <span className="text-[10px] md:text-[18px] flex-shrink-0">✨</span>
+                            NEW
                         </div>
                     )}
                     {item.isChefChoice && (

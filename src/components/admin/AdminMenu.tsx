@@ -589,10 +589,10 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                     )}
                                                     {item.isNew && (
                                                         <span
-                                                            className="flex items-center justify-center w-7 h-7 bg-blue-50 text-[14px] rounded-lg border border-blue-100 shadow-sm"
+                                                            className="flex items-center justify-center px-1.5 py-0.5 bg-blue-600 text-white text-[9px] font-black rounded-md shadow-sm uppercase tracking-wider"
                                                             title={t.tags.isNew}
                                                         >
-                                                            ✨
+                                                            NEW
                                                         </span>
                                                     )}
                                                     {item.allergens &&
