@@ -246,9 +246,9 @@ export default function ProductDetailModal({
                     {/* Image Badges */}
                     <div className="absolute bottom-3 left-3 flex flex-wrap gap-1.5 max-w-[90%] z-10">
                         {item.isPopular && (
-                            <div className="px-2.5 py-1 bg-white/95 backdrop-blur-md text-orange-600 border border-orange-100 rounded-full flex items-center gap-1 shadow-md text-xs font-black">
-                                <Flame size={14} className="fill-orange-500/20" />
-                                <span>Popular</span>
+                            <div className="px-2.5 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full flex items-center gap-1 shadow-md text-xs font-black uppercase tracking-wider">
+                                <Flame size={14} className="fill-white/30" />
+                                <span>TOP</span>
                             </div>
                         )}
                         {item.isNew && (

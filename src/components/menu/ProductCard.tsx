@@ -126,19 +126,11 @@ const ProductCard = React.memo(function ProductCard({
                 <div className="absolute bottom-2 left-2 md:bottom-3 md:left-3 flex flex-wrap gap-1.5 max-w-[90%]">
                     {item.isPopular && (
                         <div
-                            className="h-5 w-5 md:h-8 md:w-8 bg-white/95 backdrop-blur-md text-orange-600 border border-orange-100 rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:-rotate-12 transition-transform duration-300 cursor-default"
-                            title="Popular"
+                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-full flex items-center gap-1 shadow-md shadow-orange-500/20 text-[9px] md:text-[10px] font-black uppercase tracking-wider hover:scale-105 transition-transform duration-300 cursor-default shrink-0"
+                            title="Top Popular"
                         >
-                            <Flame
-                                size={12}
-                                className="flex-shrink-0 fill-orange-500/20 md:hidden"
-                                strokeWidth={2.5}
-                            />
-                            <Flame
-                                size={18}
-                                className="hidden md:block flex-shrink-0 fill-orange-500/20"
-                                strokeWidth={2.5}
-                            />
+                            <Flame size={12} className="fill-white/30" />
+                            <span>TOP</span>
                         </div>
                     )}
                     {item.isNew && (

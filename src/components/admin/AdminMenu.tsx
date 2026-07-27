@@ -573,10 +573,10 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                     )}
                                                     {item.isPopular && (
                                                         <span
-                                                            className="flex items-center justify-center w-7 h-7 bg-amber-50 text-[14px] rounded-lg border border-amber-100 shadow-sm"
+                                                            className="flex items-center justify-center px-1.5 py-0.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-[9px] font-black rounded-md shadow-sm uppercase tracking-wider"
                                                             title={t.tags.isPopular}
                                                         >
-                                                            🌟
+                                                            TOP
                                                         </span>
                                                     )}
                                                     {item.isChefChoice && (
