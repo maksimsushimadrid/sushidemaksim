@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useRef } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate, useParams } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CartProvider } from './hooks/useCart';
@@ -138,6 +138,11 @@ function PageTracker() {
     return null;
 }
 
+function ShareRedirect() {
+    const { id } = useParams();
+    return <Navigate to={id ? `/menu?item=${id}#item-${id}` : '/menu'} replace />;
+}
+
 function App() {
     const location = useLocation();
     const isAdminRoute = location.pathname.startsWith('/admin');
@@ -247,6 +252,14 @@ function App() {
                                                         <MenuPage />
                                                     </PageWrapper>
                                                 }
+                                            />
+                                            <Route
+                                                path="/compartir/item/:id"
+                                                element={<ShareRedirect />}
+                                            />
+                                            <Route
+                                                path="/compartir/*"
+                                                element={<Navigate to="/menu" replace />}
                                             />
                                             <Route
                                                 path="/cart"

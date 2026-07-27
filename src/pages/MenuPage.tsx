@@ -142,23 +142,32 @@ export default function MenuPage() {
 
     const hasScrolledToHash = useRef(false);
 
-    // Handle initial hash scroll and highlight
+    // Handle initial item query param or hash scroll and highlight
     useEffect(() => {
         if (!isLoading && items.length > 0 && !hasScrolledToHash.current) {
             const hash = window.location.hash;
-            if (hash) {
-                const id = hash.replace('#', '');
-                hasScrolledToHash.current = true;
+            const searchParams = new URLSearchParams(window.location.search);
+            const itemFromQuery = searchParams.get('item');
 
-                // If it's a specific product link (item-ID), highlight it
-                if (id.startsWith('item-')) {
-                    const itemId = id.replace('item-', '');
-                    setHighlightedItemId(itemId);
-                    setTimeout(() => setHighlightedItemId(null), 3000);
-                }
+            let rawItemId: string | null = null;
+            if (hash.startsWith('#item-')) {
+                rawItemId = hash.replace('#item-', '');
+            } else if (itemFromQuery) {
+                rawItemId = itemFromQuery;
+            } else if (hash) {
+                rawItemId = hash.replace('#', '');
+            }
+
+            if (rawItemId) {
+                hasScrolledToHash.current = true;
+                const cleanItemId = rawItemId.replace('item-', '');
+                setHighlightedItemId(cleanItemId);
+                setTimeout(() => setHighlightedItemId(null), 3500);
 
                 setTimeout(() => {
-                    const el = document.getElementById(id);
+                    const el =
+                        document.getElementById(`item-${cleanItemId}`) ||
+                        document.getElementById(rawItemId!);
                     if (el) {
                         const headerHeight =
                             parseInt(
@@ -171,7 +180,7 @@ export default function MenuPage() {
                         const top = el.getBoundingClientRect().top + window.scrollY - offset;
                         window.scrollTo({ top, behavior: 'smooth' });
                     }
-                }, 400); // Slightly more delay for better stability
+                }, 400);
             }
         }
     }, [isLoading, items.length]);
