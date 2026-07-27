@@ -276,9 +276,8 @@ export default function ProductDetailModal({
                             </div>
                         )}
                         {item.weight && Boolean(String(item.weight).trim()) && (
-                            <div className="px-2.5 py-1 bg-gray-900/80 backdrop-blur-md text-white rounded-full flex items-center gap-1 shadow-md text-xs font-black">
+                            <div className="px-2.5 py-1 bg-gray-900/80 backdrop-blur-md text-white rounded-full flex items-center shadow-md text-xs font-black">
                                 <span>
-                                    ⚖️{' '}
                                     {String(item.weight).toLowerCase().includes('g')
                                         ? item.weight
                                         : `${item.weight} g`}
@@ -308,8 +307,7 @@ export default function ProductDetailModal({
                                     </span>
                                 )}
                                 {item.weight && Boolean(String(item.weight).trim()) && (
-                                    <span className="text-xs font-black text-orange-600 bg-orange-50 border border-orange-100 px-2.5 py-0.5 rounded-md flex items-center gap-1">
-                                        ⚖️{' '}
+                                    <span className="text-xs font-black text-orange-600 bg-orange-50 border border-orange-100 px-2.5 py-0.5 rounded-md flex items-center">
                                         {String(item.weight).toLowerCase().includes('g')
                                             ? item.weight
                                             : `${item.weight} g`}

@@ -526,7 +526,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                         {item.pieces ? `${item.pieces} uds` : ''}
                                                         {item.pieces && item.weight ? ' • ' : ''}
                                                         {item.weight
-                                                            ? `⚖️ ${String(item.weight).toLowerCase().includes('g') ? item.weight : `${item.weight} g`}`
+                                                            ? `${String(item.weight).toLowerCase().includes('g') ? item.weight : `${item.weight} g`}`
                                                             : ''}
                                                     </p>
                                                 )}
