@@ -126,7 +126,7 @@ const ProductCard = React.memo(function ProductCard({
                 <div className="absolute bottom-2 right-2 md:bottom-3 md:right-3 flex flex-wrap justify-end gap-1.5 max-w-[90%]">
                     {item.isPopular && (
                         <div
-                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-amber-500 text-white rounded-full flex items-center justify-center shadow-md text-[9px] md:text-[10px] font-black uppercase tracking-wider shrink-0 cursor-default"
+                            className="h-5 md:h-6 px-2.5 bg-amber-500 text-white rounded-full inline-flex items-center justify-center shadow-md text-[9px] md:text-[10px] font-black uppercase tracking-wider shrink-0 cursor-default leading-none"
                             title="Top Popular"
                         >
                             TOP
@@ -134,7 +134,7 @@ const ProductCard = React.memo(function ProductCard({
                     )}
                     {item.isNew && (
                         <div
-                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-md text-[9px] md:text-[10px] font-black uppercase tracking-wider shrink-0 cursor-default"
+                            className="h-5 md:h-6 px-2.5 bg-blue-600 text-white rounded-full inline-flex items-center justify-center shadow-md text-[9px] md:text-[10px] font-black uppercase tracking-wider shrink-0 cursor-default leading-none"
                             title="Nuevo"
                         >
                             NEW
@@ -142,7 +142,7 @@ const ProductCard = React.memo(function ProductCard({
                     )}
                     {item.isChefChoice && (
                         <div
-                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-purple-600 text-white rounded-full flex items-center justify-center shadow-md text-[9px] md:text-[10px] font-black uppercase tracking-wider shrink-0 cursor-default"
+                            className="h-5 md:h-6 px-2.5 bg-purple-600 text-white rounded-full inline-flex items-center justify-center shadow-md text-[9px] md:text-[10px] font-black uppercase tracking-wider shrink-0 cursor-default leading-none"
                             title="Sugerencia del Chef"
                         >
                             CHEF
@@ -150,7 +150,7 @@ const ProductCard = React.memo(function ProductCard({
                     )}
                     {item.spicy && (
                         <div
-                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-red-600 text-white rounded-full flex items-center justify-center shadow-md text-[9px] md:text-[10px] font-black uppercase tracking-wider shrink-0 cursor-default"
+                            className="h-5 md:h-6 px-2.5 bg-red-600 text-white rounded-full inline-flex items-center justify-center shadow-md text-[9px] md:text-[10px] font-black uppercase tracking-wider shrink-0 cursor-default leading-none"
                             title="Picante"
                         >
                             HOT
@@ -158,7 +158,7 @@ const ProductCard = React.memo(function ProductCard({
                     )}
                     {item.vegetarian && (
                         <div
-                            className="px-2 py-0.5 md:px-2.5 md:py-1 bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-md text-[9px] md:text-[10px] font-black uppercase tracking-wider shrink-0 cursor-default"
+                            className="h-5 md:h-6 px-2.5 bg-emerald-600 text-white rounded-full inline-flex items-center justify-center shadow-md text-[9px] md:text-[10px] font-black uppercase tracking-wider shrink-0 cursor-default leading-none"
                             title="Vegetariano"
                         >
                             VEG
