@@ -10,7 +10,7 @@ import { MenuItem } from '../../hooks/queries/useMenu';
 import { User } from '../../types';
 import { triggerHaptic } from '../../utils/haptics';
 import { useScrollLock } from '../../hooks/useScrollLock';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { PRODUCT_VIDEO_OVERRIDES } from '../../constants/tableOverrides';
 
@@ -54,6 +54,7 @@ export default function ProductDetailModal({
     onUpdateQuantity,
     onRemoveItem,
 }: ProductDetailModalProps) {
+    const navigate = useNavigate();
     const [quantity, setQuantity] = useState(cartQuantity > 0 ? cartQuantity : 1);
 
     // Lock body scroll and stop Lenis smooth scrolling while modal is mounted
@@ -84,6 +85,13 @@ export default function ProductDetailModal({
             e.stopPropagation();
         }
         onClose();
+    };
+
+    const handleGoToAllergens = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onClose();
+        navigate('/alergenos');
     };
 
     const handleShareClick = (e: React.MouseEvent) => {
@@ -151,7 +159,7 @@ export default function ProductDetailModal({
                 initial={{ y: '100%', opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: '100%', opacity: 0 }}
-                transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+                transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
                 drag="y"
                 dragConstraints={{ top: 0, bottom: 0 }}
                 dragElastic={{ top: 0, bottom: 0.5 }}
@@ -160,7 +168,7 @@ export default function ProductDetailModal({
                         handleClose();
                     }
                 }}
-                className="relative bg-white w-full sm:max-w-lg rounded-t-[32px] sm:rounded-[32px] max-h-[85vh] sm:max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-gray-100 z-[1001] pointer-events-auto"
+                className="relative bg-white w-full sm:max-w-lg rounded-t-[32px] sm:rounded-[32px] max-h-[85vh] sm:max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-gray-100 z-[1001] pointer-events-auto transform-gpu"
             >
                 {/* Pull Indicator (Mobile) */}
                 <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto my-2.5 sm:hidden shrink-0" />
@@ -355,14 +363,14 @@ export default function ProductDetailModal({
                             </div>
                         )}
                         <div className="mt-3">
-                            <Link
-                                to="/alergenos"
-                                onClick={handleClose}
-                                className="inline-flex items-center gap-1.5 text-xs font-black text-orange-600 hover:text-orange-700 transition-colors no-underline"
+                            <button
+                                type="button"
+                                onClick={handleGoToAllergens}
+                                className="inline-flex items-center gap-1.5 text-xs font-black text-orange-600 hover:text-orange-700 transition-colors border-none bg-transparent p-0 cursor-pointer"
                             >
                                 <span>Ver guía completa de alérgenos</span>
                                 <span>→</span>
-                            </Link>
+                            </button>
                         </div>
                     </div>
                 </div>
