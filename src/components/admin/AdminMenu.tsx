@@ -21,6 +21,7 @@ interface MenuItem {
     price: number;
     image: string;
     category: string;
+    weight?: string | number;
     pieces?: number;
     spicy?: boolean;
     vegetarian?: boolean;
@@ -60,6 +61,8 @@ const MENU_TRANSLATIONS = {
             price: 'Цена (€) *',
             costPrice: 'Себестоимость (€) *',
             pieces: 'Кусочков (опц.)',
+            weight: 'Вес в граммах (опц.)',
+            weightPlaceholder: 'Например: 240',
             description: 'Описание *',
             imageLabel: 'Изображение блюда',
             uploading: 'Загрузка...',
@@ -127,6 +130,8 @@ const MENU_TRANSLATIONS = {
             price: 'Precio (€) *',
             costPrice: 'Coste Ingredientes (€) *',
             pieces: 'Piezas (opcional)',
+            weight: 'Peso en gramos (opcional)',
+            weightPlaceholder: 'Ej. 240',
             description: 'Descripción *',
             imageLabel: 'Imagen del Plato',
             uploading: 'Subiendo...',
@@ -258,6 +263,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
             image: '',
             category: 'entrantes',
             pieces: 0,
+            weight: '',
             spicy: false,
             vegetarian: false,
             isPromo: false,
@@ -515,6 +521,15 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                 <p className="font-black text-gray-900 text-base tracking-tight leading-tight">
                                                     {item.name}
                                                 </p>
+                                                {(item.pieces || item.weight) && (
+                                                    <p className="text-[11px] font-bold text-gray-400 mt-0.5">
+                                                        {item.pieces ? `${item.pieces} uds` : ''}
+                                                        {item.pieces && item.weight ? ' • ' : ''}
+                                                        {item.weight
+                                                            ? `⚖️ ${String(item.weight).toLowerCase().includes('g') ? item.weight : `${item.weight} g`}`
+                                                            : ''}
+                                                    </p>
+                                                )}
                                             </td>
                                             <td className="px-3.5 md:px-8 py-2 md:py-4">
                                                 <span className="text-[10px] font-black uppercase tracking-widest bg-gray-100 px-3 py-1.5 rounded-xl border border-gray-200 text-gray-500 whitespace-nowrap">
@@ -776,6 +791,23 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                 className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-orange-400 transition-all"
                                             />
                                         </div>
+                                        <div className="space-y-2">
+                                            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                                {t.modal.weight}
+                                            </label>
+                                            <input
+                                                type="text"
+                                                placeholder={t.modal.weightPlaceholder}
+                                                value={formData.weight || ''}
+                                                onChange={e =>
+                                                    setFormData({
+                                                        ...formData,
+                                                        weight: e.target.value,
+                                                    })
+                                                }
+                                                className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-orange-400 transition-all"
+                                            />
+                                        </div>
                                     </div>
 
                                     <div className="space-y-2">
@@ -944,23 +976,33 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                             </span>
                                         </div>
                                         <div className="flex flex-wrap gap-2.5">
-                                            {['gluten', 'lactose', 'fish', 'soy', 'nuts'].map(
-                                                allergen => (
+                                            {[
+                                                'gluten',
+                                                'fish',
+                                                'crustaceos',
+                                                'soy',
+                                                'lactose',
+                                                'huevo',
+                                                'nuts',
+                                                'sesamo',
+                                                'mostaza',
+                                                'moluscos',
+                                            ].map(allergen => {
+                                                const info = getAllergenInfo(allergen);
+                                                const isSelected =
+                                                    formData.allergens?.includes(allergen);
+                                                return (
                                                     <label
                                                         key={allergen}
-                                                        className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border transition-all cursor-pointer ${
-                                                            formData.allergens?.includes(allergen)
-                                                                ? 'bg-blue-50 border-blue-200 text-blue-700 shadow-sm'
+                                                        className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border transition-all cursor-pointer select-none ${
+                                                            isSelected
+                                                                ? `${info.bg} ${info.border} ${info.text} font-black shadow-sm scale-[1.02]`
                                                                 : 'bg-white border-gray-100 text-gray-400 hover:border-gray-200'
                                                         }`}
                                                     >
                                                         <input
                                                             type="checkbox"
-                                                            checked={
-                                                                formData.allergens?.includes(
-                                                                    allergen
-                                                                ) || false
-                                                            }
+                                                            checked={!!isSelected}
                                                             onChange={e => {
                                                                 const current =
                                                                     formData.allergens || [];
@@ -976,12 +1018,15 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                             }}
                                                             className="hidden"
                                                         />
+                                                        <span className="text-base font-normal">
+                                                            {info.icon}
+                                                        </span>
                                                         <span className="text-[10px] font-black uppercase tracking-widest">
                                                             {allergen}
                                                         </span>
                                                     </label>
-                                                )
-                                            )}
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                 </form>

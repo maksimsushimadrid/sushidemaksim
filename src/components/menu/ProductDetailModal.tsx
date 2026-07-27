@@ -267,6 +267,16 @@ export default function ProductDetailModal({
                                 <span>{item.pieces} Unidades</span>
                             </div>
                         )}
+                        {item.weight && Boolean(String(item.weight).trim()) && (
+                            <div className="px-2.5 py-1 bg-gray-900/80 backdrop-blur-md text-white rounded-full flex items-center gap-1 shadow-md text-xs font-black">
+                                <span>
+                                    ⚖️{' '}
+                                    {String(item.weight).toLowerCase().includes('g')
+                                        ? item.weight
+                                        : `${item.weight} g`}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -278,11 +288,26 @@ export default function ProductDetailModal({
                             <h2 className="text-xl sm:text-2xl font-black text-gray-900 leading-tight">
                                 {item.name}
                             </h2>
-                            {item.category && (
-                                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block mt-1">
-                                    {item.category}
-                                </span>
-                            )}
+                            <div className="flex items-center flex-wrap gap-2 mt-1.5">
+                                {item.category && (
+                                    <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+                                        {item.category}
+                                    </span>
+                                )}
+                                {item.pieces && (
+                                    <span className="text-xs font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">
+                                        {item.pieces} uds
+                                    </span>
+                                )}
+                                {item.weight && Boolean(String(item.weight).trim()) && (
+                                    <span className="text-xs font-black text-orange-600 bg-orange-50 border border-orange-100 px-2.5 py-0.5 rounded-md flex items-center gap-1">
+                                        ⚖️{' '}
+                                        {String(item.weight).toLowerCase().includes('g')
+                                            ? item.weight
+                                            : `${item.weight} g`}
+                                    </span>
+                                )}
+                            </div>
                         </div>
                         <span className="text-2xl font-black text-orange-600 shrink-0">
                             {item.price.toFixed(2).replace('.', ',')} €

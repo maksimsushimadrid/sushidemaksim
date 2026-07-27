@@ -8,6 +8,7 @@ export interface MenuItem {
     price: number;
     image: string;
     category: string;
+    weight?: string | number;
     pieces?: number;
     spicy?: boolean;
     vegetarian?: boolean;

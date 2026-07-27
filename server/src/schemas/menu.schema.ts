@@ -24,7 +24,11 @@ const menuItemBase = {
     price: z.number().positive('El precio debe ser mayor que 0'),
     category: menuItemCategorySchema,
     image: z.string().max(500).optional().nullable(),
-    weight: z.string().max(100).optional().nullable(),
+    weight: z
+        .union([z.string(), z.number()])
+        .transform(val => (val !== undefined && val !== null ? String(val) : null))
+        .optional()
+        .nullable(),
     pieces: z.number().int().positive().max(999).optional().nullable(),
     spicy: z.boolean().optional().default(false),
     vegetarian: z.boolean().optional().default(false),
