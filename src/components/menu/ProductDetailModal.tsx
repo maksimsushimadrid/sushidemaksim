@@ -348,10 +348,10 @@ export default function ProductDetailModal({
                                     return (
                                         <div
                                             key={allergen}
-                                            className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold ${info.bg} ${info.text} ${info.border} shadow-sm`}
+                                            className={`w-9 h-9 rounded-xl border flex items-center justify-center text-lg ${info.bg} ${info.text} ${info.border} shadow-sm transition-transform hover:scale-105`}
+                                            title={allergen}
                                         >
-                                            <span className="text-base">{info.icon}</span>
-                                            <span className="capitalize">{allergen}</span>
+                                            <span>{info.icon}</span>
                                         </div>
                                     );
                                 })}
