@@ -8,8 +8,6 @@ import { MenuItem } from '../../hooks/queries/useMenu';
 import { User } from '../../types';
 import { triggerHaptic } from '../../utils/haptics';
 
-import { getAllergenInfo } from '../../utils/allergens';
-
 import ProductDetailModal from './ProductDetailModal';
 
 interface ProductCardProps {
@@ -175,22 +173,6 @@ const ProductCard = React.memo(function ProductCard({
                             <span className="text-[10px] md:text-[18px]">🥬</span>
                         </div>
                     )}
-                    {item.allergens &&
-                        item.allergens.length > 0 &&
-                        item.allergens.map(allergen => {
-                            const info = getAllergenInfo(allergen);
-                            return (
-                                <div
-                                    key={allergen}
-                                    className={`h-5 w-5 md:h-8 md:w-8 ${info.bg} ${info.text} border ${info.border} rounded-full flex items-center justify-center shadow-lg hover:scale-110 hover:-rotate-6 transition-transform duration-300 cursor-default`}
-                                    title={`Alérgeno: ${allergen}`}
-                                >
-                                    <span className="text-[10px] md:text-[18px] flex-shrink-0">
-                                        {info.icon}
-                                    </span>
-                                </div>
-                            );
-                        })}
                 </div>
             </div>
 
