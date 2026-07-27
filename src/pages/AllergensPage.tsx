@@ -13,21 +13,18 @@ export default function AllergensPage() {
         if (!query) return true;
         return (
             item.nameEs.toLowerCase().includes(query) ||
-            item.nameRu.toLowerCase().includes(query) ||
             item.descriptionEs.toLowerCase().includes(query) ||
-            item.descriptionRu.toLowerCase().includes(query) ||
-            item.examplesEs.some(ex => ex.toLowerCase().includes(query)) ||
-            item.examplesRu.some(ex => ex.toLowerCase().includes(query))
+            item.examplesEs.some(ex => ex.toLowerCase().includes(query))
         );
     });
 
     return (
         <>
             <Helmet>
-                <title>Guía de Alérgenos y Lista de Ingredientes | Sushi de Maksim</title>
+                <title>Información de Alérgenos e Ingredientes | Sushi de Maksim</title>
                 <meta
                     name="description"
-                    content="Consulta la guía completa y desglosada de alérgenos de nuestro menú en Sushi de Maksim Madrid. Cumplimiento con el Reglamento (UE) Nº 1169/2011."
+                    content="Consulta la guía completa de alérgenos de nuestra carta de sushi en Madrid. Información transparente según el Reglamento (UE) Nº 1169/2011."
                 />
             </Helmet>
 
@@ -60,9 +57,10 @@ export default function AllergensPage() {
                                     Guía de <span className="text-orange-600">Alérgenos</span>
                                 </h1>
                                 <p className="text-sm sm:text-base text-gray-600 font-medium max-w-2xl leading-relaxed">
-                                    Расшифровка всех иконок и ингредиентов нашего меню. Мы заботимся
-                                    о вашей безопасности и предоставляем полную информацию об
-                                    аллергенах в соответствии с нормами ЕС.
+                                    Información detallada sobre todos los alérgenos e ingredientes
+                                    presentes en nuestra carta. Garantizamos la máxima transparencia
+                                    para tu seguridad alimentaria y tranquilidad al disfrutar de tu
+                                    sushi.
                                 </p>
                             </div>
 
@@ -74,7 +72,7 @@ export default function AllergensPage() {
                                 />
                                 <input
                                     type="text"
-                                    placeholder="Buscar alérgano o plato..."
+                                    placeholder="Buscar alérgeno o ingrediente..."
                                     value={search}
                                     onChange={e => setSearch(e.target.value)}
                                     className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold focus:bg-white focus:border-orange-500 focus:outline-none focus:ring-4 focus:ring-orange-50 transition-all placeholder:text-gray-400"
@@ -105,9 +103,6 @@ export default function AllergensPage() {
                                                 <h3 className="text-lg font-black text-gray-900 leading-tight">
                                                     {allergen.nameEs}
                                                 </h3>
-                                                <span className="text-xs font-bold text-gray-400 block mt-0.5">
-                                                    {allergen.nameRu}
-                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -119,7 +114,7 @@ export default function AllergensPage() {
 
                                 <div>
                                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 block mb-2">
-                                        Presente en / Присутствует в:
+                                        Presente en:
                                     </span>
                                     <div className="flex flex-wrap gap-1.5">
                                         {allergen.examplesEs.map((ex, i) => (
@@ -148,11 +143,12 @@ export default function AllergensPage() {
                                         Aviso Importante sobre Contaminación Cruzada
                                     </h3>
                                     <p className="text-xs sm:text-sm text-gray-600 font-medium max-w-2xl leading-relaxed">
-                                        В нашей кухне используются свежие морепродукты, соя и
-                                        глютен. Хотя мы соблюдаем строгое разделение при
-                                        приготовлении, на кухне возможен контакт с аллергенами. Если
-                                        у вас сильная аллергия, пожалуйста, укажите это в
-                                        комментариях к заказу.
+                                        En nuestra cocina manipulamos ingredientes frescos como
+                                        pescado, marisco, sésamo y soja. Aunque aplicamos estrictos
+                                        protocolos de higiene y prevención, no podemos garantizar la
+                                        ausencia total de trazas por contaminación cruzada. Si
+                                        padeces una alergia o intolerancia severa, por favor
+                                        infórmanos al realizar tu pedido.
                                     </p>
                                 </div>
                             </div>
