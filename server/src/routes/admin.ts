@@ -416,10 +416,12 @@ router.get(
         const search = toStr(req.query.search);
         const offset = (page - 1) * limit;
 
+        const archived = req.query.archived === 'true';
+
         let query = supabase
             .from('orders')
             .select('*, users(name, email, avatar), items:order_items(*)', { count: 'exact' })
-            .eq('is_archived', false);
+            .eq('is_archived', archived);
 
         if (status) {
             if (status.includes(',')) {
@@ -504,6 +506,78 @@ router.get(
                 hasPrev: page > 1,
             },
         });
+    })
+);
+
+// DELETE /api/admin/orders/:id — Soft-delete an order (mark as archived)
+router.delete(
+    '/orders/:id',
+    asyncHandler(async (req: Request, res: Response) => {
+        const orderId = req.params.id;
+
+        // 1. Verify the order exists
+        const { data: order, error: fetchError } = await supabase
+            .from('orders')
+            .select('id, is_archived')
+            .eq('id', orderId)
+            .single();
+
+        if (fetchError || !order) {
+            return res.status(404).json({ error: 'Pedido no encontrado' });
+        }
+
+        if (order.is_archived) {
+            return res.status(400).json({ error: 'El pedido ya está archivado' });
+        }
+
+        // 2. Soft-delete: mark as archived
+        const { error: updateError } = await supabase
+            .from('orders')
+            .update({ is_archived: true })
+            .eq('id', orderId);
+
+        if (updateError) {
+            console.error('❌ Error archiving order:', updateError);
+            return res.status(500).json({ error: 'Error al archivar el pedido' });
+        }
+
+        console.log(`🗑️  [ADMIN] Order #${orderId} archived (soft-deleted)`);
+        res.json({ success: true, message: `Pedido #${orderId} archivado` });
+    })
+);
+
+// PATCH /api/admin/orders/:id/restore — Restore an archived order
+router.patch(
+    '/orders/:id/restore',
+    asyncHandler(async (req: Request, res: Response) => {
+        const orderId = req.params.id;
+
+        const { data: order, error: fetchError } = await supabase
+            .from('orders')
+            .select('id, is_archived')
+            .eq('id', orderId)
+            .single();
+
+        if (fetchError || !order) {
+            return res.status(404).json({ error: 'Pedido no encontrado' });
+        }
+
+        if (!order.is_archived) {
+            return res.status(400).json({ error: 'El pedido no está archivado' });
+        }
+
+        const { error: updateError } = await supabase
+            .from('orders')
+            .update({ is_archived: false })
+            .eq('id', orderId);
+
+        if (updateError) {
+            console.error('❌ Error restoring order:', updateError);
+            return res.status(500).json({ error: 'Error al restaurar el pedido' });
+        }
+
+        console.log(`♻️  [ADMIN] Order #${orderId} restored`);
+        res.json({ success: true, message: `Pedido #${orderId} restaurado` });
     })
 );
 

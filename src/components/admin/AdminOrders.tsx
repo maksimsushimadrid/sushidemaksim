@@ -21,6 +21,8 @@ import {
     ChefHat,
     Printer,
     ExternalLink,
+    Trash2,
+    RotateCcw,
 } from 'lucide-react';
 import { api, ApiError } from '../../utils/api';
 import { cn } from '../../utils/cn';
@@ -28,6 +30,7 @@ import { useToast } from '../../context/ToastContext';
 import { Order, OrderItem } from '../../types';
 import { AdminOrdersSkeleton } from '../skeletons/AdminOrdersSkeleton';
 import { UserAnalyticsTooltip } from './UserAnalyticsTooltip';
+import DeleteConfirmationModal from './DeleteConfirmationModal';
 import { memo, useRef } from 'react';
 
 // Wrap the order item in a memo component to prevent unnecessary re-renders of the whole list when hovering a name
@@ -156,6 +159,12 @@ const ORDERS_TRANSLATIONS = {
         corruptOrder: 'ОШИБКА: ЗАКАЗ БЕЗ ТОВАРОВ',
         corruptOrderDesc: 'Этот заказ был прерван при создании. Пожалуйста, свяжитесь с клиентом.',
         discount: 'Скидка',
+        deleteOrder: 'УДАЛИТЬ ЗАКАЗ',
+        restoreOrder: 'ВОССТАНОВИТЬ',
+        deleteConfirmTitle: 'Удалить заказ?',
+        deleteConfirmDesc:
+            'Заказ будет архивирован и не будет учитываться в статистике. Вы сможете восстановить его позже.',
+        deletedFilter: 'Удалённые',
     },
     es: {
         searchPlaceholder: 'Buscar ID, Teléfono, Promo...',
@@ -240,6 +249,12 @@ const ORDERS_TRANSLATIONS = {
         corruptOrderDesc:
             'Este pedido se interrumpió durante su creación. Por favor, contacte con el cliente.',
         discount: 'Descuento',
+        deleteOrder: 'ELIMINAR PEDIDO',
+        restoreOrder: 'RESTAURAR',
+        deleteConfirmTitle: '¿Eliminar pedido?',
+        deleteConfirmDesc:
+            'El pedido será archivado y no contará en las estadísticas. Podrás restaurarlo más tarde.',
+        deletedFilter: 'Eliminados',
     },
 } as const;
 const getWhatsAppConfirmationUrl = (order: Order, isPickup: boolean) => {
@@ -313,7 +328,7 @@ export default function AdminOrders({
     onStopSound,
 }: AdminOrdersProps) {
     const queryClient = useQueryClient();
-    const { success } = useToast();
+    const { success: toastSuccess, error: toastError } = useToast();
     const [search, setSearch] = useState('');
     const [filter, setFilter] = useState<string>('active');
     const [page, setPage] = useState(1);
@@ -342,6 +357,7 @@ export default function AdminOrders({
         delivered: 'delivered',
         cancelled: 'cancelled',
         all: '',
+        archived: '',
     };
 
     // Orders Query
@@ -355,6 +371,9 @@ export default function AdminOrders({
         queryKey: ['admin-orders', page, filter, debouncedSearch],
         queryFn: async () => {
             let url = `/admin/orders?page=${page}&limit=${LIMIT}`;
+            if (filter === 'archived') {
+                url += '&archived=true';
+            }
             if (debouncedSearch) {
                 url += `&search=${encodeURIComponent(debouncedSearch)}`;
             }
@@ -390,6 +409,42 @@ export default function AdminOrders({
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+        },
+    });
+
+    // Delete Order Mutation
+    const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
+    const deleteMutation = useMutation({
+        mutationFn: (id: string) => api.delete(`/admin/orders/${id}`),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-analytics'] });
+            toastSuccess(
+                language === 'ru'
+                    ? 'Заказ удалён из базы данных'
+                    : 'El pedido ha sido eliminado de la base de datos'
+            );
+            setOrderToDelete(null);
+        },
+        onError: (err: any) => {
+            const msg = err instanceof ApiError ? err.message : 'Error';
+            toastError(msg);
+        },
+    });
+
+    // Restore Order Mutation
+    const restoreMutation = useMutation({
+        mutationFn: (id: string) => api.patch(`/admin/orders/${id}/restore`, {}),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-analytics'] });
+            toastSuccess(language === 'ru' ? 'Заказ восстановлен' : 'Pedido restaurado');
+        },
+        onError: (err: any) => {
+            const msg = err instanceof ApiError ? err.message : 'Error';
+            toastError(msg);
         },
     });
 
@@ -539,6 +594,7 @@ export default function AdminOrders({
                             { id: 'delivered', label: t.filters.delivered },
                             { id: 'cancelled', label: t.filters.cancelled },
                             { id: 'all', label: t.filters.all },
+                            { id: 'archived', label: t.deletedFilter, isArchived: true },
                         ].map(tab => (
                             <button
                                 key={tab.id}
@@ -640,7 +696,7 @@ export default function AdminOrders({
                                                         title={order.id}
                                                         onClick={() => {
                                                             navigator.clipboard.writeText(order.id);
-                                                            success(
+                                                            toastSuccess(
                                                                 language === 'ru'
                                                                     ? 'ID заказа скопирован'
                                                                     : 'Pedido ID copiado'
@@ -1557,6 +1613,42 @@ export default function AdminOrders({
                                                         {t.printReceipt}
                                                     </motion.button>
 
+                                                    {/* Delete / Restore Order Button */}
+                                                    {filter === 'archived' ? (
+                                                        <motion.button
+                                                            whileHover={{ scale: 1.02 }}
+                                                            whileTap={{ scale: 0.98 }}
+                                                            onClick={() =>
+                                                                restoreMutation.mutate(order.id)
+                                                            }
+                                                            disabled={restoreMutation.isPending}
+                                                            className="w-full mt-2 py-3 bg-green-50 border-2 border-green-100 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-sm hover:shadow-md hover:border-green-300 hover:bg-green-100 transition-all flex items-center justify-center gap-3 text-green-500 hover:text-green-700 no-print disabled:opacity-50"
+                                                        >
+                                                            <RotateCcw
+                                                                size={16}
+                                                                strokeWidth={2.5}
+                                                                className={
+                                                                    restoreMutation.isPending
+                                                                        ? 'animate-spin'
+                                                                        : ''
+                                                                }
+                                                            />
+                                                            {t.restoreOrder}
+                                                        </motion.button>
+                                                    ) : (
+                                                        <motion.button
+                                                            whileHover={{ scale: 1.02 }}
+                                                            whileTap={{ scale: 0.98 }}
+                                                            onClick={() =>
+                                                                setOrderToDelete(order.id)
+                                                            }
+                                                            className="w-full mt-2 py-3 bg-red-50 border-2 border-red-100 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-sm hover:shadow-md hover:border-red-300 hover:bg-red-100 transition-all flex items-center justify-center gap-3 text-red-400 hover:text-red-600 no-print"
+                                                        >
+                                                            <Trash2 size={16} strokeWidth={2.5} />
+                                                            {t.deleteOrder}
+                                                        </motion.button>
+                                                    )}
+
                                                     <div className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between">
                                                         <div className="flex items-center gap-3">
                                                             <Globe
@@ -1606,6 +1698,18 @@ export default function AdminOrders({
                     ))}
                 </div>
             )}
+
+            {/* Delete Order Confirmation Modal */}
+            <DeleteConfirmationModal
+                isOpen={!!orderToDelete}
+                onClose={() => setOrderToDelete(null)}
+                onConfirm={() => {
+                    if (orderToDelete) deleteMutation.mutate(orderToDelete);
+                }}
+                title={t.deleteConfirmTitle}
+                description={t.deleteConfirmDesc}
+                isLoading={deleteMutation.isPending}
+            />
         </div>
     );
 }

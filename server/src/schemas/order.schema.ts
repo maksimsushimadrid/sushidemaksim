@@ -243,5 +243,6 @@ export const getOrdersSchema = z.object({
         status: z.string().optional(), // Can be single or comma-separated
         userId: z.string().optional(),
         search: z.string().optional(),
+        archived: z.string().optional(), // 'true' to fetch archived (soft-deleted) orders
     }),
 });
