@@ -13,6 +13,8 @@ import {
     Loader2,
     HelpCircle,
     AlertCircle,
+    Navigation,
+    ExternalLink,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useForm } from 'react-hook-form';
@@ -156,7 +158,9 @@ export default function ContactsPage() {
     const fullAddress = `${addressLine1} ${addressLine2}`.trim();
     const mapsUrl =
         settings?.contactGoogleMapsUrl ||
-        `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fullAddress)}`;
+        `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+            'Sushi de Maksim, ' + fullAddress
+        )}`;
 
     const upcomingHolidays = MADRID_HOLIDAYS_2026.filter(h => {
         const hDate = new Date(h.date);
@@ -582,18 +586,75 @@ export default function ContactsPage() {
                                     zoomControl={false}
                                 >
                                     <MapResizer />
-                                    <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
+                                    <TileLayer
+                                        url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                                    />
                                     <Marker
                                         position={[40.397042, -3.672449]}
                                         icon={SushiRestaurantIcon}
+                                        eventHandlers={{
+                                            click: () => {
+                                                window.open(
+                                                    mapsUrl,
+                                                    '_blank',
+                                                    'noopener,noreferrer'
+                                                );
+                                            },
+                                        }}
                                     >
                                         <Popup>
-                                            <div className="text-center font-black text-xs uppercase tracking-wide">
-                                                Sushi de Maksim
+                                            <div className="text-center p-1">
+                                                <div className="font-black text-xs uppercase tracking-wide text-gray-900 mb-1">
+                                                    Sushi de Maksim
+                                                </div>
+                                                <div className="text-[11px] text-gray-500 mb-2">
+                                                    {fullAddress}
+                                                </div>
+                                                <a
+                                                    href={mapsUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg text-[10px] font-black uppercase tracking-wider transition-colors shadow-sm"
+                                                    onClick={e => e.stopPropagation()}
+                                                >
+                                                    <Navigation size={12} />
+                                                    <span>Cómo llegar</span>
+                                                </a>
                                             </div>
                                         </Popup>
                                     </Marker>
                                 </MapContainer>
+
+                                {/* Floating navigation button */}
+                                <a
+                                    href={mapsUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    aria-label="Abrir navegación en Google Maps"
+                                    className="absolute bottom-4 right-4 z-[400] flex items-center gap-2.5 bg-gray-900/90 hover:bg-black text-white px-4 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider backdrop-blur-md shadow-2xl border border-white/10 transition-all hover:scale-105 active:scale-95 group/nav"
+                                >
+                                    <Navigation
+                                        size={14}
+                                        className="text-orange-500 group-hover/nav:rotate-45 transition-transform"
+                                    />
+                                    <span>Cómo llegar</span>
+                                    <ExternalLink
+                                        size={12}
+                                        className="text-gray-400 group-hover/nav:text-white transition-colors"
+                                    />
+                                </a>
+
+                                {/* Floating address badge */}
+                                <a
+                                    href={mapsUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="absolute top-4 left-4 z-[400] hidden sm:flex items-center gap-2 bg-white/95 hover:bg-white text-gray-900 px-3.5 py-1.5 rounded-xl text-[11px] font-bold shadow-md backdrop-blur-md border border-gray-100 transition-all hover:shadow-lg hover:border-orange-200"
+                                >
+                                    <MapPin size={13} className="text-orange-600" />
+                                    <span>{fullAddress}</span>
+                                </a>
                             </div>
                         </motion.div>
 
