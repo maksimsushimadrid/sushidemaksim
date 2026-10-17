@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import SafeImage from '../common/SafeImage';
-import { getSharpAvatar } from '../../utils/avatar';
+import { getSharpAvatar, getDefaultAvatar } from '../../utils/avatar';
 import { useTableI18n } from '../../utils/tableI18n';
 import { cn } from '../../utils/cn';
 
@@ -89,24 +89,22 @@ export default function UserActions({
                         className={`w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-black text-white shadow-sm overflow-hidden shrink-0 border border-white/10
                             ${user?.avatar?.startsWith('http') ? 'bg-white' : user?.avatar ? 'bg-white/10 text-[14px]' : 'bg-orange-600'}`}
                     >
-                        {user?.avatar ? (
-                            user.avatar.startsWith('http') ? (
-                                <SafeImage
-                                    src={user.avatar}
-                                    getOptimizedUrl={getSharpAvatar}
-                                    alt={user.name}
-                                    className="w-full h-full object-cover"
-                                    fallbackContent={
-                                        <span className="select-none text-[12px] text-white">
-                                            {initials}
-                                        </span>
-                                    }
-                                />
-                            ) : (
-                                <span className="select-none">{user.avatar}</span>
-                            )
+                        {user?.avatar && user.avatar.startsWith('http') ? (
+                            <SafeImage
+                                src={user.avatar}
+                                getOptimizedUrl={getSharpAvatar}
+                                alt={user.name}
+                                className="w-full h-full object-cover"
+                                fallbackContent={
+                                    <span className="select-none text-[15px]">
+                                        {getDefaultAvatar(user)}
+                                    </span>
+                                }
+                            />
                         ) : (
-                            <span className="select-none">{initials}</span>
+                            <span className="select-none text-[15px]">
+                                {user?.avatar || getDefaultAvatar(user)}
+                            </span>
                         )}
                     </div>
                     <span className="text-[11px] font-black text-white uppercase tracking-tight">

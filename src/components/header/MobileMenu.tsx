@@ -7,7 +7,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../context/ToastContext';
 import { GoogleAuthButton } from '../LoginModal';
 import SafeImage from '../common/SafeImage';
-import { getSharpAvatar } from '../../utils/avatar';
+import { getSharpAvatar, getDefaultAvatar } from '../../utils/avatar';
 
 interface MobileMenuProps {
     showMobileMenu: boolean;
@@ -21,15 +21,6 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
 
     const hasToken = !!localStorage.getItem('sushi_token');
     const showSkeleton = isLoading || (hasToken && !user);
-
-    const initials = user
-        ? user.name
-              .split(' ')
-              .map(n => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2)
-        : '';
 
     const navLinks = [
         { to: '/menu', label: 'Carta', icon: Menu },
@@ -153,8 +144,8 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                                             alt={user.name}
                                                             className="w-full h-full object-cover"
                                                             fallbackContent={
-                                                                <span className="select-none text-base font-black text-gray-900">
-                                                                    {initials}
+                                                                <span className="select-none text-3xl">
+                                                                    {getDefaultAvatar(user)}
                                                                 </span>
                                                             }
                                                         />
@@ -164,8 +155,8 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                                         </span>
                                                     )
                                                 ) : (
-                                                    <span className="select-none text-xl font-black">
-                                                        {initials}
+                                                    <span className="select-none text-4xl">
+                                                        {getDefaultAvatar(user)}
                                                     </span>
                                                 )}
                                             </div>

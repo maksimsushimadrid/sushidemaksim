@@ -37,3 +37,45 @@ export function getSharpAvatar(url: string | null | undefined, size = 256): stri
     // Supabase or other generic URLs
     return getOptimizedImageUrl(url, size);
 }
+
+/**
+ * Standard default avatars randomly assigned to users upon registration.
+ */
+export const STANDARD_AVATARS = [
+    '🍣', // Sushi Nigiri
+    '🍱', // Bento
+    '🍙', // Onigiri
+    '🍥', // Narutomaki
+    '🍜', // Ramen
+    '🥟', // Gyoza
+    '🍤', // Tempura
+    '🥷', // Ninja
+    '🧑‍🍳', // Chef
+    '🦊', // Kitsune
+    '🐱', // Neko
+    '🐼', // Panda
+    '🐉', // Dragon
+    '🏮', // Chochin Lantern
+    '🔥', // Fire
+    '⚡', // Lightning
+] as const;
+
+/**
+ * Returns a consistent random standard avatar for a user based on their ID, email or name.
+ */
+export function getDefaultAvatar(
+    user?: { id?: string | number; email?: string; name?: string; avatar?: string | null } | null
+): string {
+    if (user?.avatar && !user.avatar.startsWith('http')) {
+        return user.avatar;
+    }
+    const seed = String(user?.id || user?.email || user?.name || '');
+    if (!seed) return '🍣';
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+        hash = (hash << 5) - hash + seed.charCodeAt(i);
+        hash |= 0;
+    }
+    const index = Math.abs(hash) % STANDARD_AVATARS.length;
+    return STANDARD_AVATARS[index];
+}

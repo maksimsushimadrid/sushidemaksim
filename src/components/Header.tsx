@@ -16,7 +16,7 @@ import CartButton from './header/CartButton';
 import UserActions from './header/UserActions';
 import { useAuth } from '../hooks/useAuth';
 import SafeImage from './common/SafeImage';
-import { getSharpAvatar } from '../utils/avatar';
+import { getSharpAvatar, getDefaultAvatar } from '../utils/avatar';
 import MobileMenu from './header/MobileMenu';
 import { triggerHaptic } from '../utils/haptics';
 import { JapaneseNavIcon } from './header/JapaneseNavIcon';
@@ -148,15 +148,6 @@ export default function Header() {
           : currentPath.includes('profile')
             ? 'Perfil'
             : 'Página';
-
-    const initials = user
-        ? user.name
-              .split(' ')
-              .map(n => n[0])
-              .join('')
-              .toUpperCase()
-              .slice(0, 2)
-        : '';
 
     const [showTapHint, setShowTapHint] = useState(() => {
         if (typeof window === 'undefined') return false;
@@ -458,117 +449,206 @@ export default function Header() {
                                 ease: 'easeInOut',
                             }}
                         >
-                            <button
-                                onClick={() => {
-                                    triggerHaptic(20);
-                                    setIsAvatarDistorting(true);
-                                    setTimeout(() => {
-                                        setIsAvatarDistorting(false);
-                                        if (isAuthenticated && user) {
+                            {isAuthenticated && user ? (
+                                <button
+                                    onClick={() => {
+                                        triggerHaptic(20);
+                                        setIsAvatarDistorting(true);
+                                        setTimeout(() => {
+                                            setIsAvatarDistorting(false);
                                             setShowMobileMenu(true);
-                                        } else {
-                                            setIsRegistrationDiscountOpen(true);
-                                        }
-                                    }, 280);
-                                }}
-                                className="relative w-[62px] h-[62px] rounded-full p-[2px] bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-400 shadow-[0_10px_28px_-4px_rgba(242,101,34,0.55),0_3px_10px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer active:scale-95 transition-transform group"
-                                title={
-                                    isAuthenticated && user
-                                        ? 'Abrir perfil y menú'
-                                        : '¡10% de descuento al registrarte! Toca para ver la oferta'
-                                }
-                                aria-label={
-                                    isAuthenticated && user
-                                        ? 'Abrir perfil y menú'
-                                        : '¡10% de descuento al registrarte! Toca para ver la oferta'
-                                }
-                            >
-                                {/* Inner circle container with 3D sphere bulge distortion */}
-                                <motion.div
-                                    animate={
-                                        isAvatarDistorting
-                                            ? {
-                                                  scale: [1, 1.25, 0.93, 1],
-                                                  boxShadow: [
-                                                      'inset 0 0 0 rgba(0,0,0,0)',
-                                                      'inset -5px -7px 18px rgba(0,0,0,0.65), inset 5px 7px 16px rgba(255,255,255,0.7)',
-                                                      'inset 0 0 0 rgba(0,0,0,0)',
-                                                  ],
-                                              }
-                                            : {}
-                                    }
-                                    transition={{ duration: 0.32, ease: 'easeOut' }}
-                                    className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white shadow-inner"
+                                        }, 280);
+                                    }}
+                                    className="relative w-[62px] h-[62px] rounded-full p-[2px] bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-400 shadow-[0_10px_28px_-4px_rgba(242,101,34,0.55),0_3px_10px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer active:scale-95 transition-transform group"
+                                    title="Abrir perfil y menú"
+                                    aria-label="Abrir perfil y menú"
                                 >
+                                    {/* Inner circle container with 3D sphere bulge distortion */}
                                     <motion.div
                                         animate={
                                             isAvatarDistorting
                                                 ? {
-                                                      scale: [1, 1.48, 0.96, 1],
+                                                      scale: [1, 1.25, 0.93, 1],
+                                                      boxShadow: [
+                                                          'inset 0 0 0 rgba(0,0,0,0)',
+                                                          'inset -5px -7px 18px rgba(0,0,0,0.65), inset 5px 7px 16px rgba(255,255,255,0.7)',
+                                                          'inset 0 0 0 rgba(0,0,0,0)',
+                                                      ],
                                                   }
-                                                : { scale: 1 }
+                                                : {}
                                         }
-                                        transition={{ duration: 0.32, ease: [0.34, 1.56, 0.64, 1] }}
-                                        className="w-full h-full flex items-center justify-center"
+                                        transition={{ duration: 0.32, ease: 'easeOut' }}
+                                        className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white shadow-inner"
                                     >
-                                        {isAuthenticated && user?.avatar ? (
-                                            user.avatar.startsWith('http') ? (
+                                        <motion.div
+                                            animate={
+                                                isAvatarDistorting
+                                                    ? {
+                                                          scale: [1, 1.48, 0.96, 1],
+                                                      }
+                                                    : { scale: 1 }
+                                            }
+                                            transition={{
+                                                duration: 0.32,
+                                                ease: [0.34, 1.56, 0.64, 1],
+                                            }}
+                                            className="w-full h-full flex items-center justify-center"
+                                        >
+                                            {user.avatar && user.avatar.startsWith('http') ? (
                                                 <SafeImage
                                                     src={user.avatar}
                                                     getOptimizedUrl={getSharpAvatar}
                                                     alt={user.name}
                                                     className="w-full h-full object-cover rounded-full pointer-events-none"
                                                     fallbackContent={
-                                                        <span className="text-sm font-black text-gray-900 select-none">
-                                                            {initials}
+                                                        <span className="text-2xl select-none">
+                                                            {getDefaultAvatar(user)}
                                                         </span>
                                                     }
                                                 />
                                             ) : (
                                                 <span className="text-2xl select-none">
-                                                    {user.avatar}
+                                                    {user.avatar || getDefaultAvatar(user)}
                                                 </span>
-                                            )
-                                        ) : isAuthenticated && user ? (
-                                            <span className="text-sm font-black text-gray-900 select-none">
-                                                {initials}
-                                            </span>
-                                        ) : (
-                                            /* Unauthenticated placeholder with question mark */
-                                            <div className="flex items-center justify-center w-full h-full bg-gradient-to-br from-orange-50 via-white to-amber-50">
-                                                <span className="text-[28px] font-black text-orange-600 select-none leading-none tracking-tight">
-                                                    ?
-                                                </span>
-                                            </div>
-                                        )}
+                                            )}
+                                        </motion.div>
+
+                                        {/* 3D Spherical Fisheye Lens Sheen Overlay */}
+                                        <motion.div
+                                            animate={
+                                                isAvatarDistorting
+                                                    ? {
+                                                          opacity: [0, 0.9, 0],
+                                                          scale: [0.85, 1.12, 1],
+                                                      }
+                                                    : { opacity: 0 }
+                                            }
+                                            transition={{ duration: 0.32, ease: 'easeOut' }}
+                                            className="absolute inset-0 rounded-full pointer-events-none"
+                                            style={{
+                                                background:
+                                                    'radial-gradient(circle at 32% 26%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.3) 28%, rgba(0,0,0,0) 65%, rgba(0,0,0,0.55) 100%)',
+                                                boxShadow:
+                                                    'inset -3px -5px 12px rgba(0,0,0,0.5), inset 3px 5px 12px rgba(255,255,255,0.6)',
+                                            }}
+                                        />
                                     </motion.div>
 
-                                    {/* 3D Spherical Fisheye Lens Sheen Overlay */}
+                                    {/* Subtitle label under floating avatar */}
+                                    <span className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 bg-[#121212]/92 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full whitespace-nowrap shadow-lg border border-white/15 leading-none">
+                                        {user.name.split(' ')[0]}
+                                    </span>
+                                </button>
+                            ) : (
+                                /* Guest state: 3D Festive Gift Box with ribbon, bow and -10% badge */
+                                <button
+                                    onClick={() => {
+                                        triggerHaptic(20);
+                                        setIsAvatarDistorting(true);
+                                        setTimeout(() => {
+                                            setIsAvatarDistorting(false);
+                                            setIsRegistrationDiscountOpen(true);
+                                        }, 280);
+                                    }}
+                                    className="relative w-[60px] h-[60px] flex items-center justify-center cursor-pointer active:scale-95 transition-transform group"
+                                    title="¡10% de descuento al registrarte! Toca para abrir tu regalo"
+                                    aria-label="¡10% de descuento al registrarte! Toca para abrir tu regalo"
+                                >
+                                    {/* 3D Bow sitting on top of the gift box */}
+                                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-20 pointer-events-none drop-shadow-md">
+                                        <svg
+                                            width="34"
+                                            height="20"
+                                            viewBox="0 0 34 20"
+                                            fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                        >
+                                            <path
+                                                d="M17 12 C13 3, 2 3, 4 10 C 6 15, 14 13, 17 12 Z"
+                                                fill="url(#header-bow-grad)"
+                                                stroke="#FDE68A"
+                                                strokeWidth="0.8"
+                                            />
+                                            <path
+                                                d="M17 12 C21 3, 32 3, 30 10 C 28 15, 20 13, 17 12 Z"
+                                                fill="url(#header-bow-grad)"
+                                                stroke="#FDE68A"
+                                                strokeWidth="0.8"
+                                            />
+                                            <ellipse
+                                                cx="17"
+                                                cy="12"
+                                                rx="3.5"
+                                                ry="3"
+                                                fill="#F59E0B"
+                                                stroke="#FEF3C7"
+                                                strokeWidth="0.8"
+                                            />
+                                            <path
+                                                d="M15 13 Q 12 18 10 19"
+                                                stroke="#FBBF24"
+                                                strokeWidth="2.2"
+                                                strokeLinecap="round"
+                                            />
+                                            <path
+                                                d="M19 13 Q 22 18 24 19"
+                                                stroke="#FBBF24"
+                                                strokeWidth="2.2"
+                                                strokeLinecap="round"
+                                            />
+                                            <defs>
+                                                <linearGradient
+                                                    id="header-bow-grad"
+                                                    x1="0"
+                                                    y1="0"
+                                                    x2="34"
+                                                    y2="20"
+                                                    gradientUnits="userSpaceOnUse"
+                                                >
+                                                    <stop stopColor="#FDE047" />
+                                                    <stop offset="0.5" stopColor="#F59E0B" />
+                                                    <stop offset="1" stopColor="#D97706" />
+                                                </linearGradient>
+                                            </defs>
+                                        </svg>
+                                    </div>
+
+                                    {/* Gift Box Container with 3D bulge animation on tap */}
                                     <motion.div
                                         animate={
                                             isAvatarDistorting
                                                 ? {
-                                                      opacity: [0, 0.9, 0],
-                                                      scale: [0.85, 1.12, 1],
+                                                      scale: [1, 1.25, 0.93, 1],
                                                   }
-                                                : { opacity: 0 }
+                                                : {}
                                         }
                                         transition={{ duration: 0.32, ease: 'easeOut' }}
-                                        className="absolute inset-0 rounded-full pointer-events-none"
-                                        style={{
-                                            background:
-                                                'radial-gradient(circle at 32% 26%, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.3) 28%, rgba(0,0,0,0) 65%, rgba(0,0,0,0.55) 100%)',
-                                            boxShadow:
-                                                'inset -3px -5px 12px rgba(0,0,0,0.5), inset 3px 5px 12px rgba(255,255,255,0.6)',
-                                        }}
-                                    />
-                                </motion.div>
+                                        className="relative w-full h-full rounded-[22px] bg-gradient-to-br from-orange-500 via-amber-500 to-orange-600 shadow-[0_12px_28px_-3px_rgba(242,101,34,0.65),0_4px_12px_rgba(0,0,0,0.3)] border-2 border-amber-300/80 overflow-hidden flex items-center justify-center"
+                                    >
+                                        {/* Box Lid highlight */}
+                                        <div className="absolute top-0 inset-x-0 h-4 bg-gradient-to-b from-white/40 to-transparent border-b border-white/20 pointer-events-none" />
 
-                                {/* Subtitle label under floating avatar */}
-                                <span className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 bg-[#121212]/92 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full whitespace-nowrap shadow-lg border border-white/15 leading-none">
-                                    {isAuthenticated && user ? user.name.split(' ')[0] : '-10% DTO'}
-                                </span>
-                            </button>
+                                        {/* Satin Ribbons crossing */}
+                                        <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-3.5 bg-gradient-to-r from-amber-300 via-yellow-100 to-amber-300 shadow-sm" />
+                                        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3.5 bg-gradient-to-b from-amber-300 via-yellow-100 to-amber-300 shadow-sm" />
+
+                                        {/* Center Sparkle Badge */}
+                                        <div className="relative z-10 w-7 h-7 rounded-full bg-gradient-to-br from-amber-100 to-amber-300 flex items-center justify-center shadow-md border border-white/60">
+                                            <span className="text-[10px] font-black text-amber-900 tracking-tight leading-none">
+                                                -10%
+                                            </span>
+                                        </div>
+
+                                        {/* Glossy light reflection sheen */}
+                                        <div className="absolute top-0 right-0 w-8 h-8 bg-gradient-to-bl from-white/45 to-transparent pointer-events-none" />
+                                    </motion.div>
+
+                                    {/* Subtitle label under gift box */}
+                                    <span className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 bg-[#121212]/92 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full whitespace-nowrap shadow-lg border border-white/15 leading-none">
+                                        -10% DTO
+                                    </span>
+                                </button>
+                            )}
                         </motion.div>
                     </motion.div>
                 </AnimatePresence>

@@ -116,6 +116,26 @@ router.post(
 
         const passwordHash = await bcrypt.hash(password, config.bcryptRounds);
 
+        const defaultAvatars = [
+            '🍣',
+            '🍱',
+            '🍙',
+            '🍥',
+            '🍜',
+            '🥟',
+            '🍤',
+            '🥷',
+            '🧑‍🍳',
+            '🦊',
+            '🐱',
+            '🐼',
+            '🐉',
+            '🏮',
+            '🔥',
+            '⚡',
+        ];
+        const randomAvatar = defaultAvatars[Math.floor(Math.random() * defaultAvatars.length)];
+
         const { data: newUser, error: insertError } = await supabase
             .from('users')
             .insert({
@@ -123,6 +143,7 @@ router.post(
                 email: email.toLowerCase().trim(),
                 phone: phone?.trim() || '',
                 password_hash: passwordHash,
+                avatar: randomAvatar,
                 last_seen_at: new Date().toISOString(),
             })
             .select()
