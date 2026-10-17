@@ -163,20 +163,20 @@ export default function Header() {
         return () => clearTimeout(timer);
     }, [showTapHint]);
 
-    // Periodic double-bounce for unauthenticated users every minute
+    // Periodic playful shake & wiggle for unauthenticated gift box every 10 seconds
     useEffect(() => {
         if (isAuthenticated) return;
 
-        const triggerDoubleBounce = () => {
+        const triggerGiftAttention = () => {
             setIsBouncing(true);
             setTimeout(() => {
                 setIsBouncing(false);
             }, 900);
         };
 
-        // First gentle nudge after 4s, then every minute (60s)
-        const initialTimer = setTimeout(triggerDoubleBounce, 4000);
-        const interval = setInterval(triggerDoubleBounce, 60000);
+        // First gentle shake after 3.5s, then every 10 seconds
+        const initialTimer = setTimeout(triggerGiftAttention, 3500);
+        const interval = setInterval(triggerGiftAttention, 10000);
 
         return () => {
             clearTimeout(initialTimer);
@@ -432,20 +432,19 @@ export default function Header() {
                             isAuthenticated && user ? 'md:hidden' : ''
                         }`}
                     >
-                        {/* Periodic double-bounce animation for unauthenticated question mark */}
+                        {/* Periodic playful shake & wiggle for gift box every 10s */}
                         <motion.div
                             animate={
                                 isBouncing
                                     ? {
-                                          y: [0, -18, 2, -11, 0],
-                                          scaleY: [1, 1.14, 0.93, 1.07, 1],
-                                          scaleX: [1, 0.93, 1.07, 0.96, 1],
+                                          rotate: [0, -12, 12, -9, 9, -4, 4, 0],
+                                          y: [0, -8, 1, -6, 0, -2, 0],
+                                          scale: [1, 1.1, 1.1, 1.06, 1.06, 1.02, 1],
                                       }
-                                    : { y: 0, scaleY: 1, scaleX: 1 }
+                                    : { rotate: 0, y: 0, scale: 1 }
                             }
                             transition={{
                                 duration: 0.85,
-                                times: [0, 0.28, 0.52, 0.76, 1],
                                 ease: 'easeInOut',
                             }}
                         >
