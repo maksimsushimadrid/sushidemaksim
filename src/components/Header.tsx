@@ -584,6 +584,11 @@ export default function Header() {
                         setLoginModalMode('register');
                         setIsLoginModalOpen(true);
                     }}
+                    onLogin={() => {
+                        setIsRegistrationDiscountOpen(false);
+                        setLoginModalMode('login');
+                        setIsLoginModalOpen(true);
+                    }}
                 />
 
                 <LoginModal
