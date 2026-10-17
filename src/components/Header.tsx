@@ -539,7 +539,7 @@ export default function Header() {
                                     </span>
                                 </button>
                             ) : (
-                                /* Guest state: 3D Festive Gift Box with ribbon, bow and -10% badge */
+                                /* Guest state: 3D Luxury Black & Gold Gift Box with -10% badge matching user reference */
                                 <button
                                     onClick={() => {
                                         triggerHaptic(20);
@@ -549,101 +549,42 @@ export default function Header() {
                                             setIsRegistrationDiscountOpen(true);
                                         }, 280);
                                     }}
-                                    className="relative w-[60px] h-[60px] flex items-center justify-center cursor-pointer active:scale-95 transition-transform group"
+                                    className="relative w-[68px] h-[68px] flex items-center justify-center cursor-pointer active:scale-90 transition-transform duration-200 group focus:outline-none"
                                     title="¡10% de descuento al registrarte! Toca para abrir tu regalo"
                                     aria-label="¡10% de descuento al registrarte! Toca para abrir tu regalo"
                                 >
-                                    {/* 3D Bow sitting on top of the gift box */}
-                                    <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 z-20 pointer-events-none drop-shadow-md">
-                                        <svg
-                                            width="34"
-                                            height="20"
-                                            viewBox="0 0 34 20"
-                                            fill="none"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                        >
-                                            <path
-                                                d="M17 12 C13 3, 2 3, 4 10 C 6 15, 14 13, 17 12 Z"
-                                                fill="url(#header-bow-grad)"
-                                                stroke="#FDE68A"
-                                                strokeWidth="0.8"
-                                            />
-                                            <path
-                                                d="M17 12 C21 3, 32 3, 30 10 C 28 15, 20 13, 17 12 Z"
-                                                fill="url(#header-bow-grad)"
-                                                stroke="#FDE68A"
-                                                strokeWidth="0.8"
-                                            />
-                                            <ellipse
-                                                cx="17"
-                                                cy="12"
-                                                rx="3.5"
-                                                ry="3"
-                                                fill="#F59E0B"
-                                                stroke="#FEF3C7"
-                                                strokeWidth="0.8"
-                                            />
-                                            <path
-                                                d="M15 13 Q 12 18 10 19"
-                                                stroke="#FBBF24"
-                                                strokeWidth="2.2"
-                                                strokeLinecap="round"
-                                            />
-                                            <path
-                                                d="M19 13 Q 22 18 24 19"
-                                                stroke="#FBBF24"
-                                                strokeWidth="2.2"
-                                                strokeLinecap="round"
-                                            />
-                                            <defs>
-                                                <linearGradient
-                                                    id="header-bow-grad"
-                                                    x1="0"
-                                                    y1="0"
-                                                    x2="34"
-                                                    y2="20"
-                                                    gradientUnits="userSpaceOnUse"
-                                                >
-                                                    <stop stopColor="#FDE047" />
-                                                    <stop offset="0.5" stopColor="#F59E0B" />
-                                                    <stop offset="1" stopColor="#D97706" />
-                                                </linearGradient>
-                                            </defs>
-                                        </svg>
-                                    </div>
+                                    {/* Ambient golden luxury glow behind the box */}
+                                    <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-tr from-amber-500/30 via-yellow-400/25 to-amber-300/10 blur-lg pointer-events-none group-hover:scale-125 transition-transform duration-500" />
 
-                                    {/* Gift Box Container with 3D bulge animation on tap */}
+                                    {/* 3D Black & Gold Gift Box from reference */}
                                     <motion.div
                                         animate={
                                             isAvatarDistorting
                                                 ? {
-                                                      scale: [1, 1.25, 0.93, 1],
+                                                      scale: [1, 1.28, 0.92, 1],
+                                                      rotate: [0, -12, 12, -6, 0],
                                                   }
                                                 : {}
                                         }
-                                        transition={{ duration: 0.32, ease: 'easeOut' }}
-                                        className="relative w-full h-full rounded-[22px] bg-gradient-to-br from-orange-500 via-amber-500 to-orange-600 shadow-[0_12px_28px_-3px_rgba(242,101,34,0.65),0_4px_12px_rgba(0,0,0,0.3)] border-2 border-amber-300/80 overflow-hidden flex items-center justify-center"
+                                        transition={{ duration: 0.35, ease: 'easeOut' }}
+                                        className="relative w-full h-full flex items-center justify-center filter drop-shadow-[0_12px_22px_rgba(0,0,0,0.55)] group-hover:scale-108 transition-transform duration-300"
                                     >
-                                        {/* Box Lid highlight */}
-                                        <div className="absolute top-0 inset-x-0 h-4 bg-gradient-to-b from-white/40 to-transparent border-b border-white/20 pointer-events-none" />
-
-                                        {/* Satin Ribbons crossing */}
-                                        <div className="absolute inset-y-0 left-1/2 -translate-x-1/2 w-3.5 bg-gradient-to-r from-amber-300 via-yellow-100 to-amber-300 shadow-sm" />
-                                        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-3.5 bg-gradient-to-b from-amber-300 via-yellow-100 to-amber-300 shadow-sm" />
-
-                                        {/* Center Sparkle Badge */}
-                                        <div className="relative z-10 w-7 h-7 rounded-full bg-gradient-to-br from-amber-100 to-amber-300 flex items-center justify-center shadow-md border border-white/60">
-                                            <span className="text-[10px] font-black text-amber-900 tracking-tight leading-none">
-                                                -10%
-                                            </span>
-                                        </div>
-
-                                        {/* Glossy light reflection sheen */}
-                                        <div className="absolute top-0 right-0 w-8 h-8 bg-gradient-to-bl from-white/45 to-transparent pointer-events-none" />
+                                        <picture>
+                                            <source srcSet="/gift-box-3d.webp" type="image/webp" />
+                                            <img
+                                                src="/gift-box-3d.png"
+                                                alt="Regalo 10% de descuento"
+                                                className="w-full h-full object-contain select-none pointer-events-none drop-shadow-[0_4px_10px_rgba(245,158,11,0.25)]"
+                                                draggable={false}
+                                                width={68}
+                                                height={68}
+                                            />
+                                        </picture>
                                     </motion.div>
 
-                                    {/* Subtitle label under gift box */}
-                                    <span className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 bg-[#121212]/92 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full whitespace-nowrap shadow-lg border border-white/15 leading-none">
+                                    {/* Subtitle luxury badge under gift box */}
+                                    <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 text-amber-300 text-[8.5px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full whitespace-nowrap shadow-[0_4px_12px_rgba(0,0,0,0.6)] border border-amber-400/40 leading-none flex items-center gap-1 group-hover:border-amber-300 group-hover:text-amber-200 transition-colors">
+                                        <span className="inline-block w-1 h-1 rounded-full bg-amber-400 animate-pulse" />
                                         -10% DTO
                                     </span>
                                 </button>
