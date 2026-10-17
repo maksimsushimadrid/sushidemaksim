@@ -266,13 +266,13 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
 
     if (isExcluded) return null;
 
-    // If animations are turned off or theme is "none" or "halloween_wallpaper":
-    // Return null (no animation DOM nodes at all — clean & fast!)
-    if (
-        !animationsEnabled ||
-        effectiveTheme === 'none' ||
-        effectiveTheme === 'halloween_wallpaper'
-    ) {
+    // If theme is "none" or "halloween_wallpaper", do not render animations
+    if (effectiveTheme === 'none' || effectiveTheme === 'halloween_wallpaper') {
+        return null;
+    }
+
+    // For Halloween, only render bats/spider if animations are enabled
+    if (effectiveTheme === 'halloween' && !animationsEnabled) {
         return null;
     }
 

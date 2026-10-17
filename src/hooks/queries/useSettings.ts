@@ -77,6 +77,6 @@ export function useSettings() {
                 holidayWallpaperUntil: data.holidayWallpaperUntil || '2026-11-01',
             };
         },
-        staleTime: 1000 * 60 * 60, // 1 hour
+        staleTime: 1000 * 15, // 15 seconds (promptly synchronizes with admin changes)
     });
 }

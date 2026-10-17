@@ -8,6 +8,7 @@ import {
     X,
     RefreshCw,
     Sparkles,
+    ExternalLink,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -82,7 +83,7 @@ const SETTINGS_TRANSLATIONS = {
         reasonPlaceholder: 'например: Отпуск, Санитарный день, Закрытие раньше времени',
         holidayThemeTitle: 'Праздничное оформление и сезонные темы',
         holidayThemeDesc:
-            'Настройте внешний вид сайта под праздники: Хэллоуин, Новый Год, Рождество или чистый режим.',
+            'Нажмите на карточку — тема сохраняется мгновенно! На сайте сразу появится выбранное оформление.',
         holidayThemeAuto: 'Автоматически по датам',
         holidayThemeAutoSub: 'Хэллоуин до 1 ноября, затем Новый Год в декабре',
         holidayThemeHalloweenWallpaper: 'Хэллоуин (Только обои)',
@@ -98,6 +99,12 @@ const SETTINGS_TRANSLATIONS = {
         holidayAnimationsLabel: 'Анимации (мыши, паук, снег)',
         holidayAnimationsDesc: 'Выключите, чтобы убрать все движущиеся элементы',
         holidayDateNotice: 'Дата окончания осенней темы (до какого числа):',
+        holidayLiveActive: 'Сейчас активно на сайте:',
+        holidayAutoSavedNotice: 'Сохраняется автоматически при клике на карточку',
+        holidayPreviewBtn: 'Открыть сайт и проверить',
+        holidayAdminNotice:
+            'Важно: В самой админке фоны и летающие эффекты отключены, чтобы не отвлекать от управления рестораном. Перейдите на сайт, чтобы увидеть результат!',
+        holidayActiveBadge: 'АКТИВНО',
     },
     es: {
         title: 'Configuración de Contactos',
@@ -163,7 +170,7 @@ const SETTINGS_TRANSLATIONS = {
         reasonPlaceholder: 'Ej: Vacaciones, Evento privado, Cierre anticipado',
         holidayThemeTitle: 'Decoración Temática y Festividades',
         holidayThemeDesc:
-            'Configura el ambiente visual de la web para Halloween, Año Nuevo, Navidad o modo clásico.',
+            'Haz clic en una tarjeta y se guardará al instante. La web mostrará el tema de inmediato.',
         holidayThemeAuto: 'Automático por fechas',
         holidayThemeAutoSub: 'Halloween hasta el 1 de nov, Año Nuevo en dic/ene',
         holidayThemeHalloweenWallpaper: 'Halloween (Solo fondo)',
@@ -179,6 +186,12 @@ const SETTINGS_TRANSLATIONS = {
         holidayAnimationsLabel: 'Animaciones (murciélagos, araña, nieve)',
         holidayAnimationsDesc: 'Desactiva para quitar elementos móviles de la pantalla',
         holidayDateNotice: 'Fecha límite del fondo otoñal (hasta qué fecha):',
+        holidayLiveActive: 'Actualmente activo en la web:',
+        holidayAutoSavedNotice: 'Se guarda automáticamente al pulsar una tarjeta',
+        holidayPreviewBtn: 'Abrir web y comprobar',
+        holidayAdminNotice:
+            'Importante: En el panel de control los efectos están ocultos para mayor comodidad al gestionar pedidos. ¡Abre la web para ver el resultado en directo!',
+        holidayActiveBadge: 'ACTIVO',
     },
 } as const;
 
@@ -297,6 +310,88 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
         if (localSettings) {
             updateMutation.mutate(localSettings);
         }
+    };
+
+    const handleSelectThemePreset = (presetId: string) => {
+        if (!localSettings) return;
+        let animations = localSettings.holidayAnimationsEnabled;
+        if (presetId === 'halloween' || presetId === 'new_year' || presetId === 'christmas') {
+            animations = true;
+        } else if (presetId === 'halloween_wallpaper' || presetId === 'none') {
+            animations = false;
+        }
+
+        const next = {
+            ...localSettings,
+            holidayTheme: presetId,
+            holidayAnimationsEnabled: animations,
+        };
+        setLocalSettings(next);
+        updateMutation.mutate(next);
+    };
+
+    const handleToggleAnimations = (enabled: boolean) => {
+        if (!localSettings) return;
+        const next = {
+            ...localSettings,
+            holidayAnimationsEnabled: enabled,
+        };
+        setLocalSettings(next);
+        updateMutation.mutate(next);
+    };
+
+    const handleWallpaperDateChange = (date: string) => {
+        if (!localSettings) return;
+        const next = {
+            ...localSettings,
+            holidayWallpaperUntil: date,
+        };
+        setLocalSettings(next);
+        updateMutation.mutate(next);
+    };
+
+    const getActiveThemeSummary = () => {
+        if (!localSettings)
+            return { selectedPresetName: '', effectiveName: '', wallpaper: '', animations: false };
+        const mode = localSettings.holidayTheme || 'auto';
+        const todayStr = new Date().toISOString().split('T')[0];
+        const wallpaperUntil = localSettings.holidayWallpaperUntil || '2026-11-01';
+
+        let effectiveMode = mode;
+        if (mode === 'auto') {
+            if (todayStr <= wallpaperUntil) {
+                effectiveMode = localSettings.holidayAnimationsEnabled
+                    ? 'halloween'
+                    : 'halloween_wallpaper';
+            } else if (todayStr >= '2026-12-01' || todayStr <= '2027-01-15') {
+                effectiveMode = 'new_year';
+            } else {
+                effectiveMode = 'none';
+            }
+        }
+
+        const names: Record<string, string> = {
+            auto: t.holidayThemeAuto,
+            halloween: t.holidayThemeHalloween,
+            halloween_wallpaper: t.holidayThemeHalloweenWallpaper,
+            new_year: t.holidayThemeNewYear,
+            christmas: t.holidayThemeChristmas,
+            none: t.holidayThemeNone,
+        };
+
+        const isHalloweenWallpaper =
+            effectiveMode === 'halloween' || effectiveMode === 'halloween_wallpaper';
+        const hasAnimations =
+            effectiveMode === 'halloween'
+                ? Boolean(localSettings.holidayAnimationsEnabled)
+                : effectiveMode === 'new_year' || effectiveMode === 'christmas';
+
+        return {
+            selectedPresetName: names[mode] || mode,
+            effectiveName: names[effectiveMode] || effectiveMode,
+            wallpaper: isHalloweenWallpaper ? 'Halloween' : 'Classic',
+            animations: hasAnimations,
+        };
     };
 
     const handleAddSocial = () => {
@@ -677,8 +772,8 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 </div>
 
                 {/* Holiday & Seasonal Themes Configuration */}
-                <div className="p-3.5 sm:p-5 md:p-6 bg-purple-50/30 rounded-xl sm:rounded-2xl border border-purple-200/60 mb-4 sm:mb-8 space-y-4 sm:space-y-6 text-left">
-                    <div className="flex items-center justify-between">
+                <div className="p-3.5 sm:p-5 md:p-6 bg-purple-50/40 rounded-xl sm:rounded-2xl border border-purple-200/70 mb-4 sm:mb-8 space-y-4 sm:space-y-6 text-left">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div>
                             <h4 className="text-sm font-black text-purple-950 uppercase tracking-tight mb-1 flex items-center gap-2">
                                 <Sparkles size={16} className="text-purple-600" />
@@ -688,7 +783,70 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                 {t.holidayThemeDesc}
                             </p>
                         </div>
-                        <span className="text-2xl select-none">🎃 / ❄️</span>
+                        <span className="text-2xl select-none self-end sm:self-auto">🎃 / ❄️</span>
+                    </div>
+
+                    {/* LIVE STATUS BANNER */}
+                    {(() => {
+                        const summary = getActiveThemeSummary();
+                        return (
+                            <div className="bg-white/90 backdrop-blur-sm border border-purple-200/80 rounded-xl p-3 sm:p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className="relative flex h-2.5 w-2.5">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                                        </span>
+                                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-purple-950">
+                                            {t.holidayLiveActive}{' '}
+                                            <span className="text-purple-700 underline decoration-purple-300 underline-offset-2">
+                                                {summary.effectiveName}
+                                            </span>
+                                        </span>
+                                    </div>
+                                    <div className="flex flex-wrap items-center gap-2 text-[10px] text-gray-500 font-medium pl-4">
+                                        <span>
+                                            Фон:{' '}
+                                            <strong className="text-gray-700 font-bold">
+                                                {summary.wallpaper === 'Halloween'
+                                                    ? '🎃 Хэллоуин'
+                                                    : '🍣 Стандартные суши'}
+                                            </strong>
+                                        </span>
+                                        <span>•</span>
+                                        <span>
+                                            Анимации:{' '}
+                                            <strong
+                                                className={
+                                                    summary.animations
+                                                        ? 'text-emerald-600 font-bold'
+                                                        : 'text-gray-500 font-bold'
+                                                }
+                                            >
+                                                {summary.animations ? '✨ Включены' : 'Выключены'}
+                                            </strong>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+                                    <a
+                                        href="/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-95 text-white text-[11px] font-black uppercase tracking-wider shadow-sm transition-all"
+                                    >
+                                        <ExternalLink size={13} />
+                                        {t.holidayPreviewBtn}
+                                    </a>
+                                </div>
+                            </div>
+                        );
+                    })()}
+
+                    {/* Explanatory Admin Note */}
+                    <div className="text-[10px] text-purple-800/90 bg-purple-100/50 border border-purple-200/50 rounded-lg px-3 py-2 leading-relaxed">
+                        💡 {t.holidayAdminNotice}
                     </div>
 
                     {/* Presets Grid */}
@@ -742,28 +900,25 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                 <button
                                     key={preset.id}
                                     type="button"
-                                    onClick={() =>
-                                        setLocalSettings({
-                                            ...localSettings,
-                                            holidayTheme: preset.id,
-                                        })
-                                    }
-                                    className={`p-2.5 sm:p-3.5 md:p-4 rounded-xl text-left border transition-all cursor-pointer flex flex-col justify-between ${
+                                    onClick={() => handleSelectThemePreset(preset.id)}
+                                    className={`p-2.5 sm:p-3.5 md:p-4 rounded-xl text-left border transition-all cursor-pointer flex flex-col justify-between relative group ${
                                         isSelected
-                                            ? 'bg-white border-purple-500 ring-2 ring-purple-500/20 shadow-md'
-                                            : 'bg-white/60 border-purple-100 hover:bg-white hover:border-purple-300'
+                                            ? 'bg-white border-purple-500 ring-2 ring-purple-500/25 shadow-md shadow-purple-100'
+                                            : 'bg-white/70 border-purple-100 hover:bg-white hover:border-purple-300 hover:shadow-sm'
                                     }`}
                                 >
                                     <div className="flex items-start justify-between w-full mb-1 sm:mb-2">
                                         <span className="text-xl sm:text-2xl">{preset.icon}</span>
                                         <span
-                                            className={`text-[8px] sm:text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${
+                                            className={`text-[8px] sm:text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
                                                 isSelected
-                                                    ? 'bg-purple-600 text-white'
+                                                    ? 'bg-purple-600 text-white shadow-sm'
                                                     : 'bg-purple-100 text-purple-700'
                                             }`}
                                         >
-                                            {preset.badge}
+                                            {isSelected
+                                                ? `✓ ${t.holidayActiveBadge}`
+                                                : preset.badge}
                                         </span>
                                     </div>
                                     <div>
@@ -795,12 +950,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                 <input
                                     type="checkbox"
                                     checked={Boolean(localSettings.holidayAnimationsEnabled)}
-                                    onChange={e =>
-                                        setLocalSettings({
-                                            ...localSettings,
-                                            holidayAnimationsEnabled: e.target.checked,
-                                        })
-                                    }
+                                    onChange={e => handleToggleAnimations(e.target.checked)}
                                     className="sr-only peer"
                                 />
                                 <div
@@ -821,12 +971,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                             <input
                                 type="date"
                                 value={localSettings.holidayWallpaperUntil || '2026-11-01'}
-                                onChange={e =>
-                                    setLocalSettings({
-                                        ...localSettings,
-                                        holidayWallpaperUntil: e.target.value,
-                                    })
-                                }
+                                onChange={e => handleWallpaperDateChange(e.target.value)}
                                 className="w-full bg-purple-50/50 border border-purple-100 rounded-lg px-2.5 py-1.5 text-xs font-bold text-gray-900 outline-none focus:border-purple-400 cursor-pointer"
                             />
                         </div>
