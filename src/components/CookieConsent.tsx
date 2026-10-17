@@ -32,7 +32,7 @@ export default function CookieConsent() {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: 100, opacity: 0 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                    className="fixed bottom-4 left-4 right-4 z-[9999] max-w-3xl mx-auto"
+                    className="fixed bottom-4 left-4 right-4 z-toast max-w-3xl mx-auto"
                 >
                     <div className="relative overflow-hidden bg-white border border-gray-100 shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] rounded-2xl p-5 md:p-6 flex flex-col md:flex-row items-start md:items-center gap-5">
                         {/* Logo Background */}

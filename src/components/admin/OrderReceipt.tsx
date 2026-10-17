@@ -97,7 +97,7 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
         const restPhone = settings?.contactPhone || '631 920 312';
 
         return (
-            <div className="receipt-container fixed top-0 left-0 right-0 z-[999999] bg-white text-black px-4 py-8 font-mono text-[12px] leading-relaxed w-[80mm] mx-auto print:block hidden">
+            <div className="receipt-container fixed top-0 left-0 right-0 z-max bg-white text-black px-4 py-8 font-mono text-[12px] leading-relaxed w-[80mm] mx-auto print:block hidden">
                 <style>{`
                     @media print {
                         @page {
@@ -278,7 +278,7 @@ const ReceiptContent: React.FC<{ order: Order }> = ({ order }) => {
         );
     } catch (error) {
         return (
-            <div className="fixed top-0 left-0 bg-white p-10 z-[999999] text-black">
+            <div className="fixed top-0 left-0 bg-white p-10 z-max text-black">
                 <p>Error crítico en ticket: {String(error)}</p>
             </div>
         );

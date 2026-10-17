@@ -1,11 +1,13 @@
+import { useModalA11y } from '../../hooks/useModalA11y';
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { X, Heart, Share2, Plus, Minus, Check, Info } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, useDragControls } from 'framer-motion';
 import SafeImage from '../common/SafeImage';
 import { getOptimizedImageUrl } from '../../utils/images';
 import { slugify } from '../../utils/formatters';
 import { getAllergenInfo } from '../../utils/allergens';
+import { estimateCalories } from '../../utils/calories';
 import { MenuItem } from '../../hooks/queries/useMenu';
 import { User } from '../../types';
 import { triggerHaptic } from '../../utils/haptics';
@@ -137,10 +139,14 @@ export default function ProductDetailModal({
     }, [videoSources]);
 
     const totalPrice = (item.price * quantity).toFixed(2).replace('.', ',');
+    const calories = useMemo(() => estimateCalories(item), [item]);
+    const [showCalInfo, setShowCalInfo] = useState(false);
+    const dialogRef = useModalA11y();
+    const dragControls = useDragControls();
 
     const modalContent = (
         <div
-            className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center"
+            className="fixed inset-0 z-modal flex items-end sm:items-center justify-center"
             onClick={e => e.stopPropagation()}
         >
             {/* Backdrop Fade */}
@@ -161,6 +167,8 @@ export default function ProductDetailModal({
                 exit={{ y: '100%', opacity: 0 }}
                 transition={{ duration: 0.32, ease: [0.32, 0.72, 0, 1] }}
                 drag="y"
+                dragControls={dragControls}
+                dragListener={false}
                 dragConstraints={{ top: 0, bottom: 0 }}
                 dragElastic={{ top: 0, bottom: 0.5 }}
                 onDragEnd={(_e, info) => {
@@ -168,13 +176,29 @@ export default function ProductDetailModal({
                         handleClose();
                     }
                 }}
-                className="relative bg-white w-full sm:max-w-lg rounded-t-[32px] sm:rounded-[32px] max-h-[85vh] sm:max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-gray-100 z-[1001] pointer-events-auto transform-gpu"
+                ref={dialogRef}
+                role="dialog"
+                aria-modal="true"
+                aria-label={item.name}
+                className="relative bg-white w-full sm:max-w-lg rounded-t-[32px] sm:rounded-[32px] max-h-[90vh] sm:max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-gray-100 z-10 pointer-events-auto transform-gpu"
             >
-                {/* Pull Indicator (Mobile) */}
-                <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto my-2.5 sm:hidden shrink-0" />
+                {/* Pull Indicator Area (Mobile Drag Handle) */}
+                <div
+                    onPointerDown={e => dragControls.start(e)}
+                    className="absolute top-0 left-1/2 -translate-x-1/2 w-32 pt-2.5 pb-3 flex justify-center cursor-grab active:cursor-grabbing touch-none sm:hidden select-none z-30"
+                    aria-label="Arrastrar para cerrar"
+                >
+                    <div className="w-12 h-1.5 bg-white/90 rounded-full shadow-[0_1px_4px_rgba(0,0,0,0.35)]" />
+                </div>
 
                 {/* Large Media Header (Video Animation or Image) */}
-                <div className="relative aspect-[4/3] sm:aspect-[16/10] w-full bg-gray-100 shrink-0 overflow-hidden">
+                <div
+                    onPointerDown={e => {
+                        if ((e.target as HTMLElement).closest('button, a')) return;
+                        dragControls.start(e);
+                    }}
+                    className="relative aspect-[16/10] sm:aspect-[16/10] max-h-[250px] sm:max-h-[300px] w-full bg-gray-100 shrink-0 overflow-hidden cursor-grab active:cursor-grabbing select-none"
+                >
                     {videoSources ? (
                         <video
                             ref={videoRef}
@@ -288,7 +312,10 @@ export default function ProductDetailModal({
                 </div>
 
                 {/* Scrollable Content Body */}
-                <div className="p-5 sm:p-6 overflow-y-auto flex-1 space-y-4 no-scrollbar allow-modal-scroll">
+                <div
+                    className="p-5 sm:p-6 pb-8 sm:pb-8 overflow-y-auto flex-1 min-h-0 space-y-4 touch-pan-y overscroll-contain no-scrollbar allow-modal-scroll"
+                    style={{ WebkitOverflowScrolling: 'touch' }}
+                >
                     {/* Title & Price */}
                     <div className="flex items-start justify-between gap-4 border-b border-gray-100 pb-4">
                         <div>
@@ -329,6 +356,77 @@ export default function ProductDetailModal({
                             {item.description || 'Sin descripción disponible.'}
                         </p>
                     </div>
+
+                    {/* Approximate Calories */}
+                    <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100">
+                        <div className="flex items-center gap-2.5">
+                            <span className="text-xl">🔥</span>
+                            <div>
+                                <p className="text-xs font-black text-gray-400 uppercase tracking-wider leading-none">
+                                    Calorías aprox.
+                                </p>
+                                <p className="text-[11px] font-medium text-gray-500 mt-1">
+                                    ~{calories.per100g} kcal / 100 g
+                                    {calories.weightEstimated ? ` · ~${calories.grams} g est.` : ''}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                            <span className="text-lg font-black text-orange-600">
+                                ≈ {calories.kcal} kcal
+                            </span>
+                            <button
+                                type="button"
+                                onClick={e => {
+                                    e.stopPropagation();
+                                    setShowCalInfo(v => !v);
+                                }}
+                                className={`w-7 h-7 rounded-full flex items-center justify-center border-none cursor-pointer transition-colors ${
+                                    showCalInfo
+                                        ? 'bg-orange-500 text-white'
+                                        : 'bg-white text-orange-500 hover:bg-orange-100'
+                                }`}
+                                aria-label="Cómo se calculan las calorías"
+                                aria-expanded={showCalInfo}
+                                title="Cómo se calcula"
+                            >
+                                <Info size={15} strokeWidth={2.5} />
+                            </button>
+                        </div>
+                    </div>
+
+                    {showCalInfo && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="-mt-2 p-4 rounded-2xl bg-gray-50 border border-gray-100 text-xs text-gray-600 leading-relaxed space-y-2"
+                        >
+                            <p className="font-black text-gray-800">¿Cómo se calcula?</p>
+                            <p className="font-mono text-[11px] bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-gray-800">
+                                kcal = peso (g) × kcal/100 g ÷ 100
+                            </p>
+                            <ul className="list-disc pl-4 space-y-1">
+                                <li>
+                                    <b>kcal/100 g:</b> valor base según el tipo de plato (roll,
+                                    nigiri, sashimi, tempura, gyoza, poke, wok, sopa, postre…),
+                                    ajustado por ingredientes: queso crema, tempura/panko, salsas y
+                                    mayonesa, aguacate o salmón suben; pepino y verduras bajan.
+                                </li>
+                                <li>
+                                    <b>Peso:</b> el indicado en la carta; si no existe, nº de piezas
+                                    × peso medio por pieza, o una ración típica del tipo de plato.
+                                </li>
+                                <li>Resultado redondeado a 10 kcal.</li>
+                            </ul>
+                            <p className="text-[11px] text-gray-500">
+                                Este plato: {calories.grams} g
+                                {calories.weightEstimated ? ' (estimado)' : ''} × {calories.per100g}{' '}
+                                kcal/100 g ≈ {calories.kcal} kcal. Valor orientativo, no sustituye
+                                información nutricional oficial.
+                            </p>
+                        </motion.div>
+                    )}
 
                     {/* Allergens Section */}
                     <div className="pt-2">
@@ -373,7 +471,7 @@ export default function ProductDetailModal({
                 </div>
 
                 {/* Bottom Action Bar */}
-                <div className="p-4 sm:p-5 bg-gray-50 border-t border-gray-100 flex items-center justify-between gap-3 shrink-0">
+                <div className="p-4 sm:p-5 pb-[max(1rem,env(safe-area-inset-bottom,0px))] sm:pb-5 bg-gray-50 border-t border-gray-100 flex items-center justify-between gap-3 shrink-0">
                     {/* Quantity Control */}
                     <div className="flex items-center bg-white rounded-2xl p-1 border border-gray-200 shadow-sm shrink-0">
                         <button

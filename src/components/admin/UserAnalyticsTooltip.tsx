@@ -101,7 +101,7 @@ export const UserAnalyticsTooltip = memo(
                             x: '-50%',
                             y: '-100%',
                         }}
-                        className="w-72 bg-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-gray-100 p-6 z-[9999] pointer-events-none"
+                        className="w-72 bg-white rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.2)] border border-gray-100 p-6 z-popover pointer-events-none"
                     >
                         {/* Header with Registration Date */}
                         {stats.registrationDate && (

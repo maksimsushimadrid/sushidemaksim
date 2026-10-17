@@ -122,6 +122,11 @@ export default function AdminPage() {
     // New Users Notification State
     const [newUsersCount, setNewUsersCount] = useState(0);
 
+    // Unviewed Reservations State
+    const [lastViewedResTime, setLastViewedResTime] = useState<string>(() => {
+        return localStorage.getItem('admin_last_reservations_view') || '';
+    });
+
     // Prime audio on first interaction
     useEffect(() => {
         const primeAudio = async () => {
@@ -252,7 +257,8 @@ export default function AdminPage() {
         queryKey: ['admin-pending-monitor'],
         queryFn: () => api.get('/admin/orders?status=pending&limit=100'),
         enabled: isAuthenticated && (user?.role === 'admin' || user?.isSuperadmin),
-        refetchInterval: false,
+        refetchInterval: 15000,
+        refetchOnWindowFocus: true,
     });
 
     // Pending Reservations Query
@@ -260,7 +266,8 @@ export default function AdminPage() {
         queryKey: ['admin-pending-res-monitor'],
         queryFn: () => api.get('/admin/reservations?status=pending'),
         enabled: isAuthenticated && (user?.role === 'admin' || user?.isSuperadmin),
-        refetchInterval: false,
+        refetchInterval: 20000,
+        refetchOnWindowFocus: true,
     });
 
     // Pending Tablon Posts Query
@@ -312,8 +319,22 @@ export default function AdminPage() {
         if (activeTab === 'users') {
             setNewUsersCount(0);
             localStorage.setItem('admin_last_users_view', new Date().toISOString());
+        } else if (activeTab === 'orders') {
+            queryClient.invalidateQueries({ queryKey: ['admin-pending-monitor'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+        } else if (activeTab === 'reservations') {
+            const now = new Date().toISOString();
+            localStorage.setItem('admin_last_reservations_view', now);
+            setLastViewedResTime(now);
+            queryClient.invalidateQueries({ queryKey: ['admin-pending-res-monitor'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-reservations'] });
+            return () => {
+                const leaveTime = new Date().toISOString();
+                localStorage.setItem('admin_last_reservations_view', leaveTime);
+                setLastViewedResTime(leaveTime);
+            };
         }
-    }, [activeTab]);
+    }, [activeTab, queryClient]);
 
     // Realtime Order Monitoring
     useEffect(() => {
@@ -481,6 +502,23 @@ export default function AdminPage() {
     const pendingOrders = useMemo(() => pendingData?.orders || [], [pendingData]);
     const pendingCount = pendingData?.pagination?.total || pendingOrders.length;
 
+    const pendingReservations = useMemo(
+        () => (pendingResData?.reservations || []) as any[],
+        [pendingResData]
+    );
+
+    const unviewedResCount = useMemo(() => {
+        if (!pendingReservations.length) return 0;
+        if (activeTab === 'reservations') return 0;
+        if (!lastViewedResTime) {
+            // First time: only count pending reservations from the last 24h as unviewed
+            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+            return pendingReservations.filter((r: any) => (r.created_at || '') >= yesterday).length;
+        }
+        return pendingReservations.filter((r: any) => (r.created_at || '') > lastViewedResTime)
+            .length;
+    }, [pendingReservations, lastViewedResTime, activeTab]);
+
     // Audio Alert Effect
     useEffect(() => {
         const currentPendingOrders = pendingOrders || [];
@@ -522,8 +560,11 @@ export default function AdminPage() {
                 }
             });
 
-            // 2. Check Reservations
-            currentPendingRes.forEach((res: any) => {
+            // 2. Check Reservations (only alert for unviewed / new ones)
+            const unviewedPendingRes = currentPendingRes.filter((res: any) =>
+                lastViewedResTime ? (res.created_at || '') > lastViewedResTime : true
+            );
+            unviewedPendingRes.forEach((res: any) => {
                 const resId = String(res.id);
                 const lastNotified = pendingResReminders.current.get(resId);
                 if (!lastNotified) {
@@ -573,7 +614,7 @@ export default function AdminPage() {
             clearInterval(heartbeat);
             document.removeEventListener('visibilitychange', handleVisibility);
         };
-    }, [pendingOrders, pendingResData, isSoundEnabled, playAlert]);
+    }, [pendingOrders, pendingResData, isSoundEnabled, playAlert, lastViewedResTime]);
 
     const navLinks = useMemo(
         () => [
@@ -611,7 +652,7 @@ export default function AdminPage() {
                 id: 'reservations',
                 label: t.nav.reservations,
                 icon: CalendarDays,
-                badge: pendingResData?.total > 0 ? pendingResData.total : null,
+                badge: unviewedResCount > 0 ? unviewedResCount : null,
             },
             { id: 'delivery', label: t.nav.delivery, icon: MapIcon },
             { id: 'newsletter', label: t.nav.newsletter, icon: Bell },
@@ -619,7 +660,7 @@ export default function AdminPage() {
         ],
         [
             pendingCount,
-            pendingResData?.total,
+            unviewedResCount,
             t,
             newUsersCount,
             pendingTablonData,
@@ -709,14 +750,14 @@ export default function AdminPage() {
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsMobileMenuOpen(false)}
-                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[1005] md:hidden"
+                            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-backdrop md:hidden"
                         />
                     )}
                 </AnimatePresence>
 
                 {/* Sidebar */}
                 <aside
-                    className={`fixed top-0 bottom-0 left-0 w-[280px] md:w-60 bg-white/95 backdrop-blur-xl border-r border-gray-200 flex flex-col z-[1006] transition-transform duration-300 shadow-2xl
+                    className={`fixed top-0 bottom-0 left-0 w-[280px] md:w-60 bg-white/95 backdrop-blur-xl border-r border-gray-200 flex flex-col z-modal transition-transform duration-300 shadow-2xl
                     ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
                 >
                     <div className="p-4 border-b border-gray-100">
@@ -885,7 +926,7 @@ export default function AdminPage() {
                         {/* Audio Blocked Warning */}
                         <AnimatePresence>
                             {audioBlocked && isSoundEnabled && (
-                                <div className="fixed top-20 left-0 right-0 flex justify-center z-[200] px-4 pointer-events-none">
+                                <div className="fixed top-20 left-0 right-0 flex justify-center z-toast px-4 pointer-events-none">
                                     <motion.div
                                         initial={{ y: -100, opacity: 0 }}
                                         animate={{ y: 0, opacity: 1 }}

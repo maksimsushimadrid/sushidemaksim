@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { safeRandomUUID } from '../utils/uuid';
 
 function urlBase64ToUint8Array(base64String: string) {
     const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
@@ -60,7 +61,7 @@ export function usePushNotifications() {
             // Get or create anonymous device ID for guests
             let deviceId = localStorage.getItem('push_device_id');
             if (!deviceId) {
-                deviceId = crypto.randomUUID();
+                deviceId = safeRandomUUID();
                 localStorage.setItem('push_device_id', deviceId);
             }
 

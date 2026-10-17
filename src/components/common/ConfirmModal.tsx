@@ -1,3 +1,4 @@
+import { useModalA11y } from '../../hooks/useModalA11y';
 import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, X } from 'lucide-react';
@@ -38,11 +39,13 @@ export function ConfirmModal({
         };
     }, [isOpen]);
 
+    const dialogRef = useModalA11y({ onClose: onCancel, isOpen });
+
     if (!isOpen) return null;
 
     return (
         <AnimatePresence>
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div className="fixed inset-0 z-popover flex items-center justify-center p-4">
                 {/* Backdrop */}
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -57,6 +60,10 @@ export function ConfirmModal({
                     initial={{ opacity: 0, scale: 0.9, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                    ref={dialogRef}
+                    role="alertdialog"
+                    aria-modal="true"
+                    aria-label={title}
                     className="relative w-full max-w-sm bg-gray-900 border border-white/10 rounded-3xl p-6 shadow-2xl overflow-hidden"
                 >
                     {/* Background Accent */}
@@ -67,6 +74,7 @@ export function ConfirmModal({
                     {/* Close Button */}
                     <button
                         onClick={onCancel}
+                        aria-label="Cerrar"
                         className="absolute top-4 right-4 p-2 rounded-xl bg-white/5 text-gray-500 hover:text-white hover:bg-white/10 transition-all"
                     >
                         <X size={16} strokeWidth={2.5} />

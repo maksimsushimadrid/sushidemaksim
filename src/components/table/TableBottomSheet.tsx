@@ -68,7 +68,7 @@ export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/40 z-[100] backdrop-blur-sm"
+                        className="fixed inset-0 bg-black/40 z-backdrop backdrop-blur-sm"
                     />
 
                     {/* Bottom Sheet */}
@@ -77,7 +77,7 @@ export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="fixed bottom-0 left-0 right-0 z-[101] bg-[#0A0A0A] rounded-t-[40px] max-h-[92vh] overflow-hidden flex flex-col shadow-2xl"
+                        className="fixed bottom-0 left-0 right-0 z-modal bg-[#0A0A0A] rounded-t-[40px] max-h-[92vh] overflow-hidden flex flex-col shadow-2xl"
                     >
                         {/* Drag Handle */}
                         <div className="absolute top-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-white/20 rounded-full z-10" />

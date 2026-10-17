@@ -12,6 +12,7 @@ import {
     FileText,
     ChevronRight,
     X,
+    ShoppingBag,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
@@ -140,6 +141,12 @@ const ANALYTICS_TRANSLATIONS = {
         },
         deliveryZones: {
             title: 'Популярные районы доставки',
+            pickupTitle: 'Самовывоз (Recogida)',
+            pickupBadge: 'В ресторане',
+            pickupDesc: 'Заказы, забранные клиентами в заведении',
+            courierTitle: 'Районы доставки курьером',
+            noDeliveryData: 'Нет данных по адресам доставки',
+            ped: 'ped.',
             insight:
                 'Показывает основные районы. Помогает оптимизировать логистику и таргет рекламы.',
         },
@@ -312,6 +319,12 @@ const ANALYTICS_TRANSLATIONS = {
         },
         deliveryZones: {
             title: 'Zonas de Entrega Populares',
+            pickupTitle: 'Recogida en Local (Takeaway)',
+            pickupBadge: 'En local',
+            pickupDesc: 'Pedidos recogidos directamente por el cliente',
+            courierTitle: 'Zonas de reparto a domicilio',
+            noDeliveryData: 'Sin datos de entrega a domicilio',
+            ped: 'ped.',
             insight:
                 'Muestra las zonas principales de entrega. Ayuda a optimizar la logística y enfocar la publicidad.',
         },
@@ -994,41 +1007,117 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     </div>
                 </div>
 
-                {/* Area Distribution */}
-                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-10">
-                    <h3 className="font-black text-gray-900 mb-10 flex items-center gap-3 text-xs uppercase tracking-widest">
-                        <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
-                            <ExternalLink size={18} strokeWidth={2.5} />
-                        </div>
-                        {t.deliveryZones.title}
-                    </h3>
-                    <div className="space-y-6">
-                        {(stats?.areaStats || []).slice(0, 5).map((area: any, idx: number) => (
-                            <div key={idx} className="flex flex-col gap-2">
-                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
-                                    <span className="text-gray-800">{area.name}</span>
-                                    <span className="text-orange-600">
-                                        {area.count} ped. / {area.revenue}€
+                {/* Area Distribution & Recogida */}
+                {(() => {
+                    const rawAreas = (stats?.areaStats || []) as any[];
+                    const legacyRecogida = rawAreas.find((a: any) => /^recogida/i.test(a.name));
+                    const pickupStats =
+                        stats?.pickupStats ||
+                        (legacyRecogida
+                            ? { count: legacyRecogida.count, revenue: legacyRecogida.revenue }
+                            : { count: 0, revenue: 0 });
+                    const deliveryAreas = rawAreas
+                        .filter(
+                            (a: any) =>
+                                !/^recogida/i.test(a.name) &&
+                                !/^consume/i.test(a.name) &&
+                                !/^mesa/i.test(a.name)
+                        )
+                        .slice(0, 5);
+                    const maxDeliveryRevenue = deliveryAreas[0]?.revenue || 1;
+
+                    return (
+                        <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8 sm:p-10 flex flex-col justify-between">
+                            <div>
+                                <h3 className="font-black text-gray-900 mb-6 flex items-center gap-3 text-xs uppercase tracking-widest">
+                                    <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
+                                        <ExternalLink size={18} strokeWidth={2.5} />
+                                    </div>
+                                    {t.deliveryZones.title}
+                                </h3>
+
+                                {/* Separate Recogida item */}
+                                {pickupStats.count > 0 && (
+                                    <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-orange-50/90 via-amber-50/60 to-white border border-orange-200/80 shadow-sm flex items-center justify-between gap-3">
+                                        <div className="flex items-center gap-3 min-w-0">
+                                            <div className="p-2.5 bg-gradient-to-br from-orange-500 to-amber-600 text-white rounded-xl shadow-md shadow-orange-500/20 shrink-0">
+                                                <ShoppingBag size={18} strokeWidth={2.5} />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                    <span className="text-xs font-black uppercase tracking-wider text-gray-900 truncate">
+                                                        {t.deliveryZones.pickupTitle}
+                                                    </span>
+                                                    <span className="px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-orange-100 text-orange-700 tracking-wider">
+                                                        {t.deliveryZones.pickupBadge}
+                                                    </span>
+                                                </div>
+                                                <p className="text-[10px] text-gray-500 font-medium mt-0.5 truncate">
+                                                    {t.deliveryZones.pickupDesc}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div className="text-right shrink-0">
+                                            <div className="text-xs font-black text-orange-600 tracking-tight tabular-nums">
+                                                {pickupStats.count} {t.deliveryZones.ped} /{' '}
+                                                {pickupStats.revenue}€
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Courier Delivery Zones Header */}
+                                <div className="flex items-center justify-between mb-4">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
+                                        {t.deliveryZones.courierTitle}
                                     </span>
+                                    {deliveryAreas.length > 0 && (
+                                        <span className="text-[10px] font-black uppercase tracking-wider text-gray-400">
+                                            ТОП {deliveryAreas.length}
+                                        </span>
+                                    )}
                                 </div>
-                                <div className="w-full bg-gray-100 h-2.5 rounded-full overflow-hidden shadow-inner p-0.5">
-                                    <div
-                                        className="bg-orange-600 h-full rounded-full transition-all duration-[1500ms] shadow-lg"
-                                        style={{
-                                            width: `${Math.min(100, (area.revenue / (stats?.areaStats?.[0]?.revenue || 1)) * 100)}%`,
-                                        }}
-                                    ></div>
-                                </div>
+
+                                {deliveryAreas.length === 0 ? (
+                                    <div className="py-8 text-center text-gray-400 text-xs font-bold bg-gray-50/60 rounded-2xl border border-dashed border-gray-100">
+                                        {t.deliveryZones.noDeliveryData}
+                                    </div>
+                                ) : (
+                                    <div className="space-y-5">
+                                        {deliveryAreas.map((area: any, idx: number) => (
+                                            <div key={idx} className="flex flex-col gap-1.5">
+                                                <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
+                                                    <span className="text-gray-800 truncate mr-2">
+                                                        {area.name}
+                                                    </span>
+                                                    <span className="text-orange-600 shrink-0 tabular-nums">
+                                                        {area.count} {t.deliveryZones.ped} /{' '}
+                                                        {area.revenue}€
+                                                    </span>
+                                                </div>
+                                                <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden shadow-inner p-0.5">
+                                                    <div
+                                                        className="bg-orange-600 h-full rounded-full transition-all duration-[1500ms] shadow-lg"
+                                                        style={{
+                                                            width: `${Math.min(100, (area.revenue / maxDeliveryRevenue) * 100)}%`,
+                                                        }}
+                                                    ></div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
-                        ))}
-                    </div>
-                    <div className="mt-6 border-t border-gray-100 pt-4 flex items-start gap-2.5">
-                        <span className="text-sm mt-px">💡</span>
-                        <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
-                            {t.deliveryZones.insight}
-                        </p>
-                    </div>
-                </div>
+
+                            <div className="mt-8 border-t border-gray-100 pt-4 flex items-start gap-2.5">
+                                <span className="text-sm mt-px">💡</span>
+                                <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
+                                    {t.deliveryZones.insight}
+                                </p>
+                            </div>
+                        </div>
+                    );
+                })()}
             </div>
 
             {/* Promo Campaigns & Analytics Breakdown */}
@@ -1585,7 +1674,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
 
             {/* Report Detail Modal */}
             {selectedReport && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+                <div className="fixed inset-0 z-modal flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
                     <div className="bg-[#fbf7f0] w-full max-w-4xl max-h-[90vh] rounded-[40px] shadow-2xl overflow-hidden flex flex-col border border-white/50 animate-in zoom-in-95 duration-300">
                         <div className="p-8 border-b border-gray-200 flex justify-between items-center bg-white">
                             <div>

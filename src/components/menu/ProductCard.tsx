@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Heart, Share2, Plus, Minus } from 'lucide-react';
 import { AnimatePresence } from 'framer-motion';
 import { getOptimizedImageUrl } from '../../utils/images';
@@ -54,6 +54,7 @@ const ProductCard = React.memo(function ProductCard({
 }: ProductCardProps) {
     const [quantity, setQuantity] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const autoOpenedRef = useRef(false);
 
     const isExtra = item.category === 'extras';
 
@@ -64,6 +65,18 @@ const ProductCard = React.memo(function ProductCard({
         onZoom?.(item.id);
         setIsModalOpen(true);
     };
+
+    // Auto-open detail modal if item is highlighted from URL query
+    useEffect(() => {
+        if (isHighlighted && !autoOpenedRef.current) {
+            autoOpenedRef.current = true;
+            const timer = setTimeout(() => {
+                onZoom?.(item.id);
+                setIsModalOpen(true);
+            }, 600);
+            return () => clearTimeout(timer);
+        }
+    }, [isHighlighted, item.id, onZoom]);
 
     return (
         <div

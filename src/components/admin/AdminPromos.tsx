@@ -283,7 +283,7 @@ const FieldLabel = ({ title, hint, language, align = 'left', className = '' }: a
                             exit={{ opacity: 0, scale: 0.9, y: 5 }}
                             className={`absolute ${
                                 align === 'right' ? 'right-0' : 'left-0 sm:left-auto sm:right-0'
-                            } bottom-full mb-3 w-64 bg-white/95 rounded-2xl shadow-2xl border border-gray-100 z-[100] overflow-hidden backdrop-blur-md pointer-events-none`}
+                            } bottom-full mb-3 w-64 bg-white/95 rounded-2xl shadow-2xl border border-gray-100 z-popover overflow-hidden backdrop-blur-md pointer-events-none`}
                         >
                             <div className="bg-gray-900 px-4 py-2 flex items-center justify-between">
                                 <div className="flex items-center gap-2">
@@ -1314,7 +1314,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
             {/* Delete Confirmation Modal */}
             {promoToDelete && (
                 <div
-                    className="fixed inset-0 z-[100] bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
+                    className="fixed inset-0 z-popover bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
                     onClick={e => {
                         if (e.target === e.currentTarget) setPromoToDelete(null);
                     }}

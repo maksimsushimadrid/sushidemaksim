@@ -462,7 +462,7 @@ export default function WaiterOrderPage() {
             {/* Order Confirmation Modal */}
             <AnimatePresence>
                 {showConfirmModal && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-popover flex items-center justify-center p-4">
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -599,7 +599,7 @@ export default function WaiterOrderPage() {
             {/* Table Selection Bottom Sheet/Drawer */}
             <AnimatePresence>
                 {showTableDrawer && (
-                    <div className="fixed inset-0 z-[110] flex items-end justify-center">
+                    <div className="fixed inset-0 z-modal flex items-end justify-center">
                         {/* Backdrop */}
                         <motion.div
                             initial={{ opacity: 0 }}

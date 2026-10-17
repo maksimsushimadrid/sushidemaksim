@@ -1,3 +1,4 @@
+import { useModalA11y } from '../../hooks/useModalA11y';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { CheckCircle, Store, MapPin, Users, X } from 'lucide-react';
@@ -10,6 +11,9 @@ interface OrderSummary {
     house: string;
     apartment: string;
     phone: string;
+    tipAmount?: number;
+    discountAmount?: number;
+    finalTotal?: number;
 }
 
 interface OrderSuccessModalProps {
@@ -41,6 +45,8 @@ export default function OrderSuccessModal({
     const isPickup = address === 'RECOGIDA';
     const isReservation = address === 'RESERVA';
 
+    const dialogRef = useModalA11y({ onClose, isOpen });
+
     if (!isOpen) return null;
 
     return (
@@ -51,10 +57,15 @@ export default function OrderSuccessModal({
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.8, opacity: 0, y: 20 }}
                     transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                    ref={dialogRef}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label="Pedido realizado"
                     className="bg-white rounded-[32px] md:rounded-[40px] shadow-2xl p-5 md:p-10 max-w-md w-full text-center relative overflow-hidden border border-white my-auto"
                 >
                     <button
                         onClick={onClose}
+                        aria-label="Cerrar"
                         className="absolute top-5 right-5 p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400 z-20 border-none bg-transparent cursor-pointer"
                     >
                         <X size={18} />
@@ -119,7 +130,7 @@ export default function OrderSuccessModal({
 
                             <div className="space-y-1.5 md:space-y-2 border-t border-white/10 pt-3 md:pt-4">
                                 <div className="flex justify-between items-center text-[10px] md:text-[11px] font-bold text-white/50">
-                                    <span className="uppercase tracking-wider">Subtotal</span>
+                                    <span className="uppercase tracking-wider">Productos</span>
                                     <span>{total.toFixed(2).replace('.', ',')} €</span>
                                 </div>
                                 {!isPickup && !isReservation && (
@@ -136,14 +147,40 @@ export default function OrderSuccessModal({
                                         </span>
                                     </div>
                                 )}
+                                {Number(summary?.tipAmount) > 0 && (
+                                    <div className="flex justify-between items-center text-[10px] md:text-[11px] font-bold text-white/50">
+                                        <span className="uppercase tracking-wider">
+                                            Propina equipo
+                                        </span>
+                                        <span>
+                                            {Number(summary?.tipAmount)
+                                                .toFixed(2)
+                                                .replace('.', ',')}{' '}
+                                            €
+                                        </span>
+                                    </div>
+                                )}
+                                {Number(summary?.discountAmount) > 0 && (
+                                    <div className="flex justify-between items-center text-[10px] md:text-[11px] font-bold text-green-400">
+                                        <span className="uppercase tracking-wider">Descuentos</span>
+                                        <span>
+                                            -
+                                            {Number(summary?.discountAmount)
+                                                .toFixed(2)
+                                                .replace('.', ',')}{' '}
+                                            €
+                                        </span>
+                                    </div>
+                                )}
                                 <div className="pt-2 md:pt-3 flex justify-between items-end">
                                     <span className="text-[9px] md:text-[10px] uppercase font-black text-white/40 tracking-widest">
                                         Total Pagado
                                     </span>
                                     <div className="text-xl md:text-2xl font-black text-white tracking-tighter leading-none">
-                                        {(
-                                            Number(total) +
-                                            (Number(deliveryCost) > 0 ? Number(deliveryCost) : 0)
+                                        {(summary?.finalTotal !== undefined
+                                            ? Number(summary.finalTotal)
+                                            : Number(total) +
+                                              (Number(deliveryCost) > 0 ? Number(deliveryCost) : 0)
                                         )
                                             .toFixed(2)
                                             .replace('.', ',')}

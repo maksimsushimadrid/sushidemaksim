@@ -960,7 +960,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
             {/* Permanent Delete Confirmation Modal */}
             {userToDelete &&
                 createPortal(
-                    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-popover flex items-center justify-center p-4">
                         <div
                             className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300"
                             onClick={() => setUserToDelete(null)}
@@ -1017,7 +1017,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
             {userToChangeRole &&
                 createPortal(
                     <div
-                        className="fixed inset-0 z-[9999] bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
+                        className="fixed inset-0 z-popover bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
                         onClick={e => {
                             if (e.target === e.currentTarget) setUserToChangeRole(null);
                         }}
@@ -1119,7 +1119,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
             {userToVerify &&
                 createPortal(
                     <div
-                        className="fixed inset-0 z-[9999] bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
+                        className="fixed inset-0 z-popover bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
                         onClick={e => {
                             if (e.target === e.currentTarget) setUserToVerify(null);
                         }}

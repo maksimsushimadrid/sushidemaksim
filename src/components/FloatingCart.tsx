@@ -7,21 +7,28 @@ export default function FloatingCart() {
     const { itemCount, total } = useCart();
     const location = useLocation();
 
-    // Don't show on cart page, table ordering page, or if empty
-    if (location.pathname === '/cart' || location.pathname === '/table' || itemCount === 0)
-        return null;
+    // Don't show on admin, waiter, table, cart, order tracking pages, or if empty
+    const isExcludedRoute =
+        location.pathname.startsWith('/admin') ||
+        location.pathname.startsWith('/waiter') ||
+        location.pathname.startsWith('/table') ||
+        location.pathname.startsWith('/cart') ||
+        location.pathname.startsWith('/track');
+
+    if (isExcludedRoute || itemCount === 0) return null;
 
     return (
         <AnimatePresence>
             <motion.div
-                initial={{ y: 100, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: 100, opacity: 0 }}
-                className="fixed bottom-6 right-6 z-[90] md:hidden"
+                initial={{ x: 60, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                exit={{ x: 60, opacity: 0 }}
+                transition={{ type: 'spring', damping: 22, stiffness: 260 }}
+                className="fixed top-[calc(58%-46px)] -translate-y-full right-3 z-fixed md:hidden select-none"
             >
                 <Link
                     to="/cart"
-                    className="flex items-center gap-2 bg-orange-600 text-white px-4 py-3 rounded-2xl shadow-[0_15px_30px_-5px_rgba(242,101,34,0.4)] no-underline active:scale-95 transition-all border-none"
+                    className="flex items-center gap-2 bg-gradient-to-r from-orange-600 to-amber-600 text-white px-3.5 py-2.5 rounded-2xl shadow-[0_10px_25px_-5px_rgba(242,101,34,0.5)] no-underline active:scale-95 transition-all border border-white/20 backdrop-blur-md"
                 >
                     <div className="relative">
                         <ShoppingCart size={20} strokeWidth={1.5} />

@@ -44,6 +44,14 @@ export default function CartItemList({
         (sum, item) => sum + (item.isGift ? 0 : item.price * item.quantity),
         0
     );
+    const effectiveDeliveryCost =
+        deliveryType === 'delivery' && selectedZone && deliveryCost > 0 ? deliveryCost : 0;
+    const promoDiscountAmount = promoDiscount ? (subtotal * promoDiscount) / 100 : 0;
+    const coinsDiscountAmount = coinsSpent || 0;
+    const totalDiscounts = promoDiscountAmount + coinsDiscountAmount;
+    const hasDiscounts = totalDiscounts > 0;
+    const grossTotal = subtotal + effectiveDeliveryCost + tipAmount;
+    const netTotal = Math.max(0, grossTotal - totalDiscounts);
     return (
         <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 mb-6 overflow-hidden">
             <div className="flex items-center justify-between p-4 pb-2 border-b border-gray-50 bg-gray-50/30">
@@ -100,6 +108,18 @@ export default function CartItemList({
                                     </p>
                                 )}
 
+                                {item.selectedOption &&
+                                    item.id !== '116' &&
+                                    item.menuItemId !== 116 &&
+                                    item.id !== '113' &&
+                                    item.menuItemId !== 113 &&
+                                    item.id !== '115' &&
+                                    item.menuItemId !== 115 && (
+                                        <span className="inline-block px-2 py-0.5 mt-1 rounded bg-orange-50 text-orange-600 text-[10px] font-bold border border-orange-100">
+                                            {item.selectedOption}
+                                        </span>
+                                    )}
+
                                 {/* Drink Option Selector */}
                                 {(item.id === '116' || item.menuItemId === 116) && (
                                     <div className="mt-2">
@@ -149,6 +169,31 @@ export default function CartItemList({
                                                 🍷 Ladrón de Tinto
                                             </option>
                                             <option value="Amstel Radler">🍺 Amstel Radler</option>
+                                        </select>
+                                    </div>
+                                )}
+
+                                {(item.id === '115' || item.menuItemId === 115) && (
+                                    <div className="mt-2">
+                                        <select
+                                            value={item.selectedOption || 'Cerveza de Calabaza'}
+                                            onChange={e => {
+                                                triggerHaptic();
+                                                updateQuantity(
+                                                    item.id,
+                                                    item.quantity,
+                                                    item.cartItemId,
+                                                    e.target.value
+                                                );
+                                            }}
+                                            className="text-[11px] font-bold bg-white border border-gray-200 rounded-md px-3 py-1.5 outline-none text-gray-700 focus:border-orange-200 shadow-sm transition-all cursor-pointer hover:bg-gray-50 active:scale-95"
+                                        >
+                                            <option value="Cerveza de Calabaza">
+                                                🎃 Cerveza de Calabaza (Pumpkin Ale)
+                                            </option>
+                                            <option value="Cerveza Artesana Clásica">
+                                                🍺 Cerveza Artesana Clásica
+                                            </option>
                                         </select>
                                     </div>
                                 )}
@@ -247,13 +292,17 @@ export default function CartItemList({
                         tipAmount > 0 ||
                         coinsSpent > 0) && (
                         <div className="lg:hidden flex flex-col gap-2.5 pb-4 border-b border-gray-100/80">
+                            {/* Products */}
                             <div className="flex justify-between items-center text-xs font-bold text-gray-500 uppercase tracking-widest">
-                                <span>Subtotal</span>
+                                <span>
+                                    Productos ({items.reduce((s, i) => s + i.quantity, 0)} uds.)
+                                </span>
                                 <span className="text-gray-900 font-black">
                                     {subtotal.toFixed(2).replace('.', ',')} €
                                 </span>
                             </div>
 
+                            {/* Delivery */}
                             {deliveryType === 'delivery' && (
                                 <div className="flex justify-between items-center text-xs font-bold text-gray-500 uppercase tracking-widest">
                                     <span>
@@ -279,6 +328,7 @@ export default function CartItemList({
                                 </div>
                             )}
 
+                            {/* Pickup */}
                             {deliveryType === 'pickup' && (
                                 <div className="flex justify-between items-center text-xs font-bold text-gray-500 uppercase tracking-widest">
                                     <span>Recogida en local</span>
@@ -286,49 +336,71 @@ export default function CartItemList({
                                 </div>
                             )}
 
-                            {promoDiscount && promoDiscount > 0 && (
-                                <div className="flex justify-between items-center text-xs font-bold text-green-600 uppercase tracking-widest">
-                                    <span>Descuento ({promoDiscount}%)</span>
-                                    <span>
-                                        -
-                                        {((subtotal * promoDiscount) / 100)
-                                            .toFixed(2)
-                                            .replace('.', ',')}{' '}
-                                        €
+                            {/* Tip */}
+                            {tipAmount > 0 && (
+                                <div className="flex justify-between items-center text-xs font-bold text-gray-500 uppercase tracking-widest">
+                                    <span>Propina equipo</span>
+                                    <span className="text-gray-900 font-black">
+                                        {tipAmount.toFixed(2).replace('.', ',')} €
                                     </span>
                                 </div>
                             )}
 
-                            {tipAmount > 0 && (
-                                <div className="flex justify-between items-center text-xs font-bold text-orange-600 uppercase tracking-widest">
-                                    <span>Propina equipo</span>
-                                    <span>{tipAmount.toFixed(2).replace('.', ',')} €</span>
+                            {/* Subtotal without discount (when discounts are present) */}
+                            {hasDiscounts && (
+                                <div className="flex justify-between items-center py-1.5 px-2.5 bg-gray-50 rounded-lg border border-gray-100 text-[11px] font-bold text-gray-600 uppercase tracking-wider my-0.5">
+                                    <span>Subtotal sin descuento</span>
+                                    <span className="text-gray-900 font-black text-xs">
+                                        {grossTotal.toFixed(2).replace('.', ',')} €
+                                    </span>
                                 </div>
                             )}
 
-                            {coinsSpent > 0 && (
-                                <div className="flex justify-between items-center text-xs font-bold text-green-600 uppercase tracking-widest">
-                                    <span>Maksim Coins</span>
-                                    <span>-{coinsSpent.toFixed(2).replace('.', ',')} €</span>
+                            {/* Discounts */}
+                            {hasDiscounts && (
+                                <div className="flex flex-col gap-1.5">
+                                    {promoDiscount && promoDiscount > 0 && (
+                                        <div className="flex justify-between items-center text-xs font-bold text-green-600 uppercase tracking-widest">
+                                            <span>Descuento ({promoDiscount}%)</span>
+                                            <span>
+                                                -{promoDiscountAmount.toFixed(2).replace('.', ',')}{' '}
+                                                €
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    {coinsSpent > 0 && (
+                                        <div className="flex justify-between items-center text-xs font-bold text-green-600 uppercase tracking-widest">
+                                            <span>Maksim Coins</span>
+                                            <span>
+                                                -{coinsDiscountAmount.toFixed(2).replace('.', ',')}{' '}
+                                                €
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
-                            {/* Total row to summarize the mobile card */}
+                            {/* Total row */}
                             <div className="flex justify-between items-center text-xs font-black text-gray-900 uppercase tracking-widest pt-2.5 border-t border-dashed border-gray-200 mt-1">
-                                <span>Total</span>
-                                <span className="text-orange-600">
-                                    {Math.max(
-                                        0,
-                                        subtotal -
-                                            (promoDiscount ? (subtotal * promoDiscount) / 100 : 0) +
-                                            deliveryCost +
-                                            tipAmount -
-                                            coinsSpent
-                                    )
-                                        .toFixed(2)
-                                        .replace('.', ',')}{' '}
-                                    €
-                                </span>
+                                <div className="flex flex-col">
+                                    <span>Total</span>
+                                    {hasDiscounts && (
+                                        <span className="text-[9px] text-green-600 font-bold lowercase tracking-normal">
+                                            ahorras {totalDiscounts.toFixed(2).replace('.', ',')} €
+                                        </span>
+                                    )}
+                                </div>
+                                <div className="text-right">
+                                    {hasDiscounts && (
+                                        <span className="text-[10px] text-gray-400 line-through font-bold block leading-none mb-0.5">
+                                            {grossTotal.toFixed(2).replace('.', ',')} €
+                                        </span>
+                                    )}
+                                    <span className="text-orange-600 text-sm">
+                                        {netTotal.toFixed(2).replace('.', ',')} €
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     )}

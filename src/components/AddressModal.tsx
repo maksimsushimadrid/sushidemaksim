@@ -1,3 +1,4 @@
+import { useModalA11y } from '../hooks/useModalA11y';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MapPin, ArrowRight, Loader2, Search, CheckCircle, Info, Crosshair } from 'lucide-react';
@@ -160,6 +161,7 @@ export default function AddressModal({
     deliveryZones,
     currentAddress,
 }: AddressModalProps) {
+    const dialogRef = useModalA11y({ isOpen });
     const [markerPosition, setMarkerPosition] = useState<[number, number]>(
         currentAddress?.lat && currentAddress?.lon
             ? [currentAddress.lat, currentAddress.lon]
@@ -730,6 +732,10 @@ export default function AddressModal({
                         animate={{ y: 0 }}
                         exit={{ y: '100%' }}
                         transition={{ type: 'spring', damping: 30, stiffness: 200 }}
+                        ref={dialogRef}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Seleccionar dirección de entrega"
                         className="fixed inset-0 md:inset-auto md:top-12 md:bottom-12 md:left-0 md:right-0 bg-white z-modal h-[100dvh] md:h-auto md:max-h-[90vh] overflow-hidden flex flex-col md:max-w-5xl md:mx-auto md:rounded-[32px] shadow-3xl"
                     >
                         {/* Header (Desktop only) */}
@@ -755,7 +761,7 @@ export default function AddressModal({
                             {/* Mobile Close Button */}
                             <button
                                 onClick={onClose}
-                                className="md:hidden absolute top-safe-top right-4 mt-4 w-10 h-10 bg-white/90 backdrop-blur-md shadow-xl rounded-full flex items-center justify-center text-gray-900 active:scale-95 transition z-[1001]"
+                                className="md:hidden absolute top-safe-top right-4 mt-4 w-10 h-10 bg-white/90 backdrop-blur-md shadow-xl rounded-full flex items-center justify-center text-gray-900 active:scale-95 transition z-30"
                             >
                                 <X size={20} strokeWidth={2.5} />
                             </button>
@@ -776,7 +782,7 @@ export default function AddressModal({
                                 <MapContainer
                                     center={markerPosition}
                                     zoom={window.innerWidth < 768 ? 14 : 15}
-                                    style={{ height: '100%', width: '100%' }}
+                                    style={{ height: '100%', width: '100%', zIndex: 0 }}
                                     zoomControl={false}
                                     attributionControl={false}
                                     preferCanvas={true}
@@ -824,7 +830,7 @@ export default function AddressModal({
                                             initial={{ opacity: 0 }}
                                             animate={{ opacity: 1 }}
                                             exit={{ opacity: 0 }}
-                                            className="absolute inset-0 z-[40] bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center"
+                                            className="absolute inset-0 z-10 bg-white/60 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center"
                                         >
                                             <div className="w-16 h-16 bg-orange-600 rounded-2xl shadow-xl flex items-center justify-center mb-4 animate-bounce">
                                                 <MapPin size={24} className="text-white" />
@@ -841,7 +847,7 @@ export default function AddressModal({
 
                                 {/* Search Overlay — fullscreen on mobile when focused */}
                                 <div
-                                    className={`absolute z-[1000] transition-all duration-300 ${
+                                    className={`absolute z-20 transition-all duration-300 ${
                                         isSearchFullscreen
                                             ? 'inset-0 bg-white/98 backdrop-blur-xl flex flex-col p-4 pt-14 md:top-6 md:left-6 md:right-6 md:bottom-auto md:bg-transparent md:backdrop-blur-none md:p-0'
                                             : 'top-6 left-6 right-16 md:top-6 md:left-6 md:right-6'
@@ -918,7 +924,7 @@ export default function AddressModal({
                                                     isSearchFullscreen
                                                         ? 'mt-3 flex-1 overflow-y-auto rounded-2xl bg-white border border-gray-100 divide-y divide-gray-50'
                                                         : 'absolute top-full mt-2 left-0 right-0 bg-white/95 backdrop-blur rounded-2xl shadow-2xl border border-gray-100 overflow-y-auto max-h-[200px] md:max-h-[440px] divide-y divide-gray-50'
-                                                } animate-in fade-in slide-in-from-top-2 duration-200 z-[1001] custom-scrollbar`}
+                                                } animate-in fade-in slide-in-from-top-2 duration-200 z-30 custom-scrollbar`}
                                             >
                                                 {isSearching && <SearchSkeleton count={3} />}
 

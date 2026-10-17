@@ -69,9 +69,7 @@ export function optionalAuthMiddleware(req: AuthRequest, res: Response, next: Ne
             req.userId = payload.userId;
         }
     } catch {
-        return res
-            .status(401)
-            .json({ error: 'Sesión expirada. Por favor, vuelve a iniciar sesión.' });
+        // Invalid/expired token on an optional-auth route: continue as guest.
     }
 
     next();

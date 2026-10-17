@@ -91,14 +91,14 @@ export default function CustomTimePicker({
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsOpen(false)}
-                            className="fixed inset-0 z-[1050]"
+                            className="fixed inset-0 z-modal"
                         />
 
                         <motion.div
                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                             animate={{ opacity: 1, y: 5, scale: 1 }}
                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                            className="absolute left-0 top-full mt-2 z-[1100] w-full bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden"
+                            className="absolute left-0 top-full mt-2 z-popover w-full bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden"
                         >
                             {/* Header */}
                             <div className="px-4 pt-4 pb-3 border-b border-gray-50">

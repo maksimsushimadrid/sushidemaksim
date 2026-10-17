@@ -1,5 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Save, Plus, Trash2, CheckCircle2, AlertTriangle, X, RefreshCw } from 'lucide-react';
+import {
+    Save,
+    Plus,
+    Trash2,
+    CheckCircle2,
+    AlertTriangle,
+    X,
+    RefreshCw,
+    Sparkles,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '../../utils/api';
@@ -71,6 +80,24 @@ const SETTINGS_TRANSLATIONS = {
         addClosureBtn: 'Добавить период закрытия',
         noClosures: 'Специальные закрытия не настроены.',
         reasonPlaceholder: 'например: Отпуск, Санитарный день, Закрытие раньше времени',
+        holidayThemeTitle: 'Праздничное оформление и сезонные темы',
+        holidayThemeDesc:
+            'Настройте внешний вид сайта под праздники: Хэллоуин, Новый Год, Рождество или чистый режим.',
+        holidayThemeAuto: 'Автоматически по датам',
+        holidayThemeAutoSub: 'Хэллоуин до 1 ноября, затем Новый Год в декабре',
+        holidayThemeHalloweenWallpaper: 'Хэллоуин (Только обои)',
+        holidayThemeHalloweenWallpaperSub: 'Паттерн Хэллоуин без летающих мышей и пауков',
+        holidayThemeHalloween: 'Хэллоуин (Полный)',
+        holidayThemeHalloweenSub: 'Обои + паутина с пауком + летучие мыши',
+        holidayThemeNewYear: 'Новый Год',
+        holidayThemeNewYearSub: 'Праздничная атмосфера + мягкий падающий снег',
+        holidayThemeChristmas: 'Рождество',
+        holidayThemeChristmasSub: 'Зимние мотивы + снежные хлопья',
+        holidayThemeNone: 'Обычный режим',
+        holidayThemeNoneSub: 'Стандартные суши-обои, как раньше, без эффектов',
+        holidayAnimationsLabel: 'Анимации (мыши, паук, снег)',
+        holidayAnimationsDesc: 'Выключите, чтобы убрать все движущиеся элементы',
+        holidayDateNotice: 'Дата окончания осенней темы (до какого числа):',
     },
     es: {
         title: 'Configuración de Contactos',
@@ -134,6 +161,24 @@ const SETTINGS_TRANSLATIONS = {
         addClosureBtn: 'Añadir período de cierre',
         noClosures: 'No hay cierres especiales configurados.',
         reasonPlaceholder: 'Ej: Vacaciones, Evento privado, Cierre anticipado',
+        holidayThemeTitle: 'Decoración Temática y Festividades',
+        holidayThemeDesc:
+            'Configura el ambiente visual de la web para Halloween, Año Nuevo, Navidad o modo clásico.',
+        holidayThemeAuto: 'Automático por fechas',
+        holidayThemeAutoSub: 'Halloween hasta el 1 de nov, Año Nuevo en dic/ene',
+        holidayThemeHalloweenWallpaper: 'Halloween (Solo fondo)',
+        holidayThemeHalloweenWallpaperSub: 'Fondo de Halloween sin murciélagos ni araña',
+        holidayThemeHalloween: 'Halloween Completo',
+        holidayThemeHalloweenSub: 'Fondo temático + araña colgante + murciélagos',
+        holidayThemeNewYear: 'Año Nuevo',
+        holidayThemeNewYearSub: 'Ambiente festivo + copos de nieve flotando',
+        holidayThemeChristmas: 'Navidad',
+        holidayThemeChristmasSub: 'Estilo navideño + copos de nieve suaves',
+        holidayThemeNone: 'Modo Clásico',
+        holidayThemeNoneSub: 'Fondo de sushi original como antes, sin efectos',
+        holidayAnimationsLabel: 'Animaciones (murciélagos, araña, nieve)',
+        holidayAnimationsDesc: 'Desactiva para quitar elementos móviles de la pantalla',
+        holidayDateNotice: 'Fecha límite del fondo otoñal (hasta qué fecha):',
     },
 } as const;
 
@@ -216,6 +261,11 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 vacationStartDate: data.vacationStartDate || '',
                 vacationEndDate: data.vacationEndDate || '',
                 customClosures: Array.isArray(data.customClosures) ? data.customClosures : [],
+                holidayTheme: data.holidayTheme || 'auto',
+                holidayAnimationsEnabled:
+                    data.holidayAnimationsEnabled === 'true' ||
+                    data.holidayAnimationsEnabled === true,
+                holidayWallpaperUntil: data.holidayWallpaperUntil || '2026-11-01',
             };
         },
         refetchOnWindowFocus: false,
@@ -225,6 +275,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
         mutationFn: (payload: any) => api.put('/admin/settings', payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-settings'] });
+            queryClient.invalidateQueries({ queryKey: ['settings'] });
             setSaveStatus('success');
             setTimeout(() => setSaveStatus(null), 4000);
         },
@@ -625,6 +676,163 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                     </div>
                 </div>
 
+                {/* Holiday & Seasonal Themes Configuration */}
+                <div className="p-6 bg-purple-50/30 rounded-2xl border border-purple-200/60 mb-8 space-y-6 text-left">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <h4 className="text-sm font-black text-purple-950 uppercase tracking-tight mb-1 flex items-center gap-2">
+                                <Sparkles size={16} className="text-purple-600" />
+                                {t.holidayThemeTitle}
+                            </h4>
+                            <p className="text-[11px] text-purple-900/80 font-medium">
+                                {t.holidayThemeDesc}
+                            </p>
+                        </div>
+                        <span className="text-2xl select-none">🎃 / ❄️</span>
+                    </div>
+
+                    {/* Presets Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                        {[
+                            {
+                                id: 'auto',
+                                title: t.holidayThemeAuto,
+                                subtitle: t.holidayThemeAutoSub,
+                                icon: '🗓️',
+                                badge: 'Auto',
+                            },
+                            {
+                                id: 'halloween_wallpaper',
+                                title: t.holidayThemeHalloweenWallpaper,
+                                subtitle: t.holidayThemeHalloweenWallpaperSub,
+                                icon: '🍂',
+                                badge: 'Fondo',
+                            },
+                            {
+                                id: 'halloween',
+                                title: t.holidayThemeHalloween,
+                                subtitle: t.holidayThemeHalloweenSub,
+                                icon: '🎃',
+                                badge: 'Completo',
+                            },
+                            {
+                                id: 'new_year',
+                                title: t.holidayThemeNewYear,
+                                subtitle: t.holidayThemeNewYearSub,
+                                icon: '❄️',
+                                badge: 'Invierno',
+                            },
+                            {
+                                id: 'christmas',
+                                title: t.holidayThemeChristmas,
+                                subtitle: t.holidayThemeChristmasSub,
+                                icon: '🎄',
+                                badge: 'Navidad',
+                            },
+                            {
+                                id: 'none',
+                                title: t.holidayThemeNone,
+                                subtitle: t.holidayThemeNoneSub,
+                                icon: '🍣',
+                                badge: 'Original',
+                            },
+                        ].map(preset => {
+                            const isSelected = (localSettings.holidayTheme || 'auto') === preset.id;
+                            return (
+                                <button
+                                    key={preset.id}
+                                    type="button"
+                                    onClick={() =>
+                                        setLocalSettings({
+                                            ...localSettings,
+                                            holidayTheme: preset.id,
+                                        })
+                                    }
+                                    className={`p-4 rounded-xl text-left border transition-all cursor-pointer flex flex-col justify-between ${
+                                        isSelected
+                                            ? 'bg-white border-purple-500 ring-2 ring-purple-500/20 shadow-md'
+                                            : 'bg-white/60 border-purple-100 hover:bg-white hover:border-purple-300'
+                                    }`}
+                                >
+                                    <div className="flex items-start justify-between w-full mb-2">
+                                        <span className="text-2xl">{preset.icon}</span>
+                                        <span
+                                            className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${
+                                                isSelected
+                                                    ? 'bg-purple-600 text-white'
+                                                    : 'bg-purple-100 text-purple-700'
+                                            }`}
+                                        >
+                                            {preset.badge}
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <div className="text-xs font-black text-gray-900 mb-0.5">
+                                            {preset.title}
+                                        </div>
+                                        <div className="text-[10px] text-gray-500 font-medium leading-tight">
+                                            {preset.subtitle}
+                                        </div>
+                                    </div>
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* Additional Options */}
+                    <div className="pt-4 border-t border-purple-100 grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                        {/* Animation Toggle */}
+                        <div className="flex items-center justify-between p-3.5 bg-white rounded-xl border border-purple-100">
+                            <div>
+                                <div className="text-xs font-black text-gray-900">
+                                    {t.holidayAnimationsLabel}
+                                </div>
+                                <div className="text-[10px] text-gray-500 font-medium">
+                                    {t.holidayAnimationsDesc}
+                                </div>
+                            </div>
+                            <label className="relative inline-flex items-center cursor-pointer ml-3 shrink-0">
+                                <input
+                                    type="checkbox"
+                                    checked={Boolean(localSettings.holidayAnimationsEnabled)}
+                                    onChange={e =>
+                                        setLocalSettings({
+                                            ...localSettings,
+                                            holidayAnimationsEnabled: e.target.checked,
+                                        })
+                                    }
+                                    className="sr-only peer"
+                                />
+                                <div
+                                    className="w-12 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer 
+                                               peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] 
+                                               after:absolute after:top-0.5 after:start-[3px] after:bg-white after:border-gray-300 
+                                               after:border after:rounded-full after:h-6 after:w-6 after:transition-all 
+                                               peer-checked:bg-purple-600"
+                                ></div>
+                            </label>
+                        </div>
+
+                        {/* Date Picker: Wallpaper until date */}
+                        <div className="p-3.5 bg-white rounded-xl border border-purple-100 space-y-1">
+                            <label className="block text-[10px] font-black text-purple-900 uppercase tracking-wider">
+                                {t.holidayDateNotice}
+                            </label>
+                            <input
+                                type="date"
+                                value={localSettings.holidayWallpaperUntil || '2026-11-01'}
+                                onChange={e =>
+                                    setLocalSettings({
+                                        ...localSettings,
+                                        holidayWallpaperUntil: e.target.value,
+                                    })
+                                }
+                                className="w-full bg-purple-50/50 border border-purple-100 rounded-lg px-3 py-1.5 text-xs font-bold text-gray-900 outline-none focus:border-purple-400 cursor-pointer"
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-pretty">
                     <div className="space-y-2">
                         <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
@@ -956,7 +1164,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
 
             {/* Remove Social Confirmation Modal */}
             {socialToRemove !== null && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-popover flex items-center justify-center p-4">
                     <div
                         className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300"
                         onClick={() => setSocialToRemove(null)}

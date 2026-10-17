@@ -13,6 +13,7 @@ import SmoothScroll from './components/SmoothScroll';
 import RegistrationPrompt from './components/RegistrationPrompt';
 import ErrorBoundary from './components/ErrorBoundary';
 import ReloadPrompt from './components/ReloadPrompt';
+import { SeasonalAtmosphere } from './components/SeasonalAtmosphere';
 import { ToastProvider } from './context/ToastContext';
 import Schema from './components/SEO/Schema';
 import { Analytics } from '@vercel/analytics/react';
@@ -89,19 +90,19 @@ const PageWrapper = ({
     const isProfile = location.pathname === '/profile';
     const isWaiterRoute = location.pathname.startsWith('/waiter');
     const isTablonRoute = location.pathname.startsWith('/tablon');
-
-    const prevPathname = useRef(location.pathname);
+    const prevPathnameRef = useRef<string | null>(null);
 
     useEffect(() => {
-        // Scroll to top only on actual page (pathname) navigation.
+        // Scroll to top on page mount and actual pathname navigation.
         // Prevents jumpy scrolling when toggling tabs or search params (e.g. /profile?tab=addresses).
-        if (prevPathname.current !== location.pathname) {
-            prevPathname.current = location.pathname;
+        if (prevPathnameRef.current !== location.pathname) {
+            prevPathnameRef.current = location.pathname;
             const hasCategory = new URLSearchParams(location.search).has('category');
             if (!location.hash && !hasCategory) {
+                window.scrollTo(0, 0);
+                (window as any).lenis?.scrollTo(0, { immediate: true });
                 requestAnimationFrame(() => {
                     window.scrollTo(0, 0);
-                    (window as any).lenis?.scrollTo(0, { immediate: true });
                 });
             }
         }
@@ -203,9 +204,16 @@ function App() {
                                 {!isAdminRoute && !isWaiterRoute && !isTableRoute && (
                                     <CookieConsent />
                                 )}
-                                {!isTableRoute && <RegistrationPrompt />}
+                                {!isAdminRoute && !isWaiterRoute && !isTableRoute && (
+                                    <RegistrationPrompt />
+                                )}
                                 <ReloadPrompt />
-                                <FloatingCart />
+                                {!isAdminRoute && !isWaiterRoute && !isTableRoute && (
+                                    <FloatingCart />
+                                )}
+                                {!isAdminRoute && !isWaiterRoute && !isTableRoute && (
+                                    <SeasonalAtmosphere />
+                                )}
 
                                 {!isAdminRoute && !isWaiterRoute && <Header />}
                                 <main className="flex-1 grid grid-cols-1 grid-rows-1 relative w-full overflow-x-clip">

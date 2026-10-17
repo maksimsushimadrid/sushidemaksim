@@ -261,71 +261,53 @@ export default function ProfilePage() {
                 description="Gestiona tu cuenta, direcciones y pedidos en Sushi de Maksim."
             />
 
-            {/* Header Section - Increased pt for mobile to account for transparent header */}
+            {/* Full-Screen Hero with User Photo Background & Overlay Information */}
             <div
-                className="bg-orange-600 pb-28 px-2 md:px-4 relative overflow-hidden"
-                style={{ paddingTop: 'calc(var(--header-height, 64px) + 40px)' }}
+                className="relative w-full min-h-[82vh] md:min-h-[72vh] flex flex-col justify-end overflow-hidden pb-10 sm:pb-14 px-4 sm:px-6 md:px-8 bg-zinc-950"
+                style={{ paddingTop: 'calc(var(--header-height, 64px) + 50px)' }}
             >
-                {/* Wallpaper Pattern Overlay (Staggered Checkerboard) */}
-                <div className="absolute inset-[-50%] z-0 opacity-10 pointer-events-none flex flex-col justify-center items-center gap-24 md:gap-32 -rotate-12 scale-110">
-                    {Array.from({ length: 12 }).map((_, rowIndex) => (
-                        <div
-                            key={`row-${rowIndex}`}
-                            className="flex items-center gap-24 md:gap-32"
-                            style={{
-                                transform: rowIndex % 2 !== 0 ? 'translateX(200px)' : 'none',
-                            }}
-                        >
-                            {Array.from({ length: 8 }).map((_, colIndex) => (
-                                <img
-                                    key={`col-${rowIndex}-${colIndex}`}
-                                    src="/logo.svg"
-                                    alt=""
-                                    className="h-10 md:h-16 object-contain grayscale brightness-200"
-                                />
-                            ))}
-                        </div>
-                    ))}
-                </div>
-
-                <div className="max-w-7xl mx-auto relative z-10">
-                    <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
-                        <div className="w-20 h-20 md:w-24 md:h-24 rounded-3xl bg-white p-1 shadow-xl relative">
-                            <div className="w-full h-full rounded-[22px] bg-orange-50 flex items-center justify-center text-2xl md:text-4xl border-2 border-white overflow-hidden shadow-inner">
-                                {user.avatar ? (
-                                    user.avatar.startsWith('http') ? (
-                                        <SafeImage
-                                            src={user.avatar}
-                                            getOptimizedUrl={getSharpAvatar}
-                                            alt={user.name}
-                                            className="w-full h-full object-cover"
-                                            fallbackContent={
-                                                <div className="text-2xl md:text-4xl select-none font-black text-orange-600/60 uppercase">
-                                                    {initials}
-                                                </div>
-                                            }
-                                        />
-                                    ) : (
-                                        <span className="select-none">{user.avatar}</span>
-                                    )
-                                ) : (
-                                    <span className="select-none text-orange-600/60 font-black">
-                                        {initials}
-                                    </span>
-                                )}
+                {/* Big Full-Screen Photo Background */}
+                {user.avatar && user.avatar.startsWith('http') ? (
+                    <SafeImage
+                        src={user.avatar}
+                        getOptimizedUrl={url => getSharpAvatar(url, 1200)}
+                        alt={user.name}
+                        className="absolute inset-0 w-full h-full object-cover object-top sm:object-center select-none"
+                        fallbackContent={
+                            <div className="absolute inset-0 bg-gradient-to-br from-orange-600 via-orange-800 to-zinc-950 flex items-center justify-center">
+                                <div className="text-8xl md:text-9xl font-black text-white/10 select-none uppercase">
+                                    {initials}
+                                </div>
                             </div>
-                            <div className="absolute -bottom-1 -right-1 bg-green-500 border-2 border-white w-6 h-6 rounded-full shadow-lg flex items-center justify-center">
-                                <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-                            </div>
+                        }
+                    />
+                ) : (
+                    <div className="absolute inset-0 bg-gradient-to-br from-orange-600 via-orange-800 to-zinc-950 flex items-center justify-center">
+                        <div className="text-8xl md:text-9xl font-black text-white/10 select-none uppercase">
+                            {initials}
                         </div>
+                    </div>
+                )}
 
+                {/* Top Dark Header Scrim (makes transparent header, logo, and curtain crystal-clear) */}
+                <div className="absolute inset-x-0 top-0 h-44 bg-gradient-to-b from-black/85 via-black/35 to-transparent z-[1] pointer-events-none" />
+
+                {/* Subtle Contrast Scrim */}
+                <div className="absolute inset-0 bg-black/20 z-[2] pointer-events-none" />
+
+                {/* Bottom Dark Gradient for Legibility of Overlaid Information */}
+                <div className="absolute inset-x-0 bottom-0 h-[85%] bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C]/80 via-45% to-transparent z-[3] pointer-events-none" />
+
+                {/* Information Layer Overlaid on Top of the Photo */}
+                <div className="max-w-7xl mx-auto w-full relative z-10">
+                    <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
+                        {/* User Identity Details */}
                         <div className="flex-1">
-                            <div className="flex flex-col md:flex-row md:items-center gap-1.5 md:gap-4 mb-2">
-                                <h1 className="text-2xl md:text-3xl font-black text-white m-0 tracking-tight">
-                                    {user.name}
-                                </h1>
-                                <div className="inline-flex items-center gap-1.5 bg-white/10 backdrop-blur-md px-2 py-1 rounded-full text-[10px] font-bold text-white border border-white/10 w-fit mx-auto md:mx-0">
-                                    <Trophy size={10} className="text-amber-400" />
+                            {/* Status & Online Badge */}
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-white text-[11px] sm:text-xs font-bold shadow-xl mb-3">
+                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                                <Trophy size={13} className="text-amber-400 shrink-0" />
+                                <span>
                                     {(user.orderCount || 0) >= 50
                                         ? 'Leyenda del Sushi'
                                         : (user.orderCount || 0) >= 20
@@ -333,13 +315,19 @@ export default function ProfilePage() {
                                           : (user.orderCount || 0) >= 5
                                             ? 'Cliente Fiel'
                                             : 'Nuevo Miembro'}
-                                </div>
+                                </span>
                             </div>
-                            <p className="text-orange-100 font-medium opacity-80 m-0 text-sm mb-3">
-                                {user.email}
-                            </p>
-                            <div className="flex flex-wrap gap-2 justify-center md:justify-start">
-                                <span className="bg-white/10 backdrop-blur-md px-3 py-1 rounded-lg text-[10px] font-bold text-white border border-white/5">
+
+                            {/* Name */}
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white m-0 tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
+                                {user.name}
+                            </h1>
+
+                            {/* Email & Member Since */}
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-zinc-300 text-xs sm:text-sm font-medium mt-2 drop-shadow-md">
+                                <span>{user.email}</span>
+                                <span className="text-white/40">•</span>
+                                <span className="bg-white/10 backdrop-blur-md px-2.5 py-0.5 rounded-lg text-[11px] font-semibold text-zinc-200 border border-white/10">
                                     Miembro desde{' '}
                                     {new Date(user.createdAt || Date.now()).toLocaleDateString(
                                         'es-ES',
@@ -349,29 +337,32 @@ export default function ProfilePage() {
                             </div>
                         </div>
 
-                        {/* Quick Stats Grid */}
-                        <div className="grid grid-cols-2 md:flex gap-3 md:gap-4 w-full md:w-auto mt-4 md:mt-0">
-                            <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-[18px] border border-white/20 text-center min-w-[120px] flex-1 md:flex-none">
-                                <div className="text-white font-black text-2xl leading-none">
+                        {/* Quick Stats Grid & Logout Overlaid */}
+                        <div className="grid grid-cols-2 md:flex items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
+                            <div className="bg-black/50 hover:bg-black/60 backdrop-blur-xl px-5 py-3 rounded-2xl border border-white/15 text-center min-w-[110px] flex-1 md:flex-none shadow-2xl transition-all">
+                                <div className="text-white font-black text-2xl leading-none drop-shadow">
                                     {user.orderCount || 0}
                                 </div>
-                                <div className="text-orange-100 text-[10px] uppercase font-bold tracking-widest mt-1 opacity-70">
+                                <div className="text-zinc-300 text-[10px] uppercase font-bold tracking-widest mt-1 opacity-80">
                                     Pedidos
                                 </div>
                             </div>
-                            <div className="bg-white/10 backdrop-blur-md px-6 py-3 rounded-[18px] border border-white/20 text-center min-w-[120px] flex-1 md:flex-none">
-                                <div className="text-white font-black text-2xl leading-none flex items-center justify-center gap-1">
+
+                            <div className="bg-black/50 hover:bg-black/60 backdrop-blur-xl px-5 py-3 rounded-2xl border border-white/15 text-center min-w-[110px] flex-1 md:flex-none shadow-2xl transition-all">
+                                <div className="text-amber-400 font-black text-2xl leading-none flex items-center justify-center gap-1 drop-shadow">
                                     {user.coinsBalance || 0}
                                 </div>
-                                <div className="text-orange-100 text-[10px] uppercase font-bold tracking-widest mt-1 opacity-70">
+                                <div className="text-zinc-300 text-[10px] uppercase font-bold tracking-widest mt-1 opacity-80">
                                     Maksim Coins
                                 </div>
                             </div>
+
                             <button
                                 onClick={handleLogout}
-                                className="bg-white/10 hover:bg-white/20 px-6 py-3 rounded-[18px] border border-white/20 text-white font-bold transition-all flex items-center justify-center gap-2 flex-1 md:flex-none"
+                                className="bg-white/15 hover:bg-red-500/80 hover:border-red-400/50 backdrop-blur-xl px-5 py-3 rounded-2xl border border-white/20 text-white font-bold transition-all flex items-center justify-center gap-2 flex-1 md:flex-none shadow-2xl active:scale-95 cursor-pointer"
+                                title="Cerrar sesión"
                             >
-                                <LogOut size={18} strokeWidth={1.5} />
+                                <LogOut size={18} strokeWidth={2} />
                                 <span className="md:hidden">Salir</span>
                             </button>
                         </div>
@@ -380,235 +371,225 @@ export default function ProfilePage() {
             </div>
 
             {/* Main Content Area */}
-            <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 -mt-16 pb-20 relative z-20">
-                {/* Push Notifications Banner */}
+            <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 pt-6 pb-20 relative z-20">
+                {/* Push Notifications Prompt - Clean & Slim */}
                 {isSupported && !isSubscribed && (
                     <motion.div
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-[24px] p-4 shadow-xl flex items-center justify-between text-white"
+                        className="mb-5 flex items-center justify-between gap-3 px-4 py-2.5 bg-blue-50/90 border border-blue-200/60 rounded-2xl text-blue-950 shadow-sm"
                     >
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                                <BellRing size={20} className="animate-bounce" />
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-black m-0">
-                                    ¡Activa las notificaciones!
-                                </h3>
-                                <p className="text-[10px] opacity-90 m-0">
-                                    Recibe avisos sobre el estado de tu pedido
+                        <div className="flex items-center gap-2.5 min-w-0">
+                            <BellRing size={16} className="text-blue-600 shrink-0" />
+                            <div className="min-w-0">
+                                <p className="text-xs font-bold text-gray-900 m-0 truncate">
+                                    Activa las notificaciones
+                                </p>
+                                <p className="text-[10px] text-gray-500 m-0 truncate hidden sm:block">
+                                    Recibe avisos sobre el estado de tu pedido en tiempo real
                                 </p>
                             </div>
                         </div>
                         <button
                             onClick={subscribeToPush}
-                            className="px-4 py-2 bg-white text-blue-600 rounded-xl text-xs font-black shadow-md hover:scale-105 transition-transform"
+                            className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-bold shadow-sm transition-all shrink-0 cursor-pointer"
                         >
                             Activar
                         </button>
                     </motion.div>
                 )}
 
-                {/* Loyalty Program Section */}
-                <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="bg-white rounded-[32px] p-5 shadow-xl border border-white relative overflow-hidden group"
-                    >
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-orange-500/10 transition-colors" />
-                        <div className="flex items-center gap-4 mb-4">
-                            <div className="w-12 h-12 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-600 shadow-inner">
+                {/* Loyalty Program Section - Unified & Clean */}
+                <div className="mb-6 bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-gray-100">
+                    <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
+                        <div>
+                            <h3 className="text-sm font-extrabold text-gray-900 m-0 uppercase tracking-tight">
+                                Premios por fidelidad
+                            </h3>
+                            <p className="text-[11px] text-gray-400 font-medium m-0">
+                                Descuentos y regalos automáticos acumulando pedidos
+                            </p>
+                        </div>
+                        <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-full shrink-0">
+                            {user.orderCount || 0} pedidos
+                        </span>
+                    </div>
+
+                    <div className="space-y-5">
+                        {/* Reward 1: Descuento 5% */}
+                        <div>
+                            <div className="flex items-center justify-between gap-3 mb-2">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-8 h-8 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shrink-0">
+                                        <Percent size={16} strokeWidth={2.5} />
+                                    </div>
+                                    <div>
+                                        <div className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">
+                                            Próximo descuento 5%
+                                        </div>
+                                        <div className="text-[10px] text-gray-400">
+                                            Cada 5 pedidos
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="text-right">
+                                    <span className="text-xs font-extrabold text-orange-600">
+                                        {Math.max(0, 4 - ((user.orderCount || 0) % 5)) === 0
+                                            ? '¡Listo para usar!'
+                                            : `Faltan ${Math.max(0, 4 - ((user.orderCount || 0) % 5))}`}
+                                    </span>
+                                    <span className="text-[10px] text-gray-400 block font-medium">
+                                        {(user.orderCount || 0) % 5} / 4 pedidos
+                                    </span>
+                                </div>
+                            </div>
+
+                            {/* Clean, slim progress bar */}
+                            <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
                                 <motion.div
-                                    animate={
+                                    initial={{ width: 0 }}
+                                    animate={{
+                                        width: `${Math.min(100, (((user.orderCount || 0) % 5) / 4) * 100)}%`,
+                                    }}
+                                    className={`h-full rounded-full transition-all ${
                                         (user.orderCount || 0) % 5 === 4
-                                            ? { scale: [1, 1.2, 1], rotate: [0, 10, -10, 0] }
-                                            : {}
-                                    }
-                                    transition={{ repeat: Infinity, duration: 2 }}
-                                >
-                                    <Percent size={24} strokeWidth={2.5} />
-                                </motion.div>
+                                            ? 'bg-emerald-500'
+                                            : 'bg-orange-500'
+                                    }`}
+                                />
                             </div>
-                            <div>
-                                <h3 className="text-sm font-black text-gray-900 m-0 uppercase tracking-tight">
-                                    Próximo Descuento 5%
-                                </h3>
-                                <p className="text-[11px] text-gray-400 font-medium m-0">
-                                    Cada 5 pedidos
-                                </p>
-                            </div>
-                            <div className="ml-auto text-right">
-                                <span className="block text-lg font-black text-orange-600 leading-none">
-                                    {Math.max(0, 4 - ((user.orderCount || 0) % 5))}
-                                </span>
-                                <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
-                                    {Math.max(0, 4 - ((user.orderCount || 0) % 5)) === 0
-                                        ? '¡LISTO!'
-                                        : 'faltan'}
-                                </span>
-                            </div>
-                        </div>
-                        <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50 mb-2">
-                            <motion.div
-                                initial={{ width: 0 }}
-                                animate={{
-                                    width: `${Math.min(100, (((user.orderCount || 0) % 5) / 4) * 100)}%`,
-                                }}
-                                className={`h-full rounded-full shadow-[0_0_8px_rgba(242,101,34,0.3)] ${
-                                    (user.orderCount || 0) % 5 === 4
-                                        ? 'bg-green-500'
-                                        : 'bg-orange-600'
-                                }`}
-                            />
+
+                            {/* Active Loyalty Promo Code */}
+                            {loyaltyCode && (
+                                <div className="mt-3 p-2.5 bg-orange-50/80 rounded-xl border border-orange-100 flex items-center justify-between gap-3">
+                                    <div className="min-w-0">
+                                        <span className="text-[10px] font-bold text-orange-700 uppercase tracking-wide block">
+                                            Tu código -5%:{' '}
+                                            <span className="font-mono text-xs font-black">
+                                                {loyaltyCode.code}
+                                            </span>
+                                        </span>
+                                        <span className="text-[9px] text-gray-500 block">
+                                            Expira:{' '}
+                                            {getExpiryString(
+                                                loyaltyCode.code,
+                                                loyaltyCode.createdAt
+                                            )}
+                                        </span>
+                                    </div>
+                                    <button
+                                        onClick={() => copyToClipboard(loyaltyCode.code)}
+                                        className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+                                            copiedCode === loyaltyCode.code
+                                                ? 'bg-emerald-600 text-white'
+                                                : 'bg-orange-600 text-white hover:bg-orange-700'
+                                        }`}
+                                    >
+                                        {copiedCode === loyaltyCode.code ? (
+                                            <>
+                                                <ClipboardCheck size={13} strokeWidth={2.5} />
+                                                <span>Copiado</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Copy size={13} strokeWidth={2.5} />
+                                                <span>Copiar</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            )}
                         </div>
 
-                        {loyaltyCode && (
-                            <div className="mb-4 p-3 bg-orange-50 border border-orange-100 rounded-2xl flex items-center justify-between">
-                                <div className="flex flex-col">
-                                    <span className="text-[9px] font-black text-orange-400 uppercase tracking-widest mb-0.5">
-                                        Tu Código -5%:
+                        <div className="border-t border-gray-100" />
+
+                        {/* Reward 2: Roll Dulce de Regalo */}
+                        <div>
+                            <div className="flex items-center justify-between gap-3 mb-2">
+                                <div className="flex items-center gap-2.5">
+                                    <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                                        <Gift size={16} strokeWidth={2.5} />
+                                    </div>
+                                    <div>
+                                        <div className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">
+                                            Roll dulce de regalo 🍣
+                                        </div>
+                                        <div className="text-[10px] text-gray-400">
+                                            Cada 10 pedidos
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="text-right">
+                                    <span className="text-xs font-extrabold text-amber-600">
+                                        {Math.max(0, 9 - ((user.orderCount || 0) % 10)) === 0
+                                            ? '¡Listo para usar!'
+                                            : `Faltan ${Math.max(0, 9 - ((user.orderCount || 0) % 10))}`}
                                     </span>
-                                    <span className="text-sm font-black text-orange-600 tracking-wider">
-                                        {loyaltyCode.code}
-                                    </span>
-                                    <span className="text-[9px] font-black text-gray-400 mt-1 flex items-center gap-1.5 uppercase tracking-tighter">
-                                        <div className="w-1 h-1 rounded-full bg-orange-400 animate-pulse" />
-                                        Expira el:{' '}
-                                        {getExpiryString(loyaltyCode.code, loyaltyCode.createdAt)}
+                                    <span className="text-[10px] text-gray-400 block font-medium">
+                                        {(user.orderCount || 0) % 10} / 9 pedidos
                                     </span>
                                 </div>
-                                <button
-                                    onClick={() => copyToClipboard(loyaltyCode.code)}
-                                    className={`p-2.5 rounded-xl shadow-lg active:scale-95 transition-all flex items-center gap-2 ${
-                                        copiedCode === loyaltyCode.code
-                                            ? 'bg-green-500 text-white shadow-green-200'
-                                            : 'bg-orange-600 text-white shadow-orange-200'
-                                    }`}
-                                >
-                                    {copiedCode === loyaltyCode.code ? (
-                                        <>
-                                            <ClipboardCheck size={14} strokeWidth={3} />
-                                            <span className="text-[10px] font-black uppercase tracking-tight">
-                                                Copiado
-                                            </span>
-                                        </>
-                                    ) : (
-                                        <Copy size={14} strokeWidth={3} />
-                                    )}
-                                </button>
                             </div>
-                        )}
 
-                        <div className="flex justify-between items-center">
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                {(user.orderCount || 0) % 5} / 4 pedidos
-                            </span>
-                            <span className="text-[9px] font-bold text-gray-300 italic">
-                                *Código enviado tras el 4º pedido para usar en el 5º
-                            </span>
-                        </div>
-                    </motion.div>
-
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.1 }}
-                        className="bg-white rounded-[32px] p-6 shadow-xl border border-white relative overflow-hidden group"
-                    >
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-amber-500/10 transition-colors" />
-                        <div className="flex items-center gap-4 mb-4">
-                            <div className="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 shadow-inner">
+                            {/* Clean, slim progress bar */}
+                            <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
                                 <motion.div
-                                    animate={
+                                    initial={{ width: 0 }}
+                                    animate={{
+                                        width: `${Math.min(100, (((user.orderCount || 0) % 10) / 9) * 100)}%`,
+                                    }}
+                                    className={`h-full rounded-full transition-all ${
                                         (user.orderCount || 0) % 10 === 9
-                                            ? { scale: [1, 1.2, 1], y: [0, -5, 0] }
-                                            : {}
-                                    }
-                                    transition={{ repeat: Infinity, duration: 2 }}
-                                >
-                                    <Gift size={24} strokeWidth={2.5} />
-                                </motion.div>
-                            </div>
-                            <div>
-                                <h3 className="text-sm font-black text-gray-900 m-0 uppercase tracking-tight">
-                                    Roll Dulce de Regalo
-                                </h3>
-                                <p className="text-[11px] text-gray-400 font-medium m-0">
-                                    Cada 10 pedidos
-                                </p>
-                            </div>
-                            <div className="ml-auto text-right">
-                                <span className="block text-lg font-black text-amber-600 leading-none">
-                                    {Math.max(0, 9 - ((user.orderCount || 0) % 10))}
-                                </span>
-                                <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">
-                                    {Math.max(0, 9 - ((user.orderCount || 0) % 10)) === 0
-                                        ? '¡LISTO!'
-                                        : 'faltan'}
-                                </span>
-                            </div>
-                        </div>
-                        <div className="h-2.5 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50 mb-2">
-                            <motion.div
-                                initial={{ width: 0 }}
-                                animate={{
-                                    width: `${Math.min(100, (((user.orderCount || 0) % 10) / 9) * 100)}%`,
-                                }}
-                                className={`h-full rounded-full shadow-[0_0_8px_rgba(245,158,11,0.3)] ${
-                                    (user.orderCount || 0) % 10 === 9
-                                        ? 'bg-green-500'
-                                        : 'bg-amber-500'
-                                }`}
-                            />
-                        </div>
-
-                        {dessertCode && (
-                            <div className="mb-4 p-3 bg-amber-50 border border-amber-100 rounded-2xl flex items-center justify-between">
-                                <div className="flex flex-col">
-                                    <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest mb-0.5">
-                                        Tu Código Roll Dulce 🍣
-                                    </span>
-                                    <span className="text-sm font-black text-amber-600 tracking-wider">
-                                        {dessertCode.code}
-                                    </span>
-                                    <span className="text-[8px] font-bold text-amber-500">
-                                        Expira el:{' '}
-                                        {getExpiryString(dessertCode.code, dessertCode.createdAt)}
-                                    </span>
-                                </div>
-                                <button
-                                    onClick={() => copyToClipboard(dessertCode.code)}
-                                    className={`p-2.5 rounded-xl shadow-lg active:scale-95 transition-all flex items-center gap-2 ${
-                                        copiedCode === dessertCode.code
-                                            ? 'bg-green-500 text-white shadow-green-200'
-                                            : 'bg-amber-600 text-white shadow-amber-200'
+                                            ? 'bg-emerald-500'
+                                            : 'bg-amber-500'
                                     }`}
-                                >
-                                    {copiedCode === dessertCode.code ? (
-                                        <>
-                                            <ClipboardCheck size={14} strokeWidth={3} />
-                                            <span className="text-[10px] font-black uppercase tracking-tight">
-                                                Copiado
-                                            </span>
-                                        </>
-                                    ) : (
-                                        <Copy size={14} strokeWidth={3} />
-                                    )}
-                                </button>
+                                />
                             </div>
-                        )}
 
-                        <div className="flex justify-between items-center">
-                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                                {(user.orderCount || 0) % 10} / 9 pedidos
-                            </span>
-                            <span className="text-[9px] font-bold text-gray-300 italic">
-                                *Roll dulce enviado tras el 9º pedido para usar en el 10º
-                            </span>
+                            {/* Active Dessert Promo Code */}
+                            {dessertCode && (
+                                <div className="mt-3 p-2.5 bg-amber-50/80 rounded-xl border border-amber-100 flex items-center justify-between gap-3">
+                                    <div className="min-w-0">
+                                        <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wide block">
+                                            Tu código regalo:{' '}
+                                            <span className="font-mono text-xs font-black">
+                                                {dessertCode.code}
+                                            </span>
+                                        </span>
+                                        <span className="text-[9px] text-gray-500 block">
+                                            Expira:{' '}
+                                            {getExpiryString(
+                                                dessertCode.code,
+                                                dessertCode.createdAt
+                                            )}
+                                        </span>
+                                    </div>
+                                    <button
+                                        onClick={() => copyToClipboard(dessertCode.code)}
+                                        className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+                                            copiedCode === dessertCode.code
+                                                ? 'bg-emerald-600 text-white'
+                                                : 'bg-amber-600 text-white hover:bg-amber-700'
+                                        }`}
+                                    >
+                                        {copiedCode === dessertCode.code ? (
+                                            <>
+                                                <ClipboardCheck size={13} strokeWidth={2.5} />
+                                                <span>Copiado</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Copy size={13} strokeWidth={2.5} />
+                                                <span>Copiar</span>
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            )}
                         </div>
-                    </motion.div>
+                    </div>
                 </div>
 
                 {/* Invite a Friend Section */}
@@ -847,7 +828,7 @@ export default function ProfilePage() {
                             top: 'calc(var(--header-height, 64px) + 12px)',
                         }}
                     >
-                        <div className="bg-white/95 md:bg-white backdrop-blur-xl border-y md:border border-gray-100 md:border-white shadow-sm md:shadow-2xl rounded-none md:rounded-[32px] p-1.5 flex md:block overflow-x-auto no-scrollbar gap-2 px-4 md:px-2 snap-x snap-mandatory scroll-px-4">
+                        <div className="bg-white/95 md:bg-white backdrop-blur-xl border border-gray-100 md:border-white shadow-sm md:shadow-2xl rounded-2xl md:rounded-[32px] p-1.5 md:p-2 flex md:block overflow-x-auto no-scrollbar gap-1.5 md:gap-2 snap-x snap-mandatory scroll-px-1.5">
                             {tabs.map(tab => {
                                 const Icon = tab.icon;
                                 const isActive = activeTab === tab.id;
@@ -856,7 +837,7 @@ export default function ProfilePage() {
                                         key={tab.id}
                                         id={`tab-${tab.id}`}
                                         onClick={() => handleTabChange(tab.id)}
-                                        className={`shrink-0 md:w-full flex items-center gap-2.5 md:gap-4 p-3 md:p-4 rounded-2xl transition-all duration-300 group snap-center relative scroll-mx-2
+                                        className={`shrink-0 md:w-full flex items-center gap-2 md:gap-3.5 py-2 px-3 md:p-3.5 rounded-xl md:rounded-2xl transition-all duration-300 group snap-center relative scroll-mx-1.5
                                             ${
                                                 isActive
                                                     ? 'text-white'
@@ -866,7 +847,7 @@ export default function ProfilePage() {
                                         {isActive && (
                                             <motion.div
                                                 layoutId="profile-tab-active"
-                                                className="absolute inset-0 bg-orange-600 shadow-lg shadow-orange-200 ring-4 ring-orange-600/5 rounded-2xl"
+                                                className="absolute inset-0 bg-orange-600 shadow-md shadow-orange-200/60 ring-2 md:ring-4 ring-orange-600/5 rounded-xl md:rounded-2xl"
                                                 transition={{
                                                     type: 'spring',
                                                     bounce: 0.2,
@@ -875,13 +856,13 @@ export default function ProfilePage() {
                                             />
                                         )}
                                         <div
-                                            className={`relative z-10 w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110
+                                            className={`relative z-10 w-7 h-7 md:w-10 md:h-10 rounded-lg md:rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shrink-0
                                             ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'}`}
                                         >
-                                            <Icon size={16} strokeWidth={1.5} />
+                                            <Icon size={15} strokeWidth={2} />
                                         </div>
                                         <span
-                                            className={`relative z-20 font-black text-[11px] md:text-sm whitespace-nowrap uppercase tracking-wider transition-transform ${isActive ? 'md:translate-x-0.5' : ''}`}
+                                            className={`relative z-20 font-black text-xs md:text-sm whitespace-nowrap uppercase tracking-wider transition-transform ${isActive ? 'md:translate-x-0.5' : ''}`}
                                         >
                                             {tab.label}
                                         </span>
@@ -898,7 +879,7 @@ export default function ProfilePage() {
 
                     {/* Content Section */}
                     <div className="flex-1 min-w-0" id="profile-content">
-                        <div className="bg-transparent md:bg-white/90 md:backdrop-blur-xl md:border md:border-white md:shadow-2xl rounded-[32px] overflow-hidden">
+                        <div className="bg-transparent md:bg-white/90 md:backdrop-blur-xl md:border md:border-white md:shadow-2xl rounded-none md:rounded-[32px] md:overflow-hidden">
                             <div className="p-0 md:p-8">
                                 <AnimatePresence mode="wait">
                                     <motion.div

@@ -651,7 +651,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
             {isModalOpen &&
                 createPortal(
                     <div
-                        className="fixed inset-0 z-[100] bg-gray-900/60 backdrop-blur-md overflow-y-auto overscroll-contain py-4 md:py-20 px-0 sm:px-4 flex justify-center items-start sm:items-center"
+                        className="fixed inset-0 z-modal bg-gray-900/60 backdrop-blur-md overflow-y-auto overscroll-contain py-4 md:py-20 px-0 sm:px-4 flex justify-center items-start sm:items-center"
                         onClick={e => {
                             if (e.target === e.currentTarget) setIsModalOpen(false);
                         }}
@@ -1061,7 +1061,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
             {itemToDelete &&
                 createPortal(
                     <div
-                        className="fixed inset-0 z-[9999] bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
+                        className="fixed inset-0 z-popover bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
                         onClick={e => {
                             if (e.target === e.currentTarget) setItemToDelete(null);
                         }}

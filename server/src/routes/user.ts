@@ -509,11 +509,33 @@ router.get(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { data: favorites, error } = await supabase
             .from('user_favorites')
-            .select('menu_items(*)')
+            .select('id, menu_items(*)')
             .eq('user_id', req.userId);
 
         if (error) throw error;
-        res.json({ favorites: favorites?.map(f => f.menu_items) || [] });
+
+        // Deduplicate and filter out deleted/null menu items
+        const seen = new Set<number>();
+        const items: any[] = [];
+        const duplicateRowIds: string[] = [];
+
+        for (const f of favorites || []) {
+            const menuItem = f.menu_items as any;
+            if (!menuItem || !menuItem.id) continue;
+            if (seen.has(menuItem.id)) {
+                duplicateRowIds.push(f.id);
+                continue;
+            }
+            seen.add(menuItem.id);
+            items.push(menuItem);
+        }
+
+        // Clean up duplicate entries from database if any exist
+        if (duplicateRowIds.length > 0) {
+            await supabase.from('user_favorites').delete().in('id', duplicateRowIds);
+        }
+
+        res.json({ favorites: items });
     })
 );
 
@@ -524,15 +546,20 @@ router.post(
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const { menuItemId } = req.body;
 
-        const { data: exists } = await supabase
+        const { data: existingRows } = await supabase
             .from('user_favorites')
             .select('id')
             .eq('user_id', req.userId)
-            .eq('menu_item_id', menuItemId)
-            .maybeSingle();
+            .eq('menu_item_id', menuItemId);
 
-        if (exists) {
-            await supabase.from('user_favorites').delete().eq('id', exists.id);
+        if (existingRows && existingRows.length > 0) {
+            await supabase
+                .from('user_favorites')
+                .delete()
+                .in(
+                    'id',
+                    existingRows.map(r => r.id)
+                );
             res.json({ isFavorite: false });
         } else {
             // Track in analytics (ignore error if table not migrated yet)

@@ -7,7 +7,7 @@ export const TableDesktopRestriction: React.FC = () => {
     const { t } = useTableI18n();
 
     return (
-        <div className="fixed inset-0 z-[200] bg-black text-white flex flex-col items-center justify-center p-8 text-center overflow-hidden">
+        <div className="fixed inset-0 z-modal bg-black text-white flex flex-col items-center justify-center p-8 text-center overflow-hidden">
             {/* Background Transitions matching screenshot */}
             <div className="absolute inset-0 pointer-events-none overflow-hidden">
                 {/* Center-bottom warm glow */}

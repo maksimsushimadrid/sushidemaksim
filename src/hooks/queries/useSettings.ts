@@ -23,6 +23,9 @@ export interface SiteSettings {
     vacationStartDate?: string;
     vacationEndDate?: string;
     customClosures?: any[];
+    holidayTheme?: 'none' | 'halloween' | 'halloween_wallpaper' | 'new_year' | 'christmas' | 'auto';
+    holidayAnimationsEnabled?: boolean;
+    holidayWallpaperUntil?: string;
 }
 
 export function useSettings() {
@@ -67,6 +70,11 @@ export function useSettings() {
                 vacationStartDate: data.vacationStartDate || '',
                 vacationEndDate: data.vacationEndDate || '',
                 customClosures: Array.isArray(data.customClosures) ? data.customClosures : [],
+                holidayTheme: data.holidayTheme || 'auto',
+                holidayAnimationsEnabled:
+                    data.holidayAnimationsEnabled === 'true' ||
+                    data.holidayAnimationsEnabled === true,
+                holidayWallpaperUntil: data.holidayWallpaperUntil || '2026-11-01',
             };
         },
         staleTime: 1000 * 60 * 60, // 1 hour

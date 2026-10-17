@@ -1,3 +1,4 @@
+import { useModalA11y } from '../hooks/useModalA11y';
 import React, { useState, useEffect, memo, useRef } from 'react';
 import {
     Mail,
@@ -890,6 +891,7 @@ export default function LoginModal({
         | 'loading'
     >(initialMode);
     const [isLoading, setIsLoading] = useState(false);
+    const dialogRef = useModalA11y({ onClose, isOpen });
     const [resetToken, setResetToken] = useState('');
     const [recoveryEmail, setRecoveryEmail] = useState('');
     const { login, register, forgotPassword, resetPassword, loginWithGoogle } = useAuth();
@@ -1067,7 +1069,7 @@ export default function LoginModal({
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-[11000] flex items-center justify-center p-0 md:p-4 isolate">
+                <div className="fixed inset-0 z-modal flex items-center justify-center p-0 md:p-4 isolate">
                     {/* Backdrop — hidden on mobile (full-screen modal), visible on desktop */}
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -1092,6 +1094,8 @@ export default function LoginModal({
                             backgroundSize: '400px',
                             backgroundRepeat: 'repeat',
                         }}
+                        ref={dialogRef}
+                        aria-label="Iniciar sesión"
                         role="dialog"
                         aria-modal="true"
                     >

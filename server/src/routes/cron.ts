@@ -2,7 +2,11 @@ import { Router } from 'express';
 import jwt from 'jsonwebtoken';
 import { supabase } from '../db/supabase.js';
 import { config } from '../config.js';
-import { getMadridStartOfDay, getMadridYesterdayStartOfDay } from '../utils/helpers.js';
+import {
+    getMadridStartOfDay,
+    getMadridYesterdayStartOfDay,
+    isAuthorizedCron,
+} from '../utils/helpers.js';
 import { sendBirthdayGiftEmail, sendUnconfirmedReminderEmail } from '../utils/email.js';
 import { BUSINESS_HOURS } from '../utils/storeStatus.js';
 
@@ -13,11 +17,7 @@ const router = Router();
 
 // CRON job to check birthdays and send 10% discount codes (1 week before and day of)
 router.post('/check-birthdays', async (req, res) => {
-    const cronSecret = req.headers['x-cron-secret'];
-    const authHeader = req.headers['authorization'];
-    const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
-
-    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
+    if (!isAuthorizedCron(req.headers)) {
         return res.status(200).json({ success: false, error: 'Unauthorized (Silent)' });
     }
 
@@ -113,11 +113,7 @@ router.post('/check-birthdays', async (req, res) => {
 
 // Daily report generation (to be called at ~0:05 AM)
 router.post('/generate-daily-report', async (req, res) => {
-    const cronSecret = req.headers['x-cron-secret'];
-    const authHeader = req.headers['authorization'];
-    const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
-
-    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
+    if (!isAuthorizedCron(req.headers)) {
         return res.status(200).json({ success: false, error: 'Unauthorized (Silent)' });
     }
 
@@ -223,11 +219,7 @@ router.post('/generate-daily-report', async (req, res) => {
 
 // CRON job to permanently delete accounts marked for deletion > 30 days ago and prune old analytics logs
 router.post('/cleanup-deleted-users', async (req, res) => {
-    const cronSecret = req.headers['x-cron-secret'];
-    const authHeader = req.headers['authorization'];
-    const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
-
-    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
+    if (!isAuthorizedCron(req.headers)) {
         return res.status(200).json({ success: false, error: 'Unauthorized (Silent)' });
     }
 
@@ -301,11 +293,7 @@ router.post('/check-abandoned-carts', async (req, res) => {
 
 // CRON job to check for unconfirmed registrations (> 12h) and send reminders
 router.post('/check-unconfirmed-users', async (req, res) => {
-    const cronSecret = req.headers['x-cron-secret'];
-    const authHeader = req.headers['authorization'];
-    const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
-
-    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
+    if (!isAuthorizedCron(req.headers)) {
         return res.status(200).json({ success: false, error: 'Unauthorized (Silent)' });
     }
 
@@ -377,11 +365,7 @@ router.post('/check-unconfirmed-users', async (req, res) => {
 
 // CRON job to check for late orders (> 60m from creation and still not delivered)
 router.post('/check-late-orders', async (req, res) => {
-    const cronSecret = req.headers['x-cron-secret'];
-    const authHeader = req.headers['authorization'];
-    const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
-
-    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
+    if (!isAuthorizedCron(req.headers)) {
         return res.status(200).json({ success: false, error: 'Unauthorized (Silent)' });
     }
 
@@ -422,11 +406,7 @@ router.post('/check-late-orders', async (req, res) => {
 });
 // Monthly archival (to be called on the 1st of each month at ~0:10 AM)
 router.post('/monthly-archival', async (req, res) => {
-    const cronSecret = req.headers['x-cron-secret'];
-    const authHeader = req.headers['authorization'];
-    const isVercelCron = authHeader === `Bearer ${process.env.CRON_SECRET}`;
-
-    if (process.env.CRON_SECRET && cronSecret !== process.env.CRON_SECRET && !isVercelCron) {
+    if (!isAuthorizedCron(req.headers)) {
         return res.status(200).json({ success: false, error: 'Unauthorized (Silent)' });
     }
 

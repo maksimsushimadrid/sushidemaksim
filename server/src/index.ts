@@ -6,6 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { config } from './config.js';
 import { supabase } from './db/supabase.js';
+import { escapeHtml, isValidUUID } from './utils/helpers.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { generalLimiter } from './middleware/rateLimiters.js';
 import authRoutes from './routes/auth.js';
@@ -80,6 +81,7 @@ app.use('/api/notifications', notificationsRoutes);
 app.get('/invitacion/:id', async (req, res) => {
     try {
         const { id } = req.params;
+        if (!isValidUUID(id)) return res.redirect('/');
         const { data: order } = await supabase
             .from('orders')
             .select('notes, total')
@@ -87,7 +89,7 @@ app.get('/invitacion/:id', async (req, res) => {
             .single();
 
         const senderMatch = order?.notes?.match(/\[De parte de: (.*?)\]/);
-        const senderName = senderMatch ? senderMatch[1] : 'Tu amigo(a)';
+        const senderName = escapeHtml(senderMatch ? senderMatch[1] : 'Tu amigo(a)');
         const fUrl = config.frontendUrl.replace(/\/$/, '');
         const pandaImg = `${fUrl}/hungry-panda.webp`;
         const finalDest = `${fUrl}/pay-for-friend/${id}`;
@@ -143,9 +145,11 @@ app.get('/compartir/item/:id', async (req, res) => {
         const { data: item } = await supabase.from('menu_items').select('*').eq('id', id).single();
 
         if (!item) return res.redirect('/menu');
+        const safeName = escapeHtml(item.name);
+        const safeDescription = escapeHtml(item.description);
 
         const fUrl = config.frontendUrl.replace(/\/$/, '');
-        const finalDest = `${fUrl}/menu#item-${id}`;
+        const finalDest = `${fUrl}/menu#item-${encodeURIComponent(id)}`;
 
         // Format image URL
         let imageUrl = item.image;
@@ -162,13 +166,13 @@ app.get('/compartir/item/:id', async (req, res) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${item.name} — Sushi de Maksim</title>
-    <meta name="description" content="${item.description}">
+    <title>${safeName} — Sushi de Maksim</title>
+    <meta name="description" content="${safeDescription}">
     
     <!-- WhatsApp / Telegram / Facebook Tags -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="¡Mira este ${item.name} en Sushi de Maksim!">
-    <meta property="og:description" content="${item.description}">
+    <meta property="og:title" content="¡Mira este ${safeName} en Sushi de Maksim!">
+    <meta property="og:description" content="${safeDescription}">
     <meta property="og:image" content="${imageUrl}">
     <meta property="og:image:secure_url" content="${imageUrl}">
     <meta property="og:image:width" content="1200">
@@ -178,8 +182,8 @@ app.get('/compartir/item/:id', async (req, res) => {
     
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="${imageUrl}">
-    <meta name="twitter:title" content="¡Mira este ${item.name} en Sushi de Maksim!">
-    <meta name="twitter:description" content="${item.description}">
+    <meta name="twitter:title" content="¡Mira este ${safeName} en Sushi de Maksim!">
+    <meta name="twitter:description" content="${safeDescription}">
     
     <!-- Redirect to React App -->
     <meta http-equiv="refresh" content="0; url=${finalDest}">
@@ -187,7 +191,7 @@ app.get('/compartir/item/:id', async (req, res) => {
 </head>
 <body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #000;">
     <div style="text-align: center; color: white;">
-        <p style="opacity: 0.6; font-weight: 500;">Cargando ${item.name}...</p>
+        <p style="opacity: 0.6; font-weight: 500;">Cargando ${safeName}...</p>
     </div>
 </body>
 </html>`;

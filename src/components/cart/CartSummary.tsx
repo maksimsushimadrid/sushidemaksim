@@ -64,12 +64,26 @@ export default function CartSummary({
     const details = propDeliveryDetails || contextDeliveryDetails;
     const { deliveryType, address, house, selectedZone } = details;
     const isMinOrderMet = total >= minOrder;
-    const finalTotal =
-        total - (promoDiscount ? (total * promoDiscount) / 100 : 0) + deliveryCost + tipAmount;
-
+    const itemsTotal = total;
+    const itemsCount = items.reduce((s, i) => s + i.quantity, 0);
     const hasAddress = !!address;
     const hasHouse = !!house;
     const hasZone = !!selectedZone;
+    const effectiveDeliveryCost =
+        deliveryType === 'delivery' && hasZone && deliveryCost > 0 ? deliveryCost : 0;
+    const promoDiscountAmount = promoDiscount ? (itemsTotal * promoDiscount) / 100 : 0;
+    const coinsDiscountAmount = coinsSpent || 0;
+    const totalDiscounts = promoDiscountAmount + coinsDiscountAmount;
+    const hasDiscounts = totalDiscounts > 0;
+
+    // Gross amount before any discounts (Products + Delivery + Tip)
+    const grossTotal = itemsTotal + effectiveDeliveryCost + tipAmount;
+
+    // Pre-coins total (used for coins percentage cap calculation: up to 20%)
+    const finalTotal = itemsTotal - promoDiscountAmount + effectiveDeliveryCost + tipAmount;
+
+    // Net total to pay
+    const netTotal = Math.max(0, grossTotal - totalDiscounts);
     const isZoneInvalid = deliveryType === 'delivery' && hasAddress && !hasZone;
     const isAddressMissing = deliveryType === 'delivery' && (!hasAddress || !hasHouse || !hasZone);
     const isDisabled = isOrdering || items.length === 0 || !isMinOrderMet || isAddressMissing;
@@ -96,12 +110,15 @@ export default function CartSummary({
             )}
 
             <div className="flex flex-col gap-3 mb-6">
+                {/* 1. Base charges: Products */}
                 <div className="flex justify-between text-gray-500 text-sm">
-                    <span>Productos ({items.reduce((s, i) => s + i.quantity, 0)} uds.)</span>
+                    <span>Productos ({itemsCount} uds.)</span>
                     <span className="font-bold text-gray-900">
-                        {total.toFixed(2).replace('.', ',')} €
+                        {itemsTotal.toFixed(2).replace('.', ',')} €
                     </span>
                 </div>
+
+                {/* 2. Base charges: Delivery */}
                 {deliveryType === 'delivery' && (
                     <div className="flex justify-between text-gray-500 text-sm animate-in fade-in duration-300">
                         <div className="flex flex-col">
@@ -129,39 +146,74 @@ export default function CartSummary({
                         )}
                     </div>
                 )}
-                {promoDiscount && (
-                    <div className="flex justify-between text-green-600 text-sm animate-in zoom-in duration-300">
-                        <span>Descuento ({promoDiscount}%)</span>
-                        <span className="font-bold">
-                            -{((total * promoDiscount) / 100).toFixed(2).replace('.', ',')} €
-                        </span>
-                    </div>
-                )}
+
+                {/* 3. Base charges: Tip */}
                 {tipAmount > 0 && (
-                    <div className="flex justify-between text-orange-600 text-sm animate-in zoom-in duration-300">
+                    <div className="flex justify-between text-gray-500 text-sm animate-in zoom-in duration-300">
                         <span>Propina equipo</span>
-                        <span className="font-bold">
+                        <span className="font-bold text-gray-900">
                             {tipAmount.toFixed(2).replace('.', ',')} €
                         </span>
                     </div>
                 )}
-                {coinsSpent > 0 && (
-                    <div className="flex justify-between text-green-600 text-sm animate-in zoom-in duration-300">
-                        <span>Maksim Coins</span>
-                        <span className="font-bold">
-                            -{coinsSpent.toFixed(2).replace('.', ',')} €
+
+                {/* 4. Subtotal without discount (Subtotal sin descuento) - Shown when discounts are applied */}
+                {hasDiscounts && (
+                    <div className="flex justify-between items-center py-2 px-3 bg-gray-50/90 rounded-xl border border-gray-100 text-xs font-bold text-gray-600 my-0.5 animate-in fade-in duration-200">
+                        <span className="uppercase tracking-wider text-[11px] text-gray-500">
+                            Subtotal sin descuento
+                        </span>
+                        <span className="font-black text-gray-900 text-sm">
+                            {grossTotal.toFixed(2).replace('.', ',')} €
                         </span>
                     </div>
                 )}
+
+                {/* 5. Discounts breakdown */}
+                {hasDiscounts && (
+                    <div className="flex flex-col gap-2 pt-0.5">
+                        {promoDiscount && promoDiscount > 0 && (
+                            <div className="flex justify-between text-emerald-600 text-sm animate-in zoom-in duration-300">
+                                <span className="font-medium">
+                                    Cupón de descuento ({promoDiscount}%)
+                                </span>
+                                <span className="font-black">
+                                    -{promoDiscountAmount.toFixed(2).replace('.', ',')} €
+                                </span>
+                            </div>
+                        )}
+                        {coinsSpent > 0 && (
+                            <div className="flex justify-between text-emerald-600 text-sm animate-in zoom-in duration-300">
+                                <span className="font-medium">Maksim Coins</span>
+                                <span className="font-black">
+                                    -{coinsSpent.toFixed(2).replace('.', ',')} €
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* 6. Final Total */}
                 <div className="border-t border-gray-200 pt-3 mt-1">
-                    <div className="flex justify-between text-lg font-bold">
-                        <span>Total</span>
+                    <div className="flex justify-between items-end">
+                        <div>
+                            <span className="text-lg font-bold text-gray-900 block leading-tight">
+                                Total
+                            </span>
+                            {hasDiscounts && (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md mt-1 border border-emerald-200/60">
+                                    Ahorro: -{totalDiscounts.toFixed(2).replace('.', ',')} €
+                                </span>
+                            )}
+                        </div>
                         <div className="text-right">
-                            <span className="text-orange-600">
-                                {Math.max(0, finalTotal - coinsSpent)
-                                    .toFixed(2)
-                                    .replace('.', ',')}{' '}
-                                €
+                            {hasDiscounts && (
+                                <span className="text-xs font-bold text-gray-400 line-through block leading-none mb-1">
+                                    {grossTotal.toFixed(2).replace('.', ',')} €
+                                </span>
+                            )}
+                            <span className="text-xl font-black text-orange-600 leading-tight block">
+                                {netTotal.toFixed(2).replace('.', ',')} €
                             </span>
                         </div>
                     </div>

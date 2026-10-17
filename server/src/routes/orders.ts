@@ -8,6 +8,7 @@ import { createOrderSchema, inviteOrderSchema, getOrdersSchema } from '../schema
 import { UAParser } from 'ua-parser-js';
 import { sendOrderReceiptEmail } from '../utils/email.js';
 import { orderLimiter } from '../middleware/rateLimiters.js';
+import { idempotency } from '../middleware/idempotency.js';
 import { isStoreOpen, isTimeWithinBusinessHours } from '../utils/storeStatus.js';
 import { formatOrder } from '../utils/helpers.js';
 
@@ -19,6 +20,7 @@ router.post(
     orderLimiter,
     optionalAuthMiddleware,
     validateResource(createOrderSchema),
+    idempotency('orders:create'),
     asyncHandler(async (req: AuthRequest, res: Response) => {
         const {
             deliveryType = 'delivery',

@@ -13,10 +13,11 @@ export const api = {
         return fetchApi(endpoint, { method: 'GET' });
     },
 
-    async post(endpoint: string, body?: unknown) {
+    async post(endpoint: string, body?: unknown, headers?: Record<string, string>) {
         return fetchApi(endpoint, {
             method: 'POST',
             body: JSON.stringify(body),
+            headers,
         });
     },
 

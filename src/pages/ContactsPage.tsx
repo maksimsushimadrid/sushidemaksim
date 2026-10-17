@@ -313,126 +313,210 @@ export default function ContactsPage() {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="premium-card p-4 md:p-8 mb-8 md:mb-16 bg-white shadow-2xl shadow-gray-200/50"
+                    className="bg-white rounded-3xl p-6 md:p-10 mb-8 md:mb-14 shadow-xl shadow-zinc-200/50 border border-zinc-100"
                 >
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-12 items-center">
-                        {/* Column 1: Info List */}
-                        <div className="space-y-8 md:space-y-10">
-                            <div>
-                                <h3 className="text-xs font-black text-orange-600 uppercase tracking-[0.2em] mb-6">
-                                    Información de Contacto
-                                </h3>
-                                <div className="space-y-6 md:space-y-8">
-                                    {/* Phone Row */}
-                                    <div className="flex items-center gap-4 md:gap-5 group">
-                                        <div className="w-10 h-10 md:w-12 md:h-12 bg-amber-100/50 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
-                                            <Phone size={20} className="text-amber-600" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5 md:mb-1">
-                                                Llámanos
-                                            </p>
-                                            <a
-                                                href={`tel:${currentPhone.replace(/\s/g, '')}`}
-                                                className="text-lg md:text-2xl font-black text-gray-900 block hover:text-orange-600 transition-colors"
-                                            >
-                                                {currentPhone}
-                                            </a>
-                                        </div>
-                                    </div>
+                    {/* Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-6 border-b border-zinc-100 mb-8">
+                        <div>
+                            <div className="flex items-center gap-2 mb-1.5">
+                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-600">
+                                    Atención directa
+                                </span>
+                            </div>
+                            <h2 className="text-xl md:text-2xl font-black text-zinc-900 tracking-tight">
+                                Canales de Contacto Directo
+                            </h2>
+                        </div>
+                        <p className="text-xs md:text-sm text-zinc-400 font-medium max-w-xs sm:text-right">
+                            Estamos disponibles para tus consultas, pedidos especiales y reservas.
+                        </p>
+                    </div>
 
-                                    {/* Address Row */}
-                                    <div className="flex items-center gap-4 md:gap-5 group">
-                                        <div className="w-10 h-10 md:w-12 md:h-12 bg-blue-100/50 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
-                                            <MapPin size={20} className="text-blue-600" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5 md:mb-1">
-                                                Visítanos
-                                            </p>
-                                            <a
-                                                href={mapsUrl}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="text-base md:text-xl font-bold text-gray-900 block hover:text-orange-600 transition-colors leading-tight"
-                                            >
-                                                {fullAddress}
-                                            </a>
-                                        </div>
-                                    </div>
+                    {/* Unified 2-Column Grid (No nested blocks, no pastel squares) */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12">
+                        {/* Column 1: Atención Telefónica & Ubicación */}
+                        <div className="space-y-3">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 block px-1 mb-2">
+                                Llamadas & Ubicación
+                            </span>
 
-                                    {/* Email Row */}
-                                    <div className="flex items-center gap-4 md:gap-5 group">
-                                        <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-100/50 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform duration-300">
-                                            <Mail size={20} className="text-orange-600" />
-                                        </div>
-                                        <div>
-                                            <p className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest mb-0.5 md:mb-1">
-                                                Escríbenos
-                                            </p>
-                                            <a
-                                                href={`mailto:${currentEmail}`}
-                                                className="text-base md:text-xl font-bold text-gray-900 block hover:text-orange-600 transition-colors"
-                                            >
-                                                {currentEmail}
-                                            </a>
-                                        </div>
+                            {/* Phone */}
+                            <a
+                                href={`tel:${currentPhone.replace(/\s/g, '')}`}
+                                className="flex items-center justify-between p-3 rounded-2xl hover:bg-zinc-50 border border-transparent hover:border-zinc-200/70 transition-all group"
+                            >
+                                <div className="flex items-center gap-3.5 min-w-0">
+                                    <div className="w-11 h-11 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shrink-0 group-hover:bg-orange-500 group-hover:text-white transition-all">
+                                        <Phone size={20} strokeWidth={2.2} />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <span className="text-[10px] font-black uppercase tracking-wider text-zinc-400 block mb-0.5">
+                                            Teléfono
+                                        </span>
+                                        <span className="text-base md:text-lg font-black text-zinc-900 group-hover:text-orange-600 transition-colors block truncate">
+                                            {currentPhone}
+                                        </span>
                                     </div>
                                 </div>
-                            </div>
+                                <span className="text-xs font-bold text-orange-600 bg-orange-50 px-3 py-1.5 rounded-xl shrink-0 group-hover:bg-orange-600 group-hover:text-white transition-all flex items-center gap-1.5 ml-2">
+                                    Llamar
+                                    <ArrowRight
+                                        size={13}
+                                        className="group-hover:translate-x-0.5 transition-transform"
+                                    />
+                                </span>
+                            </a>
+
+                            {/* Address */}
+                            <a
+                                href={mapsUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-between p-3 rounded-2xl hover:bg-zinc-50 border border-transparent hover:border-zinc-200/70 transition-all group"
+                            >
+                                <div className="flex items-center gap-3.5 min-w-0">
+                                    <div className="w-11 h-11 rounded-xl bg-zinc-100 text-zinc-700 flex items-center justify-center shrink-0 group-hover:bg-zinc-900 group-hover:text-white transition-all">
+                                        <MapPin size={20} strokeWidth={2.2} />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <span className="text-[10px] font-black uppercase tracking-wider text-zinc-400 block mb-0.5">
+                                            Visítanos en Madrid
+                                        </span>
+                                        <span className="text-sm md:text-base font-bold text-zinc-900 group-hover:text-orange-600 transition-colors block truncate">
+                                            {fullAddress}
+                                        </span>
+                                    </div>
+                                </div>
+                                <span className="text-xs font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-xl shrink-0 group-hover:bg-zinc-900 group-hover:text-white transition-all flex items-center gap-1.5 ml-2">
+                                    Maps
+                                    <ArrowRight
+                                        size={13}
+                                        className="group-hover:translate-x-0.5 transition-transform"
+                                    />
+                                </span>
+                            </a>
+
+                            {/* Email */}
+                            <a
+                                href={`mailto:${currentEmail}`}
+                                className="flex items-center justify-between p-3 rounded-2xl hover:bg-zinc-50 border border-transparent hover:border-zinc-200/70 transition-all group"
+                            >
+                                <div className="flex items-center gap-3.5 min-w-0">
+                                    <div className="w-11 h-11 rounded-xl bg-zinc-100 text-zinc-700 flex items-center justify-center shrink-0 group-hover:bg-zinc-900 group-hover:text-white transition-all">
+                                        <Mail size={20} strokeWidth={2.2} />
+                                    </div>
+                                    <div className="min-w-0">
+                                        <span className="text-[10px] font-black uppercase tracking-wider text-zinc-400 block mb-0.5">
+                                            Correo electrónico
+                                        </span>
+                                        <span className="text-sm md:text-base font-bold text-zinc-900 group-hover:text-orange-600 transition-colors block truncate">
+                                            {currentEmail}
+                                        </span>
+                                    </div>
+                                </div>
+                                <span className="text-xs font-bold text-zinc-600 bg-zinc-100 px-3 py-1.5 rounded-xl shrink-0 group-hover:bg-zinc-900 group-hover:text-white transition-all flex items-center gap-1.5 ml-2">
+                                    Escribir
+                                    <ArrowRight
+                                        size={13}
+                                        className="group-hover:translate-x-0.5 transition-transform"
+                                    />
+                                </span>
+                            </a>
                         </div>
 
-                        {/* Column 2: Social Sidebar */}
-                        <div className="bg-gray-50 rounded-xl md:rounded-[2.5rem] p-6 md:p-10 border border-gray-100/50 flex flex-col items-center justify-center text-center h-full">
-                            <h3 className="text-xl md:text-2xl font-black text-gray-900 mb-2 uppercase tracking-tight">
-                                Conecta con nosotros
-                            </h3>
-                            <p className="text-gray-500 text-xs md:text-sm mb-8 leading-relaxed font-medium max-w-[240px]">
-                                Respuesta rápida por WhatsApp y Telegram.
-                            </p>
+                        {/* Column 2: Mensajería Instantánea & Redes */}
+                        <div className="space-y-3">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 block px-1 mb-2">
+                                Mensajería & Redes Sociales
+                            </span>
 
-                            <div className="flex items-center justify-center gap-6 md:gap-8 mb-8">
-                                <a
-                                    href={`https://wa.me/${currentPhone.replace(/\s/g, '').replace('+', '')}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="w-14 h-14 md:w-16 md:h-16 bg-emerald-500 rounded-full flex items-center justify-center text-white hover:scale-110 hover:-rotate-6 transition-all duration-300 shadow-lg shadow-emerald-500/20 active:scale-95"
-                                    title="WhatsApp"
-                                >
-                                    {iconMap.whatsapp({ size: 28, strokeWidth: 2.5 })}
-                                </a>
-
-                                <a
-                                    href="https://t.me/sushidemaksim"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="w-14 h-14 md:w-16 md:h-16 bg-blue-500 rounded-full flex items-center justify-center text-white hover:scale-110 hover:rotate-6 transition-all duration-300 shadow-lg shadow-blue-500/20 active:scale-95"
-                                    title="Telegram"
-                                >
-                                    {iconMap.telegram({ size: 28, strokeWidth: 2.5 })}
-                                </a>
-
-                                <a
-                                    href="https://www.instagram.com/sushi_de_maksim/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="w-14 h-14 md:w-16 md:h-16 bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white hover:scale-110 hover:-rotate-6 transition-all duration-300 shadow-lg shadow-pink-500/20 active:scale-95"
-                                    title="Instagram"
-                                >
-                                    {iconMap.instagram({ size: 28, strokeWidth: 2.5 })}
-                                </a>
-                            </div>
-
-                            <button
-                                onClick={() => {
-                                    const element = document.getElementById('contact-form-section');
-                                    element?.scrollIntoView({ behavior: 'smooth' });
-                                }}
-                                className="w-full py-4 md:py-5 bg-gray-900 text-white rounded-2xl font-black text-xs md:text-sm uppercase tracking-[0.2em] hover:bg-black transition-all flex items-center justify-center gap-3 active:scale-95 shadow-xl shadow-gray-200"
+                            {/* WhatsApp */}
+                            <a
+                                href={`https://wa.me/${currentPhone.replace(/\s/g, '').replace('+', '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-between p-3 rounded-2xl hover:bg-emerald-50/50 border border-transparent hover:border-emerald-200/70 transition-all group"
                             >
-                                Contactar ahora
-                                <ArrowRight size={18} />
-                            </button>
+                                <div className="flex items-center gap-3.5 min-w-0">
+                                    <div className="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:bg-emerald-500 group-hover:text-white transition-all">
+                                        {iconMap.whatsapp({ size: 22, strokeWidth: 2.2 })}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600 block mb-0.5">
+                                            WhatsApp · Respuesta rápida
+                                        </span>
+                                        <span className="text-base md:text-lg font-black text-zinc-900 group-hover:text-emerald-600 transition-colors block truncate">
+                                            Iniciar conversación
+                                        </span>
+                                    </div>
+                                </div>
+                                <span className="text-xs font-bold text-emerald-700 bg-emerald-100/70 px-3 py-1.5 rounded-xl shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-all flex items-center gap-1.5 ml-2">
+                                    Chat
+                                    <ArrowRight
+                                        size={13}
+                                        className="group-hover:translate-x-0.5 transition-transform"
+                                    />
+                                </span>
+                            </a>
+
+                            {/* Telegram */}
+                            <a
+                                href="https://t.me/sushidemaksim"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-between p-3 rounded-2xl hover:bg-sky-50/50 border border-transparent hover:border-sky-200/70 transition-all group"
+                            >
+                                <div className="flex items-center gap-3.5 min-w-0">
+                                    <div className="w-11 h-11 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center shrink-0 group-hover:bg-sky-500 group-hover:text-white transition-all">
+                                        {iconMap.telegram({ size: 22, strokeWidth: 2.2 })}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <span className="text-[10px] font-black uppercase tracking-wider text-sky-600 block mb-0.5">
+                                            Telegram · Canal oficial
+                                        </span>
+                                        <span className="text-base md:text-lg font-black text-zinc-900 group-hover:text-sky-600 transition-colors block truncate">
+                                            @sushidemaksim
+                                        </span>
+                                    </div>
+                                </div>
+                                <span className="text-xs font-bold text-sky-700 bg-sky-100/70 px-3 py-1.5 rounded-xl shrink-0 group-hover:bg-sky-600 group-hover:text-white transition-all flex items-center gap-1.5 ml-2">
+                                    Abrir
+                                    <ArrowRight
+                                        size={13}
+                                        className="group-hover:translate-x-0.5 transition-transform"
+                                    />
+                                </span>
+                            </a>
+
+                            {/* Instagram */}
+                            <a
+                                href="https://www.instagram.com/sushi_de_maksim/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center justify-between p-3 rounded-2xl hover:bg-pink-50/40 border border-transparent hover:border-pink-200/70 transition-all group"
+                            >
+                                <div className="flex items-center gap-3.5 min-w-0">
+                                    <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-yellow-500/10 via-pink-500/10 to-purple-600/10 text-pink-600 flex items-center justify-center shrink-0 group-hover:bg-gradient-to-tr group-hover:from-yellow-400 group-hover:via-pink-500 group-hover:to-purple-600 group-hover:text-white transition-all">
+                                        {iconMap.instagram({ size: 22, strokeWidth: 2.2 })}
+                                    </div>
+                                    <div className="min-w-0">
+                                        <span className="text-[10px] font-black uppercase tracking-wider text-pink-600 block mb-0.5">
+                                            Instagram · Galería & Novedades
+                                        </span>
+                                        <span className="text-base md:text-lg font-black text-zinc-900 group-hover:text-pink-600 transition-colors block truncate">
+                                            @sushi_de_maksim
+                                        </span>
+                                    </div>
+                                </div>
+                                <span className="text-xs font-bold text-pink-700 bg-pink-100/70 px-3 py-1.5 rounded-xl shrink-0 group-hover:bg-pink-600 group-hover:text-white transition-all flex items-center gap-1.5 ml-2">
+                                    Seguir
+                                    <ArrowRight
+                                        size={13}
+                                        className="group-hover:translate-x-0.5 transition-transform"
+                                    />
+                                </span>
+                            </a>
                         </div>
                     </div>
                 </motion.div>
@@ -582,7 +666,7 @@ export default function ContactsPage() {
                                 <MapContainer
                                     center={[40.397042, -3.672449]}
                                     zoom={16}
-                                    style={{ width: '100%', height: '100%' }}
+                                    style={{ width: '100%', height: '100%', zIndex: 0 }}
                                     zoomControl={false}
                                 >
                                     <MapResizer />
@@ -632,7 +716,7 @@ export default function ContactsPage() {
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     aria-label="Abrir navegación en Google Maps"
-                                    className="absolute bottom-4 right-4 z-[400] flex items-center gap-2.5 bg-gray-900/90 hover:bg-black text-white px-4 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider backdrop-blur-md shadow-2xl border border-white/10 transition-all hover:scale-105 active:scale-95 group/nav"
+                                    className="absolute bottom-4 right-4 z-10 flex items-center gap-2.5 bg-gray-900/90 hover:bg-black text-white px-4 py-2.5 rounded-2xl text-xs font-black uppercase tracking-wider backdrop-blur-md shadow-2xl border border-white/10 transition-all hover:scale-105 active:scale-95 group/nav"
                                 >
                                     <Navigation
                                         size={14}
@@ -650,7 +734,7 @@ export default function ContactsPage() {
                                     href={mapsUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="absolute top-4 left-4 z-[400] hidden sm:flex items-center gap-2 bg-white/95 hover:bg-white text-gray-900 px-3.5 py-1.5 rounded-xl text-[11px] font-bold shadow-md backdrop-blur-md border border-gray-100 transition-all hover:shadow-lg hover:border-orange-200"
+                                    className="absolute top-4 left-4 z-10 hidden sm:flex items-center gap-2 bg-white/95 hover:bg-white text-gray-900 px-3.5 py-1.5 rounded-xl text-[11px] font-bold shadow-md backdrop-blur-md border border-gray-100 transition-all hover:shadow-lg hover:border-orange-200"
                                 >
                                     <MapPin size={13} className="text-orange-600" />
                                     <span>{fullAddress}</span>

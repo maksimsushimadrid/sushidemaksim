@@ -98,7 +98,7 @@ export const MenuSkeleton = () => (
                 </div>
 
                 {/* Mobile Categories Scroll Skeleton (Hidden on desktop) */}
-                <div className="mb-8 md:hidden fixed left-0 right-0 top-[64px] z-[40] bg-[#FBF7F0] border-b border-gray-200 py-3">
+                <div className="mb-8 md:hidden fixed left-0 right-0 top-[64px] z-sticky bg-[#FBF7F0] border-b border-gray-200 py-3">
                     <div className="flex gap-2 px-4 overflow-hidden">
                         {[1, 2, 3, 4, 5].map(i => (
                             <div

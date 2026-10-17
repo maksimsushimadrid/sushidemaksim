@@ -94,7 +94,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={handleClose}
-                        className="fixed inset-0 bg-black/60 z-[100] backdrop-blur-md"
+                        className="fixed inset-0 bg-black/60 z-backdrop backdrop-blur-md"
                     />
 
                     {/* Drawer */}
@@ -103,7 +103,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                        className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-[#0A0A0A] z-[101] shadow-2xl flex flex-col border-l border-white/5"
+                        className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-[#0A0A0A] z-modal shadow-2xl flex flex-col border-l border-white/5"
                     >
                         {isOrderConfirmed ? (
                             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-gradient-to-b from-orange-600/10 to-transparent">
@@ -383,7 +383,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm"
+                                className="fixed inset-0 z-popover flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm"
                             >
                                 <motion.div
                                     initial={{ scale: 0.9, opacity: 0, y: 20 }}

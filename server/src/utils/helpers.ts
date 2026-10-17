@@ -1,3 +1,4 @@
+import { timingSafeEqual } from 'crypto';
 /**
  * Shared helpers used across multiple route files.
  * Provides clean camelCase formatting for frontend consumption.
@@ -372,4 +373,33 @@ export function calculateUserStats(userOrders: any[]) {
         frequency,
         favoriteDish,
     };
+}
+
+/** Escape a string for safe interpolation into HTML text or attribute values. */
+export function escapeHtml(value: unknown): string {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+/**
+ * Fail-closed check for CRON endpoints. Requires CRON_SECRET to be configured and
+ * matched via `x-cron-secret` header or `Authorization: Bearer <secret>` (Vercel Cron).
+ */
+export function isAuthorizedCron(headers: Record<string, unknown>): boolean {
+    const secret = process.env.CRON_SECRET;
+    if (!secret) return false;
+    const safeEq = (a: unknown, expected: string) => {
+        if (typeof a !== 'string') return false;
+        const bufA = Buffer.from(a);
+        const bufB = Buffer.from(expected);
+        return bufA.length === bufB.length && timingSafeEqual(bufA, bufB);
+    };
+    return (
+        safeEq(headers['x-cron-secret'], secret) ||
+        safeEq(headers['authorization'], `Bearer ${secret}`)
+    );
 }

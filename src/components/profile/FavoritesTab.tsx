@@ -20,15 +20,21 @@ export default function FavoritesTab() {
         setLoading(true);
         try {
             const data = await api.get('/user/favorites');
-            // Normalize data if necessary (e.g., is_promo -> isPromo)
-            const normalized = (data.favorites || []).map((item: any) => ({
-                ...item,
-                isPromo: item.isPromo ?? item.is_promo,
-                isPopular: item.isPopular ?? item.is_popular,
-                isChefChoice: item.isChefChoice ?? item.is_chef_choice,
-                isNew: item.isNew ?? item.is_new,
-            }));
-            setFavorites(normalized);
+            // Filter valid items and deduplicate by item.id to prevent duplicate React keys
+            const seen = new Set<number>();
+            const uniqueFavorites: MenuItem[] = [];
+            for (const item of data.favorites || []) {
+                if (!item || !item.id || seen.has(item.id)) continue;
+                seen.add(item.id);
+                uniqueFavorites.push({
+                    ...item,
+                    isPromo: item.isPromo ?? item.is_promo,
+                    isPopular: item.isPopular ?? item.is_popular,
+                    isChefChoice: item.isChefChoice ?? item.is_chef_choice,
+                    isNew: item.isNew ?? item.is_new,
+                });
+            }
+            setFavorites(uniqueFavorites);
         } catch (error) {
             console.error('Failed to load favorites', error);
         } finally {
@@ -130,7 +136,7 @@ export default function FavoritesTab() {
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-0">
+        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-2 sm:px-3 md:px-0">
             {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5 mb-6">
                 <div>

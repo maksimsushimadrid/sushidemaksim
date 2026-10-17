@@ -373,7 +373,7 @@ const StatCard = ({
                                                 initial={{ opacity: 0, y: 5, scale: 0.95 }}
                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                                 exit={{ opacity: 0, y: 5, scale: 0.95 }}
-                                                className={`absolute bottom-full mb-3 w-72 bg-slate-900 text-white rounded-2xl shadow-2xl z-[100] overflow-visible border border-white/20 backdrop-blur-sm ${alignRight ? 'right-0' : 'left-0'}`}
+                                                className={`absolute bottom-full mb-3 w-72 bg-slate-900 text-white rounded-2xl shadow-2xl z-popover overflow-visible border border-white/20 backdrop-blur-sm ${alignRight ? 'right-0' : 'left-0'}`}
                                                 style={{
                                                     transformOrigin: alignRight
                                                         ? 'bottom right'
@@ -485,7 +485,7 @@ const StatCard = ({
             {/* Detailed Expanded Modal */}
             <AnimatePresence>
                 {isModalOpen && (
-                    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+                    <div className="fixed inset-0 z-modal flex items-center justify-center p-4">
                         {/* Backdrop */}
                         <motion.div
                             initial={{ opacity: 0 }}
@@ -1288,7 +1288,7 @@ export default function AdminDashboard({
             {/* Weekly Details Modal */}
             <AnimatePresence>
                 {selectedWeek && (
-                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-modal flex items-center justify-center p-4">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             animate={{ opacity: 1, scale: 1 }}

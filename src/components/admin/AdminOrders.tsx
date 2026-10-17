@@ -383,7 +383,8 @@ export default function AdminOrders({
             }
             return await api.get(url);
         },
-        refetchInterval: false,
+        refetchInterval: 15000,
+        refetchOnWindowFocus: true,
     });
 
     const orders = data?.orders || [];
@@ -409,6 +410,8 @@ export default function AdminOrders({
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-pending-monitor'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
         },
     });
 
@@ -418,6 +421,7 @@ export default function AdminOrders({
         mutationFn: (id: string) => api.delete(`/admin/orders/${id}`),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-pending-monitor'] });
             queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
             queryClient.invalidateQueries({ queryKey: ['admin-analytics'] });
             toastSuccess(
@@ -438,6 +442,7 @@ export default function AdminOrders({
         mutationFn: (id: string) => api.patch(`/admin/orders/${id}/restore`, {}),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-pending-monitor'] });
             queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
             queryClient.invalidateQueries({ queryKey: ['admin-analytics'] });
             toastSuccess(language === 'ru' ? 'Заказ восстановлен' : 'Pedido restaurado');
@@ -567,7 +572,12 @@ export default function AdminOrders({
                                 {t.testSoundWeb}
                             </button>
                             <button
-                                onClick={() => refetch()}
+                                onClick={() => {
+                                    refetch();
+                                    queryClient.invalidateQueries({
+                                        queryKey: ['admin-pending-monitor'],
+                                    });
+                                }}
                                 className="shrink-0 flex-1 sm:flex-none flex items-center justify-center p-3 text-gray-500 hover:text-gray-900 bg-gray-50 hover:bg-white border border-gray-100 hover:border-gray-200 rounded-xl transition-all shadow-sm active:scale-95"
                                 title={t.refresh}
                             >
@@ -1000,7 +1010,16 @@ export default function AdminOrders({
                                                             </div>
                                                         </div>
                                                         <div className="flex items-center gap-3">
-                                                            <p className="text-sm text-gray-900 font-black tabular-nums">
+                                                            <p
+                                                                onClick={() => {
+                                                                    setFilter('all');
+                                                                    setSearch(
+                                                                        order.phoneNumber || ''
+                                                                    );
+                                                                }}
+                                                                className="text-sm text-gray-900 font-black tabular-nums cursor-pointer hover:text-orange-600 transition-colors"
+                                                                title="Buscar por teléfono"
+                                                            >
                                                                 {order.phoneNumber}
                                                             </p>
                                                             <a
@@ -1022,11 +1041,10 @@ export default function AdminOrders({
                                                         {order.users?.email && (
                                                             <p
                                                                 onClick={() => {
-                                                                    const emailName =
-                                                                        order.users?.email?.split(
-                                                                            '@'
-                                                                        )[0] || '';
-                                                                    setSearch(emailName);
+                                                                    setFilter('all');
+                                                                    setSearch(
+                                                                        order.users?.email || ''
+                                                                    );
                                                                 }}
                                                                 className="text-[11px] font-bold text-gray-400 mt-2 bg-gray-50 px-2 py-1 rounded-lg w-fit border border-gray-100 cursor-pointer hover:bg-orange-50 hover:text-orange-600 hover:border-orange-200 transition-all active:scale-95 select-none"
                                                                 title="Buscar por email"

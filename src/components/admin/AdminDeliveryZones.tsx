@@ -292,7 +292,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                     <MapContainer
                         center={RESTAURANT_LOCATION}
                         zoom={14}
-                        style={{ height: '100%', width: '100%', borderRadius: '12px' }}
+                        style={{ height: '100%', width: '100%', borderRadius: '12px', zIndex: 0 }}
                         attributionControl={false}
                     >
                         <TileLayer
@@ -476,7 +476,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                 editingZone &&
                 createPortal(
                     <div
-                        className="fixed inset-0 z-[9999] bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
+                        className="fixed inset-0 z-modal bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
                         onClick={e => {
                             if (e.target === e.currentTarget) setIsModalOpen(false);
                         }}

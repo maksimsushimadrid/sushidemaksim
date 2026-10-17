@@ -57,7 +57,7 @@ export default function DeleteConfirmationModal({
         <AnimatePresence>
             {isOpen && (
                 <div
-                    className="fixed inset-0 z-[200] bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
+                    className="fixed inset-0 z-popover bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
                     onClick={e => {
                         if (e.target === e.currentTarget) onClose();
                     }}

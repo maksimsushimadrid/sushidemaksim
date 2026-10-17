@@ -73,6 +73,8 @@ const RESERVATIONS_TRANSLATIONS = {
             delete: 'Удалить',
             whatsapp: 'WhatsApp',
         },
+        refresh: 'Обновить',
+        listRefreshed: 'Список обновлен',
         createdAt: 'Создано:',
     },
     es: {
@@ -109,6 +111,8 @@ const RESERVATIONS_TRANSLATIONS = {
             delete: 'Eliminar',
             whatsapp: 'WhatsApp',
         },
+        refresh: 'Actualizar',
+        listRefreshed: 'Lista actualizada',
         createdAt: 'Creado:',
     },
 } as const;
@@ -138,17 +142,33 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
         };
     }, [reservationToDelete]);
 
-    const { data, isLoading } = useQuery({
+    const { data, isLoading, isFetching } = useQuery({
         queryKey: ['admin-reservations', filter],
         queryFn: () => api.get(`/admin/reservations${filter !== 'all' ? `?status=${filter}` : ''}`),
-        refetchInterval: false,
+        refetchInterval: 20000,
+        refetchOnWindowFocus: true,
     });
+
+    const handleRefresh = async () => {
+        const now = new Date().toISOString();
+        localStorage.setItem('admin_last_reservations_view', now);
+        await Promise.all([
+            queryClient.invalidateQueries({ queryKey: ['admin-reservations'] }),
+            queryClient.invalidateQueries({ queryKey: ['admin-pending-res-monitor'] }),
+            queryClient.invalidateQueries({ queryKey: ['admin-stats'] }),
+        ]);
+        showSuccess(t.listRefreshed);
+    };
 
     const updateMutation = useMutation({
         mutationFn: ({ id, status, notes }: { id: string; status?: string; notes?: string }) =>
             api.patch(`/admin/reservations/${id}`, { status, notes }),
         onSuccess: () => {
+            const now = new Date().toISOString();
+            localStorage.setItem('admin_last_reservations_view', now);
             queryClient.invalidateQueries({ queryKey: ['admin-reservations'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-pending-res-monitor'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
             showSuccess(language === 'ru' ? 'Обновлено успешно' : 'Actualizado con éxito');
         },
         onError: (err: any) => {
@@ -163,7 +183,11 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
     const deleteMutation = useMutation({
         mutationFn: (id: string) => api.delete(`/admin/reservations/${id}`),
         onSuccess: () => {
+            const now = new Date().toISOString();
+            localStorage.setItem('admin_last_reservations_view', now);
             queryClient.invalidateQueries({ queryKey: ['admin-reservations'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-pending-res-monitor'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-stats'] });
             setReservationToDelete(null);
             showSuccess(language === 'ru' ? 'Удалено успешно' : 'Eliminado con éxito');
         },
@@ -261,20 +285,35 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                         className="w-full pl-14 pr-6 py-4 bg-white border border-gray-100 rounded-2xl text-sm font-black text-gray-900 focus:bg-white focus:border-orange-400 focus:ring-4 focus:ring-orange-50 outline-none transition-all shadow-inner"
                     />
                 </div>
-                <div className="flex gap-2 w-full md:w-auto overflow-x-auto no-scrollbar pb-1 md:pb-0">
-                    {['all', 'pending', 'confirmed', 'cancelled'].map(s => (
-                        <button
-                            key={s}
-                            onClick={() => setFilter(s)}
-                            className={`px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 shadow-sm ${
-                                filter === s
-                                    ? 'bg-gray-900 text-white shadow-lg'
-                                    : 'bg-gray-50 text-gray-400 border border-gray-100 hover:bg-white hover:text-gray-900'
-                            }`}
-                        >
-                            {s === 'all' ? t.filters.all : t.filters[s as keyof typeof t.filters]}
-                        </button>
-                    ))}
+                <div className="flex items-center gap-3 w-full md:w-auto">
+                    <div className="flex gap-2 flex-1 md:flex-none overflow-x-auto no-scrollbar pb-1 md:pb-0">
+                        {['all', 'pending', 'confirmed', 'cancelled'].map(s => (
+                            <button
+                                key={s}
+                                onClick={() => setFilter(s)}
+                                className={`px-6 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap active:scale-95 shadow-sm ${
+                                    filter === s
+                                        ? 'bg-gray-900 text-white shadow-lg'
+                                        : 'bg-gray-50 text-gray-400 border border-gray-100 hover:bg-white hover:text-gray-900'
+                                }`}
+                            >
+                                {s === 'all'
+                                    ? t.filters.all
+                                    : t.filters[s as keyof typeof t.filters]}
+                            </button>
+                        ))}
+                    </div>
+                    <button
+                        onClick={handleRefresh}
+                        className="p-4 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-white border border-gray-100 rounded-2xl transition-all active:scale-95 shadow-sm shrink-0"
+                        title={t.refresh}
+                    >
+                        <RefreshCw
+                            size={18}
+                            strokeWidth={2.5}
+                            className={isFetching ? 'animate-spin text-orange-600' : ''}
+                        />
+                    </button>
                 </div>
             </div>
 
@@ -455,7 +494,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
             {reservationToDelete &&
                 createPortal(
                     <div
-                        className="fixed inset-0 z-[9999] bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
+                        className="fixed inset-0 z-popover bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-10 px-4 flex justify-center items-center"
                         onClick={e => {
                             if (e.target === e.currentTarget) setReservationToDelete(null);
                         }}

@@ -22,7 +22,10 @@ export const useScrollLock = (isLocked: boolean) => {
 
             // Prevent touch dragging background on iOS Safari
             const preventTouchMove = (e: TouchEvent) => {
-                const target = e.target as HTMLElement | null;
+                const target =
+                    e.target instanceof Element
+                        ? e.target
+                        : (e.target as Node | null)?.parentElement;
                 if (target && target.closest('.allow-modal-scroll')) {
                     return; // Allow scroll inside modal scrollable container
                 }

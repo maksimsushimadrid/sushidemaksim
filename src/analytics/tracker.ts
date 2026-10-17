@@ -22,6 +22,8 @@ export type EventName =
     | 'user_idle_end'
     | 'form_focus';
 
+import { safeRandomUUID } from '../utils/uuid';
+
 /**
  * Service for tracking user progress and interactions.
  */
@@ -32,12 +34,22 @@ class AnalyticsTracker {
 
     constructor() {
         // Look for existing session or generate a new one
-        let sid =
-            sessionStorage.getItem('analytics_session_id') ||
-            sessionStorage.getItem('funnel_session_id');
+        let sid: string | null = null;
+        try {
+            sid =
+                sessionStorage.getItem('analytics_session_id') ||
+                sessionStorage.getItem('funnel_session_id');
+        } catch {
+            // Private browsing or restricted sandbox
+        }
+
         if (!sid) {
-            sid = crypto.randomUUID();
-            sessionStorage.setItem('analytics_session_id', sid);
+            sid = safeRandomUUID();
+            try {
+                sessionStorage.setItem('analytics_session_id', sid);
+            } catch {
+                // Ignore storage failure
+            }
         }
         this.sessionId = sid;
 
@@ -79,8 +91,12 @@ class AnalyticsTracker {
      * Resets the session (call after successful order to start fresh)
      */
     resetSession() {
-        this.sessionId = crypto.randomUUID();
-        sessionStorage.setItem('analytics_session_id', this.sessionId);
+        this.sessionId = safeRandomUUID();
+        try {
+            sessionStorage.setItem('analytics_session_id', this.sessionId);
+        } catch {
+            // Ignore storage failure
+        }
         this.sentSteps.clear();
     }
 }

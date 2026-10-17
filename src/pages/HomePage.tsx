@@ -2,7 +2,6 @@ import { lazy, Suspense, useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import SEO from '../components/SEO';
-import RatingsBanner from '../components/RatingsBanner';
 import { useCart } from '../hooks/useCart';
 import { usePopularItems, useCategories, MenuItem } from '../hooks/queries/useMenu';
 import ShareModal from '../components/menu/ShareModal';
@@ -24,6 +23,11 @@ const CategoriesGrid = lazy(() =>
 );
 const PromosSection = lazy(() =>
     import('../components/home/PromosSection').then(m => ({ default: m.PromosSection }))
+);
+const SpecialAnnouncements = lazy(() =>
+    import('../components/home/SpecialAnnouncements').then(m => ({
+        default: m.SpecialAnnouncements,
+    }))
 );
 const PopularItems = lazy(() =>
     import('../components/home/PopularItems').then(m => ({ default: m.PopularItems }))
@@ -272,9 +276,11 @@ export default function HomePage() {
             <div className="bg-black">
                 <HeroSection />
                 <Marquee />
+                <Suspense fallback={null}>
+                    <SpecialAnnouncements />
+                </Suspense>
             </div>
 
-            <RatingsBanner />
             <Suspense fallback={null}>
                 <PressSection />
             </Suspense>

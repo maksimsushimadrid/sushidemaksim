@@ -75,7 +75,7 @@ export default function MenuCategoryBar({
         return (
             <motion.div
                 initial={false}
-                className="fixed left-0 right-0 z-[40] bg-[#FBF7F0] border-b border-gray-200 md:hidden shadow-sm select-none pt-[1px]"
+                className="fixed left-0 right-0 z-sticky bg-[#FBF7F0] border-b border-gray-200 md:hidden shadow-sm select-none pt-[1px]"
                 style={{ top: 'calc(var(--header-height, 64px) - 1px)' }}
             >
                 <div className="max-w-7xl mx-auto">

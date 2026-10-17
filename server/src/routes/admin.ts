@@ -436,22 +436,38 @@ router.get(
         }
 
         if (search) {
-            const searchNum = parseInt(search);
-            const isUUID = search.includes('-') && search.length > 20;
+            const sanitizedSearch = search.replace(/,/g, ' ').trim();
 
-            if (!isNaN(searchNum) && searchNum.toString() === search) {
-                query = query.or(
-                    `id.eq.${searchNum},phone_number.ilike.%${search}%,delivery_address.ilike.%${search}%,promo_code.ilike.%${search}%`
-                );
-            } else if (isUUID) {
-                query = query.or(
-                    `user_id.eq.${search},phone_number.ilike.%${search}%,delivery_address.ilike.%${search}%,promo_code.ilike.%${search}%`
-                );
-            } else {
-                query = query.or(
-                    `phone_number.ilike.%${search}%,delivery_address.ilike.%${search}%,promo_code.ilike.%${search}%`
-                );
+            // Find matching users by email or name
+            const { data: matchedUsers } = await supabase
+                .from('users')
+                .select('id')
+                .or(`email.ilike.%${sanitizedSearch}%,name.ilike.%${sanitizedSearch}%`)
+                .limit(50);
+            const matchedUserIds = (matchedUsers || []).map((u: any) => u.id);
+
+            const orConditions: string[] = [
+                `phone_number.ilike.%${sanitizedSearch}%`,
+                `delivery_address.ilike.%${sanitizedSearch}%`,
+                `promo_code.ilike.%${sanitizedSearch}%`,
+                `customer_name.ilike.%${sanitizedSearch}%`,
+                `notes.ilike.%${sanitizedSearch}%`,
+            ];
+
+            if (matchedUserIds.length > 0) {
+                orConditions.push(`user_id.in.(${matchedUserIds.join(',')})`);
             }
+
+            const searchNum = parseInt(sanitizedSearch);
+            const isUUID = sanitizedSearch.includes('-') && sanitizedSearch.length > 20;
+
+            if (!isNaN(searchNum) && searchNum.toString() === sanitizedSearch) {
+                orConditions.unshift(`id.eq.${searchNum}`);
+            } else if (isUUID) {
+                orConditions.unshift(`user_id.eq.${sanitizedSearch}`);
+            }
+
+            query = query.or(orConditions.join(','));
         }
 
         const {
@@ -1272,7 +1288,7 @@ router.get(
             supabase
                 .from('orders')
                 .select(
-                    'id, total, status, created_at, user_id, device_type, os_name, browser_name, delivery_address, promo_code'
+                    'id, total, status, created_at, user_id, device_type, os_name, browser_name, delivery_address, promo_code, notes'
                 )
                 .eq('is_archived', false)
                 .gte('created_at', thirtyDaysAgo),
@@ -1345,6 +1361,8 @@ router.get(
 
         const itemMap90: Record<string, { name: string; sold: number; revenue: number }> = {};
         const areaMap: Record<string, { count: number; revenue: number }> = {};
+        const pickupStats = { count: 0, revenue: 0 };
+        const localStats = { count: 0, revenue: 0 };
         const orderSubtotals: Record<string, number> = {};
         const categoryMap: Record<string, { total: number; count: number }> = {};
         let totalProfit = 0;
@@ -1418,16 +1436,35 @@ router.get(
                 dailyDistribution[day]++;
                 heatmapMatrix[day][hour]++;
 
-                // Areas
-                const area =
-                    o.delivery_address
-                        ?.split(/[,\d]/)[0]
-                        .replace(/^(calle|avenida|av|c\/|via|pza|plaza)\s+/i, '')
-                        .trim() || 'Centro/Otros';
-                if (!areaMap[area]) areaMap[area] = { count: 0, revenue: 0 };
-                areaMap[area].count++;
-                areaMap[area].revenue =
-                    Math.round((areaMap[area].revenue + Number(o.total)) * 100) / 100;
+                // Areas & Fulfillment type
+                const rawAddr = (o.delivery_address || '').trim();
+                const notes = o.notes || '';
+                const isRecogida =
+                    /^recogida/i.test(rawAddr) || /\[TIPO:\s*RECOGIDA\]/i.test(notes);
+                const isLocal =
+                    /^consume\s+en\s+local/i.test(rawAddr) ||
+                    /^mesa/i.test(rawAddr) ||
+                    /\[(PEDIDO EN EL LOCAL|TIPO:\s*LOCAL|TIPO:\s*MESA)\]/i.test(notes);
+
+                if (isRecogida) {
+                    pickupStats.count++;
+                    pickupStats.revenue =
+                        Math.round((pickupStats.revenue + Number(o.total)) * 100) / 100;
+                } else if (isLocal) {
+                    localStats.count++;
+                    localStats.revenue =
+                        Math.round((localStats.revenue + Number(o.total)) * 100) / 100;
+                } else {
+                    const area =
+                        rawAddr
+                            .split(/[,\d]/)[0]
+                            .replace(/^(calle|avenida|av|c\/|via|pza|plaza)\s+/i, '')
+                            .trim() || 'Centro/Otros';
+                    if (!areaMap[area]) areaMap[area] = { count: 0, revenue: 0 };
+                    areaMap[area].count++;
+                    areaMap[area].revenue =
+                        Math.round((areaMap[area].revenue + Number(o.total)) * 100) / 100;
+                }
 
                 // Promo Detection & Accumulation
                 const subtotal = orderSubtotals[o.id] || 0;
@@ -1669,6 +1706,8 @@ router.get(
             categoryStats,
             abcAnalysis,
             areaStats,
+            pickupStats,
+            localStats,
             promoStats: {
                 count: promoCount,
                 totalDiscount: Math.round(totalDiscount * 100) / 100,

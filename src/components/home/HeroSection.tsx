@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, Star } from 'lucide-react';
+import { ArrowRight, Star, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { useSettings } from '../../hooks/queries/useSettings';
 
 const REVIEWS = [
     {
@@ -39,9 +40,18 @@ const REVIEWS = [
 ];
 
 export function HeroSection() {
+    const { data: settings } = useSettings();
+    const googleReviewsUrl =
+        settings?.contactGoogleMapsUrl ||
+        'https://www.google.com/maps/search/?api=1&query=' +
+            encodeURIComponent('Sushi de Maksim, C. de Barrilero, 20, 28007 Madrid');
+
     const [currentReview, setCurrentReview] = useState(0);
+    const [isReviewPaused, setIsReviewPaused] = useState(false);
 
     useEffect(() => {
+        if (isReviewPaused) return;
+
         const timer = setInterval(() => {
             setCurrentReview(prev => (prev + 1) % REVIEWS.length);
         }, 5000);
@@ -49,7 +59,7 @@ export function HeroSection() {
         return () => {
             clearInterval(timer);
         };
-    }, []);
+    }, [isReviewPaused]);
 
     const [shouldPlayVideo, setShouldPlayVideo] = useState(false);
 
@@ -144,22 +154,39 @@ export function HeroSection() {
                         Artesanía japonesa en tu mesa
                     </span>
 
-                    <h2 className="text-[42px] leading-[0.9] md:text-8xl font-black text-white tracking-tighter">
-                        Reseñas de <br />
-                        <span className="text-orange-600 italic">Google</span> Maps
-                    </h2>
+                    <a
+                        href={googleReviewsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="group/title block no-underline cursor-pointer"
+                        title="Ver perfil y reseñas en Google Maps"
+                    >
+                        <h2 className="text-[42px] leading-[0.9] md:text-8xl font-black text-white tracking-tighter group-hover/title:scale-[1.01] transition-transform">
+                            Reseñas de <br />
+                            <span className="text-orange-600 italic">Google</span> Maps
+                        </h2>
+                    </a>
 
-                    <div className="h-[96px] md:h-[110px] w-full max-w-md mx-auto relative">
+                    <div className="h-[105px] md:h-[120px] w-full max-w-md mx-auto relative">
                         <AnimatePresence mode="wait">
-                            <motion.div
+                            <motion.a
                                 key={currentReview}
+                                href={googleReviewsUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Abrir reseña en Google Maps"
+                                aria-label={`Ver reseña de ${REVIEWS[currentReview].author} en Google Maps`}
                                 initial={{ opacity: 0, y: 5 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, y: -5 }}
                                 transition={{ duration: 0.4, ease: 'easeOut' }}
-                                className="absolute inset-0 flex flex-col items-center justify-start"
+                                className="absolute inset-0 flex flex-col items-center justify-start group/review no-underline cursor-pointer select-none transition-transform hover:scale-105 active:scale-95"
+                                onMouseEnter={() => setIsReviewPaused(true)}
+                                onMouseLeave={() => setIsReviewPaused(false)}
+                                onFocus={() => setIsReviewPaused(true)}
+                                onBlur={() => setIsReviewPaused(false)}
                             >
-                                <div className="flex items-center gap-0.5 mb-2 text-orange-500">
+                                <div className="flex items-center gap-0.5 mb-2 text-orange-500 group-hover/review:text-orange-400 transition-colors">
                                     {[...Array(5)].map((_, i) => (
                                         <Star
                                             key={i}
@@ -169,13 +196,18 @@ export function HeroSection() {
                                         />
                                     ))}
                                 </div>
-                                <p className="text-sm md:text-lg text-gray-300 leading-relaxed font-medium line-clamp-2 px-2">
+                                <p className="text-sm md:text-lg text-gray-200 group-hover/review:text-white leading-relaxed font-medium line-clamp-2 px-2 drop-shadow-sm transition-colors">
                                     "{REVIEWS[currentReview].text}"
                                 </p>
-                                <span className="text-[10px] md:text-xs text-gray-500 mt-2 font-bold uppercase tracking-widest">
-                                    — {REVIEWS[currentReview].author}
+                                <span className="text-xs md:text-sm text-zinc-100 group-hover/review:text-orange-300 font-black uppercase tracking-wider mt-2 flex items-center justify-center gap-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] transition-colors">
+                                    <span className="text-orange-400 font-extrabold">—</span>
+                                    <span>{REVIEWS[currentReview].author}</span>
+                                    <ExternalLink
+                                        size={12}
+                                        className="opacity-0 group-hover/review:opacity-100 transition-opacity text-orange-400 ml-0.5"
+                                    />
                                 </span>
-                            </motion.div>
+                            </motion.a>
                         </AnimatePresence>
                     </div>
 

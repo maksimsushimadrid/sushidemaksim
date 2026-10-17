@@ -29,6 +29,7 @@ import CartSuggestions from '../components/cart/CartSuggestions';
 import CartEmptyView from '../components/cart/CartEmptyView';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { tracker } from '../analytics/tracker';
+import { safeRandomUUID } from '../utils/uuid';
 
 interface MenuItem {
     id: number;
@@ -73,6 +74,9 @@ export default function CartPage() {
         house: string;
         apartment: string;
         phone: string;
+        tipAmount?: number;
+        discountAmount?: number;
+        finalTotal?: number;
     } | null>(null);
 
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
@@ -93,6 +97,8 @@ export default function CartPage() {
     const customerNameRef = useRef<HTMLInputElement>(null);
     const guestEmailRef = useRef<HTMLInputElement>(null);
     const phoneRef = useRef<HTMLInputElement>(null);
+    // Stable per-checkout key so double-clicks / network retries never create duplicate orders
+    const idempotencyKeyRef = useRef<string | null>(null);
     const addressRef = useRef<HTMLInputElement>(null);
     const houseRef = useRef<HTMLInputElement>(null);
     const apartmentRef = useRef<HTMLInputElement>(null);
@@ -741,7 +747,11 @@ export default function CartPage() {
                 giftLabel: i.giftLabel || null,
             }));
 
-            const dataRes = await api.post('/orders', payload);
+            if (!idempotencyKeyRef.current) idempotencyKeyRef.current = safeRandomUUID();
+            const dataRes = await api.post('/orders', payload, {
+                'Idempotency-Key': idempotencyKeyRef.current,
+            });
+            idempotencyKeyRef.current = null;
 
             await saveCurrentAddress();
 
@@ -768,8 +778,21 @@ export default function CartPage() {
                 userId: user?.id,
             });
 
+            const totalDiscountsRecorded = discountAmount + (coinsSpent || 0);
+            const calculatedFinalTotal = Math.max(
+                0,
+                cartSubtotal -
+                    discountAmount +
+                    (deliveryType === 'delivery' ? deliveryCost : 0) +
+                    tipAmount -
+                    (coinsSpent || 0)
+            );
+
             setLastOrderSummary({
-                total: cartSubtotal - discountAmount,
+                total: cartSubtotal,
+                discountAmount: totalDiscountsRecorded,
+                tipAmount: tipAmount || 0,
+                finalTotal: dataRes.order?.total ?? calculatedFinalTotal,
                 deliveryCost: deliveryType === 'delivery' ? deliveryCost : 0,
                 address:
                     deliveryType === 'pickup'

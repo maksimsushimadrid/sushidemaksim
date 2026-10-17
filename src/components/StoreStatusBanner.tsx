@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, Info, X, Calendar, Timer } from 'lucide-react';
+import { Clock, Info, X, Timer, ChevronDown } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { isStoreOpen, getNextOpeningTime, formatTimeLeft } from '../utils/storeStatus';
 import { useSettings } from '../hooks/queries/useSettings';
@@ -8,11 +8,32 @@ import { useSettings } from '../hooks/queries/useSettings';
 export default function StoreStatusBanner() {
     const [isVisible, setIsVisible] = useState(true);
     const [timeLeftDisplay, setTimeLeftDisplay] = useState<string | null>(null);
+    const lastOpenedScrollYRef = useRef<number>(typeof window !== 'undefined' ? window.scrollY : 0);
 
     const location = useLocation();
     const isAdminRoute = location.pathname.startsWith('/admin');
 
     const { data: settings } = useSettings();
+
+    // Automatically hide the curtain when the user starts scrolling
+    useEffect(() => {
+        if (!isVisible) return;
+
+        const handleScroll = () => {
+            const scrollDelta = Math.abs(window.scrollY - lastOpenedScrollYRef.current);
+            if (scrollDelta > 25 || window.scrollY > 40) {
+                setIsVisible(false);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [isVisible]);
+
+    const handleOpen = () => {
+        lastOpenedScrollYRef.current = typeof window !== 'undefined' ? window.scrollY : 0;
+        setIsVisible(true);
+    };
 
     useEffect(() => {
         const updateCountdown = () => {
@@ -105,81 +126,136 @@ export default function StoreStatusBanner() {
               : 'Cerrado hoy';
 
     return (
-        <AnimatePresence>
-            {isVisible && (
+        <AnimatePresence initial={true} mode="wait">
+            {isVisible ? (
                 <motion.div
-                    key="store-closed-banner"
-                    initial={false}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -40 }}
-                    transition={{ duration: 0.25, ease: 'easeInOut' }}
-                    className="bg-gray-950 border-b border-white/5 relative z-[101]"
+                    key="store-curtain-expanded"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{
+                        duration: 0.42,
+                        ease: [0.16, 1, 0.3, 1],
+                    }}
+                    className="overflow-hidden bg-gradient-to-b from-[#161514] via-[#100F10] to-[#0A0A0C] border-b border-white/10 shadow-[0_8px_20px_-4px_rgba(0,0,0,0.2)] relative z-10"
                 >
-                    <div className="max-w-7xl mx-auto px-4 py-2 md:py-2.5">
-                        <div className="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-4">
-                            <div className="flex items-center gap-3 w-full md:w-auto">
-                                <div className="w-8 h-8 rounded-xl bg-orange-600/10 flex items-center justify-center shrink-0 border border-orange-500/20 shadow-inner">
-                                    <Clock size={16} className="text-orange-500" />
+                    <motion.div
+                        initial={{ y: -32, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -32, opacity: 0 }}
+                        transition={{
+                            duration: 0.35,
+                            ease: [0.16, 1, 0.3, 1],
+                        }}
+                        className="max-w-7xl mx-auto px-3.5 sm:px-6 pt-2.5 pb-2"
+                    >
+                        {/* Header bar of the curtain */}
+                        <div className="flex items-center justify-between gap-3">
+                            {/* Status badge & title */}
+                            <div className="flex items-center gap-2 min-w-0">
+                                <div className="w-7 h-7 rounded-lg bg-orange-500/15 border border-orange-500/30 flex items-center justify-center shrink-0 shadow-inner">
+                                    <Clock size={14} className="text-orange-400" />
                                 </div>
-                                <div className="flex flex-col">
-                                    <div className="flex items-center gap-2">
-                                        <p className="text-white font-black text-[10px] md:text-sm uppercase tracking-tight">
-                                            {statusTitle}
-                                        </p>
-                                        <span className="text-orange-500 text-[7px] md:text-[8px] font-black">
-                                            PRE-ORDEN
-                                        </span>
-                                    </div>
-                                    <div className="flex items-center gap-2 mt-0">
-                                        <span className="text-gray-400 text-[9px] md:text-xs font-bold leading-none flex items-center gap-1">
-                                            <Calendar size={9} className="text-gray-500" />
-                                            {statusSubtitle}
-                                        </span>
-                                    </div>
+                                <div className="flex items-center min-w-0">
+                                    <span className="text-white font-extrabold text-xs sm:text-sm uppercase tracking-wide whitespace-nowrap">
+                                        {statusTitle}
+                                    </span>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-3 w-full md:w-auto shrink-0">
+
+                            {/* Actions: Countdown + Bright Close Button */}
+                            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                                 {timeLeftDisplay && (
-                                    <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-xl border border-white/10 shrink-0 whitespace-nowrap">
-                                        <Timer size={14} className="text-orange-500 shrink-0" />
-                                        <span className="text-[10px] uppercase font-black text-gray-400 tracking-wider whitespace-nowrap">
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/25 text-orange-300 text-[10px] sm:text-xs font-bold tabular-nums whitespace-nowrap">
+                                        <Timer
+                                            size={12}
+                                            className="text-orange-400 shrink-0 animate-pulse"
+                                        />
+                                        <span className="hidden sm:inline text-zinc-400 text-[10px] font-semibold uppercase tracking-wider">
                                             Abrimos en:
                                         </span>
-                                        <span className="text-[12px] font-black text-white tabular-nums tracking-tight whitespace-nowrap">
-                                            {timeLeftDisplay}
-                                        </span>
+                                        <span>{timeLeftDisplay}</span>
                                     </div>
                                 )}
 
-                                <div className="flex-1 md:flex-none flex items-center gap-2.5 bg-white/10 rounded-xl px-3 py-1.5 border border-white/10">
-                                    <Info size={12} className="text-amber-400 shrink-0" />
-                                    <div className="flex flex-col justify-center">
-                                        <p className="text-[9px] md:text-[11px] text-gray-200 font-medium leading-tight">
-                                            Realiza tu pedido y te contactaremos.
-                                        </p>
-                                        <div className="flex items-center gap-2 mt-0.5">
-                                            <p className="text-[8px] md:text-[10px] text-gray-400 leading-none">
-                                                Se procesarán al abrir.
-                                            </p>
-                                            {timeLeftDisplay && (
-                                                <p className="lg:hidden text-[8px] text-orange-400 font-black leading-none whitespace-nowrap tabular-nums shrink-0">
-                                                    ● {timeLeftDisplay}
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-
+                                {/* Bright, vivid high-contrast close button */}
                                 <button
+                                    type="button"
                                     onClick={() => setIsVisible(false)}
-                                    className="p-1.5 text-gray-500 hover:text-white transition-colors shrink-0"
-                                    aria-label="Cerrar"
+                                    className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/35 active:scale-90 text-white flex items-center justify-center border border-white/40 shadow-sm hover:shadow-white/20 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/60 shrink-0"
+                                    aria-label="Cerrar aviso"
+                                    title="Cerrar aviso"
                                 >
-                                    <X size={18} />
+                                    <X
+                                        size={16}
+                                        strokeWidth={2.8}
+                                        className="text-white drop-shadow"
+                                    />
                                 </button>
                             </div>
                         </div>
-                    </div>
+
+                        {/* Notice body */}
+                        <div className="mt-2 pt-2 border-t border-white/5 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-4">
+                            <div className="flex items-start sm:items-center gap-2 text-zinc-300 text-[11px] sm:text-xs leading-snug">
+                                <span className="text-zinc-200 font-medium">{statusSubtitle}</span>
+                            </div>
+
+                            <div className="flex items-center gap-1.5 text-zinc-400 text-[10px] sm:text-[11px] leading-tight shrink-0 bg-white/5 px-2.5 py-1 rounded-lg border border-white/5">
+                                <Info size={11} className="text-amber-400 shrink-0" />
+                                <span>
+                                    Realiza tu pedido y te contactaremos. Se procesarán al abrir.
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Curtain bottom grab handle indicator */}
+                        <div
+                            onClick={() => setIsVisible(false)}
+                            className="flex items-center justify-center pt-2 pb-0.5 cursor-pointer group"
+                            title="Deslizar arriba para cerrar"
+                        >
+                            <div className="w-10 h-1 rounded-full bg-white/25 group-hover:bg-white/50 transition-colors" />
+                        </div>
+                    </motion.div>
+                </motion.div>
+            ) : (
+                <motion.div
+                    key="store-curtain-collapsed"
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{
+                        duration: 0.35,
+                        ease: [0.16, 1, 0.3, 1],
+                    }}
+                    className="flex justify-center overflow-hidden relative z-10"
+                >
+                    <motion.button
+                        type="button"
+                        onClick={handleOpen}
+                        initial={{ y: -16, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -16, opacity: 0 }}
+                        transition={{ duration: 0.28, ease: 'easeOut' }}
+                        className="group -mt-px inline-flex items-center gap-2 px-3.5 py-1 bg-gradient-to-b from-[#18181A]/95 to-[#0E0E10]/95 hover:from-zinc-900 hover:to-black text-amber-300 hover:text-amber-200 text-[10px] sm:text-[11px] font-bold rounded-b-xl border-b border-x border-white/10 hover:border-white/20 shadow-[0_2px_8px_-1px_rgba(0,0,0,0.12),0_1px_3px_rgba(0,0,0,0.06)] backdrop-blur-md transition-all active:scale-95 cursor-pointer"
+                        aria-label="Mostrar aviso de horario"
+                        title="Mostrar aviso"
+                    >
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                        <span className="tracking-wide uppercase text-[9px] sm:text-[10px]">
+                            {statusTitle}
+                        </span>
+                        {timeLeftDisplay && (
+                            <span className="text-[9px] text-zinc-400 font-mono hidden xs:inline">
+                                · {timeLeftDisplay}
+                            </span>
+                        )}
+                        <ChevronDown
+                            size={12}
+                            className="text-amber-400 group-hover:translate-y-0.5 transition-transform"
+                        />
+                    </motion.button>
                 </motion.div>
             )}
         </AnimatePresence>

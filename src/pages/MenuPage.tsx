@@ -178,7 +178,11 @@ export default function MenuPage() {
 
                         const offset = headerHeight + 16;
                         const top = el.getBoundingClientRect().top + window.scrollY - offset;
-                        window.scrollTo({ top, behavior: 'smooth' });
+                        if ((window as any).lenis) {
+                            (window as any).lenis.scrollTo(top, { duration: 1.2 });
+                        } else {
+                            window.scrollTo({ top, behavior: 'smooth' });
+                        }
                     }
                 }, 400);
             }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { Info, ShieldAlert, ArrowLeft, Search, PhoneCall } from 'lucide-react';
@@ -7,6 +7,19 @@ import { ALLERGEN_LIST_DETAILS } from '../utils/allergens';
 
 export default function AllergensPage() {
     const [search, setSearch] = useState('');
+
+    // Always open from the very top. When coming from the product modal, Lenis is
+    // still stopped during the modal exit animation and ignores the global reset,
+    // so we force it now and once more after the modal has unmounted.
+    useLayoutEffect(() => {
+        const toTop = () => {
+            window.scrollTo(0, 0);
+            (window as any).lenis?.scrollTo(0, { immediate: true, force: true });
+        };
+        toTop();
+        const t = window.setTimeout(toTop, 400);
+        return () => window.clearTimeout(t);
+    }, []);
 
     const filteredAllergens = ALLERGEN_LIST_DETAILS.filter(item => {
         const query = search.toLowerCase().trim();

@@ -185,7 +185,7 @@ export default function Footer() {
                                 >
                                     DESARROLLADO POR SELENIT
                                 </a>
-                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 w-56 bg-gray-900 text-white text-[10px] font-bold py-2.5 px-3 rounded-xl shadow-xl opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 pointer-events-none transition-all duration-200 z-[1000] text-center tracking-normal normal-case leading-normal">
+                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2.5 w-56 bg-gray-900 text-white text-[10px] font-bold py-2.5 px-3 rounded-xl shadow-xl opacity-0 scale-95 group-hover:opacity-100 group-hover:scale-100 pointer-events-none transition-all duration-200 z-popover text-center tracking-normal normal-case leading-normal">
                                     ¿Quieres escribir al desarrollador de la aplicación? Haz clic
                                     para iniciar una conversación
                                     {/* Arrow */}

@@ -66,7 +66,7 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                             damping: 25,
                             stiffness: 300,
                         }}
-                        className="fixed inset-0 w-full h-[100dvh] bg-[#FDFBF7] z-[10000] md:hidden overflow-hidden flex flex-col"
+                        className="fixed inset-0 w-full h-[100dvh] bg-[#FDFBF7] z-modal md:hidden overflow-hidden flex flex-col"
                         style={{
                             backgroundImage: `linear-gradient(rgba(251, 247, 240, 0.92), rgba(251, 247, 240, 0.92)), url('/admin-bg.webp')`,
                             backgroundSize: '400px',
@@ -133,17 +133,17 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                             {/* Auth & Profile Area */}
                             <div className="mt-auto pt-4">
                                 {showSkeleton ? (
-                                    <div className="w-full h-16 bg-white/50 backdrop-blur-sm rounded-3xl animate-pulse" />
+                                    <div className="w-full h-24 bg-white/50 backdrop-blur-sm rounded-3xl animate-pulse" />
                                 ) : isAuthenticated && user ? (
                                     <div className="space-y-4">
                                         <Link
                                             to="/profile"
                                             onClick={() => setShowMobileMenu(false)}
-                                            className="px-5 py-4 bg-white/90 backdrop-blur-md rounded-3xl flex items-center gap-3 no-underline transition-all active:scale-[0.98] border border-white shadow-sm"
+                                            className="bg-white/90 backdrop-blur-md rounded-3xl flex items-stretch no-underline transition-all active:scale-[0.98] border border-white shadow-sm overflow-hidden"
                                         >
                                             <div
-                                                className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-sm overflow-hidden shrink-0 shadow-inner border border-black/10
-                                            ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[24px]' : 'bg-orange-600'}`}
+                                                className={`w-24 sm:w-28 shrink-0 flex items-center justify-center text-white font-black overflow-hidden relative self-stretch
+                                            ${user.avatar?.startsWith('http') ? 'bg-white' : user.avatar ? 'bg-gray-100 text-[36px]' : 'bg-orange-600 text-xl'}`}
                                             >
                                                 {user.avatar ? (
                                                     user.avatar.startsWith('http') ? (
@@ -153,45 +153,47 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                                             alt={user.name}
                                                             className="w-full h-full object-cover"
                                                             fallbackContent={
-                                                                <span className="select-none text-sm text-gray-900">
+                                                                <span className="select-none text-base font-black text-gray-900">
                                                                     {initials}
                                                                 </span>
                                                             }
                                                         />
                                                     ) : (
-                                                        <span className="select-none text-2xl">
+                                                        <span className="select-none text-4xl">
                                                             {user.avatar}
                                                         </span>
                                                     )
                                                 ) : (
-                                                    <span className="select-none text-sm">
+                                                    <span className="select-none text-xl font-black">
                                                         {initials}
                                                     </span>
                                                 )}
                                             </div>
-                                            <div className="flex-1 min-w-0 text-left">
-                                                <p className="font-black text-gray-900 text-[15px] leading-none mb-1.5 truncate">
-                                                    {user.name}
-                                                </p>
-                                                <p className="text-[12px] text-gray-500 font-medium leading-none mb-2 truncate">
-                                                    {user.email}
-                                                </p>
-                                                <p className="text-[10px] text-orange-600 font-black uppercase tracking-widest leading-none">
-                                                    Ver perfil
-                                                </p>
-                                            </div>
-                                            <div className="flex items-center gap-2 shrink-0">
-                                                <button
-                                                    onClick={e => {
-                                                        e.preventDefault();
-                                                        e.stopPropagation();
-                                                        logout();
-                                                        setShowMobileMenu(false);
-                                                    }}
-                                                    className="p-3 rounded-xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors border-none cursor-pointer active:scale-95"
-                                                >
-                                                    <LogOut size={20} strokeWidth={1.5} />
-                                                </button>
+                                            <div className="flex-1 min-w-0 p-4 sm:py-4.5 sm:pr-4 flex items-center justify-between gap-3">
+                                                <div className="flex-1 min-w-0 text-left">
+                                                    <p className="font-black text-gray-900 text-base leading-snug mb-1 truncate">
+                                                        {user.name}
+                                                    </p>
+                                                    <p className="text-[12px] text-gray-500 font-medium leading-normal mb-2 truncate">
+                                                        {user.email}
+                                                    </p>
+                                                    <p className="text-[11px] text-orange-600 font-black uppercase tracking-widest leading-none">
+                                                        Ver perfil
+                                                    </p>
+                                                </div>
+                                                <div className="flex items-center gap-2 shrink-0">
+                                                    <button
+                                                        onClick={e => {
+                                                            e.preventDefault();
+                                                            e.stopPropagation();
+                                                            logout();
+                                                            setShowMobileMenu(false);
+                                                        }}
+                                                        className="p-3 rounded-2xl bg-red-50 text-red-500 hover:bg-red-100 transition-colors border-none cursor-pointer active:scale-95 shadow-sm"
+                                                    >
+                                                        <LogOut size={20} strokeWidth={1.75} />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </Link>
 

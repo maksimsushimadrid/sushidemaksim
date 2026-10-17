@@ -9,10 +9,8 @@ const env = envSchema.parse(process.env);
 const jwtSecret = env.JWT_SECRET || DEFAULT_JWT_SECRET;
 const nodeEnv = env.NODE_ENV;
 
-if (nodeEnv === 'production' && jwtSecret === DEFAULT_JWT_SECRET) {
-    console.warn(
-        '⚠️ WARNING: JWT_SECRET should be set in production environment for better security.'
-    );
+if (nodeEnv === 'production' && (jwtSecret === DEFAULT_JWT_SECRET || jwtSecret.length < 32)) {
+    throw new Error('FATAL: JWT_SECRET must be set (min 32 chars) in production.');
 }
 
 export const config = {

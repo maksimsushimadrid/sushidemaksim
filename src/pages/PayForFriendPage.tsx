@@ -325,7 +325,7 @@ export default function PayForFriendPage() {
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center p-6 text-center"
+                        className="fixed inset-0 z-modal bg-white flex flex-col items-center justify-center p-6 text-center"
                     >
                         <motion.div
                             initial={{ scale: 0.5, rotate: -20, opacity: 0 }}
