@@ -1,4 +1,4 @@
-import { Trash2, Minus, Plus, X, Users } from 'lucide-react';
+import { Trash2, Minus, Plus, X, Users, ChevronDown } from 'lucide-react';
 import { getOptimizedImageUrl } from '../../utils/images';
 import SafeImage from '../common/SafeImage';
 import { CartItem } from '../../types';
@@ -98,7 +98,7 @@ export default function CartItemList({
                         </div>
 
                         <div className="flex-1 min-w-0">
-                            <div className="mb-2 pr-8">
+                            <div className="mb-1.5 pr-8">
                                 <h3 className="font-bold text-gray-900 leading-tight text-[13px] md:text-sm truncate mb-0.5">
                                     {item.name}
                                 </h3>
@@ -107,22 +107,26 @@ export default function CartItemList({
                                         {item.description}
                                     </p>
                                 )}
+                            </div>
 
-                                {item.selectedOption &&
-                                    item.id !== '116' &&
-                                    item.menuItemId !== 116 &&
-                                    item.id !== '113' &&
-                                    item.menuItemId !== 113 &&
-                                    item.id !== '115' &&
-                                    item.menuItemId !== 115 && (
-                                        <span className="inline-block px-2 py-0.5 mt-1 rounded bg-orange-50 text-orange-600 text-[10px] font-bold border border-orange-100">
+                            {item.selectedOption &&
+                                item.id !== '116' &&
+                                item.menuItemId !== 116 &&
+                                item.id !== '113' &&
+                                item.menuItemId !== 113 &&
+                                item.id !== '115' &&
+                                item.menuItemId !== 115 && (
+                                    <div className="mb-2 max-w-full">
+                                        <span className="inline-block px-2 py-0.5 rounded bg-orange-50 text-orange-600 text-[10px] font-bold border border-orange-100 max-w-full truncate">
                                             {item.selectedOption}
                                         </span>
-                                    )}
+                                    </div>
+                                )}
 
-                                {/* Drink Option Selector */}
-                                {(item.id === '116' || item.menuItemId === 116) && (
-                                    <div className="mt-2">
+                            {/* Drink Option Selector */}
+                            {(item.id === '116' || item.menuItemId === 116) && (
+                                <div className="mb-2 w-full max-w-full">
+                                    <div className="relative flex items-center w-full max-w-[220px]">
                                         <select
                                             value={item.selectedOption || ''}
                                             onChange={e => {
@@ -134,18 +138,24 @@ export default function CartItemList({
                                                     e.target.value
                                                 );
                                             }}
-                                            className="text-[11px] font-bold bg-white border border-gray-200 rounded-md px-3 py-1.5 outline-none text-gray-700 focus:border-orange-200 shadow-sm transition-all cursor-pointer hover:bg-gray-50 active:scale-95"
+                                            className="w-full text-[11px] font-bold bg-white border border-gray-200 rounded-lg pl-2.5 pr-7 py-1.5 outline-none text-gray-700 focus:border-orange-300 focus:ring-1 focus:ring-orange-200 shadow-xs transition-all cursor-pointer hover:bg-gray-50 active:scale-95 truncate appearance-none"
                                         >
                                             <option value="">Elegir sabor...</option>
                                             <option value="Coca-Cola">🥤 Coca-Cola</option>
                                             <option value="Fanta">🍊 Fanta</option>
                                             <option value="Sprite">🍋 Sprite</option>
                                         </select>
+                                        <ChevronDown
+                                            size={14}
+                                            className="absolute right-2 text-gray-400 pointer-events-none"
+                                        />
                                     </div>
-                                )}
+                                </div>
+                            )}
 
-                                {(item.id === '113' || item.menuItemId === 113) && (
-                                    <div className="mt-2">
+                            {(item.id === '113' || item.menuItemId === 113) && (
+                                <div className="mb-2 w-full max-w-full">
+                                    <div className="relative flex items-center w-full max-w-[220px]">
                                         <select
                                             value={item.selectedOption || ''}
                                             onChange={e => {
@@ -157,7 +167,7 @@ export default function CartItemList({
                                                     e.target.value
                                                 );
                                             }}
-                                            className="text-[11px] font-bold bg-white border border-gray-200 rounded-md px-3 py-1.5 outline-none text-gray-700 focus:border-orange-200 shadow-sm transition-all cursor-pointer hover:bg-gray-50 active:scale-95"
+                                            className="w-full text-[11px] font-bold bg-white border border-gray-200 rounded-lg pl-2.5 pr-7 py-1.5 outline-none text-gray-700 focus:border-orange-300 focus:ring-1 focus:ring-orange-200 shadow-xs transition-all cursor-pointer hover:bg-gray-50 active:scale-95 truncate appearance-none"
                                         >
                                             <option value="">Elegir cerveza...</option>
                                             <option value="Mahou">🍺 Mahou</option>
@@ -170,11 +180,17 @@ export default function CartItemList({
                                             </option>
                                             <option value="Amstel Radler">🍺 Amstel Radler</option>
                                         </select>
+                                        <ChevronDown
+                                            size={14}
+                                            className="absolute right-2 text-gray-400 pointer-events-none"
+                                        />
                                     </div>
-                                )}
+                                </div>
+                            )}
 
-                                {(item.id === '115' || item.menuItemId === 115) && (
-                                    <div className="mt-2">
+                            {(item.id === '115' || item.menuItemId === 115) && (
+                                <div className="mb-2 w-full max-w-full">
+                                    <div className="relative flex items-center w-full max-w-[220px]">
                                         <select
                                             value={item.selectedOption || 'Cerveza de Calabaza'}
                                             onChange={e => {
@@ -186,7 +202,7 @@ export default function CartItemList({
                                                     e.target.value
                                                 );
                                             }}
-                                            className="text-[11px] font-bold bg-white border border-gray-200 rounded-md px-3 py-1.5 outline-none text-gray-700 focus:border-orange-200 shadow-sm transition-all cursor-pointer hover:bg-gray-50 active:scale-95"
+                                            className="w-full text-[11px] font-bold bg-white border border-gray-200 rounded-lg pl-2.5 pr-7 py-1.5 outline-none text-gray-700 focus:border-orange-300 focus:ring-1 focus:ring-orange-200 shadow-xs transition-all cursor-pointer hover:bg-gray-50 active:scale-95 truncate appearance-none"
                                         >
                                             <option value="Cerveza de Calabaza">
                                                 🎃 Cerveza de Calabaza (Pumpkin Ale)
@@ -195,9 +211,13 @@ export default function CartItemList({
                                                 🍺 Cerveza Artesana Clásica
                                             </option>
                                         </select>
+                                        <ChevronDown
+                                            size={14}
+                                            className="absolute right-2 text-gray-400 pointer-events-none"
+                                        />
                                     </div>
-                                )}
-                            </div>
+                                </div>
+                            )}
                             <div className="flex items-center justify-between gap-1 md:gap-4 mt-1">
                                 <div className="flex items-center bg-gray-50 rounded-lg p-1 border border-gray-100">
                                     <button
