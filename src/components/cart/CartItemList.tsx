@@ -426,11 +426,9 @@ export default function CartItemList({
                     )}
 
                     {/* Notice */}
-                    <div className="bg-orange-50 p-4 rounded-xl border border-orange-100 text-center">
-                        <p className="text-[12px] font-black text-orange-600 leading-tight m-0 uppercase tracking-widest">
-                            Salsa de soja, wasabi y jengibre están incluidos en su pedido.
-                        </p>
-                    </div>
+                    <p className="text-[11px] sm:text-xs font-semibold text-gray-500 leading-snug m-0 px-0.5">
+                        * Salsa de soja, wasabi y jengibre están incluidos en su pedido.
+                    </p>
 
                     {/* Chopsticks Question */}
                     <div className="flex items-center justify-between gap-4 py-1">
