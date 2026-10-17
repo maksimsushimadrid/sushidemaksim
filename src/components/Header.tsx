@@ -7,6 +7,7 @@ import StoreStatusBanner from './StoreStatusBanner';
 const LoginModal = lazy(() => import('./LoginModal'));
 import { useScrollLock } from '../hooks/useScrollLock';
 const ReservationModal = lazy(() => import('./reservations/ReservationModal'));
+const RegistrationDiscountModal = lazy(() => import('./RegistrationDiscountModal'));
 
 // Imported Header Subcomponents
 import HeaderLogo from './header/HeaderLogo';
@@ -39,6 +40,7 @@ export default function Header() {
     const [loginModalMode, setLoginModalMode] = useState<
         'login' | 'register' | 'forgot' | 'verify-sent' | 'reset-password'
     >('login');
+    const [isRegistrationDiscountOpen, setIsRegistrationDiscountOpen] = useState(false);
     const [showMobileMenu, setShowMobileMenu] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
     const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
@@ -84,7 +86,9 @@ export default function Header() {
         };
     }, []);
 
-    useScrollLock(showMobileMenu || isLoginModalOpen || isReservationModalOpen);
+    useScrollLock(
+        showMobileMenu || isLoginModalOpen || isReservationModalOpen || isRegistrationDiscountOpen
+    );
 
     // Close mobile menu on route change
     useEffect(() => {
@@ -101,11 +105,22 @@ export default function Header() {
         const handleOpenReservation = () => {
             setIsReservationModalOpen(true);
         };
+        const handleOpenRegistrationDiscount = () => {
+            setIsRegistrationDiscountOpen(true);
+        };
         document.addEventListener('custom:openLogin', handleOpenLogin as EventListener);
         window.addEventListener('open:reservation', handleOpenReservation);
+        document.addEventListener(
+            'custom:openRegistrationDiscount',
+            handleOpenRegistrationDiscount
+        );
         return () => {
             document.removeEventListener('custom:openLogin', handleOpenLogin as EventListener);
             window.removeEventListener('open:reservation', handleOpenReservation);
+            document.removeEventListener(
+                'custom:openRegistrationDiscount',
+                handleOpenRegistrationDiscount
+            );
         };
     }, []);
 
@@ -422,7 +437,9 @@ export default function Header() {
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: 60, opacity: 0 }}
                         transition={{ type: 'spring', damping: 22, stiffness: 260 }}
-                        className="fixed top-[58%] right-3 -translate-y-1/2 z-fixed md:hidden select-none"
+                        className={`fixed top-[58%] right-3 md:right-5 -translate-y-1/2 z-fixed select-none ${
+                            isAuthenticated && user ? 'md:hidden' : ''
+                        }`}
                     >
                         {/* Periodic double-bounce animation for unauthenticated question mark */}
                         <motion.div
@@ -450,8 +467,7 @@ export default function Header() {
                                         if (isAuthenticated && user) {
                                             setShowMobileMenu(true);
                                         } else {
-                                            setLoginModalMode('login');
-                                            setIsLoginModalOpen(true);
+                                            setIsRegistrationDiscountOpen(true);
                                         }
                                     }, 280);
                                 }}
@@ -459,12 +475,12 @@ export default function Header() {
                                 title={
                                     isAuthenticated && user
                                         ? 'Abrir perfil y menú'
-                                        : 'Iniciar sesión o registrarse con Google'
+                                        : '¡10% de descuento al registrarte! Toca para ver la oferta'
                                 }
                                 aria-label={
                                     isAuthenticated && user
                                         ? 'Abrir perfil y menú'
-                                        : 'Iniciar sesión o registrarse con Google'
+                                        : '¡10% de descuento al registrarte! Toca para ver la oferta'
                                 }
                             >
                                 {/* Inner circle container with 3D sphere bulge distortion */}
@@ -550,7 +566,7 @@ export default function Header() {
 
                                 {/* Subtitle label under floating avatar */}
                                 <span className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 bg-[#121212]/92 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full whitespace-nowrap shadow-lg border border-white/15 leading-none">
-                                    {isAuthenticated && user ? user.name.split(' ')[0] : 'Entrar'}
+                                    {isAuthenticated && user ? user.name.split(' ')[0] : '-10% DTO'}
                                 </span>
                             </button>
                         </motion.div>
@@ -560,6 +576,16 @@ export default function Header() {
 
             {/* Global Modals triggered from Header */}
             <Suspense fallback={null}>
+                <RegistrationDiscountModal
+                    isOpen={isRegistrationDiscountOpen}
+                    onClose={() => setIsRegistrationDiscountOpen(false)}
+                    onContinue={() => {
+                        setIsRegistrationDiscountOpen(false);
+                        setLoginModalMode('register');
+                        setIsLoginModalOpen(true);
+                    }}
+                />
+
                 <LoginModal
                     isOpen={isLoginModalOpen}
                     onClose={() => setIsLoginModalOpen(false)}
