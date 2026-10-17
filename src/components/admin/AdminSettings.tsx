@@ -343,42 +343,42 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
     return (
         <form
             onSubmit={handleSave}
-            className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20"
+            className="space-y-4 sm:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20"
         >
-            <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-6 rounded-3xl border border-gray-100 shadow-sm gap-4">
-                <h2 className="text-2xl font-black text-gray-900 tracking-tight uppercase">
+            <div className="flex flex-col sm:flex-row justify-between items-center bg-white p-3.5 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl border border-gray-100 shadow-sm gap-3 sm:gap-4">
+                <h2 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight uppercase">
                     {t.title}
                 </h2>
                 <button
                     type="submit"
                     disabled={updateMutation.isPending}
-                    className="w-full sm:w-auto flex items-center justify-center gap-3 bg-orange-600 text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-100 disabled:opacity-50 active:scale-95"
+                    className="w-full sm:w-auto flex items-center justify-center gap-2.5 sm:gap-3 bg-orange-600 text-white px-5 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] hover:bg-black transition-all shadow-xl shadow-orange-100 disabled:opacity-50 active:scale-95"
                 >
                     {updateMutation.isPending ? (
-                        <RefreshCw size={18} strokeWidth={3} className="animate-spin" />
+                        <RefreshCw size={16} strokeWidth={3} className="animate-spin" />
                     ) : (
-                        <Save size={18} strokeWidth={2.5} />
+                        <Save size={16} strokeWidth={2.5} />
                     )}
                     {updateMutation.isPending ? t.savingBtn : t.saveBtn}
                 </button>
             </div>
 
-            <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
-                <div className="flex items-center gap-3 text-orange-600 border-l-4 border-orange-100 pl-4 mb-8">
+            <div className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl sm:rounded-[32px] shadow-sm border border-gray-100">
+                <div className="flex items-center gap-3 text-orange-600 border-l-4 border-orange-100 pl-3 sm:pl-4 mb-4 sm:mb-8">
                     <h3 className="font-black text-xs uppercase tracking-[0.15em]">
                         {t.generalInfo}
                     </h3>
                 </div>
-                <div className="flex flex-col md:flex-row gap-6 p-6 bg-orange-50/50 rounded-2xl border border-orange-100 mb-4">
-                    <div className="flex-1">
-                        <h4 className="text-sm font-black text-orange-900 uppercase tracking-tight mb-1">
+                <div className="flex flex-row items-center justify-between gap-3 p-3 sm:p-5 md:p-6 bg-orange-50/50 rounded-xl sm:rounded-2xl border border-orange-100 mb-3 sm:mb-4">
+                    <div className="flex-1 min-w-0 pr-1">
+                        <h4 className="text-xs sm:text-sm font-black text-orange-900 uppercase tracking-tight mb-0.5 sm:mb-1">
                             {t.isTodayClosed}
                         </h4>
-                        <p className="text-[11px] text-orange-800/80 font-medium">
+                        <p className="text-[10px] sm:text-[11px] text-orange-800/80 font-medium leading-snug">
                             {t.isTodayClosedDesc}
                         </p>
                     </div>
-                    <div className="flex items-center">
+                    <div className="shrink-0 flex items-center">
                         <label className="relative inline-flex items-center cursor-pointer">
                             <input
                                 type="checkbox"
@@ -400,16 +400,16 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                     </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row gap-6 p-6 bg-orange-50/50 rounded-2xl border border-orange-100 mb-8">
-                    <div className="flex-1">
-                        <h4 className="text-sm font-black text-orange-900 uppercase tracking-tight mb-1">
+                <div className="flex flex-row items-center justify-between gap-3 p-3 sm:p-5 md:p-6 bg-orange-50/50 rounded-xl sm:rounded-2xl border border-orange-100 mb-3 sm:mb-4">
+                    <div className="flex-1 min-w-0 pr-1">
+                        <h4 className="text-xs sm:text-sm font-black text-orange-900 uppercase tracking-tight mb-0.5 sm:mb-1">
                             {t.isPickupOnly}
                         </h4>
-                        <p className="text-[11px] text-orange-800/80 font-medium">
+                        <p className="text-[10px] sm:text-[11px] text-orange-800/80 font-medium leading-snug">
                             {t.isPickupOnlyDesc}
                         </p>
                     </div>
-                    <div className="flex items-center">
+                    <div className="shrink-0 flex items-center">
                         <label className="relative inline-flex items-center cursor-pointer">
                             <input
                                 type="checkbox"
@@ -437,16 +437,16 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                         </label>
                     </div>
                 </div>
-                <div className="flex flex-col md:flex-row gap-6 p-6 bg-orange-50/50 rounded-2xl border border-orange-100 mb-8">
-                    <div className="flex-1">
-                        <h4 className="text-sm font-black text-orange-900 uppercase tracking-tight mb-1">
+                <div className="flex flex-row items-center justify-between gap-3 p-3 sm:p-5 md:p-6 bg-orange-50/50 rounded-xl sm:rounded-2xl border border-orange-100 mb-4 sm:mb-8">
+                    <div className="flex-1 min-w-0 pr-1">
+                        <h4 className="text-xs sm:text-sm font-black text-orange-900 uppercase tracking-tight mb-0.5 sm:mb-1">
                             {t.isReservationsTodayClosed}
                         </h4>
-                        <p className="text-[11px] text-orange-800/80 font-medium">
+                        <p className="text-[10px] sm:text-[11px] text-orange-800/80 font-medium leading-snug">
                             {t.isReservationsTodayClosedDesc}
                         </p>
                     </div>
-                    <div className="flex items-center">
+                    <div className="shrink-0 flex items-center">
                         <label className="relative inline-flex items-center cursor-pointer">
                             <input
                                 type="checkbox"
@@ -472,7 +472,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 </div>
 
                 {/* Vacation & Special Closures Configuration */}
-                <div className="p-6 bg-orange-50/30 rounded-2xl border border-orange-100/50 mb-8 space-y-6">
+                <div className="p-3.5 sm:p-5 md:p-6 bg-orange-50/30 rounded-xl sm:rounded-2xl border border-orange-100/50 mb-4 sm:mb-8 space-y-4 sm:space-y-6">
                     <div>
                         <h4 className="text-sm font-black text-orange-900 uppercase tracking-tight mb-1">
                             {t.vacationTitle}
@@ -677,7 +677,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 </div>
 
                 {/* Holiday & Seasonal Themes Configuration */}
-                <div className="p-6 bg-purple-50/30 rounded-2xl border border-purple-200/60 mb-8 space-y-6 text-left">
+                <div className="p-3.5 sm:p-5 md:p-6 bg-purple-50/30 rounded-xl sm:rounded-2xl border border-purple-200/60 mb-4 sm:mb-8 space-y-4 sm:space-y-6 text-left">
                     <div className="flex items-center justify-between">
                         <div>
                             <h4 className="text-sm font-black text-purple-950 uppercase tracking-tight mb-1 flex items-center gap-2">
@@ -692,7 +692,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                     </div>
 
                     {/* Presets Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
                         {[
                             {
                                 id: 'auto',
@@ -748,16 +748,16 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                             holidayTheme: preset.id,
                                         })
                                     }
-                                    className={`p-4 rounded-xl text-left border transition-all cursor-pointer flex flex-col justify-between ${
+                                    className={`p-2.5 sm:p-3.5 md:p-4 rounded-xl text-left border transition-all cursor-pointer flex flex-col justify-between ${
                                         isSelected
                                             ? 'bg-white border-purple-500 ring-2 ring-purple-500/20 shadow-md'
                                             : 'bg-white/60 border-purple-100 hover:bg-white hover:border-purple-300'
                                     }`}
                                 >
-                                    <div className="flex items-start justify-between w-full mb-2">
-                                        <span className="text-2xl">{preset.icon}</span>
+                                    <div className="flex items-start justify-between w-full mb-1 sm:mb-2">
+                                        <span className="text-xl sm:text-2xl">{preset.icon}</span>
                                         <span
-                                            className={`text-[9px] font-black uppercase px-2 py-0.5 rounded ${
+                                            className={`text-[8px] sm:text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${
                                                 isSelected
                                                     ? 'bg-purple-600 text-white'
                                                     : 'bg-purple-100 text-purple-700'
@@ -767,10 +767,10 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                         </span>
                                     </div>
                                     <div>
-                                        <div className="text-xs font-black text-gray-900 mb-0.5">
+                                        <div className="text-[11px] sm:text-xs font-black text-gray-900 mb-0.5 leading-snug">
                                             {preset.title}
                                         </div>
-                                        <div className="text-[10px] text-gray-500 font-medium leading-tight">
+                                        <div className="text-[9px] sm:text-[10px] text-gray-500 font-medium leading-tight">
                                             {preset.subtitle}
                                         </div>
                                     </div>
@@ -780,9 +780,9 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                     </div>
 
                     {/* Additional Options */}
-                    <div className="pt-4 border-t border-purple-100 grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                    <div className="pt-3 sm:pt-4 border-t border-purple-100 grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-4 items-center">
                         {/* Animation Toggle */}
-                        <div className="flex items-center justify-between p-3.5 bg-white rounded-xl border border-purple-100">
+                        <div className="flex items-center justify-between p-2.5 sm:p-3.5 bg-white rounded-xl border border-purple-100">
                             <div>
                                 <div className="text-xs font-black text-gray-900">
                                     {t.holidayAnimationsLabel}
@@ -814,8 +814,8 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                         </div>
 
                         {/* Date Picker: Wallpaper until date */}
-                        <div className="p-3.5 bg-white rounded-xl border border-purple-100 space-y-1">
-                            <label className="block text-[10px] font-black text-purple-900 uppercase tracking-wider">
+                        <div className="p-2.5 sm:p-3.5 bg-white rounded-xl border border-purple-100 space-y-1">
+                            <label className="block text-[9px] sm:text-[10px] font-black text-purple-900 uppercase tracking-wider">
                                 {t.holidayDateNotice}
                             </label>
                             <input
@@ -827,13 +827,13 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                         holidayWallpaperUntil: e.target.value,
                                     })
                                 }
-                                className="w-full bg-purple-50/50 border border-purple-100 rounded-lg px-3 py-1.5 text-xs font-bold text-gray-900 outline-none focus:border-purple-400 cursor-pointer"
+                                className="w-full bg-purple-50/50 border border-purple-100 rounded-lg px-2.5 py-1.5 text-xs font-bold text-gray-900 outline-none focus:border-purple-400 cursor-pointer"
                             />
                         </div>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-pretty">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-6 md:gap-8 text-pretty">
                     <div className="space-y-2">
                         <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
                             {t.phone}
@@ -866,12 +866,12 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 text-orange-600 border-l-4 border-orange-100 pl-4 mb-8 mt-12">
+                <div className="flex items-center gap-3 text-orange-600 border-l-4 border-orange-100 pl-3 sm:pl-4 mb-4 mt-6 sm:mb-8 sm:mt-12">
                     <h3 className="font-black text-xs uppercase tracking-[0.15em]">
                         {t.physicalAddress}
                     </h3>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-6 md:gap-8">
                     <div className="space-y-2">
                         <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1">
                             {t.addressLine1}
@@ -1001,9 +1001,9 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 </div>
             </div>
 
-            <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
-                <div className="flex justify-between items-center mb-8">
-                    <div className="flex items-center gap-3 text-orange-600 border-l-4 border-orange-100 pl-4">
+            <div className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl sm:rounded-[32px] shadow-sm border border-gray-100">
+                <div className="flex justify-between items-center mb-4 sm:mb-8">
+                    <div className="flex items-center gap-3 text-orange-600 border-l-4 border-orange-100 pl-3 sm:pl-4">
                         <h3 className="font-black text-xs uppercase tracking-[0.15em]">
                             {t.socialNetworks}
                         </h3>
@@ -1011,18 +1011,18 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                     <button
                         type="button"
                         onClick={handleAddSocial}
-                        className="text-[10px] flex items-center gap-2 font-black text-orange-600 uppercase tracking-widest hover:text-black transition-all bg-orange-50 px-4 py-2 rounded-xl"
+                        className="text-[10px] flex items-center gap-1.5 sm:gap-2 font-black text-orange-600 uppercase tracking-widest hover:text-black transition-all bg-orange-50 px-3 sm:px-4 py-2 rounded-xl"
                     >
-                        <Plus size={16} strokeWidth={3} /> {t.addSocial}
+                        <Plus size={14} strokeWidth={3} /> {t.addSocial}
                     </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-6">
                     {Array.isArray(localSettings.socialLinks) &&
                         localSettings.socialLinks.map((link: any, idx: number) => (
                             <div
                                 key={idx}
-                                className="flex flex-col gap-4 bg-gray-50/50 p-6 rounded-3xl border border-gray-100 relative group animate-in zoom-in-95 duration-200"
+                                className="flex flex-col gap-3 sm:gap-4 bg-gray-50/50 p-3.5 sm:p-5 md:p-6 rounded-2xl sm:rounded-3xl border border-gray-100 relative group animate-in zoom-in-95 duration-200"
                             >
                                 <button
                                     type="button"
@@ -1093,7 +1093,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 </div>
             </div>
 
-            <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
+            <div className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl sm:rounded-[32px] shadow-sm border border-gray-100">
                 <div className="flex items-center gap-3 text-gray-400 border-l-4 border-gray-100 pl-4 mb-6">
                     <h3 className="font-black text-xs uppercase tracking-[0.15em]">
                         {t.scheduleTitle}
