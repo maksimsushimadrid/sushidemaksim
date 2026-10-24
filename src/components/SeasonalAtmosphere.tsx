@@ -88,10 +88,24 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
 
     // --- HALLOWEEN ANIMATIONS LOGIC (Spider & Bats) ---
     const [bats, setBats] = useState<BatInstance[]>([]);
-    const [isScrolled, setIsScrolled] = useState(false);
+    const [scrollDescend, setScrollDescend] = useState(0);
+    const [isScrolling, setIsScrolling] = useState(false);
+    const [isSpiderScared, setIsSpiderScared] = useState(false);
     const batIdCounterRef = useRef(0);
     const isMountedRef = useRef(true);
     const timeoutsRef = useRef<Set<NodeJS.Timeout>>(new Set());
+    const spiderScaredTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const scrollStopTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+    const scareSpider = useCallback(() => {
+        setIsSpiderScared(true);
+        if (spiderScaredTimerRef.current) clearTimeout(spiderScaredTimerRef.current);
+        spiderScaredTimerRef.current = setTimeout(() => {
+            if (isMountedRef.current) {
+                setIsSpiderScared(false);
+            }
+        }, 2400);
+    }, []);
 
     const safeSetTimeout = useCallback((fn: () => void, delayMs: number): NodeJS.Timeout => {
         const timer = setTimeout(() => {
@@ -117,14 +131,38 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
     useEffect(() => {
         if (isExcluded) return;
 
+        let rafId: number | null = null;
+        let lastScrollY = typeof window !== 'undefined' ? window.scrollY || 0 : 0;
+
         const handleScroll = () => {
-            const scrolled = window.scrollY > 20;
-            setIsScrolled(prev => (prev === scrolled ? prev : scrolled));
+            if (rafId !== null) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+                const currentY = window.scrollY || 0;
+                // Descend proportionally with scroll, smoothly maxing out at 120px
+                const descend = Math.min(Math.round(currentY * 0.28), 120);
+                setScrollDescend(descend);
+
+                if (Math.abs(currentY - lastScrollY) > 2) {
+                    setIsScrolling(true);
+                    if (scrollStopTimerRef.current) clearTimeout(scrollStopTimerRef.current);
+                    scrollStopTimerRef.current = setTimeout(() => {
+                        if (isMountedRef.current) {
+                            setIsScrolling(false);
+                        }
+                    }, 180);
+                }
+                lastScrollY = currentY;
+            });
         };
 
         handleScroll();
         window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
+        return () => {
+            if (rafId !== null) cancelAnimationFrame(rafId);
+            if (scrollStopTimerRef.current) clearTimeout(scrollStopTimerRef.current);
+            if (spiderScaredTimerRef.current) clearTimeout(spiderScaredTimerRef.current);
+            window.removeEventListener('scroll', handleScroll);
+        };
     }, [isExcluded]);
 
     const spawnBat = useCallback(
@@ -277,11 +315,8 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
     }
 
     return (
-        <div
-            aria-hidden="true"
-            className="fixed inset-0 pointer-events-none z-[45] overflow-hidden select-none"
-        >
-            {/* HALLOWEEN DECORATIONS */}
+        <>
+            {/* TOP-LEFT SPIDERWEB & INTERACTIVE DESCENDING SPIDER (High z-index to appear on top everywhere) */}
             {effectiveTheme === 'halloween' && (
                 <>
                     <style>{`
@@ -341,8 +376,8 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
                         }
 
                         @keyframes spider-sway {
-                            0%, 100% { transform: rotate(-3deg); }
-                            50% { transform: rotate(3deg); }
+                            0%, 100% { transform: rotate(-3.5deg); }
+                            50% { transform: rotate(3.5deg); }
                         }
                         @keyframes spider-leg-scurry-left {
                             0%, 100% { transform: rotate(-10deg); }
@@ -371,13 +406,15 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
                         }
                     `}</style>
 
-                    {/* TOP-LEFT SPIDERWEB & RETRACTING SPIDER */}
-                    <div className="absolute top-0 left-0 w-36 h-36 sm:w-44 sm:h-44 pointer-events-none">
+                    <div
+                        aria-hidden="true"
+                        className="fixed top-0 left-0 w-36 h-36 sm:w-44 sm:h-44 pointer-events-none z-[550] overflow-visible select-none"
+                    >
                         <svg
                             viewBox="0 0 120 120"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"
-                            className="absolute top-0 left-0 w-full h-full filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)] opacity-85"
+                            className="absolute top-0 left-0 w-full h-full filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)] opacity-85 pointer-events-none"
                         >
                             <line
                                 x1="0"
@@ -465,122 +502,170 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
                                 top: 0,
                                 left: '46px',
                                 transformOrigin: 'top center',
-                                transform: isScrolled
-                                    ? 'translate3d(0, -130px, 0)'
+                                transform: isSpiderScared
+                                    ? 'translate3d(0, -260px, 0)'
                                     : 'translate3d(0, 0, 0)',
                                 willChange: 'transform',
-                                transition: isScrolled
-                                    ? 'transform 0.45s cubic-bezier(0.3, 0, 0.2, 1)'
-                                    : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1)',
+                                transition: isSpiderScared
+                                    ? 'transform 0.22s cubic-bezier(0.1, 0.9, 0.2, 1)'
+                                    : 'transform 0.85s cubic-bezier(0.2, 1, 0.35, 1)',
                             }}
                         >
                             <div
                                 style={{
                                     transformOrigin: 'top center',
-                                    animation: isScrolled
+                                    animation: isSpiderScared
                                         ? 'none'
                                         : 'spider-sway 3.8s ease-in-out infinite',
                                 }}
                             >
                                 <div
                                     className="w-[1px] bg-white/70 mx-auto filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
-                                    style={{ height: '78px' }}
+                                    style={{
+                                        height: `${72 + scrollDescend}px`,
+                                        transition: 'height 0.2s cubic-bezier(0.2, 0.8, 0.4, 1)',
+                                    }}
                                 />
-                                <svg
-                                    viewBox="-18 -12 36 34"
-                                    width="28"
-                                    height="28"
-                                    className="overflow-visible -mt-1 filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.85)]"
+                                <div
+                                    role="button"
+                                    tabIndex={0}
+                                    aria-label="Halloween Spider"
+                                    onMouseEnter={() => {
+                                        setIsSpiderScared(true);
+                                        if (spiderScaredTimerRef.current)
+                                            clearTimeout(spiderScaredTimerRef.current);
+                                    }}
+                                    onMouseLeave={() => {
+                                        if (spiderScaredTimerRef.current)
+                                            clearTimeout(spiderScaredTimerRef.current);
+                                        spiderScaredTimerRef.current = setTimeout(() => {
+                                            if (isMountedRef.current) {
+                                                setIsSpiderScared(false);
+                                            }
+                                        }, 900);
+                                    }}
+                                    onTouchStart={e => {
+                                        e.stopPropagation();
+                                        scareSpider();
+                                    }}
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        scareSpider();
+                                    }}
+                                    className="pointer-events-auto cursor-pointer relative -mt-3 flex items-center justify-center p-2 select-none -ml-3.5 w-10 h-10 sm:w-12 sm:h-12"
                                 >
-                                    <g
-                                        className={isScrolled ? 'spider-scurrying-left' : ''}
-                                        style={{ transformOrigin: '0 2px' }}
+                                    <svg
+                                        viewBox="-18 -12 36 34"
+                                        width="28"
+                                        height="28"
+                                        className="overflow-visible filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.85)] pointer-events-none transition-transform duration-200 hover:scale-110 active:scale-95"
                                     >
-                                        <path
-                                            d="M -3 -5 Q -11 -11 -13 -3"
-                                            stroke="#27272a"
-                                            strokeWidth="1.2"
-                                            strokeLinecap="round"
-                                            fill="none"
+                                        <g
+                                            className={
+                                                isSpiderScared || isScrolling
+                                                    ? 'spider-scurrying-left'
+                                                    : ''
+                                            }
+                                            style={{ transformOrigin: '0 2px' }}
+                                        >
+                                            <path
+                                                d="M -3 -5 Q -11 -11 -13 -3"
+                                                stroke="#27272a"
+                                                strokeWidth="1.2"
+                                                strokeLinecap="round"
+                                                fill="none"
+                                            />
+                                            <path
+                                                d="M -4 -3 Q -15 -5 -16 4"
+                                                stroke="#27272a"
+                                                strokeWidth="1.2"
+                                                strokeLinecap="round"
+                                                fill="none"
+                                            />
+                                            <path
+                                                d="M -4 1 Q -16 3 -14 12"
+                                                stroke="#27272a"
+                                                strokeWidth="1.2"
+                                                strokeLinecap="round"
+                                                fill="none"
+                                            />
+                                            <path
+                                                d="M -3 4 Q -13 11 -10 17"
+                                                stroke="#27272a"
+                                                strokeWidth="1.2"
+                                                strokeLinecap="round"
+                                                fill="none"
+                                            />
+                                        </g>
+                                        <g
+                                            className={
+                                                isSpiderScared || isScrolling
+                                                    ? 'spider-scurrying-right'
+                                                    : ''
+                                            }
+                                            style={{ transformOrigin: '0 2px' }}
+                                        >
+                                            <path
+                                                d="M 3 -5 Q 11 -11 13 -3"
+                                                stroke="#27272a"
+                                                strokeWidth="1.2"
+                                                strokeLinecap="round"
+                                                fill="none"
+                                            />
+                                            <path
+                                                d="M 4 -3 Q 15 -5 16 4"
+                                                stroke="#27272a"
+                                                strokeWidth="1.2"
+                                                strokeLinecap="round"
+                                                fill="none"
+                                            />
+                                            <path
+                                                d="M 4 1 Q 16 3 14 12"
+                                                stroke="#27272a"
+                                                strokeWidth="1.2"
+                                                strokeLinecap="round"
+                                                fill="none"
+                                            />
+                                            <path
+                                                d="M 3 4 Q 13 11 10 17"
+                                                stroke="#27272a"
+                                                strokeWidth="1.2"
+                                                strokeLinecap="round"
+                                                fill="none"
+                                            />
+                                        </g>
+                                        <ellipse
+                                            cx="0"
+                                            cy="3"
+                                            rx="5.2"
+                                            ry="6.8"
+                                            fill="#09090b"
+                                            stroke="#f97316"
+                                            strokeWidth="0.5"
                                         />
-                                        <path
-                                            d="M -4 -3 Q -15 -5 -16 4"
-                                            stroke="#27272a"
-                                            strokeWidth="1.2"
-                                            strokeLinecap="round"
-                                            fill="none"
-                                        />
-                                        <path
-                                            d="M -4 1 Q -16 3 -14 12"
-                                            stroke="#27272a"
-                                            strokeWidth="1.2"
-                                            strokeLinecap="round"
-                                            fill="none"
-                                        />
-                                        <path
-                                            d="M -3 4 Q -13 11 -10 17"
-                                            stroke="#27272a"
-                                            strokeWidth="1.2"
-                                            strokeLinecap="round"
-                                            fill="none"
-                                        />
-                                    </g>
-                                    <g
-                                        className={isScrolled ? 'spider-scurrying-right' : ''}
-                                        style={{ transformOrigin: '0 2px' }}
-                                    >
-                                        <path
-                                            d="M 3 -5 Q 11 -11 13 -3"
-                                            stroke="#27272a"
-                                            strokeWidth="1.2"
-                                            strokeLinecap="round"
-                                            fill="none"
-                                        />
-                                        <path
-                                            d="M 4 -3 Q 15 -5 16 4"
-                                            stroke="#27272a"
-                                            strokeWidth="1.2"
-                                            strokeLinecap="round"
-                                            fill="none"
-                                        />
-                                        <path
-                                            d="M 4 1 Q 16 3 14 12"
-                                            stroke="#27272a"
-                                            strokeWidth="1.2"
-                                            strokeLinecap="round"
-                                            fill="none"
-                                        />
-                                        <path
-                                            d="M 3 4 Q 13 11 10 17"
-                                            stroke="#27272a"
-                                            strokeWidth="1.2"
-                                            strokeLinecap="round"
-                                            fill="none"
-                                        />
-                                    </g>
-                                    <ellipse
-                                        cx="0"
-                                        cy="3"
-                                        rx="5.2"
-                                        ry="6.8"
-                                        fill="#09090b"
-                                        stroke="#f97316"
-                                        strokeWidth="0.5"
-                                    />
-                                    <polygon points="0, 0.5 -2, 3 2, 3" fill="#f97316" />
-                                    <polygon points="-2, 3 2, 3 0, 5.5" fill="#f97316" />
-                                    <circle cx="0" cy="-4.8" r="3.4" fill="#09090b" />
-                                    <circle cx="-1.1" cy="-5.4" r="0.75" fill="#f97316" />
-                                    <circle cx="1.1" cy="-5.4" r="0.75" fill="#f97316" />
-                                    <circle cx="-1.1" cy="-5.4" r="0.3" fill="#ffffff" />
-                                    <circle cx="1.1" cy="-5.4" r="0.3" fill="#ffffff" />
-                                </svg>
+                                        <polygon points="0, 0.5 -2, 3 2, 3" fill="#f97316" />
+                                        <polygon points="-2, 3 2, 3 0, 5.5" fill="#f97316" />
+                                        <circle cx="0" cy="-4.8" r="3.4" fill="#09090b" />
+                                        <circle cx="-1.1" cy="-5.4" r="0.75" fill="#f97316" />
+                                        <circle cx="1.1" cy="-5.4" r="0.75" fill="#f97316" />
+                                        <circle cx="-1.1" cy="-5.4" r="0.3" fill="#ffffff" />
+                                        <circle cx="1.1" cy="-5.4" r="0.3" fill="#ffffff" />
+                                    </svg>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </>
+            )}
 
-                    {/* FLYING BATS */}
-                    {bats.map(bat => (
+            {/* BACKGROUND SEASONAL EFFECTS (Bats, falling leaves, etc. at z-[45]) */}
+            <div
+                aria-hidden="true"
+                className="fixed inset-0 pointer-events-none z-[45] overflow-hidden select-none"
+            >
+                {/* FLYING BATS */}
+                {effectiveTheme === 'halloween' &&
+                    bats.map(bat => (
                         <div
                             key={bat.id}
                             className={bat.isRtl ? 'bat-flying-rtl' : 'bat-flying-ltr'}
@@ -622,13 +707,11 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
                             </svg>
                         </div>
                     ))}
-                </>
-            )}
 
-            {/* NEW YEAR & CHRISTMAS SNOWFALL */}
-            {(effectiveTheme === 'new_year' || effectiveTheme === 'christmas') && (
-                <>
-                    <style>{`
+                {/* NEW YEAR & CHRISTMAS SNOWFALL */}
+                {(effectiveTheme === 'new_year' || effectiveTheme === 'christmas') && (
+                    <>
+                        <style>{`
                         @keyframes snowflake-fall {
                             0% {
                                 transform: translate3d(0, -20px, 0);
@@ -661,41 +744,42 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
                             }
                         }
                     `}</style>
-                    {snowflakes.map(flake => (
-                        <div
-                            key={flake.id}
-                            className="snowflake-particle absolute top-0"
-                            style={
-                                {
-                                    left: `${flake.x}vw`,
-                                    '--snow-duration': `${flake.duration}s`,
-                                    '--snow-delay': `${flake.delay}s`,
-                                    '--snow-opacity': flake.opacity,
-                                    '--snow-drift': `${(flake.id % 2 === 0 ? 1 : -1) * (20 + (flake.id % 5) * 10)}px`,
-                                } as React.CSSProperties
-                            }
-                        >
+                        {snowflakes.map(flake => (
                             <div
-                                className="snowflake-inner"
+                                key={flake.id}
+                                className="snowflake-particle absolute top-0"
                                 style={
                                     {
-                                        '--snow-sway': `${flake.swayDuration}s`,
+                                        left: `${flake.x}vw`,
+                                        '--snow-duration': `${flake.duration}s`,
+                                        '--snow-delay': `${flake.delay}s`,
+                                        '--snow-opacity': flake.opacity,
+                                        '--snow-drift': `${(flake.id % 2 === 0 ? 1 : -1) * (20 + (flake.id % 5) * 10)}px`,
                                     } as React.CSSProperties
                                 }
                             >
                                 <div
-                                    className="rounded-full bg-white blur-[0.4px] shadow-[0_0_6px_rgba(255,255,255,0.8)]"
-                                    style={{
-                                        width: `${flake.size}px`,
-                                        height: `${flake.size}px`,
-                                        opacity: flake.opacity,
-                                    }}
-                                />
+                                    className="snowflake-inner"
+                                    style={
+                                        {
+                                            '--snow-sway': `${flake.swayDuration}s`,
+                                        } as React.CSSProperties
+                                    }
+                                >
+                                    <div
+                                        className="rounded-full bg-white blur-[0.4px] shadow-[0_0_6px_rgba(255,255,255,0.8)]"
+                                        style={{
+                                            width: `${flake.size}px`,
+                                            height: `${flake.size}px`,
+                                            opacity: flake.opacity,
+                                        }}
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </>
-            )}
-        </div>
+                        ))}
+                    </>
+                )}
+            </div>
+        </>
     );
 });

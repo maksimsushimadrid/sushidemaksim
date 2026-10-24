@@ -14,10 +14,24 @@ interface BatInstance {
 export const HalloweenAtmosphere = memo(function HalloweenAtmosphere() {
     const location = useLocation();
     const [bats, setBats] = useState<BatInstance[]>([]);
-    const [isScrolled, setIsScrolled] = useState(false);
+    const [scrollDescend, setScrollDescend] = useState(0);
+    const [isScrolling, setIsScrolling] = useState(false);
+    const [isSpiderScared, setIsSpiderScared] = useState(false);
     const batIdCounterRef = useRef(0);
     const isMountedRef = useRef(true);
     const timeoutsRef = useRef<Set<NodeJS.Timeout>>(new Set());
+    const spiderScaredTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const scrollStopTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+    const scareSpider = useCallback(() => {
+        setIsSpiderScared(true);
+        if (spiderScaredTimerRef.current) clearTimeout(spiderScaredTimerRef.current);
+        spiderScaredTimerRef.current = setTimeout(() => {
+            if (isMountedRef.current) {
+                setIsSpiderScared(false);
+            }
+        }, 2400);
+    }, []);
 
     // Exclude admin, waiter, table, track screens
     const isExcluded =
@@ -54,18 +68,41 @@ export const HalloweenAtmosphere = memo(function HalloweenAtmosphere() {
         typeof window !== 'undefined' &&
         window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Track scroll to make spider scurry away off-screen when scrolled
+    // Track scroll to make spider descend and wiggle legs
     useEffect(() => {
         if (isExcluded) return;
 
+        let rafId: number | null = null;
+        let lastScrollY = typeof window !== 'undefined' ? window.scrollY || 0 : 0;
+
         const handleScroll = () => {
-            const scrolled = window.scrollY > 20;
-            setIsScrolled(prev => (prev === scrolled ? prev : scrolled));
+            if (rafId !== null) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => {
+                const currentY = window.scrollY || 0;
+                const descend = Math.min(Math.round(currentY * 0.28), 120);
+                setScrollDescend(descend);
+
+                if (Math.abs(currentY - lastScrollY) > 2) {
+                    setIsScrolling(true);
+                    if (scrollStopTimerRef.current) clearTimeout(scrollStopTimerRef.current);
+                    scrollStopTimerRef.current = setTimeout(() => {
+                        if (isMountedRef.current) {
+                            setIsScrolling(false);
+                        }
+                    }, 180);
+                }
+                lastScrollY = currentY;
+            });
         };
 
         handleScroll();
         window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
+        return () => {
+            if (rafId !== null) cancelAnimationFrame(rafId);
+            if (scrollStopTimerRef.current) clearTimeout(scrollStopTimerRef.current);
+            if (spiderScaredTimerRef.current) clearTimeout(spiderScaredTimerRef.current);
+            window.removeEventListener('scroll', handleScroll);
+        };
     }, [isExcluded]);
 
     // Helper to spawn a bat and remove it when its flight ends
@@ -177,120 +214,120 @@ export const HalloweenAtmosphere = memo(function HalloweenAtmosphere() {
     if (isExcluded) return null;
 
     return (
-        <div
-            aria-hidden="true"
-            className="fixed inset-0 pointer-events-none z-[45] overflow-hidden select-none"
-        >
-            <style>{`
-                /* Bat swooping animations */
-                @keyframes bat-swoop-ltr {
-                    0% {
-                        transform: translate3d(-140px, var(--bat-start-y), 0) rotate(12deg) scale(0.85);
-                        opacity: 0;
+        <>
+            {/* TOP-LEFT SPIDERWEB & INTERACTIVE DESCENDING SPIDER (z-[550] to be above header and all content) */}
+            <div
+                aria-hidden="true"
+                className="fixed top-0 left-0 w-36 h-36 sm:w-44 sm:h-44 pointer-events-none z-[550] overflow-visible select-none"
+            >
+                <style>{`
+                    /* Bat swooping animations */
+                    @keyframes bat-swoop-ltr {
+                        0% {
+                            transform: translate3d(-140px, var(--bat-start-y), 0) rotate(12deg) scale(0.85);
+                            opacity: 0;
+                        }
+                        10% {
+                            opacity: 1;
+                        }
+                        50% {
+                            transform: translate3d(50vw, calc((var(--bat-start-y) + var(--bat-end-y)) / 2 + 60px), 0) rotate(-6deg) scale(1.1);
+                        }
+                        90% {
+                            opacity: 1;
+                        }
+                        100% {
+                            transform: translate3d(calc(100vw + 140px), var(--bat-end-y), 0) rotate(8deg) scale(0.9);
+                            opacity: 0;
+                        }
                     }
-                    10% {
-                        opacity: 1;
+                    @keyframes bat-swoop-rtl {
+                        0% {
+                            transform: translate3d(calc(100vw + 140px), var(--bat-start-y), 0) scaleX(-1) rotate(12deg) scale(0.85);
+                            opacity: 0;
+                        }
+                        10% {
+                            opacity: 1;
+                        }
+                        50% {
+                            transform: translate3d(50vw, calc((var(--bat-start-y) + var(--bat-end-y)) / 2 + 60px), 0) scaleX(-1) rotate(-6deg) scale(1.1);
+                        }
+                        90% {
+                            opacity: 1;
+                        }
+                        100% {
+                            transform: translate3d(-140px, var(--bat-end-y), 0) scaleX(-1) rotate(8deg) scale(0.9);
+                            opacity: 0;
+                        }
                     }
-                    50% {
-                        transform: translate3d(50vw, calc((var(--bat-start-y) + var(--bat-end-y)) / 2 + 60px), 0) rotate(-6deg) scale(1.1);
+                    @keyframes bat-wing-flap-left {
+                        0%, 100% { transform: rotate(0deg) scaleY(1); }
+                        50% { transform: rotate(28deg) scaleY(-0.7); }
                     }
-                    90% {
-                        opacity: 1;
+                    @keyframes bat-wing-flap-right {
+                        0%, 100% { transform: rotate(0deg) scaleY(1); }
+                        50% { transform: rotate(-28deg) scaleY(-0.7); }
                     }
-                    100% {
-                        transform: translate3d(calc(100vw + 140px), var(--bat-end-y), 0) rotate(8deg) scale(0.9);
-                        opacity: 0;
+                    .bat-flying-ltr {
+                        animation: bat-swoop-ltr var(--bat-duration, 1s) cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+                        will-change: transform;
                     }
-                }
-                @keyframes bat-swoop-rtl {
-                    0% {
-                        transform: translate3d(calc(100vw + 140px), var(--bat-start-y), 0) scaleX(-1) rotate(12deg) scale(0.85);
-                        opacity: 0;
+                    .bat-flying-rtl {
+                        animation: bat-swoop-rtl var(--bat-duration, 1s) cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
+                        will-change: transform;
                     }
-                    10% {
-                        opacity: 1;
+                    .bat-wing-left {
+                        transform-origin: 46px 28px;
+                        animation: bat-wing-flap-left var(--bat-wing-speed, 0.1s) infinite ease-in-out;
                     }
-                    50% {
-                        transform: translate3d(50vw, calc((var(--bat-start-y) + var(--bat-end-y)) / 2 + 60px), 0) scaleX(-1) rotate(-6deg) scale(1.1);
+                    .bat-wing-right {
+                        transform-origin: 54px 28px;
+                        animation: bat-wing-flap-right var(--bat-wing-speed, 0.1s) infinite ease-in-out;
                     }
-                    90% {
-                        opacity: 1;
-                    }
-                    100% {
-                        transform: translate3d(-140px, var(--bat-end-y), 0) scaleX(-1) rotate(8deg) scale(0.9);
-                        opacity: 0;
-                    }
-                }
-                @keyframes bat-wing-flap-left {
-                    0%, 100% { transform: rotate(0deg) scaleY(1); }
-                    50% { transform: rotate(28deg) scaleY(-0.7); }
-                }
-                @keyframes bat-wing-flap-right {
-                    0%, 100% { transform: rotate(0deg) scaleY(1); }
-                    50% { transform: rotate(-28deg) scaleY(-0.7); }
-                }
-                .bat-flying-ltr {
-                    animation: bat-swoop-ltr var(--bat-duration, 1s) cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-                    will-change: transform;
-                }
-                .bat-flying-rtl {
-                    animation: bat-swoop-rtl var(--bat-duration, 1s) cubic-bezier(0.25, 0.1, 0.25, 1) forwards;
-                    will-change: transform;
-                }
-                .bat-wing-left {
-                    transform-origin: 46px 28px;
-                    animation: bat-wing-flap-left var(--bat-wing-speed, 0.1s) infinite ease-in-out;
-                }
-                .bat-wing-right {
-                    transform-origin: 54px 28px;
-                    animation: bat-wing-flap-right var(--bat-wing-speed, 0.1s) infinite ease-in-out;
-                }
 
-                /* Spider gentle pendulum sway on idle */
-                @keyframes spider-sway {
-                    0%, 100% {
-                        transform: rotate(-3deg);
+                    /* Spider gentle pendulum sway on idle */
+                    @keyframes spider-sway {
+                        0%, 100% {
+                            transform: rotate(-3.5deg);
+                        }
+                        50% {
+                            transform: rotate(3.5deg);
+                        }
                     }
-                    50% {
-                        transform: rotate(3deg);
+                    /* Spider legs scurry motion when escaping */
+                    @keyframes spider-leg-scurry-left {
+                        0%, 100% { transform: rotate(-10deg); }
+                        50% { transform: rotate(14deg); }
                     }
-                }
-                /* Spider legs scurry motion when escaping */
-                @keyframes spider-leg-scurry-left {
-                    0%, 100% { transform: rotate(-10deg); }
-                    50% { transform: rotate(14deg); }
-                }
-                @keyframes spider-leg-scurry-right {
-                    0%, 100% { transform: rotate(10deg); }
-                    50% { transform: rotate(-14deg); }
-                }
-                .spider-scurrying-left {
-                    animation: spider-leg-scurry-left 0.08s infinite ease-in-out;
-                }
-                .spider-scurrying-right {
-                    animation: spider-leg-scurry-right 0.08s infinite ease-in-out;
-                }
-
-                @media (prefers-reduced-motion: reduce) {
-                    .bat-flying-ltr,
-                    .bat-flying-rtl,
-                    .bat-wing-left,
-                    .bat-wing-right,
-                    .spider-scurrying-left,
+                    @keyframes spider-leg-scurry-right {
+                        0%, 100% { transform: rotate(10deg); }
+                        50% { transform: rotate(-14deg); }
+                    }
+                    .spider-scurrying-left {
+                        animation: spider-leg-scurry-left 0.08s infinite ease-in-out;
+                    }
                     .spider-scurrying-right {
-                        animation: none !important;
+                        animation: spider-leg-scurry-right 0.08s infinite ease-in-out;
                     }
-                }
-            `}</style>
 
-            {/* TOP-LEFT CORNER SPIDERWEB & SPIDER */}
-            <div className="absolute top-0 left-0 w-36 h-36 sm:w-44 sm:h-44 pointer-events-none">
+                    @media (prefers-reduced-motion: reduce) {
+                        .bat-flying-ltr,
+                        .bat-flying-rtl,
+                        .bat-wing-left,
+                        .bat-wing-right,
+                        .spider-scurrying-left,
+                        .spider-scurrying-right {
+                            animation: none !important;
+                        }
+                    }
+                `}</style>
+
                 {/* Spiderweb SVG */}
                 <svg
                     viewBox="0 0 120 120"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
-                    className="absolute top-0 left-0 w-full h-full filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)] opacity-85"
+                    className="absolute top-0 left-0 w-full h-full filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.55)] opacity-85 pointer-events-none"
                 >
                     {/* Radial threads from (0,0) */}
                     <line
@@ -343,28 +380,24 @@ export const HalloweenAtmosphere = memo(function HalloweenAtmosphere() {
                     />
 
                     {/* Concentric curved connecting arcs */}
-                    {/* Ring 1 */}
                     <path
                         d="M 32 0 Q 30 6 30 10 Q 26 16 25 20 Q 22 22 20 25 Q 16 26 10 30 Q 6 30 0 32"
                         stroke="rgba(255,255,255,0.5)"
                         strokeWidth="0.75"
                         fill="none"
                     />
-                    {/* Ring 2 */}
                     <path
                         d="M 60 0 Q 56 10 55 18 Q 49 28 45 37 Q 40 40 37 45 Q 28 49 18 55 Q 10 56 0 60"
                         stroke="rgba(255,255,255,0.5)"
                         strokeWidth="0.75"
                         fill="none"
                     />
-                    {/* Ring 3 */}
                     <path
                         d="M 88 0 Q 82 14 80 26 Q 72 41 66 54 Q 59 59 54 66 Q 41 72 26 80 Q 14 82 0 88"
                         stroke="rgba(255,255,255,0.5)"
                         strokeWidth="0.75"
                         fill="none"
                     />
-                    {/* Ring 4 */}
                     <path
                         d="M 114 0 Q 106 18 104 34 Q 93 54 85 70 Q 77 77 70 85 Q 54 93 34 104 Q 18 106 0 114"
                         stroke="rgba(255,255,255,0.4)"
@@ -386,19 +419,19 @@ export const HalloweenAtmosphere = memo(function HalloweenAtmosphere() {
                         top: 0,
                         left: '46px',
                         transformOrigin: 'top center',
-                        transform: isScrolled
-                            ? 'translate3d(0, -130px, 0)'
+                        transform: isSpiderScared
+                            ? 'translate3d(0, -260px, 0)'
                             : 'translate3d(0, 0, 0)',
                         willChange: 'transform',
-                        transition: isScrolled
-                            ? 'transform 0.45s cubic-bezier(0.3, 0, 0.2, 1)'
-                            : 'transform 0.9s cubic-bezier(0.16, 1, 0.3, 1)',
+                        transition: isSpiderScared
+                            ? 'transform 0.22s cubic-bezier(0.1, 0.9, 0.2, 1)'
+                            : 'transform 0.85s cubic-bezier(0.2, 1, 0.35, 1)',
                     }}
                 >
                     <div
                         style={{
                             transformOrigin: 'top center',
-                            animation: isScrolled
+                            animation: isSpiderScared
                                 ? 'none'
                                 : 'spider-sway 3.8s ease-in-out infinite',
                         }}
@@ -406,163 +439,206 @@ export const HalloweenAtmosphere = memo(function HalloweenAtmosphere() {
                         {/* Silk Thread */}
                         <div
                             className="w-[1px] bg-white/70 mx-auto filter drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]"
-                            style={{ height: '78px' }}
+                            style={{
+                                height: `${72 + scrollDescend}px`,
+                                transition: 'height 0.2s cubic-bezier(0.2, 0.8, 0.4, 1)',
+                            }}
                         />
 
-                        {/* Spider Creature SVG */}
-                        <svg
-                            viewBox="-18 -12 36 34"
-                            width="28"
-                            height="28"
-                            className="overflow-visible -mt-1 filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.85)]"
+                        {/* Interactive Spider Button Target */}
+                        <div
+                            role="button"
+                            tabIndex={0}
+                            aria-label="Halloween Spider"
+                            onMouseEnter={() => {
+                                setIsSpiderScared(true);
+                                if (spiderScaredTimerRef.current)
+                                    clearTimeout(spiderScaredTimerRef.current);
+                            }}
+                            onMouseLeave={() => {
+                                if (spiderScaredTimerRef.current)
+                                    clearTimeout(spiderScaredTimerRef.current);
+                                spiderScaredTimerRef.current = setTimeout(() => {
+                                    if (isMountedRef.current) {
+                                        setIsSpiderScared(false);
+                                    }
+                                }, 900);
+                            }}
+                            onTouchStart={e => {
+                                e.stopPropagation();
+                                scareSpider();
+                            }}
+                            onClick={e => {
+                                e.stopPropagation();
+                                scareSpider();
+                            }}
+                            className="pointer-events-auto cursor-pointer relative -mt-3 flex items-center justify-center p-2 select-none -ml-3.5 w-10 h-10 sm:w-12 sm:h-12"
                         >
-                            {/* Spider Left Legs */}
-                            <g
-                                className={isScrolled ? 'spider-scurrying-left' : ''}
-                                style={{ transformOrigin: '0 2px' }}
+                            <svg
+                                viewBox="-18 -12 36 34"
+                                width="28"
+                                height="28"
+                                className="overflow-visible filter drop-shadow-[0_3px_5px_rgba(0,0,0,0.85)] pointer-events-none transition-transform duration-200 hover:scale-110 active:scale-95"
                             >
-                                <path
-                                    d="M -3 -5 Q -11 -11 -13 -3"
-                                    stroke="#27272a"
-                                    strokeWidth="1.2"
-                                    strokeLinecap="round"
-                                    fill="none"
-                                />
-                                <path
-                                    d="M -4 -3 Q -15 -5 -16 4"
-                                    stroke="#27272a"
-                                    strokeWidth="1.2"
-                                    strokeLinecap="round"
-                                    fill="none"
-                                />
-                                <path
-                                    d="M -4 1 Q -16 3 -14 12"
-                                    stroke="#27272a"
-                                    strokeWidth="1.2"
-                                    strokeLinecap="round"
-                                    fill="none"
-                                />
-                                <path
-                                    d="M -3 4 Q -13 11 -10 17"
-                                    stroke="#27272a"
-                                    strokeWidth="1.2"
-                                    strokeLinecap="round"
-                                    fill="none"
-                                />
-                            </g>
+                                {/* Spider Left Legs */}
+                                <g
+                                    className={
+                                        isSpiderScared || isScrolling ? 'spider-scurrying-left' : ''
+                                    }
+                                    style={{ transformOrigin: '0 2px' }}
+                                >
+                                    <path
+                                        d="M -3 -5 Q -11 -11 -13 -3"
+                                        stroke="#27272a"
+                                        strokeWidth="1.2"
+                                        strokeLinecap="round"
+                                        fill="none"
+                                    />
+                                    <path
+                                        d="M -4 -3 Q -15 -5 -16 4"
+                                        stroke="#27272a"
+                                        strokeWidth="1.2"
+                                        strokeLinecap="round"
+                                        fill="none"
+                                    />
+                                    <path
+                                        d="M -4 1 Q -16 3 -14 12"
+                                        stroke="#27272a"
+                                        strokeWidth="1.2"
+                                        strokeLinecap="round"
+                                        fill="none"
+                                    />
+                                    <path
+                                        d="M -3 4 Q -13 11 -10 17"
+                                        stroke="#27272a"
+                                        strokeWidth="1.2"
+                                        strokeLinecap="round"
+                                        fill="none"
+                                    />
+                                </g>
 
-                            {/* Spider Right Legs */}
-                            <g
-                                className={isScrolled ? 'spider-scurrying-right' : ''}
-                                style={{ transformOrigin: '0 2px' }}
-                            >
-                                <path
-                                    d="M 3 -5 Q 11 -11 13 -3"
-                                    stroke="#27272a"
-                                    strokeWidth="1.2"
-                                    strokeLinecap="round"
-                                    fill="none"
-                                />
-                                <path
-                                    d="M 4 -3 Q 15 -5 16 4"
-                                    stroke="#27272a"
-                                    strokeWidth="1.2"
-                                    strokeLinecap="round"
-                                    fill="none"
-                                />
-                                <path
-                                    d="M 4 1 Q 16 3 14 12"
-                                    stroke="#27272a"
-                                    strokeWidth="1.2"
-                                    strokeLinecap="round"
-                                    fill="none"
-                                />
-                                <path
-                                    d="M 3 4 Q 13 11 10 17"
-                                    stroke="#27272a"
-                                    strokeWidth="1.2"
-                                    strokeLinecap="round"
-                                    fill="none"
-                                />
-                            </g>
+                                {/* Spider Right Legs */}
+                                <g
+                                    className={
+                                        isSpiderScared || isScrolling
+                                            ? 'spider-scurrying-right'
+                                            : ''
+                                    }
+                                    style={{ transformOrigin: '0 2px' }}
+                                >
+                                    <path
+                                        d="M 3 -5 Q 11 -11 13 -3"
+                                        stroke="#27272a"
+                                        strokeWidth="1.2"
+                                        strokeLinecap="round"
+                                        fill="none"
+                                    />
+                                    <path
+                                        d="M 4 -3 Q 15 -5 16 4"
+                                        stroke="#27272a"
+                                        strokeWidth="1.2"
+                                        strokeLinecap="round"
+                                        fill="none"
+                                    />
+                                    <path
+                                        d="M 4 1 Q 16 3 14 12"
+                                        stroke="#27272a"
+                                        strokeWidth="1.2"
+                                        strokeLinecap="round"
+                                        fill="none"
+                                    />
+                                    <path
+                                        d="M 3 4 Q 13 11 10 17"
+                                        stroke="#27272a"
+                                        strokeWidth="1.2"
+                                        strokeLinecap="round"
+                                        fill="none"
+                                    />
+                                </g>
 
-                            {/* Spider Abdomen */}
-                            <ellipse
-                                cx="0"
-                                cy="3"
-                                rx="5.2"
-                                ry="6.8"
-                                fill="#09090b"
-                                stroke="#f97316"
-                                strokeWidth="0.5"
-                            />
+                                {/* Spider Abdomen */}
+                                <ellipse
+                                    cx="0"
+                                    cy="3"
+                                    rx="5.2"
+                                    ry="6.8"
+                                    fill="#09090b"
+                                    stroke="#f97316"
+                                    strokeWidth="0.5"
+                                />
 
-                            {/* Halloween Orange Hourglass mark on back */}
-                            <polygon points="0, 0.5 -2, 3 2, 3" fill="#f97316" />
-                            <polygon points="-2, 3 2, 3 0, 5.5" fill="#f97316" />
+                                {/* Halloween Orange Hourglass mark on back */}
+                                <polygon points="0, 0.5 -2, 3 2, 3" fill="#f97316" />
+                                <polygon points="-2, 3 2, 3 0, 5.5" fill="#f97316" />
 
-                            {/* Spider Cephalothorax / Head */}
-                            <circle cx="0" cy="-4.8" r="3.4" fill="#09090b" />
+                                {/* Spider Cephalothorax / Head */}
+                                <circle cx="0" cy="-4.8" r="3.4" fill="#09090b" />
 
-                            {/* Glowing Orange Halloween Eyes */}
-                            <circle cx="-1.1" cy="-5.4" r="0.75" fill="#f97316" />
-                            <circle cx="1.1" cy="-5.4" r="0.75" fill="#f97316" />
-                            <circle cx="-1.1" cy="-5.4" r="0.3" fill="#ffffff" />
-                            <circle cx="1.1" cy="-5.4" r="0.3" fill="#ffffff" />
-                        </svg>
+                                {/* Glowing Orange Halloween Eyes */}
+                                <circle cx="-1.1" cy="-5.4" r="0.75" fill="#f97316" />
+                                <circle cx="1.1" cy="-5.4" r="0.75" fill="#f97316" />
+                                <circle cx="-1.1" cy="-5.4" r="0.3" fill="#ffffff" />
+                                <circle cx="1.1" cy="-5.4" r="0.3" fill="#ffffff" />
+                            </svg>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            {/* BAT FLIGHT ANIMATIONS (Regular 1.0s bat + Fast 0.5s bat flock) */}
-            {bats.map(bat => (
-                <div
-                    key={bat.id}
-                    className={bat.isRtl ? 'bat-flying-rtl' : 'bat-flying-ltr'}
-                    style={
-                        {
-                            '--bat-start-y': `${bat.startY}vh`,
-                            '--bat-end-y': `${bat.endY}vh`,
-                            '--bat-duration': `${bat.durationSec}s`,
-                            '--bat-wing-speed': `${bat.wingSpeedSec}s`,
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            transform: `scale(${bat.scale})`,
-                        } as React.CSSProperties
-                    }
-                >
-                    <svg
-                        viewBox="0 0 100 60"
-                        className="w-14 h-9 sm:w-20 sm:h-12 drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)] filter"
+            {/* BAT FLIGHT ANIMATIONS (Regular 1.0s bat + Fast 0.5s bat flock) (z-[45]) */}
+            <div
+                aria-hidden="true"
+                className="fixed inset-0 pointer-events-none z-[45] overflow-hidden select-none"
+            >
+                {bats.map(bat => (
+                    <div
+                        key={bat.id}
+                        className={bat.isRtl ? 'bat-flying-rtl' : 'bat-flying-ltr'}
+                        style={
+                            {
+                                '--bat-start-y': `${bat.startY}vh`,
+                                '--bat-end-y': `${bat.endY}vh`,
+                                '--bat-duration': `${bat.durationSec}s`,
+                                '--bat-wing-speed': `${bat.wingSpeedSec}s`,
+                                position: 'absolute',
+                                top: 0,
+                                left: 0,
+                                transform: `scale(${bat.scale})`,
+                            } as React.CSSProperties
+                        }
                     >
-                        {/* Bat body */}
-                        <ellipse cx="50" cy="32" rx="5.5" ry="11" fill="#09090b" />
-                        {/* Bat head */}
-                        <circle cx="50" cy="20" r="5" fill="#09090b" />
-                        {/* Ears */}
-                        <polygon points="46,18 43,10 48,16" fill="#09090b" />
-                        <polygon points="54,18 57,10 52,16" fill="#09090b" />
-                        {/* Glowing orange eyes */}
-                        <circle cx="48" cy="20" r="1.1" fill="#f97316" />
-                        <circle cx="52" cy="20" r="1.1" fill="#f97316" />
-                        {/* Animated Left Wing */}
-                        <g className="bat-wing-left">
-                            <path
-                                d="M 46 28 C 34 14, 14 14, 2 24 C 10 34, 24 37, 28 46 C 35 38, 41 35, 46 36 Z"
-                                fill="#18181b"
-                            />
-                        </g>
-                        {/* Animated Right Wing */}
-                        <g className="bat-wing-right">
-                            <path
-                                d="M 54 28 C 66 14, 86 14, 98 24 C 90 34, 76 37, 72 46 C 65 38, 59 35, 54 36 Z"
-                                fill="#18181b"
-                            />
-                        </g>
-                    </svg>
-                </div>
-            ))}
-        </div>
+                        <svg
+                            viewBox="0 0 100 60"
+                            className="w-14 h-9 sm:w-20 sm:h-12 drop-shadow-[0_8px_16px_rgba(0,0,0,0.8)] filter"
+                        >
+                            {/* Bat body */}
+                            <ellipse cx="50" cy="32" rx="5.5" ry="11" fill="#09090b" />
+                            {/* Bat head */}
+                            <circle cx="50" cy="20" r="5" fill="#09090b" />
+                            {/* Ears */}
+                            <polygon points="46,18 43,10 48,16" fill="#09090b" />
+                            <polygon points="54,18 57,10 52,16" fill="#09090b" />
+                            {/* Glowing orange eyes */}
+                            <circle cx="48" cy="20" r="1.1" fill="#f97316" />
+                            <circle cx="52" cy="20" r="1.1" fill="#f97316" />
+                            {/* Animated Left Wing */}
+                            <g className="bat-wing-left">
+                                <path
+                                    d="M 46 28 C 34 14, 14 14, 2 24 C 10 34, 24 37, 28 46 C 35 38, 41 35, 46 36 Z"
+                                    fill="#18181b"
+                                />
+                            </g>
+                            {/* Animated Right Wing */}
+                            <g className="bat-wing-right">
+                                <path
+                                    d="M 54 28 C 66 14, 86 14, 98 24 C 90 34, 76 37, 72 46 C 65 38, 59 35, 54 36 Z"
+                                    fill="#18181b"
+                                />
+                            </g>
+                        </svg>
+                    </div>
+                ))}
+            </div>
+        </>
     );
 });
