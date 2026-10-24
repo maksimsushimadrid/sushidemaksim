@@ -10,9 +10,19 @@ import {
     RefreshCw,
     Upload,
     Image as ImageIcon,
+    SlidersHorizontal,
+    ArrowUp,
+    ArrowDown,
+    CheckCircle2,
 } from 'lucide-react';
 import { api, ApiError } from '../../utils/api';
 import { getAllergenInfo } from '../../utils/allergens';
+import {
+    AVAILABLE_CATEGORY_ICONS,
+    resolveCategories,
+    type MenuCategory,
+} from '../../constants/menu';
+import { useSettings } from '../../hooks/queries/useSettings';
 
 interface MenuItem {
     id: number;
@@ -73,6 +83,31 @@ const MENU_TRANSLATIONS = {
             save: 'Сохранить изменения',
             create: 'Создать блюдо',
         },
+        categoriesBtn: 'Категории',
+        categoryModal: {
+            title: 'Управление категориями',
+            desc: 'Настройте порядок отображения категорий в меню (десктоп и мобильный) и добавляйте новые.',
+            orderTitle: 'Порядок категорий на сайте',
+            moveUp: 'Вверх',
+            moveDown: 'Вниз',
+            addTitle: 'Добавить новую категорию',
+            nameLabel: 'Название категории (на испанском)',
+            namePlaceholder: 'Например: Poke Bowls, Sashimi, Wok',
+            idLabel: 'Идентификатор (slug)',
+            idPlaceholder: 'poke-bowls, sashimi',
+            iconLabel: 'Иконка',
+            descLabel: 'Описание (опционально)',
+            descPlaceholder: 'Краткое описание категории...',
+            addBtn: 'Добавить в список',
+            resetBtn: 'Сбросить порядок по умолчанию',
+            saveBtn: 'Сохранить категории',
+            savingBtn: 'Сохранение...',
+            deleteConfirm: 'Удалить категорию "{name}"?',
+            successMsg: 'Порядок категорий успешно сохранен!',
+            fillRequired: 'Пожалуйста, укажите название и идентификатор категории.',
+            customBadge: 'Новая',
+            close: 'Закрыть',
+        },
         categories: {
             entrantes: 'Закуски',
             'rollos-grandes': 'Большие роллы',
@@ -80,9 +115,9 @@ const MENU_TRANSLATIONS = {
             'rollos-fritos': 'Жареные роллы',
             sopas: 'Супы',
             menus: 'Сеты / Меню',
-            extras: 'Добавки',
-            bebidas: 'Напитки',
             postre: 'Десерты',
+            bebidas: 'Напитки',
+            extras: 'Добавки',
         },
         tags: {
             spicy: 'Острое',
@@ -111,6 +146,31 @@ const MENU_TRANSLATIONS = {
         searchPlaceholder: 'Buscar por nombre o categoría...',
         refresh: 'Actualizar',
         newDish: 'Nuevo Plato',
+        categoriesBtn: 'Categorías',
+        categoryModal: {
+            title: 'Gestión de Categorías',
+            desc: 'Configura el orden de las categorías en el menú (móvil y escritorio) y añade nuevas.',
+            orderTitle: 'Orden actual de categorías en la web',
+            moveUp: 'Subir',
+            moveDown: 'Bajar',
+            addTitle: 'Añadir nueva categoría',
+            nameLabel: 'Nombre de la categoría',
+            namePlaceholder: 'Ej. Poke Bowls, Sashimi, Wok',
+            idLabel: 'Identificador (slug)',
+            idPlaceholder: 'poke-bowls, sashimi',
+            iconLabel: 'Icono',
+            descLabel: 'Descripción (opcional)',
+            descPlaceholder: 'Breve descripción de la categoría...',
+            addBtn: 'Añadir a la lista',
+            resetBtn: 'Restablecer por defecto',
+            saveBtn: 'Guardar categorías',
+            savingBtn: 'Guardando...',
+            deleteConfirm: '¿Eliminar categoría "{name}"?',
+            successMsg: '¡Categorías guardadas correctamente!',
+            fillRequired: 'Por favor, introduce el nombre y el identificador.',
+            customBadge: 'Personalizada',
+            close: 'Cerrar',
+        },
         loadingMenu: 'Cargando menú...',
         table: {
             image: 'Imagen',
@@ -149,9 +209,9 @@ const MENU_TRANSLATIONS = {
             'rollos-fritos': 'Rollos Fritos',
             sopas: 'Sopas',
             menus: 'Menús',
-            extras: 'Extras',
-            bebidas: 'Bebidas',
             postre: 'Postre',
+            bebidas: 'Bebidas',
+            extras: 'Extras',
         },
         tags: {
             spicy: 'Picante',
@@ -188,6 +248,119 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
 
+    // Category management state
+    const { data: siteSettings } = useSettings();
+    const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+    const [categoryList, setCategoryList] = useState<MenuCategory[]>(() => resolveCategories());
+    const [catSuccessToast, setCatSuccessToast] = useState(false);
+    const [newCat, setNewCat] = useState({
+        name: '',
+        id: '',
+        iconName: 'Utensils',
+        description: '',
+    });
+
+    // Sync remote categories from siteSettings when loaded
+    useEffect(() => {
+        if (siteSettings?.menuCategories && Array.isArray(siteSettings.menuCategories)) {
+            setCategoryList(resolveCategories(siteSettings.menuCategories));
+        } else {
+            setCategoryList(resolveCategories());
+        }
+    }, [siteSettings?.menuCategories]);
+
+    const handleMoveUp = (index: number) => {
+        if (index <= 0) return;
+        setCategoryList(prev => {
+            const next = [...prev];
+            const temp = next[index - 1];
+            next[index - 1] = next[index];
+            next[index] = temp;
+            return next;
+        });
+    };
+
+    const handleMoveDown = (index: number) => {
+        if (index >= categoryList.length - 1) return;
+        setCategoryList(prev => {
+            const next = [...prev];
+            const temp = next[index + 1];
+            next[index + 1] = next[index];
+            next[index] = temp;
+            return next;
+        });
+    };
+
+    const handleAddCategory = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newCat.name.trim() || !newCat.id.trim()) {
+            alert(t.categoryModal.fillRequired);
+            return;
+        }
+        const cleanId = newCat.id
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, '-')
+            .replace(/[^a-z0-9-]/g, '');
+
+        if (categoryList.some(c => c.id === cleanId)) {
+            alert(
+                language === 'ru'
+                    ? 'Категория с таким ID уже существует.'
+                    : 'Ya existe una categoría con este identificador.'
+            );
+            return;
+        }
+
+        const selectedIconInfo = AVAILABLE_CATEGORY_ICONS.find(i => i.id === newCat.iconName);
+
+        const createdCategory: MenuCategory = {
+            id: cleanId,
+            name: newCat.name.trim(),
+            description: newCat.description.trim(),
+            icon: selectedIconInfo?.icon || AVAILABLE_CATEGORY_ICONS[0].icon,
+            iconName: newCat.iconName,
+            emoji: selectedIconInfo?.emoji || '🍽️',
+            isCustom: true,
+        };
+
+        setCategoryList(prev => [...prev, createdCategory]);
+        setNewCat({ name: '', id: '', iconName: 'Utensils', description: '' });
+    };
+
+    const handleDeleteCategory = (cat: MenuCategory) => {
+        if (window.confirm(t.categoryModal.deleteConfirm.replace('{name}', cat.name))) {
+            setCategoryList(prev => prev.filter(c => c.id !== cat.id));
+        }
+    };
+
+    const handleResetCategories = () => {
+        setCategoryList(resolveCategories());
+    };
+
+    const saveCategoriesMutation = useMutation({
+        mutationFn: (categoriesToSave: MenuCategory[]) => {
+            const payload = categoriesToSave.map(c => ({
+                id: c.id,
+                name: c.name,
+                iconName: c.iconName || 'Utensils',
+                emoji: c.emoji || '🍽️',
+                description: c.description || '',
+                isCustom: !!c.isCustom,
+            }));
+            return api.put('/admin/settings', { menu_categories: payload });
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['settings'] });
+            queryClient.invalidateQueries({ queryKey: ['admin-settings'] });
+            setCatSuccessToast(true);
+            setTimeout(() => setCatSuccessToast(false), 3000);
+        },
+        onError: () => {
+            alert(t.errorSaving);
+        },
+    });
+
     // Form state
     const [formData, setFormData] = useState<Partial<MenuItem>>({});
     const [uploadingImage, setUploadingImage] = useState(false);
@@ -197,7 +370,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
 
     // Prevent background scrolling when modal is open
     useEffect(() => {
-        if (isModalOpen || itemToDelete) {
+        if (isModalOpen || itemToDelete || isCategoryModalOpen) {
             document.body.style.overflow = 'hidden';
             (window as any).lenis?.stop();
         } else {
@@ -208,7 +381,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
             document.body.style.overflow = 'unset';
             (window as any).lenis?.start();
         };
-    }, [isModalOpen, itemToDelete]);
+    }, [isModalOpen, itemToDelete, isCategoryModalOpen]);
 
     // Menu Query
     const { data, isLoading, refetch, isFetching } = useQuery({
@@ -443,6 +616,12 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                 strokeWidth={2}
                                 className={isFetching ? 'animate-spin' : ''}
                             />
+                        </button>
+                        <button
+                            onClick={() => setIsCategoryModalOpen(true)}
+                            className="flex-1 sm:flex-none uppercase tracking-widest bg-gray-900 text-white px-5 py-3 rounded-xl text-[10px] font-black flex items-center justify-center gap-2 hover:bg-orange-600 transition-all shadow-md active:scale-95"
+                        >
+                            <SlidersHorizontal size={15} strokeWidth={2.5} /> {t.categoriesBtn}
                         </button>
                         <button
                             onClick={openAddModal}
@@ -723,13 +902,21 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                                 }
                                                 className="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold focus:bg-white focus:border-orange-400 transition-all appearance-none"
                                             >
-                                                {Object.entries(t.categories).map(
-                                                    ([key, label]) => (
-                                                        <option key={key} value={key}>
-                                                            {label}
+                                                {categoryList.map(cat => {
+                                                    const localizedName = (t.categories as any)[
+                                                        cat.id
+                                                    ];
+                                                    const displayLabel =
+                                                        localizedName && localizedName !== cat.name
+                                                            ? `${cat.name} (${localizedName})`
+                                                            : cat.name;
+                                                    return (
+                                                        <option key={cat.id} value={cat.id}>
+                                                            {cat.emoji ? `${cat.emoji} ` : ''}
+                                                            {displayLabel}
                                                         </option>
-                                                    )
-                                                )}
+                                                    );
+                                                })}
                                             </select>
                                         </div>
                                         <div className="space-y-2">
@@ -1099,6 +1286,284 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                         {t.delete.no}
                                     </button>
                                 </div>
+                            </div>
+                        </div>
+                    </div>,
+                    document.body
+                )}
+
+            {/* Category Management Modal */}
+            {isCategoryModalOpen &&
+                createPortal(
+                    <div
+                        className="fixed inset-0 z-popover bg-gray-900/60 backdrop-blur-sm overflow-y-auto overscroll-contain py-6 sm:py-10 px-3 sm:px-4 flex justify-center items-center"
+                        onClick={e => {
+                            if (e.target === e.currentTarget) setIsCategoryModalOpen(false);
+                        }}
+                    >
+                        <div className="relative bg-white rounded-3xl max-w-2xl w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-gray-100 flex flex-col max-h-[90vh] overflow-hidden">
+                            {/* Modal Header */}
+                            <div className="p-5 sm:p-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                                <div>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <SlidersHorizontal size={18} className="text-orange-600" />
+                                        <h3 className="text-lg sm:text-xl font-black text-gray-900 tracking-tight">
+                                            {t.categoryModal.title}
+                                        </h3>
+                                    </div>
+                                    <p className="text-xs text-gray-500 font-medium">
+                                        {t.categoryModal.desc}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => setIsCategoryModalOpen(false)}
+                                    className="p-2 text-gray-400 hover:text-gray-900 hover:bg-gray-100 rounded-xl transition-colors"
+                                >
+                                    <X size={20} />
+                                </button>
+                            </div>
+
+                            {/* Modal Body */}
+                            <div className="p-5 sm:p-6 overflow-y-auto space-y-6 flex-1 no-scrollbar">
+                                {/* Success toast inside modal */}
+                                {catSuccessToast && (
+                                    <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl flex items-center gap-3 text-sm font-bold animate-in fade-in">
+                                        <CheckCircle2
+                                            size={20}
+                                            className="text-emerald-600 shrink-0"
+                                        />
+                                        <span>{t.categoryModal.successMsg}</span>
+                                    </div>
+                                )}
+
+                                {/* Categories List */}
+                                <div>
+                                    <div className="flex items-center justify-between mb-3">
+                                        <h4 className="text-[10px] sm:text-xs font-black text-gray-400 uppercase tracking-widest">
+                                            {t.categoryModal.orderTitle} ({categoryList.length})
+                                        </h4>
+                                        <button
+                                            type="button"
+                                            onClick={handleResetCategories}
+                                            className="text-[10px] sm:text-[11px] font-black text-gray-400 hover:text-orange-600 uppercase tracking-wider transition-colors"
+                                        >
+                                            {t.categoryModal.resetBtn}
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        {categoryList.map((cat, idx) => {
+                                            const IconComp = cat.icon;
+                                            return (
+                                                <div
+                                                    key={cat.id}
+                                                    className="flex items-center justify-between p-3 sm:p-3.5 bg-gray-50 border border-gray-100 rounded-2xl hover:border-gray-200 transition-all gap-2 sm:gap-3"
+                                                >
+                                                    <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                                                        <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-white border border-gray-200 text-gray-400 text-[10px] sm:text-xs font-black flex items-center justify-center shrink-0">
+                                                            {idx + 1}
+                                                        </span>
+                                                        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-white border border-gray-100 shadow-sm flex items-center justify-center text-base sm:text-lg shrink-0 text-orange-600">
+                                                            {IconComp ? (
+                                                                <IconComp size={18} />
+                                                            ) : (
+                                                                cat.emoji || '🍽️'
+                                                            )}
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-xs sm:text-sm font-black text-gray-900 truncate">
+                                                                    {cat.name}
+                                                                </span>
+                                                                {cat.isCustom && (
+                                                                    <span className="px-1.5 py-0.5 rounded-full text-[8px] sm:text-[9px] font-black bg-orange-100 text-orange-700 uppercase tracking-wider shrink-0">
+                                                                        {
+                                                                            t.categoryModal
+                                                                                .customBadge
+                                                                        }
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                            <span className="text-[9px] sm:text-[10px] text-gray-400 font-mono">
+                                                                id: {cat.id}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="flex items-center gap-1 shrink-0">
+                                                        <button
+                                                            type="button"
+                                                            disabled={idx === 0}
+                                                            onClick={() => handleMoveUp(idx)}
+                                                            className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-all disabled:opacity-30 disabled:pointer-events-none active:scale-95"
+                                                            title={t.categoryModal.moveUp}
+                                                        >
+                                                            <ArrowUp size={15} />
+                                                        </button>
+                                                        <button
+                                                            type="button"
+                                                            disabled={
+                                                                idx === categoryList.length - 1
+                                                            }
+                                                            onClick={() => handleMoveDown(idx)}
+                                                            className="p-1.5 sm:p-2 text-gray-500 hover:text-gray-900 bg-white border border-gray-200 hover:bg-gray-50 rounded-xl transition-all disabled:opacity-30 disabled:pointer-events-none active:scale-95"
+                                                            title={t.categoryModal.moveDown}
+                                                        >
+                                                            <ArrowDown size={15} />
+                                                        </button>
+                                                        {cat.isCustom && (
+                                                            <button
+                                                                type="button"
+                                                                onClick={() =>
+                                                                    handleDeleteCategory(cat)
+                                                                }
+                                                                className="p-1.5 sm:p-2 text-red-500 hover:text-red-700 bg-white border border-red-100 hover:bg-red-50 rounded-xl transition-all active:scale-95 ml-0.5 sm:ml-1"
+                                                                title="Eliminar"
+                                                            >
+                                                                <Trash2 size={15} />
+                                                            </button>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
+
+                                {/* Add New Category Form */}
+                                <form
+                                    onSubmit={handleAddCategory}
+                                    className="p-4 sm:p-5 bg-orange-50/50 border border-orange-100 rounded-2xl space-y-3.5"
+                                >
+                                    <h4 className="text-xs font-black text-orange-900 uppercase tracking-widest flex items-center gap-2">
+                                        <Plus size={15} className="text-orange-600" />
+                                        {t.categoryModal.addTitle}
+                                    </h4>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                                                {t.categoryModal.nameLabel} *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                required
+                                                placeholder={t.categoryModal.namePlaceholder}
+                                                value={newCat.name}
+                                                onChange={e => {
+                                                    const nameVal = e.target.value;
+                                                    setNewCat(prev => ({
+                                                        ...prev,
+                                                        name: nameVal,
+                                                        id: prev.id
+                                                            ? prev.id
+                                                            : nameVal
+                                                                  .toLowerCase()
+                                                                  .trim()
+                                                                  .replace(/\s+/g, '-')
+                                                                  .replace(/[^a-z0-9-]/g, ''),
+                                                    }));
+                                                }}
+                                                className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold focus:border-orange-500 focus:outline-none"
+                                            />
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                                                {t.categoryModal.idLabel} *
+                                            </label>
+                                            <input
+                                                type="text"
+                                                required
+                                                placeholder={t.categoryModal.idPlaceholder}
+                                                value={newCat.id}
+                                                onChange={e =>
+                                                    setNewCat(prev => ({
+                                                        ...prev,
+                                                        id: e.target.value
+                                                            .toLowerCase()
+                                                            .replace(/\s+/g, '-')
+                                                            .replace(/[^a-z0-9-]/g, ''),
+                                                    }))
+                                                }
+                                                className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold font-mono focus:border-orange-500 focus:outline-none"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                                                {t.categoryModal.iconLabel}
+                                            </label>
+                                            <select
+                                                value={newCat.iconName}
+                                                onChange={e =>
+                                                    setNewCat(prev => ({
+                                                        ...prev,
+                                                        iconName: e.target.value,
+                                                    }))
+                                                }
+                                                className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold focus:border-orange-500 focus:outline-none"
+                                            >
+                                                {AVAILABLE_CATEGORY_ICONS.map(i => (
+                                                    <option key={i.id} value={i.id}>
+                                                        {i.emoji} {i.label}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">
+                                                {t.categoryModal.descLabel}
+                                            </label>
+                                            <input
+                                                type="text"
+                                                placeholder={t.categoryModal.descPlaceholder}
+                                                value={newCat.description}
+                                                onChange={e =>
+                                                    setNewCat(prev => ({
+                                                        ...prev,
+                                                        description: e.target.value,
+                                                    }))
+                                                }
+                                                className="w-full px-3.5 py-2.5 bg-white border border-gray-200 rounded-xl text-xs font-bold focus:border-orange-500 focus:outline-none"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        className="w-full py-2.5 bg-orange-600 text-white font-black text-xs uppercase tracking-wider rounded-xl hover:bg-black transition-colors active:scale-95 shadow-sm"
+                                    >
+                                        + {t.categoryModal.addBtn}
+                                    </button>
+                                </form>
+                            </div>
+
+                            {/* Modal Footer */}
+                            <div className="p-4 sm:p-5 border-t border-gray-100 flex items-center justify-between bg-gray-50/50">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsCategoryModalOpen(false)}
+                                    className="px-4 py-2.5 text-xs font-black uppercase tracking-wider text-gray-500 hover:text-gray-900 bg-white border border-gray-200 rounded-xl transition-all active:scale-95"
+                                >
+                                    {t.categoryModal.close}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => saveCategoriesMutation.mutate(categoryList)}
+                                    disabled={saveCategoriesMutation.isPending}
+                                    className="px-5 py-2.5 text-xs font-black uppercase tracking-wider text-white bg-orange-600 hover:bg-black rounded-xl transition-all active:scale-95 shadow-md flex items-center gap-2 disabled:opacity-50"
+                                >
+                                    {saveCategoriesMutation.isPending && (
+                                        <RefreshCw size={14} className="animate-spin" />
+                                    )}
+                                    {saveCategoriesMutation.isPending
+                                        ? t.categoryModal.savingBtn
+                                        : t.categoryModal.saveBtn}
+                                </button>
                             </div>
                         </div>
                     </div>,

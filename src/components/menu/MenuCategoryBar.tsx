@@ -1,11 +1,12 @@
 import { motion, LayoutGroup } from 'framer-motion';
 import { useEffect, useCallback } from 'react';
-import { CATEGORIES } from '../../constants/menu';
+import { CATEGORIES, type MenuCategory } from '../../constants/menu';
 
 interface MenuCategoryBarProps {
     activeCategory: string;
     onCategoryClick: (id: string) => void;
     isMobile?: boolean;
+    categories?: MenuCategory[];
 }
 
 const KatanaUnderline = () => (
@@ -32,7 +33,9 @@ export default function MenuCategoryBar({
     activeCategory,
     onCategoryClick,
     isMobile = false,
+    categories,
 }: MenuCategoryBarProps) {
+    const activeCategories = categories && categories.length > 0 ? categories : CATEGORIES;
     const scrollBarToCategory = useCallback(
         (id: string, behavior: ScrollBehavior = 'smooth') => {
             if (!isMobile) return;
@@ -87,7 +90,7 @@ export default function MenuCategoryBar({
                         >
                             <div className="flex gap-2 flex-nowrap px-4 w-max relative">
                                 {/* CATEGORY Buttons */}
-                                {CATEGORIES.map(cat => (
+                                {activeCategories.map(cat => (
                                     <button
                                         key={cat.id}
                                         id={`cat-btn-${cat.id}`}
@@ -127,7 +130,7 @@ export default function MenuCategoryBar({
             >
                 <LayoutGroup id="sidebar-katana">
                     <nav className="flex flex-col py-4 px-2 relative z-10">
-                        {CATEGORIES.map(cat => (
+                        {activeCategories.map(cat => (
                             <button
                                 key={cat.id}
                                 onClick={() => onCategoryClick(cat.id)}

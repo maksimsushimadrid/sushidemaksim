@@ -167,23 +167,26 @@ router.get(
             }
         });
 
-        const categoryMap: Record<string, { name: string; icon: string }> = {
-            entrantes: { name: 'Entrantes', icon: '🥟' },
-            'rollos-grandes': { name: 'Rollos Grandes', icon: '🍣' },
-            'rollos-clasicos': { name: 'Rollos Clásicos', icon: '🥢' },
-            'rollos-fritos': { name: 'Rollos Fritos/Horneados', icon: '🔥' },
-            sopas: { name: 'Sopas', icon: '🍜' },
-            menus: { name: 'Menús', icon: '🎁' },
-            extras: { name: 'Extras', icon: '🧴' },
-            postre: { name: 'Postre', icon: '🍰' },
+        const categoryMap: Record<string, { name: string; icon: string; order?: number }> = {
+            entrantes: { name: 'Entrantes', icon: '🥟', order: 1 },
+            'rollos-grandes': { name: 'Rollos Grandes', icon: '🍣', order: 2 },
+            'rollos-clasicos': { name: 'Rollos Clásicos', icon: '🥢', order: 3 },
+            'rollos-fritos': { name: 'Rollos Fritos/Horneados', icon: '🔥', order: 4 },
+            sopas: { name: 'Sopas', icon: '🍜', order: 5 },
+            menus: { name: 'Menús', icon: '🎁', order: 6 },
+            postre: { name: 'Postre', icon: '🍰', order: 7 },
+            bebidas: { name: 'Bebidas', icon: '🥤', order: 8 },
+            extras: { name: 'Extras', icon: '🧴', order: 9 },
         };
 
-        const categories = Object.entries(counts).map(([cat, count]) => ({
-            id: cat,
-            ...(categoryMap[cat] || { name: cat, icon: '📋' }),
-            count,
-            image: images[cat] || null,
-        }));
+        const categories = Object.entries(counts)
+            .map(([cat, count]) => ({
+                id: cat,
+                ...(categoryMap[cat] || { name: cat, icon: '📋', order: 99 }),
+                count,
+                image: images[cat] || null,
+            }))
+            .sort((a, b) => (a.order || 99) - (b.order || 99));
 
         const result = { categories };
 

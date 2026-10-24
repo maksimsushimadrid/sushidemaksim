@@ -3,17 +3,7 @@ import { z } from 'zod';
 /**
  * Valid categories for menu items
  */
-export const menuItemCategorySchema = z.enum([
-    'entrantes',
-    'rollos-grandes',
-    'rollos-clasicos',
-    'rollos-fritos',
-    'sopas',
-    'menus',
-    'extras',
-    'postre',
-    'bebidas', // Added common category just in case
-]);
+export const menuItemCategorySchema = z.string().min(1, 'La categoría es obligatoria').max(50);
 
 /**
  * Base schema for a menu item

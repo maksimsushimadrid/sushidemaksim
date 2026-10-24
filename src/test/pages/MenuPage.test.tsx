@@ -51,7 +51,12 @@ const mockItems = [
 describe('MenuPage (Integration)', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        (api.get as any).mockResolvedValue({ items: mockItems });
+        (api.get as any).mockImplementation((url: string) => {
+            if (url.includes('/settings')) {
+                return Promise.resolve({});
+            }
+            return Promise.resolve({ items: mockItems });
+        });
     });
 
     const renderMenu = () => renderWithProviders(<MenuPage />);
@@ -98,7 +103,12 @@ describe('MenuPage (Integration)', () => {
     });
 
     it('displays empty state when no matches found', async () => {
-        (api.get as any).mockResolvedValueOnce({ items: [] });
+        (api.get as any).mockImplementation((url: string) => {
+            if (url.includes('/settings')) {
+                return Promise.resolve({});
+            }
+            return Promise.resolve({ items: [] });
+        });
         renderMenu();
 
         const searchInput = await screen.findByPlaceholderText(/hoy/i);
@@ -110,7 +120,12 @@ describe('MenuPage (Integration)', () => {
     });
 
     it('handles api failure gracefully', async () => {
-        (api.get as any).mockRejectedValueOnce(new Error('Network Error'));
+        (api.get as any).mockImplementation((url: string) => {
+            if (url.includes('/settings')) {
+                return Promise.resolve({});
+            }
+            return Promise.reject(new Error('Network Error'));
+        });
         renderMenu();
 
         await waitFor(() => {

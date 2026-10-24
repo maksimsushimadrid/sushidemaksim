@@ -5,7 +5,8 @@ import { useAuth } from '../hooks/useAuth';
 import SEO from '../components/SEO';
 import { tracker } from '../analytics/tracker';
 import { MenuItemsSkeleton } from '../components/skeletons/MenuSkeleton';
-import { CATEGORIES, EMOJI } from '../constants/menu';
+import { EMOJI } from '../constants/menu';
+import { useMenuCategories } from '../hooks/queries/useMenuCategories';
 import { MenuItem, useMenu, useFavorites, useToggleFavorite } from '../hooks/queries/useMenu';
 import { SITE_URL } from '../constants/config';
 import MenuCategoryBar from '../components/menu/MenuCategoryBar';
@@ -16,6 +17,7 @@ import FlyToCart, { FlyingItem } from '../components/menu/FlyToCart';
 
 export default function MenuPage() {
     const [searchParams] = useSearchParams();
+    const { categories } = useMenuCategories();
     const initialCategory = searchParams.get('category') || 'all';
     const [activeCategory, setActiveCategory] = useState<string>(initialCategory);
     const [search, setSearch] = useState('');
@@ -71,7 +73,7 @@ export default function MenuPage() {
             if (intersectingEntry) {
                 const targetId = intersectingEntry.target.id;
                 if (targetId === 'menu-top-sentinel') {
-                    setActiveCategory(CATEGORIES[0]?.id || 'entrantes');
+                    setActiveCategory(categories[0]?.id || 'entrantes');
                 } else {
                     const id = targetId.replace('section-', '');
                     setActiveCategory(id);
@@ -81,7 +83,7 @@ export default function MenuPage() {
 
         const observer = new IntersectionObserver(observerCallback, observerOptions);
 
-        CATEGORIES.forEach(cat => {
+        categories.forEach(cat => {
             const el = document.getElementById(`section-${cat.id}`);
             if (el) observer.observe(el);
         });
@@ -90,7 +92,7 @@ export default function MenuPage() {
         if (menuTop) observer.observe(menuTop);
 
         return () => observer.disconnect();
-    }, [isLoading, isError, items.length, debouncedSearch, initialScrollDone]);
+    }, [isLoading, isError, items.length, debouncedSearch, initialScrollDone, categories]);
 
     const handleCategoryClick = (id: string) => {
         setActiveCategory(id);
@@ -331,29 +333,29 @@ export default function MenuPage() {
             '@type': 'WebPage',
             '@id': `${SITE_URL}/menu`,
         },
-        hasMenuSection: CATEGORIES.filter(cat =>
-            activeCategory === 'all' ? true : cat.id === activeCategory
-        ).map(cat => ({
-            '@type': 'MenuSection',
-            name: cat.name,
-            description: cat.description,
-            hasMenuItem: items
-                .filter(item => item.category === cat.id)
-                .map(item => ({
-                    '@type': 'MenuItem',
-                    name: item.name,
-                    description: item.description,
-                    offers: {
-                        '@type': 'Offer',
-                        price: item.price,
-                        priceCurrency: 'EUR',
-                        itemCondition: 'https://schema.org/NewCondition',
-                        availability: 'https://schema.org/InStock',
-                        url: `${SITE_URL}/menu?category=${cat.id}#item-${item.id}`,
-                    },
-                    image: item.image,
-                })),
-        })),
+        hasMenuSection: categories
+            .filter(cat => (activeCategory === 'all' ? true : cat.id === activeCategory))
+            .map(cat => ({
+                '@type': 'MenuSection',
+                name: cat.name,
+                description: cat.description,
+                hasMenuItem: items
+                    .filter(item => item.category === cat.id)
+                    .map(item => ({
+                        '@type': 'MenuItem',
+                        name: item.name,
+                        description: item.description,
+                        offers: {
+                            '@type': 'Offer',
+                            price: item.price,
+                            priceCurrency: 'EUR',
+                            itemCondition: 'https://schema.org/NewCondition',
+                            availability: 'https://schema.org/InStock',
+                            url: `${SITE_URL}/menu?category=${cat.id}#item-${item.id}`,
+                        },
+                        image: item.image,
+                    })),
+            })),
     };
 
     const breadcrumbSchema = {
@@ -383,12 +385,12 @@ export default function MenuPage() {
                 title={
                     activeCategory === 'all'
                         ? 'Menú de Sushi a Domicilio en Madrid | Carta Completa'
-                        : `${Array.isArray(CATEGORIES) ? CATEGORIES.find(c => c.id === activeCategory)?.name || 'Sushi' : 'Sushi'} en Madrid — Menú de Sushi de Maksim`
+                        : `${Array.isArray(categories) ? categories.find(c => c.id === activeCategory)?.name || 'Sushi' : 'Sushi'} en Madrid — Menú de Sushi de Maksim`
                 }
                 description={
                     activeCategory === 'all'
                         ? 'Descubre el mejor menú de sushi en Madrid. Rolls artesanales, nigiri, sashimi y combos premium con entrega rápida a domicilio. ¡Calidad superior en cada bocado!'
-                        : `${Array.isArray(CATEGORIES) ? CATEGORIES.find(c => c.id === activeCategory)?.description || '' : ''} Pide online con entrega rápida a domicilio en Madrid.`
+                        : `${Array.isArray(categories) ? categories.find(c => c.id === activeCategory)?.description || '' : ''} Pide online con entrega rápida a domicilio en Madrid.`
                 }
                 keywords={`menu sushi madrid, carta sushi, sushi a domicilio madrid, ${activeCategory === 'all' ? '' : activeCategory + ' madrid,'} pedir sushi online`}
                 schema={[menuSchema, breadcrumbSchema]}
@@ -397,13 +399,14 @@ export default function MenuPage() {
             <h1 className="sr-only">
                 {activeCategory === 'all'
                     ? 'Menú de Sushi a Domicilio en Madrid — Sushi de Maksim'
-                    : `Menú de ${Array.isArray(CATEGORIES) ? CATEGORIES.find(c => c.id === activeCategory)?.name || 'Sushi' : 'Sushi'} en Madrid`}
+                    : `Menú de ${Array.isArray(categories) ? categories.find(c => c.id === activeCategory)?.name || 'Sushi' : 'Sushi'} en Madrid`}
             </h1>
             <div className="max-w-[1440px] mx-auto flex-1 md:flex px-3 md:px-6 w-full">
                 {/* Desktop Sidebar Sidebar */}
                 <MenuCategoryBar
                     activeCategory={activeCategory}
                     onCategoryClick={handleCategoryClick}
+                    categories={categories}
                 />
 
                 <div
@@ -431,6 +434,7 @@ export default function MenuPage() {
                     <MenuCategoryBar
                         activeCategory={activeCategory}
                         onCategoryClick={handleCategoryClick}
+                        categories={categories}
                         isMobile
                     />
 
@@ -476,6 +480,7 @@ export default function MenuPage() {
                                 onUpdateQuantity={updateQuantity}
                                 onRemoveItem={removeItem}
                                 highlightedItemId={highlightedItemId}
+                                categories={categories}
                             />
                         </div>
                     )}

@@ -26,6 +26,14 @@ export interface SiteSettings {
     holidayTheme?: 'none' | 'halloween' | 'halloween_wallpaper' | 'new_year' | 'christmas' | 'auto';
     holidayAnimationsEnabled?: boolean;
     holidayWallpaperUntil?: string;
+    menuCategories?: Array<{
+        id: string;
+        name: string;
+        iconName?: string;
+        emoji?: string;
+        description?: string;
+        isCustom?: boolean;
+    }>;
 }
 
 export function useSettings() {
@@ -75,6 +83,11 @@ export function useSettings() {
                     data.holidayAnimationsEnabled === 'true' ||
                     data.holidayAnimationsEnabled === true,
                 holidayWallpaperUntil: data.holidayWallpaperUntil || '2026-11-01',
+                menuCategories: Array.isArray(data.menuCategories)
+                    ? data.menuCategories
+                    : Array.isArray(data.menu_categories)
+                      ? data.menu_categories
+                      : undefined,
             };
         },
         staleTime: 1000 * 15, // 15 seconds (promptly synchronizes with admin changes)

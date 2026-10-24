@@ -1,5 +1,5 @@
 import { MenuItem } from '../../hooks/queries/useMenu';
-import { CATEGORIES } from '../../constants/menu';
+import { CATEGORIES, type MenuCategory } from '../../constants/menu';
 import ProductCard from './ProductCard';
 import React from 'react';
 
@@ -26,6 +26,7 @@ interface ProductGridProps {
     ) => void;
     onRemoveItem: (id: string, cartItemId?: number) => void;
     highlightedItemId?: string | null;
+    categories?: MenuCategory[];
 }
 
 export default function ProductGrid({
@@ -44,7 +45,9 @@ export default function ProductGrid({
     onUpdateQuantity,
     onRemoveItem,
     highlightedItemId,
+    categories,
 }: ProductGridProps) {
+    const activeCategories = categories && categories.length > 0 ? categories : CATEGORIES;
     const [activeItemId, setActiveItemId] = React.useState<number | null>(null);
 
     if (items.length === 0) {
@@ -71,10 +74,10 @@ export default function ProductGrid({
     }
 
     const categoriesToShow = search
-        ? CATEGORIES.filter(cat => items.some(item => item.category === cat.id))
+        ? activeCategories.filter(cat => items.some(item => item.category === cat.id))
         : selectedCategory === 'all'
-          ? CATEGORIES.filter(cat => items.some(item => item.category === cat.id))
-          : CATEGORIES.filter(cat => cat.id === selectedCategory);
+          ? activeCategories.filter(cat => items.some(item => item.category === cat.id))
+          : activeCategories.filter(cat => cat.id === selectedCategory);
 
     return (
         <div className="space-y-12 pb-32">
@@ -108,8 +111,9 @@ export default function ProductGrid({
                                     <div className="flex flex-col">
                                         <h2 className="text-3xl md:text-5xl font-black text-gray-900 tracking-tighter italic leading-none">
                                             {cat.name ||
-                                                (Array.isArray(CATEGORIES)
-                                                    ? CATEGORIES.find(c => c.id === cat.id)?.name
+                                                (Array.isArray(activeCategories)
+                                                    ? activeCategories.find(c => c.id === cat.id)
+                                                          ?.name
                                                     : '')}
                                         </h2>
                                     </div>

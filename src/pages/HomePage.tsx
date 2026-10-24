@@ -109,8 +109,9 @@ export default function HomePage() {
             'rollos-fritos',
             'sopas',
             'menus',
-            'extras',
             'postre',
+            'bebidas',
+            'extras',
         ];
 
         return categoriesData

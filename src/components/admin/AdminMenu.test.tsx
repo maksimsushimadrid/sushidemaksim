@@ -4,16 +4,24 @@ import AdminMenu from './AdminMenu';
 import { api } from '../../utils/api';
 
 // Mock Lucide icons
-vi.mock('lucide-react', () => ({
-    Plus: () => <div data-testid="plus" />,
-    Edit2: () => <div data-testid="edit" />,
-    Trash2: () => <div data-testid="trash" />,
-    Search: () => <div data-testid="search" />,
-    X: () => <div data-testid="x" />,
-    RefreshCw: () => <div data-testid="refresh" />,
-    Upload: () => <div data-testid="upload" />,
-    Image: () => <div data-testid="image" />,
-}));
+vi.mock('lucide-react', async importOriginal => {
+    const actual = await importOriginal<Record<string, any>>();
+    return {
+        ...actual,
+        Plus: () => <div data-testid="plus" />,
+        Edit2: () => <div data-testid="edit" />,
+        Trash2: () => <div data-testid="trash" />,
+        Search: () => <div data-testid="search" />,
+        X: () => <div data-testid="x" />,
+        RefreshCw: () => <div data-testid="refresh" />,
+        Upload: () => <div data-testid="upload" />,
+        Image: () => <div data-testid="image" />,
+        SlidersHorizontal: () => <div data-testid="sliders" />,
+        ArrowUp: () => <div data-testid="arrow-up" />,
+        ArrowDown: () => <div data-testid="arrow-down" />,
+        CheckCircle2: () => <div data-testid="check" />,
+    };
+});
 
 // Mock API
 vi.mock('../../utils/api', () => ({
