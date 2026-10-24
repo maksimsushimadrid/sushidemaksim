@@ -431,28 +431,32 @@ export default function CartItemList({
                     </p>
 
                     {/* Chopsticks Question */}
-                    <div className="flex items-center justify-between gap-4 py-1">
-                        <div className="flex items-center gap-2">
-                            <div className="p-2 bg-orange-50 rounded-xl text-orange-600">
-                                <Users size={16} strokeWidth={2.5} />
+                    <div className="flex items-center justify-between gap-3">
+                        <div className="flex items-center gap-2 min-w-0">
+                            <div className="w-7 h-7 shrink-0 flex items-center justify-center bg-orange-50 rounded-lg text-orange-600">
+                                <Users size={14} strokeWidth={2.5} />
                             </div>
-                            <p className="text-[10px] sm:text-[13px] font-black text-gray-900 m-0 uppercase tracking-wide sm:tracking-widest whitespace-nowrap">
+                            <p className="text-[10px] sm:text-xs font-black text-gray-900 m-0 uppercase tracking-wide whitespace-nowrap">
                                 Número de personas
                             </p>
                         </div>
 
-                        <div className="flex items-center bg-white rounded-lg p-1 border border-gray-200 shadow-sm">
+                        <div className="flex items-center shrink-0 bg-gray-50 rounded-full p-0.5 border border-gray-200">
                             <button
                                 onClick={() => {
                                     triggerHaptic();
                                     updateChopsticks(Math.max(1, chopsticksCount - 1));
                                 }}
-                                className="w-11 h-11 md:w-8 md:h-8 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30"
+                                className="w-8 h-8 rounded-full bg-white shadow-sm border-none cursor-pointer flex items-center justify-center text-gray-700 hover:text-orange-600 active:scale-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                                 disabled={chopsticksCount <= 1}
+                                aria-label="Menos personas"
                             >
-                                <Minus size={16} strokeWidth={2.5} />
+                                <Minus size={14} strokeWidth={2.5} />
                             </button>
-                            <span className="w-10 text-center font-black text-gray-900 text-base md:text-[14px]">
+                            <span
+                                data-testid="persons-count"
+                                className="w-7 text-center font-black text-gray-900 text-sm tabular-nums"
+                            >
                                 {chopsticksCount}
                             </span>
                             <button
@@ -460,10 +464,11 @@ export default function CartItemList({
                                     triggerHaptic();
                                     updateChopsticks(Math.min(10, chopsticksCount + 1));
                                 }}
-                                className="w-11 h-11 md:w-8 md:h-8 rounded-md bg-transparent border-none cursor-pointer flex items-center justify-center hover:text-orange-600 active:scale-90 transition-all font-bold disabled:opacity-30"
+                                className="w-8 h-8 rounded-full bg-white shadow-sm border-none cursor-pointer flex items-center justify-center text-gray-700 hover:text-orange-600 active:scale-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                                 disabled={chopsticksCount >= 10}
+                                aria-label="Más personas"
                             >
-                                <Plus size={16} strokeWidth={2.5} />
+                                <Plus size={14} strokeWidth={2.5} />
                             </button>
                         </div>
                     </div>

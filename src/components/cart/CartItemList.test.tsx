@@ -43,7 +43,7 @@ describe('CartItemList', () => {
     it('renders the guests/persons question and count', () => {
         render(<CartItemList {...defaultProps} />);
         expect(screen.getByText(/Número de personas/i)).toBeInTheDocument();
-        expect(screen.getByText('1', { selector: 'span.w-10' })).toBeInTheDocument();
+        expect(screen.getByTestId('persons-count')).toHaveTextContent('1');
     });
 
     it('calls updateChopsticks when clicking buttons', () => {
