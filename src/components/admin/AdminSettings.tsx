@@ -1268,39 +1268,40 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                         initial={{ opacity: 0, y: 50, scale: 0.9 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-                        className="fixed bottom-8 right-8 z-50 pointer-events-auto"
+                        className="fixed left-3 right-3 bottom-[max(12px,env(safe-area-inset-bottom))] md:left-auto md:right-8 md:bottom-8 md:max-w-[420px] z-toast pointer-events-auto"
                     >
                         <div
-                            className={`flex items-center gap-4 px-8 py-5 rounded-[24px] shadow-2xl border-2 ${
+                            className={`flex items-center gap-3 md:gap-4 px-4 py-3 md:px-6 md:py-4 rounded-2xl md:rounded-[24px] shadow-2xl border-2 ${
                                 saveStatus === 'success'
                                     ? 'bg-green-600 border-green-500 text-white'
                                     : 'bg-orange-600 border-orange-500 text-white'
                             }`}
                         >
-                            <div className="bg-white/20 p-2 rounded-xl">
+                            <div className="bg-white/20 p-1.5 md:p-2 rounded-xl shrink-0">
                                 {saveStatus === 'success' ? (
                                     <CheckCircle2
-                                        size={28}
+                                        size={22}
                                         strokeWidth={2.5}
                                         className="animate-pulse"
                                     />
                                 ) : (
-                                    <AlertTriangle size={28} strokeWidth={2.5} />
+                                    <AlertTriangle size={22} strokeWidth={2.5} />
                                 )}
                             </div>
-                            <div className="min-w-[200px]">
-                                <p className="font-black text-sm uppercase tracking-widest">
+                            <div className="flex-1 min-w-0">
+                                <p className="font-black text-[13px] md:text-sm uppercase tracking-wider leading-tight m-0">
                                     {saveStatus === 'success' ? t.success.title : t.error.title}
                                 </p>
-                                <p className="text-[10px] font-bold opacity-90 uppercase tracking-tight mt-0.5">
+                                <p className="text-[10px] font-bold opacity-90 uppercase tracking-tight mt-0.5 m-0">
                                     {saveStatus === 'success' ? t.success.desc : t.error.desc}
                                 </p>
                             </div>
                             <button
                                 onClick={() => setSaveStatus(null)}
-                                className="ml-4 p-2 hover:bg-white/20 rounded-xl transition-all active:scale-90"
+                                className="shrink-0 p-1.5 hover:bg-white/20 rounded-xl transition-all active:scale-90 border-none bg-transparent text-white cursor-pointer"
+                                aria-label="Cerrar"
                             >
-                                <X size={20} strokeWidth={3} />
+                                <X size={18} strokeWidth={3} />
                             </button>
                         </div>
                     </motion.div>
