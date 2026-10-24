@@ -22,6 +22,13 @@ interface SnowflakeInstance {
     swayDuration: number;
 }
 
+interface WitchInstance {
+    id: number;
+    startY: number;
+    isRtl: boolean;
+    durationSec: number;
+}
+
 export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
     const location = useLocation();
     const { data: settings } = useSettings();
@@ -86,12 +93,14 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
         typeof window !== 'undefined' &&
         window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // --- HALLOWEEN ANIMATIONS LOGIC (Spider & Bats) ---
+    // --- HALLOWEEN ANIMATIONS LOGIC (Spider, Bats & Flying Witch) ---
     const [bats, setBats] = useState<BatInstance[]>([]);
+    const [witch, setWitch] = useState<WitchInstance | null>(null);
     const [scrollDescend, setScrollDescend] = useState(0);
     const [isScrolling, setIsScrolling] = useState(false);
     const [isSpiderScared, setIsSpiderScared] = useState(false);
     const batIdCounterRef = useRef(0);
+    const witchIdCounterRef = useRef(0);
     const isMountedRef = useRef(true);
     const timeoutsRef = useRef<Set<NodeJS.Timeout>>(new Set());
     const spiderScaredTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -204,6 +213,30 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
         [prefersReducedMotion, safeSetTimeout]
     );
 
+    const spawnWitch = useCallback(() => {
+        if (!isMountedRef.current || prefersReducedMotion) return;
+
+        witchIdCounterRef.current += 1;
+        const id = witchIdCounterRef.current;
+        const isRtl = witchIdCounterRef.current % 2 === 0;
+        const startY = Math.round(16 + Math.random() * 20); // 16vh to 36vh
+        const durationSec = 5.8;
+
+        setWitch({
+            id,
+            startY,
+            isRtl,
+            durationSec,
+        });
+
+        safeSetTimeout(
+            () => {
+                setWitch(prev => (prev?.id === id ? null : prev));
+            },
+            durationSec * 1000 + 200
+        );
+    }, [prefersReducedMotion, safeSetTimeout]);
+
     // Regular bat flight interval
     useEffect(() => {
         if (
@@ -287,6 +320,33 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
         animationsEnabled,
         safeSetTimeout,
         spawnBat,
+    ]);
+
+    // Witch on broom flight interval (once a minute)
+    useEffect(() => {
+        if (
+            isExcluded ||
+            prefersReducedMotion ||
+            effectiveTheme !== 'halloween' ||
+            !animationsEnabled
+        )
+            return;
+
+        // Preview first flight after 8 seconds, then every 60 seconds (1 minute)
+        const initialTimer = safeSetTimeout(spawnWitch, 8000);
+        const intervalTimer = setInterval(spawnWitch, 60000);
+
+        return () => {
+            clearTimeout(initialTimer);
+            clearInterval(intervalTimer);
+        };
+    }, [
+        isExcluded,
+        prefersReducedMotion,
+        effectiveTheme,
+        animationsEnabled,
+        safeSetTimeout,
+        spawnWitch,
     ]);
 
     // --- NEW YEAR & CHRISTMAS SNOWFALL EFFECT ---
@@ -394,13 +454,96 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
                             animation: spider-leg-scurry-right 0.08s infinite ease-in-out;
                         }
 
+                        /* Flying Witch on Broomstick Animations */
+                        @keyframes witch-swoop-ltr {
+                            0% {
+                                transform: translate3d(-200px, var(--witch-start-y, 22vh), 0);
+                                opacity: 0;
+                            }
+                            6% {
+                                opacity: 1;
+                            }
+                            50% {
+                                transform: translate3d(50vw, calc(var(--witch-start-y, 22vh) - 28px), 0);
+                            }
+                            94% {
+                                opacity: 1;
+                            }
+                            100% {
+                                transform: translate3d(calc(100vw + 200px), calc(var(--witch-start-y, 22vh) + 16px), 0);
+                                opacity: 0;
+                            }
+                        }
+
+                        @keyframes witch-swoop-rtl {
+                            0% {
+                                transform: translate3d(calc(100vw + 200px), var(--witch-start-y, 22vh), 0) scaleX(-1);
+                                opacity: 0;
+                            }
+                            6% {
+                                opacity: 1;
+                            }
+                            50% {
+                                transform: translate3d(50vw, calc(var(--witch-start-y, 22vh) - 28px), 0) scaleX(-1);
+                            }
+                            94% {
+                                opacity: 1;
+                            }
+                            100% {
+                                transform: translate3d(-200px, calc(var(--witch-start-y, 22vh) + 16px), 0) scaleX(-1);
+                                opacity: 0;
+                            }
+                        }
+
+                        @keyframes witch-flight-bob {
+                            0%, 100% {
+                                transform: translateY(0px) rotate(-2deg);
+                            }
+                            50% {
+                                transform: translateY(-12px) rotate(3deg);
+                            }
+                        }
+
+                        @keyframes witch-sparkle-pulse {
+                            0%, 100% {
+                                opacity: 0.6;
+                                transform: scale(0.9);
+                            }
+                            50% {
+                                opacity: 1;
+                                transform: scale(1.15);
+                            }
+                        }
+
+                        .witch-flying-ltr {
+                            animation: witch-swoop-ltr var(--witch-duration, 5.8s) cubic-bezier(0.35, 0.1, 0.25, 1) forwards;
+                            will-change: transform;
+                        }
+
+                        .witch-flying-rtl {
+                            animation: witch-swoop-rtl var(--witch-duration, 5.8s) cubic-bezier(0.35, 0.1, 0.25, 1) forwards;
+                            will-change: transform;
+                        }
+
+                        .witch-bobbing {
+                            animation: witch-flight-bob 1.8s ease-in-out infinite;
+                        }
+
+                        .witch-sparks {
+                            animation: witch-sparkle-pulse 0.9s ease-in-out infinite;
+                        }
+
                         @media (prefers-reduced-motion: reduce) {
                             .bat-flying-ltr,
                             .bat-flying-rtl,
                             .bat-wing-left,
                             .bat-wing-right,
                             .spider-scurrying-left,
-                            .spider-scurrying-right {
+                            .spider-scurrying-right,
+                            .witch-flying-ltr,
+                            .witch-flying-rtl,
+                            .witch-bobbing,
+                            .witch-sparks {
                                 animation: none !important;
                             }
                         }
@@ -655,6 +798,187 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
                             </div>
                         </div>
                     </div>
+
+                    {/* FLYING WITCH ON BROOM (z-[520] - flies once a minute across the sky) */}
+                    {witch && (
+                        <div
+                            key={witch.id}
+                            aria-hidden="true"
+                            className={`fixed top-0 left-0 pointer-events-none z-[520] select-none ${
+                                witch.isRtl ? 'witch-flying-rtl' : 'witch-flying-ltr'
+                            }`}
+                            style={
+                                {
+                                    '--witch-start-y': `${witch.startY}vh`,
+                                    '--witch-duration': `${witch.durationSec}s`,
+                                } as React.CSSProperties
+                            }
+                        >
+                            <div className="witch-bobbing">
+                                <svg
+                                    viewBox="0 0 160 100"
+                                    fill="none"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="w-28 h-20 sm:w-36 sm:h-24 filter drop-shadow-[0_8px_20px_rgba(0,0,0,0.85)] pointer-events-none"
+                                >
+                                    {/* Magic Trail Sparkles */}
+                                    <g className="witch-sparks">
+                                        <path
+                                            d="M 14 50 L 16 53 L 19 54 L 16 55 L 14 58 L 12 55 L 9 54 L 12 53 Z"
+                                            fill="#facc15"
+                                            opacity="0.9"
+                                        />
+                                        <path
+                                            d="M 4 66 L 5.5 68 L 8 69 L 5.5 70 L 4 72 L 2.5 70 L 0 69 L 2.5 68 Z"
+                                            fill="#fb923c"
+                                            opacity="0.85"
+                                        />
+                                        <path
+                                            d="M 22 40 L 23.5 42 L 26 43 L 23.5 44 L 22 46 L 20.5 44 L 18 43 L 20.5 42 Z"
+                                            fill="#c084fc"
+                                            opacity="0.8"
+                                        />
+                                        <circle
+                                            cx="10"
+                                            cy="38"
+                                            r="1.5"
+                                            fill="#fef08a"
+                                            opacity="0.75"
+                                        />
+                                        <circle
+                                            cx="28"
+                                            cy="68"
+                                            r="1.8"
+                                            fill="#fdba74"
+                                            opacity="0.8"
+                                        />
+                                        <circle
+                                            cx="18"
+                                            cy="74"
+                                            r="1.2"
+                                            fill="#f472b6"
+                                            opacity="0.7"
+                                        />
+                                    </g>
+
+                                    {/* Broom Handle */}
+                                    <line
+                                        x1="18"
+                                        y1="64"
+                                        x2="138"
+                                        y2="47"
+                                        stroke="#78350f"
+                                        strokeWidth="3.5"
+                                        strokeLinecap="round"
+                                    />
+
+                                    {/* Broom Straw Bristles */}
+                                    <path d="M 36 62 L 6 52 Q 2 64 8 76 L 36 65 Z" fill="#ca8a04" />
+                                    <path
+                                        d="M 34 62 L 7 56 M 34 63 L 6 62 M 34 64 L 7 68 M 34 65 L 9 73"
+                                        stroke="#a16207"
+                                        strokeWidth="1.2"
+                                        strokeLinecap="round"
+                                    />
+                                    <rect
+                                        x="31"
+                                        y="60"
+                                        width="6"
+                                        height="5"
+                                        rx="1"
+                                        transform="rotate(-8 31 60)"
+                                        fill="#ea580c"
+                                    />
+
+                                    {/* Black Cat riding the broom */}
+                                    <g transform="translate(42, 47)">
+                                        <ellipse cx="6" cy="10" rx="5.5" ry="4.5" fill="#09090b" />
+                                        <circle cx="10.5" cy="6" r="3.6" fill="#09090b" />
+                                        <polygon points="9,3.5 8,0 11,2.5" fill="#09090b" />
+                                        <path
+                                            d="M 1 12 Q -4 6 -2 2"
+                                            stroke="#09090b"
+                                            strokeWidth="2"
+                                            strokeLinecap="round"
+                                            fill="none"
+                                        />
+                                        <circle cx="11.5" cy="5.8" r="0.75" fill="#facc15" />
+                                    </g>
+
+                                    {/* Witch Cape Fluttering Behind */}
+                                    <path
+                                        d="M 72 44 Q 50 48 36 62 Q 54 64 66 58 L 78 54 Z"
+                                        fill="#1e1b4b"
+                                    />
+                                    <path
+                                        d="M 76 46 Q 58 52 44 65 Q 60 66 70 60 Z"
+                                        fill="#09090b"
+                                    />
+
+                                    {/* Witch Torso & Dress */}
+                                    <path d="M 78 44 L 88 54 L 82 58 L 72 52 Z" fill="#09090b" />
+
+                                    {/* Witch Arm reaching to hold broom */}
+                                    <path
+                                        d="M 84 48 Q 94 48 102 51"
+                                        stroke="#09090b"
+                                        strokeWidth="3.2"
+                                        strokeLinecap="round"
+                                        fill="none"
+                                    />
+                                    <circle cx="102" cy="51" r="2.2" fill="#84cc16" />
+
+                                    {/* Witch Leg & Pointy Boot */}
+                                    <path
+                                        d="M 82 56 Q 90 62 96 61 Q 102 61 100 57"
+                                        stroke="#09090b"
+                                        strokeWidth="3.5"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        fill="none"
+                                    />
+                                    <path
+                                        d="M 97 60 Q 102 60 101 56"
+                                        stroke="#ea580c"
+                                        strokeWidth="1.5"
+                                        strokeLinecap="round"
+                                        fill="none"
+                                    />
+
+                                    {/* Witch Head & Profile */}
+                                    <circle cx="86" cy="38" r="7" fill="#84cc16" />
+                                    <path d="M 90 36 L 96 39 L 91 41 Z" fill="#84cc16" />
+                                    <circle cx="89" cy="43" r="2.2" fill="#84cc16" />
+                                    <circle cx="89" cy="36" r="1.1" fill="#09090b" />
+
+                                    {/* Witch Hat Brim */}
+                                    <ellipse
+                                        cx="84"
+                                        cy="33"
+                                        rx="16"
+                                        ry="3.8"
+                                        transform="rotate(-15 84 33)"
+                                        fill="#09090b"
+                                    />
+                                    {/* Orange Hat Ribbon Band */}
+                                    <path d="M 78 28 L 89 25 L 90 28 L 79 31 Z" fill="#f97316" />
+                                    {/* Gold Buckle on ribbon */}
+                                    <rect
+                                        x="82"
+                                        y="26"
+                                        width="3.5"
+                                        height="4"
+                                        transform="rotate(-15 82 26)"
+                                        fill="#facc15"
+                                        stroke="#78350f"
+                                        strokeWidth="0.6"
+                                    />
+                                    {/* Tall Witch Hat Cone with curved crooked tip */}
+                                    <path d="M 76 29 Q 78 12 60 6 Q 73 14 88 26 Z" fill="#09090b" />
+                                </svg>
+                            </div>
+                        </div>
+                    )}
                 </>
             )}
 
