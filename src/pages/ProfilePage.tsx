@@ -136,6 +136,22 @@ export default function ProfilePage() {
         }
     };
 
+    // Automatically open register or login modal if requested via URL query params
+    useEffect(() => {
+        if (!isAuthenticated) {
+            const isRegister = searchParams.get('register') === 'true';
+            const isLogin = searchParams.get('login') === 'true';
+            if (isRegister || isLogin) {
+                const event = new CustomEvent('custom:openLogin', {
+                    detail: { mode: isRegister ? 'register' : 'login' },
+                    bubbles: true,
+                });
+                document.dispatchEvent(event);
+                window.dispatchEvent(event);
+            }
+        }
+    }, [isAuthenticated, searchParams]);
+
     if (isLoading) {
         return <ProfileSkeleton />;
     }
@@ -143,23 +159,55 @@ export default function ProfilePage() {
     if (!isAuthenticated || !user) {
         return (
             <div className="min-h-screen bg-transparent flex items-center justify-center p-6">
-                <div className="max-w-md w-full bg-white rounded-[40px] p-12 shadow-2xl text-center border border-gray-100">
-                    <div className="w-24 h-24 bg-orange-50 rounded-3xl flex items-center justify-center mx-auto mb-8 text-4xl shadow-inner border-2 border-white">
+                <div className="max-w-md w-full bg-white rounded-[40px] p-8 sm:p-12 shadow-2xl text-center border border-gray-100">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 bg-orange-50 rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-8 text-3xl sm:text-4xl shadow-inner border-2 border-white">
                         🔒
                     </div>
-                    <h1 className="text-3xl font-black text-gray-900 mb-4 tracking-tight">
+                    <h1 className="text-2xl sm:text-3xl font-black text-gray-900 mb-3 sm:mb-4 tracking-tight">
                         Inicia sesión
                     </h1>
-                    <p className="text-gray-500 font-medium mb-10 leading-relaxed italic">
-                        Inicia sesión para poder gestionar tu perfil, direcciones y ver tu historial
-                        de pedidos.
+                    <p className="text-gray-500 font-medium mb-8 sm:mb-10 text-sm sm:text-base leading-relaxed">
+                        Inicia sesión o regístrate para poder gestionar tu perfil, direcciones y ver
+                        tu historial de pedidos.
                     </p>
-                    <button
-                        onClick={() => navigate('/')}
-                        className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 transform hover:scale-[1.02]"
-                    >
-                        Volver al inicio
-                    </button>
+                    <div className="flex flex-col gap-3">
+                        <button
+                            onClick={() => {
+                                const isRegister = searchParams.get('register') === 'true';
+                                const event = new CustomEvent('custom:openLogin', {
+                                    detail: { mode: isRegister ? 'register' : 'login' },
+                                    bubbles: true,
+                                });
+                                document.dispatchEvent(event);
+                                window.dispatchEvent(event);
+                            }}
+                            className="w-full py-4 bg-orange-600 text-white rounded-2xl font-black text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 transform hover:scale-[1.02] cursor-pointer border-none"
+                        >
+                            {searchParams.get('register') === 'true'
+                                ? 'CREAR CUENTA'
+                                : 'INICIAR SESIÓN'}
+                        </button>
+                        <button
+                            onClick={() => {
+                                const event = new CustomEvent('custom:openLogin', {
+                                    detail: { mode: 'register' },
+                                    bubbles: true,
+                                });
+                                document.dispatchEvent(event);
+                                window.dispatchEvent(event);
+                            }}
+                            className="text-xs sm:text-sm font-bold text-gray-600 hover:text-orange-600 bg-transparent border-none py-2 cursor-pointer transition-colors"
+                        >
+                            ¿No tienes cuenta?{' '}
+                            <span className="text-orange-600 underline">Regístrate</span>
+                        </button>
+                        <button
+                            onClick={() => navigate('/')}
+                            className="w-full py-3 bg-gray-100 text-gray-700 rounded-2xl font-bold text-xs sm:text-sm hover:bg-gray-200 transition-all border-none cursor-pointer mt-1"
+                        >
+                            Volver al inicio
+                        </button>
+                    </div>
                 </div>
             </div>
         );

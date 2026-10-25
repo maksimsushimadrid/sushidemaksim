@@ -109,15 +109,24 @@ export default function Header() {
             setIsRegistrationDiscountOpen(true);
         };
         document.addEventListener('custom:openLogin', handleOpenLogin as EventListener);
+        window.addEventListener('custom:openLogin', handleOpenLogin as EventListener);
         window.addEventListener('open:reservation', handleOpenReservation);
+        document.addEventListener('open:reservation', handleOpenReservation);
         document.addEventListener(
             'custom:openRegistrationDiscount',
             handleOpenRegistrationDiscount
         );
+        window.addEventListener('custom:openRegistrationDiscount', handleOpenRegistrationDiscount);
         return () => {
             document.removeEventListener('custom:openLogin', handleOpenLogin as EventListener);
+            window.removeEventListener('custom:openLogin', handleOpenLogin as EventListener);
             window.removeEventListener('open:reservation', handleOpenReservation);
+            document.removeEventListener('open:reservation', handleOpenReservation);
             document.removeEventListener(
+                'custom:openRegistrationDiscount',
+                handleOpenRegistrationDiscount
+            );
+            window.removeEventListener(
                 'custom:openRegistrationDiscount',
                 handleOpenRegistrationDiscount
             );

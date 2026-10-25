@@ -468,13 +468,28 @@ export default function PromoPage() {
                                 <span className="text-gray-900 font-bold">5%</span> de descuento
                                 para tu 5º pedido!
                             </p>
-                            <Link
-                                to={user ? '/menu' : '/profile'}
-                                className="inline-flex items-center gap-2 bg-gray-900 text-white px-8 py-3.5 md:px-10 md:py-4 rounded-xl sm:rounded-2xl font-black text-xs sm:text-sm uppercase transition-all active:scale-95 shadow-lg hover:bg-black"
-                            >
-                                {user ? 'HACER UN PEDIDO' : 'REGISTRARSE'}{' '}
-                                <ArrowRight size={18} strokeWidth={2} />
-                            </Link>
+                            {user ? (
+                                <Link
+                                    to="/menu"
+                                    className="inline-flex items-center gap-2 bg-gray-900 text-white px-8 py-3.5 md:px-10 md:py-4 rounded-xl sm:rounded-2xl font-black text-xs sm:text-sm uppercase transition-all active:scale-95 shadow-lg hover:bg-black"
+                                >
+                                    HACER UN PEDIDO <ArrowRight size={18} strokeWidth={2} />
+                                </Link>
+                            ) : (
+                                <button
+                                    onClick={() => {
+                                        const event = new CustomEvent('custom:openLogin', {
+                                            detail: { mode: 'register' },
+                                            bubbles: true,
+                                        });
+                                        document.dispatchEvent(event);
+                                        window.dispatchEvent(event);
+                                    }}
+                                    className="inline-flex items-center gap-2 bg-gray-900 text-white px-8 py-3.5 md:px-10 md:py-4 rounded-xl sm:rounded-2xl font-black text-xs sm:text-sm uppercase transition-all active:scale-95 shadow-lg hover:bg-black border-none cursor-pointer"
+                                >
+                                    REGISTRARSE <ArrowRight size={18} strokeWidth={2} />
+                                </button>
+                            )}
                         </div>
                     </div>
                 )}

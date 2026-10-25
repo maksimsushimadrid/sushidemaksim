@@ -25,7 +25,11 @@ export function PromosSection({ activePromos }: PromosSectionProps) {
 
     const openRegister = (e: React.MouseEvent) => {
         e.preventDefault();
-        const event = new CustomEvent('custom:openLogin', { detail: { mode: 'register' } });
+        const event = new CustomEvent('custom:openLogin', {
+            detail: { mode: 'register' },
+            bubbles: true,
+        });
+        document.dispatchEvent(event);
         window.dispatchEvent(event);
     };
 
@@ -36,7 +40,9 @@ export function PromosSection({ activePromos }: PromosSectionProps) {
                     {activePromos.slice(0, 2).map((promo: any, idx: number) => {
                         const isWelcomeOffer =
                             promo.subtitle?.toLowerCase().includes('bienvenida') ||
-                            promo.title?.toLowerCase().includes('bienvenida');
+                            promo.title?.toLowerCase().includes('bienvenida') ||
+                            promo.cta_text?.toLowerCase().includes('regist') ||
+                            promo.cta_link === '/register';
 
                         return (
                             <motion.div

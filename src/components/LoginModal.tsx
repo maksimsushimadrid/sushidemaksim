@@ -913,10 +913,14 @@ export default function LoginModal({
         };
 
         document.addEventListener('custom:openLogin', handleOpen);
+        window.addEventListener('custom:openLogin', handleOpen);
         document.addEventListener('custom:forceOpenLogin', handleForceOpen);
+        window.addEventListener('custom:forceOpenLogin', handleForceOpen);
         return () => {
             document.removeEventListener('custom:openLogin', handleOpen);
+            window.removeEventListener('custom:openLogin', handleOpen);
             document.removeEventListener('custom:forceOpenLogin', handleForceOpen);
+            window.removeEventListener('custom:forceOpenLogin', handleForceOpen);
         };
     }, []);
 
