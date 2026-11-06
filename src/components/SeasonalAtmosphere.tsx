@@ -351,15 +351,15 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
 
     // --- NEW YEAR & CHRISTMAS SNOWFALL EFFECT ---
     const [snowflakes] = useState<SnowflakeInstance[]>(() => {
-        return Array.from({ length: 42 }, (_, i) => ({
+        return Array.from({ length: 30 }, (_, i) => ({
             id: i,
             x: Math.round(((i * 97) % 100) + Math.random() * 3),
-            size: Math.round(6 + (i % 5) * 2.5),
-            duration: Math.round(9 + (i % 7) * 1.5),
+            size: Math.round(10 + (i % 5) * 3),
+            duration: Math.round(10 + (i % 7) * 1.8),
             // Negative delay so snow is already falling across the entire screen on first render
             delay: -Math.round(((i * 1.7) % 14) * 10) / 10,
-            opacity: Math.round((0.65 + (i % 4) * 0.08) * 100) / 100,
-            swayDuration: Math.round((3 + (i % 4) * 0.8) * 10) / 10,
+            opacity: Math.round((0.55 + (i % 4) * 0.1) * 100) / 100,
+            swayDuration: Math.round((3.2 + (i % 4) * 0.8) * 10) / 10,
         }));
     });
 
@@ -1092,32 +1092,18 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
                                         } as React.CSSProperties
                                     }
                                 >
-                                    {flake.id % 3 === 0 ? (
-                                        <span
-                                            style={{
-                                                fontSize: `${flake.size + 6}px`,
-                                                lineHeight: 1,
-                                                color: '#ffffff',
-                                                textShadow:
-                                                    '0 1px 4px rgba(15, 23, 42, 0.45), 0 0 8px rgba(186, 230, 253, 0.9)',
-                                                opacity: flake.opacity,
-                                            }}
-                                        >
-                                            ❄
-                                        </span>
-                                    ) : (
-                                        <div
-                                            className="rounded-full bg-white"
-                                            style={{
-                                                width: `${flake.size}px`,
-                                                height: `${flake.size}px`,
-                                                opacity: flake.opacity,
-                                                border: '1px solid rgba(186, 230, 253, 0.9)',
-                                                boxShadow:
-                                                    '0 1px 4px rgba(15, 23, 42, 0.35), 0 0 8px rgba(255, 255, 255, 0.95)',
-                                            }}
-                                        />
-                                    )}
+                                    <span
+                                        style={{
+                                            fontSize: `${flake.size}px`,
+                                            lineHeight: 1,
+                                            color: '#ffffff',
+                                            textShadow:
+                                                '0 1px 4px rgba(15, 23, 42, 0.45), 0 0 8px rgba(186, 230, 253, 0.9)',
+                                            opacity: flake.opacity,
+                                        }}
+                                    >
+                                        ❄
+                                    </span>
                                 </div>
                             </div>
                         ))}
