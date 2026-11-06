@@ -521,12 +521,18 @@ export default function CartPage() {
         setPromoCode('');
         setPromoDiscount(null);
         setPromoError(null);
+        items
+            .filter(i => i.isGift)
+            .forEach(i => {
+                removeItem(i.id, i.cartItemId);
+            });
     };
 
     useEffect(() => {
         const isWelcomePromo = promoCode.startsWith('NUEVO') || promoCode.startsWith('NEW');
         if (promoDiscount && isWelcomePromo && cartSubtotal < 20) {
-            handleRemovePromo();
+            setPromoCode('');
+            setPromoDiscount(null);
             setPromoError('El código de bienvenida requiere un pedido mínimo de 20,00€');
         }
     }, [cartSubtotal, promoCode, promoDiscount]);
@@ -732,7 +738,7 @@ export default function CartPage() {
                 phoneNumber: `+34${finalPhone || phone}`,
                 notes: notesArray.join(' | '),
                 deliveryZoneId: selectedZone?.id,
-                promoCode: promoDiscount ? promoCode : undefined,
+                promoCode: promoDiscount !== null ? promoCode : undefined,
                 tipAmount,
                 coinsSpent,
                 lat,

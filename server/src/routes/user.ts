@@ -48,7 +48,7 @@ router.get(
         const { count: orderCount } = await supabase
             .from('orders')
             .select('*', { count: 'exact', head: true })
-            .eq('user_id', req.userId);
+            .match({ user_id: req.userId, status: 'delivered' });
 
         res.json({ user: formatUser(user, orderCount || 0, addresses || []) });
     })

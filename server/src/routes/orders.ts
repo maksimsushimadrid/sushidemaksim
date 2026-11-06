@@ -186,6 +186,33 @@ router.post(
             if (promoCode === 'TEST10') {
                 finalTotal = finalTotal * 0.9; // 10% discount
                 notesToSave += notesToSave ? ` | [PROMO: TEST10 (-10%)]` : `[PROMO: TEST10 (-10%)]`;
+            } else if (promoCode.startsWith('REF-') && promoCode.length > 5 && req.userId) {
+                const referrerIdFragment = promoCode.split('-')[1]?.trim() || '';
+                if (/^[0-9a-f]{8}$/i.test(referrerIdFragment)) {
+                    const prefix = referrerIdFragment.toLowerCase();
+                    const { data: referrer } = await supabase
+                        .from('users')
+                        .select('id')
+                        .gte('id', `${prefix}-0000-0000-0000-000000000000`)
+                        .lte('id', `${prefix}-ffff-ffff-ffff-ffffffffffff`)
+                        .limit(1)
+                        .maybeSingle();
+
+                    if (referrer && referrer.id !== req.userId) {
+                        const { count: orderCount } = await supabase
+                            .from('orders')
+                            .select('*', { count: 'exact', head: true })
+                            .eq('user_id', req.userId)
+                            .neq('status', 'cancelled');
+
+                        if (!orderCount || orderCount === 0) {
+                            finalTotal = finalTotal * 0.85; // 15% referral discount
+                            notesToSave += notesToSave
+                                ? ` | [PROMO: ${promoCode} (-15%)]`
+                                : `[PROMO: ${promoCode} (-15%)]`;
+                        }
+                    }
+                }
             } else {
                 const query = supabase
                     .from('promo_codes')
@@ -202,15 +229,16 @@ router.post(
                 const { data: promo } = await query.maybeSingle();
 
                 if (promo) {
-                    // Check if NEW user promo (NUEVO*)
-                    if (promo.code.startsWith('NUEVO')) {
-                        // 1. Expiry Check (24h)
-                        const createdAt = new Date(promo.created_at);
+                    const createdAt = new Date(promo.created_at);
+
+                    // Check if NEW user promo (NUEVO* or NEW*)
+                    if (promo.code.startsWith('NUEVO') || promo.code.startsWith('NEW')) {
+                        // 1. Expiry Check (7 days)
                         const expiredAt = new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000);
                         if (new Date() > expiredAt) {
-                            return res
-                                .status(400)
-                                .json({ error: 'El código de bienvenida ha expirado' });
+                            return res.status(400).json({
+                                error: 'El código de bienvenida ha expirado (válido por 7 días)',
+                            });
                         }
 
                         // 2. Min Order Check (20€)
@@ -221,9 +249,28 @@ router.post(
                         }
                     }
 
+                    // Check if Loyalty 5th-order promo (7 days)
+                    if (promo.code.startsWith('LOYALTY')) {
+                        const expiredAt = new Date(createdAt.getTime() + 7 * 24 * 60 * 60 * 1000);
+                        if (new Date() > expiredAt) {
+                            return res.status(400).json({
+                                error: 'El código de fidelidad ha expirado (válido por 7 días)',
+                            });
+                        }
+                    }
+
+                    // Check if Birthday or Dessert gift promo (30 days)
+                    if (promo.code.startsWith('BDAY') || promo.code.startsWith('DESSERT')) {
+                        const expiredAt = new Date(createdAt.getTime() + 30 * 24 * 60 * 60 * 1000);
+                        if (new Date() > expiredAt) {
+                            return res.status(400).json({
+                                error: 'Este código promocional ha expirado (válido por 30 días)',
+                            });
+                        }
+                    }
+
                     // Check if Special 14-day promo
                     if (promo.code.startsWith('SPECIAL')) {
-                        const createdAt = new Date(promo.created_at);
                         const expiredAt = new Date(createdAt.getTime() + 14 * 24 * 60 * 60 * 1000);
                         if (new Date() > expiredAt) {
                             return res
@@ -234,9 +281,10 @@ router.post(
 
                     finalTotal = finalTotal * (1 - promo.discount_percentage / 100);
                     usedPromoId = promo.id;
-                    notesToSave += notesToSave
-                        ? ` | [PROMO: ${promo.code} (-${promo.discount_percentage}%)]`
+                    const promoNoteLabel = promo.code.startsWith('DESSERT')
+                        ? `[PROMO: ${promo.code} (REGALO ROLL DULCE)]`
                         : `[PROMO: ${promo.code} (-${promo.discount_percentage}%)]`;
+                    notesToSave += notesToSave ? ` | ${promoNoteLabel}` : promoNoteLabel;
                 }
             }
         }

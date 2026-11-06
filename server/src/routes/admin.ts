@@ -720,25 +720,30 @@ router.patch(
             // ───── REFERRAL REWARD: If the user used a REF- code on this order ─────
             if (oldOrder.promo_code && oldOrder.promo_code.startsWith('REF-')) {
                 try {
-                    const referrerIdFragment = oldOrder.promo_code.split('-')[1];
-                    // Look up the referrer
-                    const { data: referrer } = await supabase
-                        .from('users')
-                        .select('id, coins_balance')
-                        .ilike('id', `${referrerIdFragment}%`)
-                        .single();
-
-                    if (referrer) {
-                        // Give 5 Maksim Coins to referrer
-                        const newBalance = (referrer.coins_balance || 0) + 5;
-                        await supabase
+                    const referrerIdFragment = oldOrder.promo_code.split('-')[1]?.trim() || '';
+                    if (/^[0-9a-f]{8}$/i.test(referrerIdFragment)) {
+                        const prefix = referrerIdFragment.toLowerCase();
+                        // Look up the referrer via UUID range scan
+                        const { data: referrer } = await supabase
                             .from('users')
-                            .update({ coins_balance: newBalance })
-                            .eq('id', referrer.id);
+                            .select('id, coins_balance')
+                            .gte('id', `${prefix}-0000-0000-0000-000000000000`)
+                            .lte('id', `${prefix}-ffff-ffff-ffff-ffffffffffff`)
+                            .limit(1)
+                            .maybeSingle();
 
-                        console.log(
-                            `[REFERRAL] Awarded 5 Maksim Coins to user ${referrer.id} because their referral code ${oldOrder.promo_code} was used by user ${oldOrder.user_id}`
-                        );
+                        if (referrer) {
+                            // Give 5 Maksim Coins to referrer
+                            const newBalance = Number(referrer.coins_balance || 0) + 5;
+                            await supabase
+                                .from('users')
+                                .update({ coins_balance: newBalance })
+                                .eq('id', referrer.id);
+
+                            console.log(
+                                `[REFERRAL] Awarded 5 Maksim Coins to user ${referrer.id} because their referral code ${oldOrder.promo_code} was used by user ${oldOrder.user_id}`
+                            );
+                        }
                     }
                 } catch (err) {
                     console.error('[REFERRAL] Failed to process referral reward:', err);

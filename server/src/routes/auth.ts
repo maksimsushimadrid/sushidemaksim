@@ -428,7 +428,7 @@ router.get(
         const { count: orderCount, error: orderError } = await supabase
             .from('orders')
             .select('*', { count: 'exact', head: true })
-            .eq('user_id', req.userId);
+            .match({ user_id: req.userId, status: 'delivered' });
 
         if (orderError) throw orderError;
 

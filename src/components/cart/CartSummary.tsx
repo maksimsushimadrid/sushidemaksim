@@ -227,7 +227,7 @@ export default function CartSummary({
                         Cupón de descuento
                     </span>
                 </div>
-                {!promoDiscount ? (
+                {promoDiscount === null ? (
                     <div className="relative group">
                         <div className="flex gap-1 p-1 pr-1.5 bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl transition-all duration-300 focus-within:border-orange-500/30 focus-within:bg-white focus-within:shadow-lg focus-within:shadow-orange-500/5">
                             <input
@@ -272,7 +272,7 @@ export default function CartSummary({
                             <div className="flex items-center gap-4">
                                 <div className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center shadow-md border border-green-100 shrink-0">
                                     <span className="text-green-600 font-black text-xs">
-                                        -{promoDiscount}%
+                                        {promoDiscount > 0 ? `-${promoDiscount}%` : '🎁'}
                                     </span>
                                 </div>
                                 <div className="flex flex-col">

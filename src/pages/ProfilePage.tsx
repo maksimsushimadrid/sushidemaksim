@@ -241,10 +241,13 @@ export default function ProfilePage() {
         const created = new Date(p.createdAt);
         const now = new Date();
         if (p.code.startsWith('NUEVO') || p.code.startsWith('NEW')) {
-            return now.getTime() < created.getTime() + 24 * 60 * 60 * 1000;
+            return now.getTime() < created.getTime() + 7 * 24 * 60 * 60 * 1000;
         }
         if (p.code.startsWith('LOYALTY')) {
             return now.getTime() < created.getTime() + 7 * 24 * 60 * 60 * 1000;
+        }
+        if (p.code.startsWith('SPECIAL')) {
+            return now.getTime() < created.getTime() + 14 * 24 * 60 * 60 * 1000;
         }
         if (p.code.startsWith('BDAY')) {
             return now.getTime() < created.getTime() + 30 * 24 * 60 * 60 * 1000;
@@ -259,9 +262,11 @@ export default function ProfilePage() {
         const created = new Date(createdAt);
         let expiryDate: Date;
         if (code.startsWith('NUEVO') || code.startsWith('NEW')) {
-            expiryDate = new Date(created.getTime() + 24 * 60 * 60 * 1000);
+            expiryDate = new Date(created.getTime() + 7 * 24 * 60 * 60 * 1000);
         } else if (code.startsWith('LOYALTY')) {
             expiryDate = new Date(created.getTime() + 7 * 24 * 60 * 60 * 1000);
+        } else if (code.startsWith('SPECIAL')) {
+            expiryDate = new Date(created.getTime() + 14 * 24 * 60 * 60 * 1000);
         } else if (code.startsWith('BDAY')) {
             expiryDate = new Date(created.getTime() + 30 * 24 * 60 * 60 * 1000);
         } else if (code.startsWith('DESSERT')) {
@@ -455,7 +460,7 @@ export default function ProfilePage() {
                                 Premios por fidelidad
                             </h3>
                             <p className="text-[11px] text-gray-400 font-medium m-0">
-                                Descuentos y regalos automáticos acumulando pedidos
+                                Descuentos y regalos automáticos acumulando pedidos entregados
                             </p>
                         </div>
                         <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-full shrink-0">
@@ -476,12 +481,13 @@ export default function ProfilePage() {
                                             Próximo descuento 5%
                                         </div>
                                         <div className="text-[10px] text-gray-400">
-                                            Cada 5 pedidos
+                                            Cada 5 pedidos • Recibes un cupón al completar 4 pedidos
+                                            entregados (válido 7 días)
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="text-right">
+                                <div className="text-right shrink-0">
                                     <span className="text-xs font-extrabold text-orange-600">
                                         {Math.max(0, 4 - ((user.orderCount || 0) % 5)) === 0
                                             ? '¡Listo para usar!'
@@ -513,13 +519,13 @@ export default function ProfilePage() {
                                 <div className="mt-3 p-2.5 bg-orange-50/80 rounded-xl border border-orange-100 flex items-center justify-between gap-3">
                                     <div className="min-w-0">
                                         <span className="text-[10px] font-bold text-orange-700 uppercase tracking-wide block">
-                                            Tu código -5%:{' '}
+                                            Tu código -{loyaltyCode.discountPercentage || 5}%:{' '}
                                             <span className="font-mono text-xs font-black">
                                                 {loyaltyCode.code}
                                             </span>
                                         </span>
                                         <span className="text-[9px] text-gray-500 block">
-                                            Expira:{' '}
+                                            Válido 7 días • Un solo uso • Expira:{' '}
                                             {getExpiryString(
                                                 loyaltyCode.code,
                                                 loyaltyCode.createdAt
@@ -564,12 +570,13 @@ export default function ProfilePage() {
                                             Roll dulce de regalo 🍣
                                         </div>
                                         <div className="text-[10px] text-gray-400">
-                                            Cada 10 pedidos
+                                            Cada 10 pedidos • Recibes un cupón al completar 9
+                                            pedidos entregados (válido 30 días)
                                         </div>
                                     </div>
                                 </div>
 
-                                <div className="text-right">
+                                <div className="text-right shrink-0">
                                     <span className="text-xs font-extrabold text-amber-600">
                                         {Math.max(0, 9 - ((user.orderCount || 0) % 10)) === 0
                                             ? '¡Listo para usar!'
@@ -601,13 +608,14 @@ export default function ProfilePage() {
                                 <div className="mt-3 p-2.5 bg-amber-50/80 rounded-xl border border-amber-100 flex items-center justify-between gap-3">
                                     <div className="min-w-0">
                                         <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wide block">
-                                            Tu código regalo:{' '}
+                                            Tu código regalo (Roll dulce gratis):{' '}
                                             <span className="font-mono text-xs font-black">
                                                 {dessertCode.code}
                                             </span>
                                         </span>
                                         <span className="text-[9px] text-gray-500 block">
-                                            Expira:{' '}
+                                            Válido 30 días • Añade automáticamente el postre al
+                                            carrito • Expira:{' '}
                                             {getExpiryString(
                                                 dessertCode.code,
                                                 dessertCode.createdAt
@@ -638,6 +646,12 @@ export default function ProfilePage() {
                             )}
                         </div>
                     </div>
+
+                    <div className="mt-4 pt-3 border-t border-gray-100 flex flex-wrap items-center gap-x-4 gap-y-1 text-[10px] text-gray-400 font-medium">
+                        <span>• Solo cuentan pedidos entregados.</span>
+                        <span>• Además, ganas un 5% en Maksim Coins por cada pedido.</span>
+                        <span>• 1 cupón por pedido (no acumulables entre sí).</span>
+                    </div>
                 </div>
 
                 {/* Invite a Friend Section */}
@@ -657,7 +671,7 @@ export default function ProfilePage() {
                                         Invita y Gana
                                     </h3>
                                 </div>
-                                <p className="text-sm font-medium text-white/90 mb-4 leading-relaxed max-w-sm">
+                                <p className="text-sm font-medium text-white/90 mb-4 leading-relaxed max-w-lg">
                                     Regala a un amigo un{' '}
                                     <strong className="text-white">15% de descuento</strong> en su
                                     primer pedido y llévate{' '}
@@ -696,6 +710,33 @@ export default function ProfilePage() {
                                     </button>
                                 </div>
 
+                                <div className="mt-4 bg-white/10 rounded-2xl p-3.5 border border-white/10 text-[11px] text-white/85 space-y-1.5 leading-relaxed">
+                                    <div className="font-black uppercase tracking-wider text-white text-[10px] mb-1">
+                                        ¿Cómo funciona y condiciones?
+                                    </div>
+                                    <div>
+                                        • <strong>Para tu amigo:</strong> Debe iniciar sesión o
+                                        registrarse y aplicar tu código{' '}
+                                        <span className="font-mono font-bold">
+                                            REF-{user.id.substring(0, 8).toUpperCase()}
+                                        </span>{' '}
+                                        en la cesta antes de realizar su{' '}
+                                        <strong>primer pedido</strong> (-15% de descuento directo).
+                                    </div>
+                                    <div>
+                                        • <strong>Para ti:</strong> Recibirás{' '}
+                                        <strong>5 Maksim Coins (5€)</strong> automáticamente en tu
+                                        saldo cuando el pedido de tu amigo sea marcado como{' '}
+                                        <strong>entregado</strong>.
+                                    </div>
+                                    <div>
+                                        • <strong>Uso de Coins:</strong> Puedes pagar hasta el{' '}
+                                        <strong>20% del total</strong> de tus próximos pedidos con
+                                        tus Maksim Coins (1 Coin = 1€). No válido para
+                                        auto-invitaciones.
+                                    </div>
+                                </div>
+
                                 {friends.length > 0 && (
                                     <div className="mt-6 pt-6 border-t border-white/10">
                                         <h4 className="text-xs font-black uppercase tracking-widest text-white/80 mb-4">
@@ -730,7 +771,7 @@ export default function ProfilePage() {
                                                     ) : (
                                                         <div className="bg-white/10 text-white/70 border border-white/10 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
                                                             <Clock size={12} strokeWidth={2} />
-                                                            Pendiente
+                                                            Pendiente de entrega
                                                         </div>
                                                     )}
                                                 </div>
@@ -754,16 +795,22 @@ export default function ProfilePage() {
                             <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600">
                                 <Tag size={20} strokeWidth={2.5} />
                             </div>
-                            <h3 className="text-lg font-black text-gray-900 tracking-tight">
-                                Mis Cupones Disponibles
-                            </h3>
+                            <div>
+                                <h3 className="text-lg font-black text-gray-900 tracking-tight m-0">
+                                    Mis Cupones Disponibles
+                                </h3>
+                                <p className="text-[11px] text-gray-400 font-medium m-0">
+                                    Copia tu código y aplícalo en la cesta antes de finalizar el
+                                    pedido (1 cupón por pedido)
+                                </p>
+                            </div>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {welcomeCode && (
                                 <div className="p-4 bg-gradient-to-br from-orange-50 to-white border border-orange-100 rounded-3xl relative overflow-hidden group">
                                     <div className="mb-2 flex justify-between items-start">
                                         <div className="px-2 py-0.5 bg-orange-100 text-orange-600 text-[9px] font-black rounded-lg uppercase tracking-wider">
-                                            Bienvenida -10%
+                                            Bienvenida -{welcomeCode.discountPercentage || 10}%
                                         </div>
                                         <button
                                             onClick={() => copyToClipboard(welcomeCode.code)}
@@ -783,10 +830,10 @@ export default function ProfilePage() {
                                     <div className="text-lg font-black text-gray-900 mb-1">
                                         {welcomeCode.code}
                                     </div>
-                                    <p className="text-[10px] text-gray-400 font-medium leading-tight mb-2">
-                                        {
-                                            'Válido por 7 días tras el registro. Úsalo al finalizar tu pedido.'
-                                        }
+                                    <p className="text-[10px] text-gray-500 font-medium leading-tight mb-2">
+                                        Pedido mínimo de 20,00€ (subtotal). Válido durante 7 días
+                                        tras el registro. Un solo uso, no acumulable con otros
+                                        códigos.
                                     </p>
                                     <div className="flex items-center gap-1.5 text-[9px] font-black text-orange-500 uppercase tracking-tighter">
                                         <div className="w-1 h-1 rounded-full bg-orange-400 animate-pulse" />
@@ -800,7 +847,7 @@ export default function ProfilePage() {
                                 <div className="p-4 bg-gradient-to-br from-pink-50 to-white border border-pink-100 rounded-3xl relative overflow-hidden group">
                                     <div className="mb-2 flex justify-between items-start">
                                         <div className="px-2 py-0.5 bg-pink-100 text-pink-600 text-[9px] font-black rounded-lg uppercase tracking-wider">
-                                            Cumpleaños 🎉
+                                            Cumpleaños -{birthdayCode.discountPercentage || 10}% 🎉
                                         </div>
                                         <button
                                             onClick={() => copyToClipboard(birthdayCode.code)}
@@ -820,8 +867,9 @@ export default function ProfilePage() {
                                     <div className="text-lg font-black text-gray-900 mb-1">
                                         {birthdayCode.code}
                                     </div>
-                                    <p className="text-[10px] text-gray-400 font-medium leading-tight mb-2">
-                                        ¡Feliz cumpleaños! Un regalo especial solo para ti.
+                                    <p className="text-[10px] text-gray-500 font-medium leading-tight mb-2">
+                                        ¡Feliz cumpleaños! Descuento especial de un solo uso válido
+                                        durante 30 días desde su emisión.
                                     </p>
                                     <div className="flex items-center gap-1.5 text-[9px] font-black text-pink-500 uppercase tracking-tighter">
                                         <div className="w-1 h-1 rounded-full bg-pink-400 animate-pulse" />
@@ -839,7 +887,7 @@ export default function ProfilePage() {
                                     >
                                         <div className="mb-2 flex justify-between items-start">
                                             <div className="px-2 py-0.5 bg-gray-200 text-gray-600 text-[9px] font-black rounded-lg uppercase tracking-wider">
-                                                Bonifición Especial
+                                                Bonificación Especial -{promo.discountPercentage}%
                                             </div>
                                             <button
                                                 onClick={() => copyToClipboard(promo.code)}
@@ -859,9 +907,17 @@ export default function ProfilePage() {
                                         <div className="text-lg font-black text-gray-900 mb-1">
                                             {promo.code}
                                         </div>
-                                        <p className="text-[10px] text-gray-400 font-medium leading-tight">
-                                            -{promo.discountPercentage}% de descuento extra.
+                                        <p className="text-[10px] text-gray-500 font-medium leading-tight mb-2">
+                                            -{promo.discountPercentage}% de descuento especial de un
+                                            solo uso (no acumulable con otros cupones).
                                         </p>
+                                        {getExpiryString(promo.code, promo.createdAt) && (
+                                            <div className="flex items-center gap-1.5 text-[9px] font-black text-gray-500 uppercase tracking-tighter">
+                                                <div className="w-1 h-1 rounded-full bg-gray-400 animate-pulse" />
+                                                Expira el:{' '}
+                                                {getExpiryString(promo.code, promo.createdAt)}
+                                            </div>
+                                        )}
                                     </div>
                                 ))}
                         </div>

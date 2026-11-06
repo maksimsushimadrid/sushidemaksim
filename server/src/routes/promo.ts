@@ -1,13 +1,13 @@
 import { Router, Response } from 'express';
 import { supabase } from '../db/supabase.js';
-import { authMiddleware, AuthRequest } from '../middleware/auth.js';
+import { optionalAuthMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validateResource } from '../middleware/validateResource.js';
 import { validatePromoSchema } from '../schemas/promo.schema.js';
 import { promoLimiter } from '../middleware/rateLimiters.js';
 
 const router = Router();
-router.use(authMiddleware);
+router.use(optionalAuthMiddleware);
 
 router.post(
     '/validate',
@@ -24,14 +24,20 @@ router.post(
             return res.json({ percentage: 10 });
         }
 
+        if (!req.userId) {
+            return res.status(400).json({
+                error: normalizedCode.startsWith('REF-')
+                    ? 'Inicia sesión o regístrate para usar el código de invitación de tu amigo'
+                    : 'Inicia sesión o regístrate para usar un código promocional',
+            });
+        }
+
         // ─── DB Lookup for Promo Codes ───
         console.log(`[PROMO] Validating "${normalizedCode}" for user ${req.userId}...`);
         const { data: promo, error } = await supabase
             .from('promo_codes')
             .select('*')
             .eq('code', normalizedCode)
-            // Allow checking existing codes even if used, so we can give better errors
-            .or(`user_id.is.null,user_id.eq.${req.userId}`)
             .maybeSingle();
 
         if (error) {
@@ -39,16 +45,30 @@ router.post(
             return res.status(500).json({ error: 'Error del servidor al validar el código' });
         }
 
+        if (promo && promo.user_id && promo.user_id !== req.userId) {
+            return res.status(400).json({
+                error: 'Este cupón es personal de otra cuenta. Para "Invita y Gana", usa el código que empieza por REF-',
+            });
+        }
+
         // ─── Support Dynamic Referral Codes ───
         if (normalizedCode.startsWith('REF-') && normalizedCode.length > 5) {
-            const referrerIdFragment = normalizedCode.split('-')[1];
+            const referrerIdFragment = normalizedCode.split('-')[1]?.trim() || '';
 
-            // Verify referrer exists
+            if (!/^[0-9a-f]{8}$/i.test(referrerIdFragment)) {
+                return res.status(400).json({ error: 'Código de referido no encontrado' });
+            }
+
+            const prefix = referrerIdFragment.toLowerCase();
+
+            // Verify referrer exists (UUID range scan since Postgres does not support ILIKE on UUID columns)
             const { data: referrer, error: refError } = await supabase
                 .from('users')
                 .select('id')
-                .ilike('id', `${referrerIdFragment}%`)
-                .single();
+                .gte('id', `${prefix}-0000-0000-0000-000000000000`)
+                .lte('id', `${prefix}-ffff-ffff-ffff-ffffffffffff`)
+                .limit(1)
+                .maybeSingle();
 
             if (refError || !referrer) {
                 return res.status(400).json({ error: 'Código de referido no encontrado' });
@@ -61,11 +81,12 @@ router.post(
                     .json({ error: 'No puedes usar tu propio código de referido' });
             }
 
-            // Referrals are only valid for the VERY FIRST order of the user
+            // Referrals are only valid for the VERY FIRST order of the user (excluding cancelled orders)
             const { count: orderCount } = await supabase
                 .from('orders')
                 .select('*', { count: 'exact', head: true })
-                .eq('user_id', req.userId);
+                .eq('user_id', req.userId)
+                .neq('status', 'cancelled');
 
             if (orderCount && orderCount > 0) {
                 return res

@@ -237,12 +237,33 @@ export default function PromoPage() {
                         <h2 className="text-2xl sm:text-4xl md:text-5xl font-black mb-3 tracking-tighter leading-tight sm:leading-[0.95] text-white drop-shadow-xl">
                             Invita a un amigo y Gana
                         </h2>
-                        <p className="text-xs sm:text-sm md:text-base font-medium mb-5 sm:mb-8 text-white/90 leading-relaxed max-w-xl mx-auto lg:mx-0 drop-shadow-sm">
+                        <p className="text-xs sm:text-sm md:text-base font-medium mb-4 text-white/90 leading-relaxed max-w-xl mx-auto lg:mx-0 drop-shadow-sm">
                             Regala un <strong className="text-white">15% de descuento</strong> a tus
-                            amigos en su primer pedido. Cuando lo reciban, ¡tú ganarás{' '}
+                            amigos en su primer pedido. Cuando su pedido sea entregado, ¡tú ganarás{' '}
                             <strong className="text-white">5 Maksim Coins</strong> (5€)
                             automáticamente!
                         </p>
+                        <div className="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-3.5 sm:p-4 mb-5 sm:mb-7 text-left max-w-xl mx-auto lg:mx-0">
+                            <div className="text-[10px] font-black uppercase tracking-widest text-white mb-1.5">
+                                Condiciones de la promoción:
+                            </div>
+                            <ul className="space-y-1 text-[11px] sm:text-xs text-white/85 font-medium m-0 p-0 list-none">
+                                <li>
+                                    • Tu amigo debe iniciar sesión o registrarse y aplicar tu código{' '}
+                                    <span className="font-mono font-bold text-white">REF-...</span>{' '}
+                                    en la cesta en su <strong>primer pedido</strong>.
+                                </li>
+                                <li>
+                                    • Los <strong>5 Maksim Coins (5€)</strong> se abonan en tu
+                                    cuenta una vez que el pedido de tu amigo se marque como{' '}
+                                    <strong>entregado</strong>.
+                                </li>
+                                <li>
+                                    • No acumulable con otros códigos promocionales en el mismo
+                                    pedido ni válido para auto-invitaciones.
+                                </li>
+                            </ul>
+                        </div>
                         <Link
                             to={user ? '/profile' : '/profile'}
                             className="inline-flex items-center justify-center gap-2.5 bg-white text-purple-700 px-6 py-3 md:px-8 md:py-3.5 rounded-xl sm:rounded-2xl font-black text-xs sm:text-sm uppercase transition-all active:scale-95 shadow-lg hover:bg-gray-50 hover:shadow-white/20 w-full sm:w-auto tracking-wider"
@@ -258,14 +279,14 @@ export default function PromoPage() {
                             5 COINS
                         </div>
                         <div className="text-[9px] sm:text-[10px] text-white/80 uppercase font-black tracking-widest">
-                            Para ti
+                            Para ti (al entregarse)
                         </div>
                         <div className="w-12 h-0.5 bg-white/20 my-2.5 sm:my-3 rounded-full"></div>
                         <div className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none mb-1">
                             -15%
                         </div>
                         <div className="text-[9px] sm:text-[10px] text-white/80 uppercase font-black tracking-widest">
-                            Para tu amigo
+                            Para tu amigo (1er pedido)
                         </div>
                     </div>
                 </div>
@@ -282,11 +303,12 @@ export default function PromoPage() {
                             Maksim Coins
                         </h2>
                         <p className="text-gray-500 font-medium text-xs sm:text-sm leading-relaxed">
-                            Tu saldo virtual. Gana monedas y úsalas para obtener hasta un 20% de
-                            descuento en tus próximos pedidos.
+                            Tu saldo virtual de fidelidad. Acumula monedas con tus compras e
+                            invitaciones y úsalas para descontar hasta un 20% en tus próximos
+                            pedidos.
                         </p>
                         <p className="text-[10px] sm:text-xs font-bold text-gray-400 mt-2 sm:mt-3 uppercase tracking-widest">
-                            1 Coin = 1€
+                            1 Coin = 1,00€
                         </p>
                     </div>
 
@@ -304,9 +326,12 @@ export default function PromoPage() {
                                         •
                                     </span>
                                     <span>
-                                        Gana <strong className="text-gray-900">5 Coins</strong> por
-                                        cada amigo que haga su primer pedido con tu código de
-                                        invitación.
+                                        Gana un{' '}
+                                        <strong className="text-gray-900">
+                                            5% de cashback en Coins
+                                        </strong>{' '}
+                                        sobre el importe neto de comida en cada pedido que realices
+                                        con tu cuenta.
                                     </span>
                                 </li>
                                 <li className="flex items-start gap-1.5">
@@ -314,7 +339,10 @@ export default function PromoPage() {
                                         •
                                     </span>
                                     <span>
-                                        A través de regalos sorpresa en tus próximos pedidos.
+                                        Gana <strong className="text-gray-900">5 Coins (5€)</strong>{' '}
+                                        por cada amigo invitado que reciba su primer pedido usando
+                                        tu código{' '}
+                                        <span className="font-mono font-bold">REF-...</span>.
                                     </span>
                                 </li>
                             </ul>
@@ -324,7 +352,7 @@ export default function PromoPage() {
                                 🛒
                             </div>
                             <h3 className="text-base sm:text-lg font-black text-gray-900 tracking-tight mb-1.5">
-                                Cómo gastar
+                                Cómo gastar y condiciones
                             </h3>
                             <ul className="space-y-2 text-gray-600 text-xs sm:text-sm font-medium mt-1">
                                 <li className="flex items-start gap-1.5">
@@ -332,11 +360,9 @@ export default function PromoPage() {
                                         •
                                     </span>
                                     <span>
-                                        Al procesar tu pedido, en el carrito verás la opción{' '}
-                                        <strong className="text-gray-900">
-                                            "Usar mis Coins para pagar"
-                                        </strong>
-                                        .
+                                        Al tramitar tu pedido en la cesta (iniciando sesión), activa
+                                        la opción{' '}
+                                        <strong className="text-gray-900">"Usar mis Coins"</strong>.
                                     </span>
                                 </li>
                                 <li className="flex items-start gap-1.5">
@@ -344,14 +370,102 @@ export default function PromoPage() {
                                         •
                                     </span>
                                     <span>
-                                        Puedes usar tus Coins para pagar hasta el{' '}
+                                        Puedes descontar hasta el{' '}
                                         <strong className="text-gray-900">
                                             20% del valor total
                                         </strong>{' '}
-                                        de tu pedido.
+                                        de tu pedido (no canjeables por dinero en efectivo).
                                     </span>
                                 </li>
                             </ul>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Loyalty & Automatic Rewards Overview */}
+                <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 mb-6 md:mb-10 shadow-lg border border-gray-100">
+                    <div className="text-center max-w-2xl mx-auto mb-6">
+                        <div className="inline-block bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-black mb-2.5 uppercase tracking-[0.2em]">
+                            BENEFICIOS PARA USUARIOS REGISTRADOS
+                        </div>
+                        <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight mb-2">
+                            Programa de Fidelidad y Regalos Automáticos
+                        </h2>
+                        <p className="text-gray-500 text-xs sm:text-sm font-medium">
+                            Regístrate gratis y recibe cupones automáticos en tu perfil y por correo
+                            electrónico.
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="p-4 rounded-2xl bg-orange-50/50 border border-orange-100 flex flex-col">
+                            <div className="text-2xl mb-2">🎁</div>
+                            <div className="text-[10px] font-black uppercase tracking-wider text-orange-600 mb-1">
+                                Oferta de Bienvenida
+                            </div>
+                            <h3 className="text-base font-black text-gray-900 mb-1">
+                                -10% en tu 1er Pedido
+                            </h3>
+                            <p className="text-xs text-gray-600 font-medium leading-relaxed flex-1 mb-2">
+                                Recibe un código de -10% al registrarte y verificar tu cuenta.
+                            </p>
+                            <div className="text-[10px] text-gray-400 font-bold border-t border-orange-100 pt-2">
+                                Condiciones: Pedido mínimo 20,00€ (subtotal) • Válido por 7 días • 1
+                                uso.
+                            </div>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-100 flex flex-col">
+                            <div className="text-2xl mb-2">⭐</div>
+                            <div className="text-[10px] font-black uppercase tracking-wider text-amber-600 mb-1">
+                                Fidelidad • Cada 5 Pedidos
+                            </div>
+                            <h3 className="text-base font-black text-gray-900 mb-1">
+                                -5% de Descuento
+                            </h3>
+                            <p className="text-xs text-gray-600 font-medium leading-relaxed flex-1 mb-2">
+                                Al completar tu 4º, 9º, 14º... pedido entregado, recibes un cupón
+                                para tu siguiente pedido.
+                            </p>
+                            <div className="text-[10px] text-gray-400 font-bold border-t border-amber-100 pt-2">
+                                Condiciones: Se cuentan pedidos entregados • Válido por 7 días • 1
+                                uso.
+                            </div>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex flex-col">
+                            <div className="text-2xl mb-2">🍣</div>
+                            <div className="text-[10px] font-black uppercase tracking-wider text-emerald-600 mb-1">
+                                Fidelidad • Cada 10 Pedidos
+                            </div>
+                            <h3 className="text-base font-black text-gray-900 mb-1">
+                                Roll Dulce de Regalo
+                            </h3>
+                            <p className="text-xs text-gray-600 font-medium leading-relaxed flex-1 mb-2">
+                                Al completar tu 9º, 19º, 29º... pedido entregado, te regalamos un
+                                código para un Roll dulce gratis en tu 10º pedido.
+                            </p>
+                            <div className="text-[10px] text-gray-400 font-bold border-t border-emerald-100 pt-2">
+                                Condiciones: Añade el postre gratis al aplicar el código • Válido
+                                por 30 días.
+                            </div>
+                        </div>
+
+                        <div className="p-4 rounded-2xl bg-pink-50/50 border border-pink-100 flex flex-col">
+                            <div className="text-2xl mb-2">🎂</div>
+                            <div className="text-[10px] font-black uppercase tracking-wider text-pink-600 mb-1">
+                                Regalo de Cumpleaños
+                            </div>
+                            <h3 className="text-base font-black text-gray-900 mb-1">
+                                -10% Especial Cumpleaños
+                            </h3>
+                            <p className="text-xs text-gray-600 font-medium leading-relaxed flex-1 mb-2">
+                                Añade tu fecha de nacimiento en tu perfil y recibe un cupón especial
+                                en tu semana de cumpleaños.
+                            </p>
+                            <div className="text-[10px] text-gray-400 font-bold border-t border-pink-100 pt-2">
+                                Condiciones: Fecha guardada en perfil • Válido por 30 días • 1 uso.
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -602,6 +716,44 @@ export default function PromoPage() {
                             ))}
                         </div>
                     )}
+                </div>
+
+                {/* General Terms & Conditions of Promotions */}
+                <div className="max-w-6xl mx-auto bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-8 border border-gray-100 shadow-sm">
+                    <h3 className="text-sm sm:text-base font-black text-gray-900 uppercase tracking-wider mb-3">
+                        📋 Condiciones Generales de Promociones, Cupones y Fidelidad
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-gray-500 font-medium leading-relaxed">
+                        <div>
+                            • <strong>Uso de códigos promocionales:</strong> Es necesario iniciar
+                            sesión con una cuenta registrada para validar y aplicar cualquier código
+                            promocional en la cesta. Solo se permite aplicar{' '}
+                            <strong>1 código promocional por pedido</strong> (los códigos no son
+                            acumulables entre sí).
+                        </div>
+                        <div>
+                            • <strong>Código de Bienvenida (NUEVO):</strong> Otorga un 10% de
+                            descuento para nuevos usuarios registrados en pedidos con un importe
+                            mínimo de <strong>20,00€</strong> en productos (excluyendo gastos de
+                            envío y propinas). Caduca a los <strong>7 días</strong> desde el
+                            registro.
+                        </div>
+                        <div>
+                            • <strong>Programa Invita y Gana (REF-):</strong> El código de
+                            invitación ofrece un <strong>15% de descuento</strong> exclusivamente en
+                            el <strong>primer pedido</strong> del amigo invitado (quien debe estar
+                            registrado y no tener pedidos previos completados). El anfitrión recibe{' '}
+                            <strong>5 Maksim Coins (5€)</strong> cuando dicho pedido pasa a estado{' '}
+                            <strong>entregado</strong>.
+                        </div>
+                        <div>
+                            • <strong>Premios por Fidelidad y Cumpleaños:</strong> Solo contabilizan
+                            los pedidos en estado <strong>entregado</strong>. El cupón del 5º pedido
+                            (-5%) tiene una validez de <strong>7 días</strong>; el cupón del 10º
+                            pedido (Roll dulce de regalo) y el de cumpleaños (-10%) tienen una
+                            validez de <strong>30 días</strong> desde su emisión.
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
