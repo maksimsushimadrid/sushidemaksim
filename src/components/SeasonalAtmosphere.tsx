@@ -48,7 +48,7 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
     // Compute effective theme (evaluating date for 'auto' mode)
     const [effectiveTheme, setEffectiveTheme] = useState<
         'none' | 'halloween' | 'halloween_wallpaper' | 'new_year' | 'christmas'
-    >('halloween_wallpaper');
+    >('none');
 
     useEffect(() => {
         const todayStr = new Date().toISOString().split('T')[0];
@@ -57,7 +57,7 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
             // Until November 1st: Halloween theme
             if (todayStr <= wallpaperUntil) {
                 setEffectiveTheme(animationsEnabled ? 'halloween' : 'halloween_wallpaper');
-            } else if (todayStr >= '2026-12-01' || todayStr <= '2027-01-15') {
+            } else if (todayStr >= '2026-12-01' && todayStr <= '2027-01-15') {
                 setEffectiveTheme('new_year');
             } else {
                 setEffectiveTheme('none');
@@ -351,14 +351,15 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
 
     // --- NEW YEAR & CHRISTMAS SNOWFALL EFFECT ---
     const [snowflakes] = useState<SnowflakeInstance[]>(() => {
-        return Array.from({ length: 22 }, (_, i) => ({
+        return Array.from({ length: 42 }, (_, i) => ({
             id: i,
-            x: Math.round(Math.random() * 100),
-            size: Math.round(4 + Math.random() * 6),
-            duration: Math.round(8 + Math.random() * 8),
-            delay: Math.round(Math.random() * 6 * 10) / 10,
-            opacity: Math.round((0.35 + Math.random() * 0.45) * 100) / 100,
-            swayDuration: Math.round((3 + Math.random() * 2) * 10) / 10,
+            x: Math.round(((i * 97) % 100) + Math.random() * 3),
+            size: Math.round(6 + (i % 5) * 2.5),
+            duration: Math.round(9 + (i % 7) * 1.5),
+            // Negative delay so snow is already falling across the entire screen on first render
+            delay: -Math.round(((i * 1.7) % 14) * 10) / 10,
+            opacity: Math.round((0.65 + (i % 4) * 0.08) * 100) / 100,
+            swayDuration: Math.round((3 + (i % 4) * 0.8) * 10) / 10,
         }));
     });
 
@@ -1038,23 +1039,24 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
                         <style>{`
                         @keyframes snowflake-fall {
                             0% {
-                                transform: translate3d(0, -20px, 0);
+                                transform: translate3d(0, -30px, 0);
                                 opacity: 0;
                             }
-                            10% { opacity: var(--snow-opacity, 0.7); }
-                            90% { opacity: var(--snow-opacity, 0.7); }
+                            8% { opacity: var(--snow-opacity, 0.85); }
+                            92% { opacity: var(--snow-opacity, 0.85); }
                             100% {
                                 transform: translate3d(var(--snow-drift, 40px), 105vh, 0);
                                 opacity: 0;
                             }
                         }
                         @keyframes snowflake-sway {
-                            0%, 100% { transform: translateX(-15px); }
-                            50% { transform: translateX(15px); }
+                            0%, 100% { transform: translateX(-18px) rotate(0deg); }
+                            50% { transform: translateX(18px) rotate(180deg); }
                         }
                         .snowflake-particle {
                             animation: snowflake-fall var(--snow-duration, 10s) linear infinite;
                             animation-delay: var(--snow-delay, 0s);
+                            animation-fill-mode: both;
                             will-change: transform;
                         }
                         .snowflake-inner {
@@ -1078,26 +1080,44 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
                                         '--snow-duration': `${flake.duration}s`,
                                         '--snow-delay': `${flake.delay}s`,
                                         '--snow-opacity': flake.opacity,
-                                        '--snow-drift': `${(flake.id % 2 === 0 ? 1 : -1) * (20 + (flake.id % 5) * 10)}px`,
+                                        '--snow-drift': `${(flake.id % 2 === 0 ? 1 : -1) * (25 + (flake.id % 5) * 10)}px`,
                                     } as React.CSSProperties
                                 }
                             >
                                 <div
-                                    className="snowflake-inner"
+                                    className="snowflake-inner flex items-center justify-center"
                                     style={
                                         {
                                             '--snow-sway': `${flake.swayDuration}s`,
                                         } as React.CSSProperties
                                     }
                                 >
-                                    <div
-                                        className="rounded-full bg-white blur-[0.4px] shadow-[0_0_6px_rgba(255,255,255,0.8)]"
-                                        style={{
-                                            width: `${flake.size}px`,
-                                            height: `${flake.size}px`,
-                                            opacity: flake.opacity,
-                                        }}
-                                    />
+                                    {flake.id % 3 === 0 ? (
+                                        <span
+                                            style={{
+                                                fontSize: `${flake.size + 6}px`,
+                                                lineHeight: 1,
+                                                color: '#ffffff',
+                                                textShadow:
+                                                    '0 1px 4px rgba(15, 23, 42, 0.45), 0 0 8px rgba(186, 230, 253, 0.9)',
+                                                opacity: flake.opacity,
+                                            }}
+                                        >
+                                            ❄
+                                        </span>
+                                    ) : (
+                                        <div
+                                            className="rounded-full bg-white"
+                                            style={{
+                                                width: `${flake.size}px`,
+                                                height: `${flake.size}px`,
+                                                opacity: flake.opacity,
+                                                border: '1px solid rgba(186, 230, 253, 0.9)',
+                                                boxShadow:
+                                                    '0 1px 4px rgba(15, 23, 42, 0.35), 0 0 8px rgba(255, 255, 255, 0.95)',
+                                            }}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         ))}

@@ -363,7 +363,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 effectiveMode = localSettings.holidayAnimationsEnabled
                     ? 'halloween'
                     : 'halloween_wallpaper';
-            } else if (todayStr >= '2026-12-01' || todayStr <= '2027-01-15') {
+            } else if (todayStr >= '2026-12-01' && todayStr <= '2027-01-15') {
                 effectiveMode = 'new_year';
             } else {
                 effectiveMode = 'none';

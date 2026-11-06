@@ -27,7 +27,7 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
             name: 'Cerveza de Calabaza (Pumpkin Ale)',
             description:
                 beerItem?.description ||
-                'Cerveza artesana de calabaza edición limitada Halloween (0.33L)',
+                'Cerveza artesana de calabaza edición limitada de autor (0.33L)',
             price: beerItem?.price ?? 6,
             image: '/images/announcements/pumpkin-beer-033.webp',
             category: 'bebidas',
@@ -54,7 +54,7 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
 
     return (
         <section
-            id="halloween-specials"
+            id="seasonal-specials"
             className="pt-4 pb-8 md:pt-6 md:pb-12 px-4 md:px-6 bg-black border-b border-white/10 scroll-mt-20"
             aria-label="Novedades y Especiales de Temporada"
         >
@@ -93,7 +93,7 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
                                 <div className="flex items-center gap-2 mb-2">
                                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px] font-black uppercase tracking-wider">
                                         <Flame size={10} className="text-orange-400" />
-                                        Halloween Edición
+                                        Edición Limitada
                                     </span>
                                     <span className="text-[11px] font-bold text-zinc-400">
                                         Elaboración propia
@@ -101,7 +101,7 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
                                 </div>
 
                                 <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug">
-                                    Cerveza de Calabaza{' '}
+                                    Cerveza Artesana{' '}
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
                                         Pumpkin Ale
                                     </span>
@@ -119,10 +119,10 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
 
                                 <div className="flex flex-wrap gap-1.5 mt-3">
                                     <span className="px-2 py-0.5 rounded-md bg-white/5 text-zinc-300 text-[10px] font-semibold border border-white/5">
-                                        🎃 Receta del Chef
+                                        🍺 Receta del Chef
                                     </span>
                                     <span className="px-2 py-0.5 rounded-md bg-white/5 text-zinc-300 text-[10px] font-semibold border border-white/5">
-                                        🍂 Notas tostadas
+                                        ✨ Notas tostadas
                                     </span>
                                 </div>
                             </div>
