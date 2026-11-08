@@ -19,7 +19,7 @@
         "format:check": "prettier --check \"**/*.{ts,tsx,json,css,md}\"",
         "preview": "vite preview",
         "test": "vitest run && npx playwright test",
-        "test:unit": "vitest",
+        "test:unit": "vitest run",
         "test:ui": "vitest --ui",
         "test:coverage": "vitest run --coverage",
         "test:e2e": "npx playwright test"

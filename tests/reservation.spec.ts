@@ -1,9 +1,26 @@
 import { test, expect } from '@playwright/test';
 
 test.describe('Reservation Page Flow', () => {
+    test.beforeEach(async ({ page }) => {
+        // Set fixed time to an open business afternoon + dismiss cookie banner
+        await page.addInitScript(() => {
+            const mockDate = new Date('2026-05-10T15:00:00').getTime();
+            Date.now = () => mockDate;
+            const RealDate = Date;
+            globalThis.Date = class extends RealDate {
+                constructor(...args: any[]) {
+                    if (args.length === 0) {
+                        super(mockDate);
+                    } else {
+                        super(...(args as [any]));
+                    }
+                }
+            } as any;
+            window.localStorage.setItem('cookieConsent', 'accepted');
+        });
+    });
+
     test('SUCCESS: should be able to fill the reservation form and submit', async ({ page }) => {
-        // Set fixed time to a Sunday afternoon to ensure store is open and slots available
-        await page.clock.setFixedTime(new Date('2026-05-10T15:00:00'));
         await page.goto('/reservar');
 
         // 1. Check SEO and Content
@@ -82,6 +99,10 @@ test.describe('Reservation Page Flow', () => {
         if (!viewport || viewport.width > 1024) {
             // Explicit check for desktop
             await page.goto('/');
+            const closeBtn = page.getByRole('button', { name: 'Cerrar aviso' });
+            if (await closeBtn.isVisible()) {
+                await closeBtn.click();
+            }
             const headerLink = page.locator('header').getByRole('link', { name: 'Reserva' });
             await expect(headerLink).toBeVisible();
             await headerLink.click();

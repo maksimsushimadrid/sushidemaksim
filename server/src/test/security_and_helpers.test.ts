@@ -82,8 +82,22 @@ describe('Security & Formatting Helpers', () => {
                 browser_name: 'Safari',
                 created_at: '2026-11-08T12:00:00Z',
                 items: [
-                    { id: 1, name: 'Roll Salmon', price: 10, price_at_time: 10, quantity: 2, menu_item_id: 1 },
-                    { id: 2, name: 'Gastos de Envío', price: 2.5, price_at_time: 2.5, quantity: 1, menu_item_id: -1 },
+                    {
+                        id: 1,
+                        name: 'Roll Salmon',
+                        price: 10,
+                        price_at_time: 10,
+                        quantity: 2,
+                        menu_item_id: 1,
+                    },
+                    {
+                        id: 2,
+                        name: 'Gastos de Envío',
+                        price: 2.5,
+                        price_at_time: 2.5,
+                        quantity: 1,
+                        menu_item_id: -1,
+                    },
                 ],
             };
 
@@ -150,4 +164,3 @@ describe('Secret Promo Codes (secretPromos.ts)', () => {
         expect(inactive).toBeNull();
     });
 });
-
