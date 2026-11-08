@@ -354,7 +354,7 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
         return Array.from({ length: 30 }, (_, i) => ({
             id: i,
             x: Math.round(((i * 97) % 100) + Math.random() * 3),
-            size: Math.round(10 + (i % 5) * 3),
+            size: Math.round(7 + (i % 5) * 1.5),
             duration: Math.round(10 + (i % 7) * 1.8),
             // Negative delay so snow is already falling across the entire screen on first render
             delay: -Math.round(((i * 1.7) % 14) * 10) / 10,
@@ -1098,7 +1098,7 @@ export const SeasonalAtmosphere = memo(function SeasonalAtmosphere() {
                                             lineHeight: 1,
                                             color: '#ffffff',
                                             textShadow:
-                                                '0 1px 4px rgba(15, 23, 42, 0.45), 0 0 8px rgba(186, 230, 253, 0.9)',
+                                                '0 1px 2px rgba(15, 23, 42, 0.35), 0 0 5px rgba(186, 230, 253, 0.75)',
                                             opacity: flake.opacity,
                                         }}
                                     >

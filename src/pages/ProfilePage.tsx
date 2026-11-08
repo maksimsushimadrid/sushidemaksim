@@ -683,7 +683,7 @@ export default function ProfilePage() {
                                     />
                                     <div>
                                         <div className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">
-                                            Roll dulce de regalo 🍣
+                                            Roll dulce de regalo
                                         </div>
                                         <div className="text-[10px] text-gray-400">
                                             Cada 10 pedidos • Recibes un cupón al completar 9
