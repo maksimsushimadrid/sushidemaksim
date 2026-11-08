@@ -245,13 +245,13 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
             {/* Stats Summary */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm group hover:shadow-md transition-all">
+                <div className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm group hover:shadow-md transition-all">
                     <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mb-1 group-hover:text-orange-600 transition-colors">
                         {t.totalReservas}
                     </p>
                     <p className="text-4xl font-black text-gray-900 tabular-nums">{stats.total}</p>
                 </div>
-                <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm group hover:shadow-md transition-all">
+                <div className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm group hover:shadow-md transition-all">
                     <p className="text-amber-600 text-[10px] font-black uppercase tracking-widest mb-1 group-hover:text-amber-700 transition-colors">
                         {t.pendientes}
                     </p>
@@ -259,7 +259,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                         {stats.pending}
                     </p>
                 </div>
-                <div className="bg-white p-8 rounded-[32px] border border-gray-100 shadow-sm group hover:shadow-md transition-all">
+                <div className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm group hover:shadow-md transition-all">
                     <p className="text-green-600 text-[10px] font-black uppercase tracking-widest mb-1 group-hover:text-green-700 transition-colors">
                         {t.confirmedToday}
                     </p>
@@ -270,7 +270,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
             </div>
 
             {/* Filters Bar */}
-            <div className="bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm flex flex-col md:flex-row gap-6 items-center">
+            <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-6 items-center">
                 <div className="flex-1 w-full relative">
                     <Search
                         className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-orange-600 transition-colors"
@@ -319,7 +319,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
 
             {/* List */}
             {filteredReservations.length === 0 ? (
-                <div className="bg-white p-20 rounded-[40px] border-2 border-dashed border-gray-100 text-center animate-in zoom-in-95">
+                <div className="bg-white p-20 rounded-2xl border-2 border-dashed border-gray-100 text-center animate-in zoom-in-95">
                     <div className="w-20 h-20 bg-gray-50 text-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-inner">
                         <Users size={40} strokeWidth={1.5} />
                     </div>
@@ -337,7 +337,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
                                 key={res.id}
-                                className="bg-white p-8 rounded-[36px] border border-gray-100 shadow-sm flex flex-col lg:flex-row gap-8 items-start lg:items-center hover:shadow-md hover:border-orange-100 transition-all group"
+                                className="bg-white p-4 sm:p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col lg:flex-row gap-8 items-start lg:items-center hover:shadow-md hover:border-orange-100 transition-all group"
                             >
                                 <div className="flex-1 space-y-6">
                                     <div className="flex flex-wrap items-center gap-4">
@@ -397,7 +397,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                                     </div>
 
                                     {res.notes && (
-                                        <div className="p-5 bg-gray-50/50 rounded-[28px] flex gap-4 items-start border border-gray-100 shadow-inner group-hover:bg-orange-50/30 transition-colors">
+                                        <div className="p-5 bg-gray-50/50 rounded-2xl flex gap-4 items-start border border-gray-100 shadow-inner group-hover:bg-orange-50/30 transition-colors">
                                             <MessageSquare
                                                 size={18}
                                                 className="text-orange-300 mt-0.5"
@@ -499,7 +499,7 @@ export default function AdminReservations({ language = 'es' }: AdminReservations
                             if (e.target === e.currentTarget) setReservationToDelete(null);
                         }}
                     >
-                        <div className="relative bg-white rounded-[32px] p-10 max-sm:p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
+                        <div className="relative bg-white rounded-2xl p-10 max-sm:p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                             <div className="text-center">
                                 <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-orange-50">
                                     <Trash2 size={36} strokeWidth={2.5} />

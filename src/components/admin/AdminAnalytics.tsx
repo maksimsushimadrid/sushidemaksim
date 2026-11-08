@@ -40,7 +40,7 @@ interface AdminAnalyticsProps {
 
 const ANALYTICS_TRANSLATIONS = {
     ru: {
-        title: 'Продвинутая аналитика',
+        title: 'Аналитика',
         period: 'Последние 30 дней',
         loading: 'Загрузка аналитики...',
         ltv: {
@@ -214,7 +214,7 @@ const ANALYTICS_TRANSLATIONS = {
     },
 
     es: {
-        title: 'Analítica Avanzada',
+        title: 'Analítica',
         period: 'Últimos 30 días',
         loading: 'Cargando analítica...',
         ltv: {
@@ -552,7 +552,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {/* Device Distribution */}
-                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8 flex flex-col">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 flex flex-col">
                     <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest text-pretty">
                         <div className="p-2 bg-blue-50 text-blue-500 rounded-xl">
                             <Monitor size={18} strokeWidth={2.5} />
@@ -633,7 +633,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                 </div>
 
                 {/* Customer Retention */}
-                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8 flex flex-col">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 flex flex-col">
                     <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest">
                         <div className="p-2 bg-purple-50 text-purple-600 rounded-xl">
                             <Users size={18} strokeWidth={2.5} />
@@ -699,7 +699,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                 </div>
 
                 {/* Category Performance */}
-                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8 flex flex-col">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 flex flex-col">
                     <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest">
                         <div className="p-2 bg-orange-50 text-orange-600 rounded-xl">
                             <Activity size={18} strokeWidth={2.5} />
@@ -777,7 +777,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Sales Growth Area Chart */}
-                <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-10 flex flex-col">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 flex flex-col">
                     <h3 className="font-black text-gray-900 mb-10 flex items-center gap-4 text-sm uppercase tracking-widest">
                         <div className="w-10 h-10 flex items-center justify-center bg-emerald-50 text-emerald-600 rounded-2xl shadow-inner">
                             <TrendingUp size={24} strokeWidth={2.5} />
@@ -865,7 +865,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                 </div>
 
                 {/* Activity Heatmap (Hourly) */}
-                <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-10 flex flex-col">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 flex flex-col">
                     <h3 className="font-black text-gray-900 mb-10 flex items-center gap-4 text-sm uppercase tracking-widest">
                         <div className="w-10 h-10 flex items-center justify-center bg-blue-50 text-blue-600 rounded-2xl shadow-inner">
                             <Clock size={24} strokeWidth={2.5} />
@@ -935,7 +935,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Promo Performance */}
-                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-10">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
                     <h3 className="font-black text-gray-900 mb-10 flex items-center gap-3 text-xs uppercase tracking-widest">
                         <div className="p-2 bg-purple-50 text-purple-600 rounded-xl">
                             <TrendingUp size={18} strokeWidth={2.5} />
@@ -943,7 +943,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                         {t.promoEffectiveness.title}
                     </h3>
                     <div className="space-y-6">
-                        <div className="flex justify-between items-center p-6 bg-purple-50 rounded-[28px] border border-purple-100 shadow-inner">
+                        <div className="flex justify-between items-center p-6 bg-purple-50 rounded-2xl border border-purple-100 shadow-inner">
                             <span className="text-[11px] font-black text-purple-900 uppercase tracking-widest flex flex-col">
                                 <span>{t.promoEffectiveness.discountOrders}</span>
                                 <span className="text-[9px] text-purple-600 font-bold normal-case mt-0.5">
@@ -960,7 +960,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                             </span>
                         </div>
                         <div className="grid grid-cols-2 gap-6">
-                            <div className="p-5 bg-gray-50 rounded-[24px] border border-gray-100 group">
+                            <div className="p-5 bg-gray-50 rounded-xl border border-gray-100 group">
                                 <p className="text-[9px] uppercase font-black text-gray-400 mb-2 group-hover:text-orange-500 transition-colors tracking-widest">
                                     {t.promoEffectiveness.totalSavings}
                                 </p>
@@ -968,7 +968,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                                     {stats?.promoStats?.totalDiscount || 0}€
                                 </p>
                             </div>
-                            <div className="p-5 bg-gray-50 rounded-[24px] border border-gray-100 group">
+                            <div className="p-5 bg-gray-50 rounded-xl border border-gray-100 group">
                                 <p className="text-[9px] uppercase font-black text-gray-400 mb-2 group-hover:text-orange-500 transition-colors tracking-widest">
                                     {t.promoEffectiveness.avgDiscount}
                                 </p>
@@ -976,7 +976,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                                     {stats?.promoStats?.avgDiscount || 0}€
                                 </p>
                             </div>
-                            <div className="p-5 bg-gray-50 rounded-[24px] border border-gray-100 group">
+                            <div className="p-5 bg-gray-50 rounded-xl border border-gray-100 group">
                                 <p className="text-[9px] uppercase font-black text-gray-400 mb-2 group-hover:text-orange-500 transition-colors tracking-widest">
                                     {t.promoEffectiveness.promoRevenue}
                                 </p>
@@ -984,7 +984,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                                     {stats?.promoStats?.promoRevenue || 0}€
                                 </p>
                             </div>
-                            <div className="p-5 bg-gray-50 rounded-[24px] border border-gray-100 group">
+                            <div className="p-5 bg-gray-50 rounded-xl border border-gray-100 group">
                                 <p className="text-[9px] uppercase font-black text-gray-400 mb-2 group-hover:text-orange-500 transition-colors tracking-widest">
                                     {t.promoEffectiveness.revenueShare}
                                 </p>
@@ -1027,7 +1027,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                     const maxDeliveryRevenue = deliveryAreas[0]?.revenue || 1;
 
                     return (
-                        <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8 sm:p-10 flex flex-col justify-between">
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 flex flex-col justify-between">
                             <div>
                                 <h3 className="font-black text-gray-900 mb-6 flex items-center gap-3 text-xs uppercase tracking-widest">
                                     <div className="p-2 bg-indigo-50 text-indigo-600 rounded-xl">
@@ -1121,7 +1121,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
             </div>
 
             {/* Promo Campaigns & Analytics Breakdown */}
-            <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-10">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
                     <h3 className="font-black text-gray-900 flex items-center gap-3 text-sm uppercase tracking-widest">
                         <div className="p-2 bg-purple-50 text-purple-600 rounded-xl">
@@ -1215,7 +1215,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
             {/* Individual promo codes & Active banners configuration */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Individual Promo Codes Usage */}
-                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
                     <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest">
                         <div className="p-2 bg-purple-50 text-purple-600 rounded-xl">
                             <TrendingUp size={18} strokeWidth={2.5} />
@@ -1264,7 +1264,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                 </div>
 
                 {/* Banner Promotions Overview */}
-                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
                     <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest">
                         <div className="p-2 bg-orange-50 text-orange-600 rounded-xl">
                             <Monitor size={18} strokeWidth={2.5} />
@@ -1319,7 +1319,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
             {/* Engagement Analytics (Favorites & Shares) */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Top Favorited */}
-                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
                     <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest">
                         <div className="p-2 bg-orange-50 text-orange-600 rounded-xl">
                             <Heart size={18} strokeWidth={2.5} className="fill-orange-600" />
@@ -1358,7 +1358,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                             </p>
                         )}
                     </div>
-                    <div className="mt-8 p-6 bg-orange-50/50 rounded-[28px] border border-orange-100/50">
+                    <div className="mt-8 p-6 bg-orange-50/50 rounded-2xl border border-orange-100/50">
                         <p className="text-[10px] font-black text-orange-800 uppercase tracking-widest mb-2">
                             {t.topFavorited.label}
                         </p>
@@ -1376,7 +1376,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                 </div>
 
                 {/* Top Shared */}
-                <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 p-8">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
                     <h3 className="font-black text-gray-900 mb-8 flex items-center gap-3 text-xs uppercase tracking-widest">
                         <div className="p-2 bg-blue-50 text-blue-600 rounded-xl">
                             <Share2 size={18} strokeWidth={2.5} />
@@ -1412,7 +1412,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                             </p>
                         )}
                     </div>
-                    <div className="mt-8 p-6 bg-blue-50/50 rounded-[28px] border border-blue-100/50">
+                    <div className="mt-8 p-6 bg-blue-50/50 rounded-2xl border border-blue-100/50">
                         <p className="text-[10px] font-black text-blue-800 uppercase tracking-widest mb-2">
                             {t.topShared.label}
                         </p>
@@ -1431,7 +1431,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
             </div>
 
             {/* ABC Analysis Section */}
-            <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-10">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
                     <h3 className="font-black text-gray-900 flex items-center gap-3 text-sm uppercase tracking-widest">
                         <div className="p-2 bg-emerald-50 text-emerald-600 rounded-xl">
@@ -1522,7 +1522,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
             </div>
 
             {/* Weekly Heatmap Matrix */}
-            <div className="bg-white rounded-[40px] shadow-sm border border-gray-100 p-10 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 overflow-hidden">
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
                     <h3 className="font-black text-gray-900 flex items-center gap-3 text-sm uppercase tracking-widest">
                         <div className="p-2 bg-orange-50 text-orange-600 rounded-xl">
@@ -1603,7 +1603,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                 </div>
             </div>
             {/* Reports Section */}
-            <div className="mt-12 bg-white rounded-[40px] shadow-sm border border-gray-100 p-10 overflow-hidden">
+            <div className="mt-12 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6 overflow-hidden">
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-10 gap-4">
                     <h3 className="font-black text-gray-900 flex items-center gap-4 text-sm uppercase tracking-widest">
                         <div className="w-10 h-10 flex items-center justify-center bg-orange-50 text-orange-600 rounded-2xl shadow-inner">
@@ -1675,7 +1675,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
             {/* Report Detail Modal */}
             {selectedReport && (
                 <div className="fixed inset-0 z-modal flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-                    <div className="bg-[#fbf7f0] w-full max-w-4xl max-h-[90vh] rounded-[40px] shadow-2xl overflow-hidden flex flex-col border border-white/50 animate-in zoom-in-95 duration-300">
+                    <div className="bg-[#fbf7f0] w-full max-w-4xl max-h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col border border-white/50 animate-in zoom-in-95 duration-300">
                         <div className="p-8 border-b border-gray-200 flex justify-between items-center bg-white">
                             <div>
                                 <h4 className="text-2xl font-black text-gray-900 uppercase tracking-tight">
@@ -1756,7 +1756,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 {/* Top Items */}
-                                <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
+                                <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                                     <h5 className="text-xs font-black uppercase tracking-widest mb-6 text-gray-900 border-b border-gray-50 pb-4">
                                         {t.reports.topItems}
                                     </h5>
@@ -1785,7 +1785,7 @@ export default function AdminAnalytics({ stats, loading, language = 'es' }: Admi
                                 </div>
 
                                 {/* Top Clients */}
-                                <div className="bg-white p-8 rounded-[32px] shadow-sm border border-gray-100">
+                                <div className="bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
                                     <h5 className="text-xs font-black uppercase tracking-widest mb-6 text-gray-900 border-b border-gray-50 pb-4">
                                         {t.reports.topClients}
                                     </h5>

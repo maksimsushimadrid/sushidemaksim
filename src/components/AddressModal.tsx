@@ -736,7 +736,7 @@ export default function AddressModal({
                         role="dialog"
                         aria-modal="true"
                         aria-label="Seleccionar dirección de entrega"
-                        className="fixed inset-0 md:inset-auto md:top-12 md:bottom-12 md:left-0 md:right-0 bg-white z-modal h-[100dvh] md:h-auto md:max-h-[90vh] overflow-hidden flex flex-col md:max-w-5xl md:mx-auto md:rounded-[32px] shadow-3xl"
+                        className="fixed inset-0 md:inset-auto md:top-12 md:bottom-12 md:left-0 md:right-0 bg-white z-modal h-[100dvh] md:h-auto md:max-h-[90vh] overflow-hidden flex flex-col md:max-w-5xl md:mx-auto md:rounded-2xl shadow-3xl"
                     >
                         {/* Header (Desktop only) */}
                         <div className="hidden md:flex px-6 py-4 justify-between items-start border-b border-gray-100 shrink-0 relative bg-white z-20">
@@ -1301,7 +1301,7 @@ export default function AddressModal({
                                             !selectedZone ||
                                             isReverseGeocoding
                                         }
-                                        className="w-full py-3.5 bg-orange-600 text-white rounded-[20px] font-black text-base flex items-center justify-center gap-3 hover:bg-orange-700 transition transform active:scale-95 disabled:grayscale disabled:opacity-30 shadow-[0_15px_30px_-10px_rgba(242,101,34,0.3)]"
+                                        className="w-full py-3.5 bg-orange-600 text-white rounded-xl font-black text-base flex items-center justify-center gap-3 hover:bg-orange-700 transition transform active:scale-95 disabled:grayscale disabled:opacity-30 shadow-[0_15px_30px_-10px_rgba(242,101,34,0.3)]"
                                     >
                                         {isReverseGeocoding ? (
                                             <span className="flex items-center gap-2">

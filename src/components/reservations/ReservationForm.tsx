@@ -204,7 +204,7 @@ export default function ReservationForm({
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center py-8"
                 >
-                    <div className="w-20 h-20 bg-orange-50 text-orange-600 rounded-[26px] flex items-center justify-center mx-auto mb-6 shadow-sm border border-orange-100">
+                    <div className="w-20 h-20 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-orange-100">
                         <AlertCircle size={40} strokeWidth={2.5} />
                     </div>
                     <h3 className="text-xl font-black text-gray-900 mb-3 uppercase tracking-tight">
@@ -237,7 +237,7 @@ export default function ReservationForm({
                     animate={{ opacity: 1, y: 0 }}
                     className="text-center py-8"
                 >
-                    <div className="w-20 h-20 bg-green-50 text-green-600 rounded-[26px] flex items-center justify-center mx-auto mb-6 shadow-sm border border-green-100">
+                    <div className="w-20 h-20 bg-green-50 text-green-600 rounded-xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-green-100">
                         <CheckCircle2 size={40} strokeWidth={2.5} />
                     </div>
                     <h3 className="text-2xl font-black text-gray-900 mb-3 uppercase tracking-tight">

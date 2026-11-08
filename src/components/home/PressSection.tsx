@@ -33,8 +33,8 @@ export function PressSection() {
                             rel="noopener noreferrer"
                             className="group relative block min-w-0"
                         >
-                            <div className="absolute -inset-2 md:-inset-4 bg-orange-600/5 rounded-[2rem] md:rounded-[2.5rem] blur-2xl group-hover:bg-orange-600/10 transition-all duration-500"></div>
-                            <div className="relative bg-white px-3 py-4 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-lg md:shadow-xl shadow-orange-600/5 border border-gray-50 flex flex-col items-center gap-2 md:gap-4 group-hover:scale-[1.02] transition-transform duration-500">
+                            <div className="absolute -inset-2 md:-inset-4 bg-orange-600/5 rounded-2xl blur-2xl group-hover:bg-orange-600/10 transition-all duration-500"></div>
+                            <div className="relative bg-white px-3 py-4 md:p-8 rounded-2xl shadow-lg md:shadow-xl shadow-orange-600/5 border border-gray-50 flex flex-col items-center gap-2 md:gap-4 group-hover:scale-[1.02] transition-transform duration-500">
                                 <div className="flex items-center gap-1.5 md:gap-2">
                                     <div className="w-6 h-6 md:w-8 md:h-8 bg-black rounded-md md:rounded-lg flex items-center justify-center shrink-0">
                                         <span className="text-white font-black text-sm md:text-lg italic">
@@ -58,8 +58,8 @@ export function PressSection() {
                             rel="noopener noreferrer"
                             className="group relative block min-w-0"
                         >
-                            <div className="absolute -inset-2 md:-inset-4 bg-[#53a318]/5 rounded-[2rem] md:rounded-[2.5rem] blur-2xl group-hover:bg-[#53a318]/10 transition-all duration-500"></div>
-                            <div className="relative bg-white px-3 py-4 md:p-8 rounded-2xl md:rounded-[2.5rem] shadow-lg md:shadow-xl shadow-[#53a318]/5 border border-gray-50 flex flex-col items-center gap-2 md:gap-4 group-hover:scale-[1.02] transition-transform duration-500">
+                            <div className="absolute -inset-2 md:-inset-4 bg-[#53a318]/5 rounded-2xl blur-2xl group-hover:bg-[#53a318]/10 transition-all duration-500"></div>
+                            <div className="relative bg-white px-3 py-4 md:p-8 rounded-2xl shadow-lg md:shadow-xl shadow-[#53a318]/5 border border-gray-50 flex flex-col items-center gap-2 md:gap-4 group-hover:scale-[1.02] transition-transform duration-500">
                                 <div className="flex items-center gap-1.5 md:gap-2">
                                     <div className="w-6 h-6 md:w-8 md:h-8 bg-[#53a318] rounded-md md:rounded-lg flex items-center justify-center shrink-0">
                                         <svg

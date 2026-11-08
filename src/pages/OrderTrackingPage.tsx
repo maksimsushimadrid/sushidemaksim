@@ -51,7 +51,7 @@ export default function OrderTrackingPage() {
                     description="La página que buscas no existe. Vuelve a la carta de Sushi de Maksim para disfrutar de la mejor gastronomía japonesa."
                     robots="noindex, nofollow"
                 />
-                <div className="max-w-md w-full bg-white rounded-[40px] p-12 shadow-2xl text-center border border-gray-100">
+                <div className="max-w-md w-full bg-white rounded-2xl p-12 shadow-2xl text-center border border-gray-100">
                     <div className="w-24 h-24 bg-orange-50 rounded-3xl flex items-center justify-center mx-auto mb-8 text-4xl shadow-inner border-2 border-white">
                         🔍
                     </div>
@@ -94,9 +94,9 @@ export default function OrderTrackingPage() {
                     Volver
                 </button>
 
-                <div className="bg-white rounded-[40px] overflow-hidden shadow-2xl shadow-orange-100/30 border border-gray-100">
+                <div className="bg-white rounded-2xl overflow-hidden shadow-2xl shadow-orange-100/30 border border-gray-100">
                     {/* Header with gradient */}
-                    <div className="relative overflow-hidden bg-gradient-to-br from-orange-600 to-orange-800 p-8 md:p-12 text-white">
+                    <div className="relative overflow-hidden bg-gradient-to-br from-orange-600 to-orange-800 p-5 sm:p-6 md:p-8 text-white">
                         {/* Abstract Background pattern */}
                         <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
                             <svg className="w-full h-full" viewBox="0 0 100 100">
@@ -274,7 +274,7 @@ export default function OrderTrackingPage() {
                             </div>
 
                             {/* Order Summary */}
-                            <div className="bg-gray-50 rounded-[32px] px-2.5 py-6 md:p-8 border border-white shadow-inner self-start">
+                            <div className="bg-gray-50 rounded-2xl px-2.5 py-6 md:p-8 border border-white shadow-inner self-start">
                                 <h3 className="flex items-center gap-2 text-sm font-black text-gray-900 uppercase tracking-widest mb-6">
                                     <Package
                                         size={18}

@@ -43,7 +43,7 @@ export const TableDesktopRestriction: React.FC = () => {
                 {/* QR Code with Glow */}
                 <div className="relative group">
                     <div className="absolute inset-0 bg-orange-600/20 blur-[40px] rounded-full scale-150 opacity-50 group-hover:opacity-100 transition-opacity" />
-                    <div className="relative bg-white p-5 rounded-[2.5rem] shadow-2xl">
+                    <div className="relative bg-white p-5 rounded-2xl shadow-2xl">
                         <svg
                             width="160"
                             height="160"

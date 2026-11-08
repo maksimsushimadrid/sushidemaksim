@@ -51,7 +51,7 @@ export default function ShareModal({ item, onClose, onCopy, copying }: ShareModa
                     role="dialog"
                     aria-modal="true"
                     aria-labelledby="share-modal-title"
-                    className="relative bg-white w-full max-w-sm rounded-[32px] overflow-hidden shadow-2xl"
+                    className="relative bg-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl"
                 >
                     <div className="p-6">
                         <div className="flex justify-between items-start mb-6">

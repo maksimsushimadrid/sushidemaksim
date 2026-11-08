@@ -91,7 +91,7 @@ export default function CartSummary({
     return (
         <div
             data-testid="cart-summary"
-            className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 sticky top-24 rounded-t-[32px] border-b md:border-none border-gray-50 h-fit"
+            className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 sticky top-24 rounded-t-2xl border-b md:border-none border-gray-50 h-fit"
         >
             <h2 className="text-lg font-black mb-4 uppercase tracking-tight">Resumen</h2>
 

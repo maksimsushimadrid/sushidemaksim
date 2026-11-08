@@ -104,6 +104,9 @@ export interface Order {
     updatedAt?: string;
     estimatedDeliveryTime?: string;
     promoCode?: string;
+    deviceType?: string;
+    osName?: string;
+    browserName?: string;
     users?: {
         name: string;
         email: string;

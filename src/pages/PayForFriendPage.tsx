@@ -82,7 +82,7 @@ export default function PayForFriendPage() {
     if (error || !order) {
         return (
             <div className="min-h-screen flex items-center justify-center p-6 bg-[#FBF7F0]">
-                <div className="max-w-md w-full bg-white rounded-[32px] p-8 shadow-xl text-center border border-gray-100">
+                <div className="max-w-md w-full bg-white rounded-2xl p-8 shadow-xl text-center border border-gray-100">
                     <XCircle size={64} strokeWidth={1.5} className="text-orange-500 mx-auto mb-6" />
                     <h2 className="text-2xl font-black mb-4 text-gray-900">
                         ¡Vaya! Algo salió mal
@@ -118,7 +118,7 @@ export default function PayForFriendPage() {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-[40px] shadow-2xl overflow-hidden border border-gray-100"
+                    className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100"
                 >
                     {/* Hero Section */}
                     <div className="bg-gradient-to-br from-amber-400 to-orange-500 p-6 md:p-12 text-center text-white relative">
@@ -139,7 +139,7 @@ export default function PayForFriendPage() {
                                 className="relative mb-6"
                             >
                                 <div
-                                    className={`w-32 h-32 mx-auto rounded-[32px] flex items-center justify-center text-white font-black text-3xl overflow-hidden shadow-2xl border-4 border-white
+                                    className={`w-32 h-32 mx-auto rounded-2xl flex items-center justify-center text-white font-black text-3xl overflow-hidden shadow-2xl border-4 border-white
                                         ${order.users?.avatar?.startsWith('http') ? 'bg-gray-100' : order.users?.avatar ? 'bg-gray-100 dark:text-gray-900' : 'bg-orange-600'}`}
                                 >
                                     {order.users?.avatar ? (
@@ -286,7 +286,7 @@ export default function PayForFriendPage() {
                             <button
                                 onClick={handleConfirmPayment}
                                 disabled={isProcessing}
-                                className="w-full bg-gray-900 text-white py-5 rounded-[24px] font-black text-lg shadow-2xl shadow-gray-200 hover:bg-black transition-all transform active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50"
+                                className="w-full bg-gray-900 text-white py-5 rounded-xl font-black text-lg shadow-2xl shadow-gray-200 hover:bg-black transition-all transform active:scale-[0.98] flex items-center justify-center gap-3 disabled:opacity-50"
                             >
                                 {isProcessing ? (
                                     'Procesando...'
@@ -331,7 +331,7 @@ export default function PayForFriendPage() {
                             initial={{ scale: 0.5, rotate: -20, opacity: 0 }}
                             animate={{ scale: 1, rotate: 0, opacity: 1 }}
                             transition={{ type: 'spring', damping: 15 }}
-                            className="w-32 h-32 bg-green-500 rounded-[40px] flex items-center justify-center text-white mb-8 shadow-2xl shadow-green-200"
+                            className="w-32 h-32 bg-green-500 rounded-2xl flex items-center justify-center text-white mb-8 shadow-2xl shadow-green-200"
                         >
                             <Heart size={64} strokeWidth={1.5} />
                         </motion.div>

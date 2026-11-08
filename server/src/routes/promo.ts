@@ -1,10 +1,12 @@
 import { Router, Response } from 'express';
+import { config } from '../config.js';
 import { supabase } from '../db/supabase.js';
 import { optionalAuthMiddleware, AuthRequest } from '../middleware/auth.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { validateResource } from '../middleware/validateResource.js';
 import { validatePromoSchema } from '../schemas/promo.schema.js';
 import { promoLimiter } from '../middleware/rateLimiters.js';
+import { findActiveSecretPromo } from '../utils/secretPromos.js';
 
 const router = Router();
 router.use(optionalAuthMiddleware);
@@ -19,9 +21,15 @@ router.post(
             .trim()
             .toUpperCase();
 
-        // ─── Hardcoded Test Promos ───
-        if (normalizedCode === 'TEST10') {
+        // ─── Hardcoded Test Promos (Dev/Test only) ───
+        if (!config.isProd && normalizedCode === 'TEST10') {
             return res.json({ percentage: 10 });
+        }
+
+        // ─── Permanent Secret Promo Codes ───
+        const secretPromo = await findActiveSecretPromo(normalizedCode);
+        if (secretPromo) {
+            return res.json({ percentage: secretPromo.discountPercentage });
         }
 
         if (!req.userId) {

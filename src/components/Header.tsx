@@ -592,9 +592,8 @@ export default function Header() {
                                     </motion.div>
 
                                     {/* Subtitle luxury badge under gift box */}
-                                    <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 text-amber-300 text-[8.5px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full whitespace-nowrap shadow-[0_4px_12px_rgba(0,0,0,0.6)] border border-amber-400/40 leading-none flex items-center gap-1 group-hover:border-amber-300 group-hover:text-amber-200 transition-colors">
-                                        <span className="inline-block w-1 h-1 rounded-full bg-amber-400 animate-pulse" />
-                                        -10% DTO
+                                    <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 text-amber-300 text-[8.5px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full whitespace-nowrap shadow-[0_4px_12px_rgba(0,0,0,0.6)] border border-amber-400/40 leading-none flex items-center justify-center group-hover:border-amber-300 group-hover:text-amber-200 transition-colors">
+                                        DESCUENTO 10%
                                     </span>
                                 </button>
                             )}

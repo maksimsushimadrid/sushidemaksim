@@ -20,8 +20,8 @@ export const ProfileSkeleton = () => (
 
                     {/* Stats Skeleton - Matching actual grid/flex */}
                     <div className="grid grid-cols-2 md:flex gap-3 md:gap-4 w-full md:w-auto mt-4 md:mt-0">
-                        <div className="h-14 w-full md:w-32 bg-white/20 skeleton rounded-[24px] border border-white/10" />
-                        <div className="h-14 w-full md:w-14 bg-white/20 skeleton rounded-[24px] border border-white/10" />
+                        <div className="h-14 w-full md:w-32 bg-white/20 skeleton rounded-xl border border-white/10" />
+                        <div className="h-14 w-full md:w-14 bg-white/20 skeleton rounded-xl border border-white/10" />
                     </div>
                 </div>
             </div>
@@ -34,7 +34,7 @@ export const ProfileSkeleton = () => (
                 {[1, 2].map(i => (
                     <div
                         key={i}
-                        className="bg-white rounded-[32px] p-5 shadow-xl border border-white space-y-5"
+                        className="bg-white rounded-2xl p-5 shadow-xl border border-white space-y-5"
                     >
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 bg-gray-50 skeleton rounded-2xl" />
@@ -57,9 +57,9 @@ export const ProfileSkeleton = () => (
             </div>
 
             <div className="flex flex-col lg:flex-row gap-6">
-                {/* Navigation Sidebar Skeleton - Matching actual p-1.5 and md:rounded-[32px] */}
+                {/* Navigation Sidebar Skeleton - Matching actual p-1.5 and md:rounded-2xl */}
                 <aside className="lg:w-80 shrink-0">
-                    <div className="bg-white/95 md:bg-white backdrop-blur-xl border-y md:border border-gray-100 md:border-white shadow-sm md:shadow-2xl rounded-none md:rounded-[32px] p-1.5 flex md:block overflow-x-auto no-scrollbar gap-2 px-4 md:px-2">
+                    <div className="bg-white/95 md:bg-white backdrop-blur-xl border-y md:border border-gray-100 md:border-white shadow-sm md:shadow-2xl rounded-none md:rounded-2xl p-1.5 flex md:block overflow-x-auto no-scrollbar gap-2 px-4 md:px-2">
                         {[1, 2, 3, 4].map(i => (
                             <div
                                 key={i}
@@ -72,7 +72,7 @@ export const ProfileSkeleton = () => (
 
                 {/* Content Section Skeleton */}
                 <div className="flex-1 min-w-0">
-                    <div className="bg-transparent md:bg-white/90 md:backdrop-blur-xl md:border md:border-white md:shadow-2xl rounded-[32px] overflow-hidden">
+                    <div className="bg-transparent md:bg-white/90 md:backdrop-blur-xl md:border md:border-white md:shadow-2xl rounded-2xl overflow-hidden">
                         <div className="p-0 md:p-8 space-y-8">
                             <div className="h-8 w-1/3 bg-gray-100 skeleton rounded-xl mb-8" />
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

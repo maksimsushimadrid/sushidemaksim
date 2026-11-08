@@ -58,7 +58,7 @@ export const GoogleAuthButton = ({
             onClick={handleLoginClick}
             disabled={isLoading}
             data-testid="google-login-button"
-            className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-2xl border-2 border-gray-100 bg-white text-gray-700 font-bold text-xs hover:border-gray-200 hover:shadow-md transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full h-12 flex items-center justify-center gap-3 py-3.5 px-4 rounded-2xl border-2 border-gray-100 bg-white text-gray-700 font-bold text-xs hover:border-gray-200 hover:shadow-md transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
         >
             {isLoading ? (
                 <div className="w-5 h-5 border-2 border-gray-300 border-t-orange-600 rounded-full animate-spin"></div>
@@ -156,9 +156,9 @@ const LoginForm = memo(
         };
 
         return (
-            <form onSubmit={handleSubmit} className="space-y-3">
-                <div className="space-y-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block">
                         Email
                     </label>
                     <div className="relative group">
@@ -171,13 +171,13 @@ const LoginForm = memo(
                             name="email"
                             required
                             autoComplete="email"
-                            className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 shadow-inner rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
+                            className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 shadow-inner rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
                         />
                     </div>
                 </div>
 
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                     <div className="flex justify-between items-center ml-1">
                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                             Contraseña
@@ -201,7 +201,7 @@ const LoginForm = memo(
                             name="password"
                             required
                             autoComplete="current-password"
-                            className="w-full pl-11 pr-12 py-3 bg-gray-50 border border-gray-200 shadow-inner rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
+                            className="w-full pl-11 pr-12 py-3.5 bg-gray-50 border border-gray-200 shadow-inner rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Tu contraseña"
                         />
                         <button
@@ -219,20 +219,22 @@ const LoginForm = memo(
                     </div>
                 </div>
 
-                <button
-                    type="submit"
-                    disabled={isLoading}
-                    data-testid="login-submit-button"
-                    className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs uppercase tracking-wide hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-6 h-12"
-                >
-                    {isLoading ? 'INICIANDO...' : 'INICIAR SESIÓN'}
-                </button>
+                <div className="flex flex-col gap-3.5 pt-2">
+                    <button
+                        type="submit"
+                        disabled={isLoading}
+                        data-testid="login-submit-button"
+                        className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs uppercase tracking-wide hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 h-12"
+                    >
+                        {isLoading ? 'INICIANDO...' : 'INICIAR SESIÓN'}
+                    </button>
 
-                <div className="flex justify-center w-full">
-                    <GoogleAuthButton onSuccess={onGoogleSuccess} isLoading={isLoading} />
+                    <div className="flex justify-center w-full">
+                        <GoogleAuthButton onSuccess={onGoogleSuccess} isLoading={isLoading} />
+                    </div>
                 </div>
 
-                <div className="pt-2 text-center">
+                <div className="pt-1 text-center">
                     <p className="text-xs font-medium text-gray-500">
                         ¿No tienes cuenta?{' '}
                         <button
@@ -353,10 +355,14 @@ const RegisterForm = memo(
         };
 
         return (
-            <form onSubmit={handleSubmit} data-testid="register-form" className="space-y-3">
-                <div className="space-y-3">
-                    <div className="space-y-1">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+            <form
+                onSubmit={handleSubmit}
+                data-testid="register-form"
+                className="flex flex-col gap-4"
+            >
+                <div className="flex flex-col gap-4">
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block">
                             Nombre completo
                         </label>
                         <div className="relative group">
@@ -369,14 +375,14 @@ const RegisterForm = memo(
                                 name="name"
                                 required
                                 autoComplete="name"
-                                className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 shadow-inner rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
+                                className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 shadow-inner rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                                 placeholder="Tu nombre completo"
                             />
                         </div>
                     </div>
 
-                    <div className="space-y-1">
-                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                    <div className="space-y-1.5">
+                        <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block">
                             Teléfono
                         </label>
                         <div className="relative group flex items-center bg-gray-50 border border-gray-200 shadow-inner rounded-2xl focus-within:bg-white focus-within:border-orange-600 transition-all overflow-hidden">
@@ -393,15 +399,15 @@ const RegisterForm = memo(
                                 required
                                 autoComplete="tel"
                                 onChange={handlePhoneChange}
-                                className="w-full bg-transparent pl-1 pr-4 py-3 outline-none font-medium text-sm text-gray-900 placeholder:text-gray-400"
+                                className="w-full bg-transparent pl-1 pr-4 py-3.5 outline-none font-medium text-sm text-gray-900 placeholder:text-gray-400"
                                 placeholder="600 000 000"
                             />
                         </div>
                     </div>
                 </div>
 
-                <div className="space-y-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block">
                         Email
                     </label>
                     <div className="relative group">
@@ -414,14 +420,14 @@ const RegisterForm = memo(
                             name="email"
                             required
                             autoComplete="email"
-                            className="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 shadow-inner rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
+                            className="w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 shadow-inner rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="tu@email.com"
                         />
                     </div>
                 </div>
 
-                <div className="space-y-1">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">
+                <div className="space-y-1.5">
+                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1 block">
                         Contraseña
                     </label>
                     <div className="relative group">
@@ -435,7 +441,7 @@ const RegisterForm = memo(
                             required
                             onChange={e => setPassword(e.target.value)}
                             autoComplete="new-password"
-                            className="w-full pl-11 pr-12 py-3 bg-gray-50 border border-gray-200 shadow-inner rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
+                            className="w-full pl-11 pr-12 py-3.5 bg-gray-50 border border-gray-200 shadow-inner rounded-2xl focus:bg-white focus:border-orange-600 outline-none transition-all font-medium text-sm text-gray-900"
                             placeholder="Crea una contraseña segura"
                         />
                         <button
@@ -454,24 +460,26 @@ const RegisterForm = memo(
                     <PasswordHint password={password} />
                 </div>
 
-                <button
-                    type="submit"
-                    disabled={
-                        isLoading ||
-                        password.length < 9 ||
-                        !/\d/.test(password) ||
-                        !/[!@#$%^&*(),.?":{}|<>_+-]/.test(password)
-                    }
-                    className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs uppercase tracking-wide hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 mt-6 h-12"
-                >
-                    {isLoading ? 'CREANDO...' : 'CREAR CUENTA'}
-                </button>
+                <div className="flex flex-col gap-3.5 pt-2">
+                    <button
+                        type="submit"
+                        disabled={
+                            isLoading ||
+                            password.length < 9 ||
+                            !/\d/.test(password) ||
+                            !/[!@#$%^&*(),.?":{}|<>_+-]/.test(password)
+                        }
+                        className="w-full py-3.5 bg-orange-600 text-white rounded-2xl font-black text-xs uppercase tracking-wide hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 flex items-center justify-center gap-2 transform active:scale-[0.98] disabled:opacity-50 disabled:active:scale-100 h-12"
+                    >
+                        {isLoading ? 'CREANDO...' : 'CREAR CUENTA'}
+                    </button>
 
-                <div className="flex justify-center w-full">
-                    <GoogleAuthButton onSuccess={onGoogleSuccess} isLoading={isLoading} />
+                    <div className="flex justify-center w-full">
+                        <GoogleAuthButton onSuccess={onGoogleSuccess} isLoading={isLoading} />
+                    </div>
                 </div>
 
-                <div className="pt-2 text-center">
+                <div className="pt-1 text-center">
                     <p className="text-xs font-medium text-gray-500">
                         ¿Ya tienes cuenta?{' '}
                         <button
@@ -1092,7 +1100,7 @@ export default function LoginModal({
                             damping: 25,
                             stiffness: 300,
                         }}
-                        className="relative w-full h-full md:max-w-sm md:h-auto md:max-h-[92vh] md:rounded-[32px] md:shadow-2xl md:border md:border-white/20 overflow-hidden flex flex-col bg-[#FDFBF7]"
+                        className="relative w-full h-full md:max-w-sm md:h-auto md:max-h-[92vh] md:rounded-2xl md:shadow-2xl md:border md:border-white/20 overflow-hidden flex flex-col bg-[#FDFBF7]"
                         style={{
                             backgroundImage: `linear-gradient(rgba(251, 247, 240, 0.92), rgba(251, 247, 240, 0.92)), url('/admin-bg.webp')`,
                             backgroundSize: '400px',

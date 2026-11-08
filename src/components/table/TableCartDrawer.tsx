@@ -132,7 +132,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                     initial={{ y: 20, opacity: 0 }}
                                     animate={{ y: 0, opacity: 1 }}
                                     transition={{ delay: 0.2 }}
-                                    className="w-full bg-[#141414] border border-orange-600/30 rounded-[32px] p-6 relative overflow-hidden group"
+                                    className="w-full bg-[#141414] border border-orange-600/30 rounded-2xl p-6 relative overflow-hidden group"
                                 >
                                     <div className="absolute top-0 right-0 w-32 h-32 bg-orange-600/10 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-orange-600/20 transition-colors" />
                                     <div className="relative z-10">
@@ -389,7 +389,7 @@ export const TableCartDrawer: React.FC<TableCartDrawerProps> = ({ isOpen, onClos
                                     initial={{ scale: 0.9, opacity: 0, y: 20 }}
                                     animate={{ scale: 1, opacity: 1, y: 0 }}
                                     exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                                    className="w-full max-w-sm bg-[#141414] rounded-[32px] border border-white/10 p-8 shadow-2xl"
+                                    className="w-full max-w-sm bg-[#141414] rounded-2xl border border-white/10 p-8 shadow-2xl"
                                 >
                                     <div className="flex flex-col items-center text-center">
                                         <div className="w-16 h-16 bg-orange-600/20 text-orange-500 rounded-2xl flex items-center justify-center mb-6">

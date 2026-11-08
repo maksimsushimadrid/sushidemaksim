@@ -30,7 +30,7 @@ export default function NotFoundPage() {
                         404
                     </h1>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-[40px] shadow-2xl flex items-center justify-center rotate-12 relative overflow-hidden border border-gray-100">
+                        <div className="w-24 h-24 md:w-32 md:h-32 bg-white rounded-2xl shadow-2xl flex items-center justify-center rotate-12 relative overflow-hidden border border-gray-100">
                             <div className="absolute inset-0 bg-gradient-to-br from-orange-50 to-transparent opacity-50" />
                             <Search
                                 size={48}
@@ -71,13 +71,13 @@ export default function NotFoundPage() {
                 >
                     <button
                         onClick={() => navigate('/menu')}
-                        className="flex-1 px-8 py-4 bg-gray-900 text-white rounded-[24px] font-black flex items-center justify-center gap-3 hover:bg-gray-800 transition-all active:scale-95 shadow-xl shadow-gray-900/10"
+                        className="flex-1 px-8 py-4 bg-gray-900 text-white rounded-xl font-black flex items-center justify-center gap-3 hover:bg-gray-800 transition-all active:scale-95 shadow-xl shadow-gray-900/10"
                     >
                         <Utensils size={20} /> Ver la Carta
                     </button>
                     <button
                         onClick={() => navigate('/')}
-                        className="flex-1 px-8 py-4 bg-white text-gray-900 border border-gray-100 rounded-[24px] font-black flex items-center justify-center gap-3 hover:bg-gray-50 transition-all active:scale-95 shadow-lg shadow-gray-200/20"
+                        className="flex-1 px-8 py-4 bg-white text-gray-900 border border-gray-100 rounded-xl font-black flex items-center justify-center gap-3 hover:bg-gray-50 transition-all active:scale-95 shadow-lg shadow-gray-200/20"
                     >
                         <Home size={20} /> Ir al Inicio
                     </button>

@@ -455,51 +455,43 @@ export default function AddressesTab({
     };
 
     return (
-        <div className="space-y-6 md:space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-2 md:px-0">
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header */}
-            <div className="flex flex-col items-center justify-between gap-4 sm:flex-row pb-2">
+            <div className="flex items-center justify-between gap-4 border-b border-gray-100 pb-4">
                 <div>
-                    <h3 className="text-xl md:text-2xl font-black text-gray-900 m-0 tracking-tight">
+                    <h3 className="text-lg md:text-xl font-black text-gray-900 m-0 tracking-tight">
                         Mis Direcciones
                     </h3>
-                    <p className="text-gray-500 text-[11px] md:text-xs mt-0.5 m-0 italic">
+                    <p className="text-gray-400 text-[11px] md:text-xs mt-0.5 m-0 font-medium">
                         Gestiona tus lugares de entrega frecuentes ({addresses.length}/5)
                     </p>
                 </div>
                 {addresses.length < 5 ? (
                     <button
                         onClick={handleAddClick}
-                        className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 bg-orange-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-orange-700 transition-all shadow-lg shadow-orange-100 active:scale-95"
+                        className="flex items-center justify-center gap-1.5 px-4 py-2 bg-orange-600 text-white rounded-xl font-extrabold text-xs hover:bg-orange-700 transition-all active:scale-95 shrink-0 cursor-pointer border-none"
                     >
-                        <Plus size={16} strokeWidth={2} /> AÑADIR DIRECCIÓN
+                        <Plus size={15} strokeWidth={2.5} /> Añadir
                     </button>
                 ) : (
-                    <div className="flex items-center gap-2 px-4 py-2 bg-amber-50 text-amber-700 rounded-xl border border-amber-100/50 animate-in fade-in slide-in-from-right-4 duration-500">
-                        <MapPin size={14} className="text-amber-500" />
-                        <span className="text-[10px] font-black uppercase tracking-tight">
-                            Límite de 5 direcciones alcanzado
-                        </span>
-                    </div>
+                    <span className="text-[11px] font-bold text-amber-600 shrink-0">
+                        Límite 5/5
+                    </span>
                 )}
             </div>
 
-            {/* Add/Edit Form */}
+            {/* Add/Edit Form - Flat Section */}
             {showAddAddress && (
-                <div
-                    ref={formRef}
-                    className="bg-gray-50 border-2 border-orange-600/20 rounded-[32px] p-6 md:p-8 space-y-6 relative overflow-hidden"
-                >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-orange-600 rounded-full blur-[60px] opacity-5 -mr-16 -mt-16" />
-
-                    <div className="flex items-center justify-between relative z-10">
-                        <h3 className="text-lg font-black text-gray-900 m-0">
+                <div ref={formRef} className="pb-6 border-b border-gray-100 space-y-5 relative">
+                    <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider m-0">
                             {editId ? 'Editar dirección' : 'Nueva dirección'}
                         </h3>
                         <button
                             onClick={resetForm}
-                            className="text-gray-400 hover:text-gray-600 transition-colors"
+                            className="text-gray-400 hover:text-gray-600 transition-colors bg-transparent border-none cursor-pointer p-1"
                         >
-                            <X size={20} strokeWidth={1.5} />
+                            <X size={18} strokeWidth={2} />
                         </button>
                     </div>
 
@@ -543,7 +535,7 @@ export default function AddressesTab({
                                     ref={streetRef}
                                     value={searchQuery}
                                     onChange={e => handleStreetChange(e.target.value)}
-                                    className={`w-full bg-white border border-gray-200 rounded-[18px] pl-11 pr-12 py-4 text-sm font-black text-gray-900 shadow-sm focus:ring-4 focus:ring-orange-600/10 focus:border-orange-500 outline-none transition-all placeholder:text-gray-400 placeholder:font-bold ${newAddress.street && 'border-green-200 bg-green-50/5'}`}
+                                    className={`w-full bg-white border border-gray-200 rounded-xl pl-11 pr-12 py-4 text-sm font-black text-gray-900 shadow-sm focus:ring-4 focus:ring-orange-600/10 focus:border-orange-500 outline-none transition-all placeholder:text-gray-400 placeholder:font-bold ${newAddress.street && 'border-green-200 bg-green-50/5'}`}
                                     placeholder="Introduce tu calle y número..."
                                     autoComplete="off"
                                 />
@@ -765,133 +757,118 @@ export default function AddressesTab({
                 </div>
             )}
 
-            {/* Address List */}
-            <div className="grid grid-cols-1 gap-4">
+            {/* Address List - Flat Rows */}
+            <div className="divide-y divide-gray-100">
                 {!addresses ? (
                     <div className="space-y-4">
                         {[1, 2].map(i => (
-                            <div
-                                key={i}
-                                className="p-5 bg-white border border-gray-100 rounded-[24px] animate-pulse flex items-center gap-5"
-                            >
-                                <div className="w-12 h-12 bg-gray-100 rounded-xl shrink-0" />
-                                <div className="flex-1 space-y-3">
+                            <div key={i} className="py-4 animate-pulse flex items-center gap-4">
+                                <div className="w-10 h-10 bg-gray-100 rounded-xl shrink-0" />
+                                <div className="flex-1 space-y-2">
                                     <div className="h-4 w-1/4 bg-gray-100 rounded" />
                                     <div className="h-3 w-1/2 bg-gray-50 rounded" />
-                                    <div className="h-2 w-1/3 bg-gray-50/50 rounded" />
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : addresses.length === 0 && !showAddAddress ? (
-                    <div className="bg-gray-50 rounded-[40px] p-12 text-center border-2 border-dashed border-gray-200">
-                        <div className="w-20 h-20 bg-white rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6 text-3xl">
-                            🏠
-                        </div>
-                        <h3 className="text-xl font-black text-gray-900 mb-2">Sin direcciones</h3>
-                        <p className="text-gray-500 text-sm max-w-xs mx-auto mb-8">
+                    <div className="py-10 text-center">
+                        <div className="text-3xl mb-3">🏠</div>
+                        <h3 className="text-base font-black text-gray-900 mb-1">Sin direcciones</h3>
+                        <p className="text-gray-400 text-xs max-w-xs mx-auto mb-5">
                             Añade una dirección para que tus pedidos lleguen volando.
                         </p>
                         <button
                             onClick={handleAddClick}
-                            className="inline-flex items-center gap-2 px-8 py-3 bg-orange-600 text-white rounded-xl font-bold text-sm hover:bg-orange-700 transition-all"
+                            className="inline-flex items-center gap-2 px-5 py-2.5 bg-orange-600 text-white rounded-xl font-bold text-xs hover:bg-orange-700 transition-all cursor-pointer border-none"
                         >
-                            <Plus size={18} strokeWidth={1.5} /> Añadir ahora
+                            <Plus size={15} strokeWidth={2} /> Añadir ahora
                         </button>
                     </div>
                 ) : (
                     addresses.map(addr => (
                         <div
                             key={addr.id}
-                            className={`group p-3 md:p-4 rounded-[24px] border transition-all duration-300 flex flex-row items-center gap-3 md:gap-5
-                                ${
-                                    addr.isDefault
-                                        ? 'bg-orange-50/50 border-orange-200 shadow-lg shadow-orange-100/30'
-                                        : 'bg-white border-gray-100 hover:border-orange-100 hover:shadow-md'
-                                }`}
+                            className="group py-4 first:pt-0 last:pb-0 flex items-center justify-between gap-4"
                         >
-                            <div
-                                className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 shadow-sm
-                                ${addr.isDefault ? 'bg-orange-600 text-white shadow-orange-200' : 'bg-gray-100 text-gray-400'}`}
-                            >
-                                <MapPin size={addr.isDefault ? 18 : 20} strokeWidth={1.5} />
-                            </div>
+                            <div className="flex items-start gap-3 min-w-0 flex-1">
+                                <MapPin
+                                    size={18}
+                                    strokeWidth={2}
+                                    className={`mt-0.5 shrink-0 ${addr.isDefault ? 'text-orange-600' : 'text-gray-400'}`}
+                                />
 
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center flex-wrap gap-1.5 md:gap-2 mb-0.5 md:mb-1">
-                                    <h4 className="text-sm md:text-base font-black text-gray-900 m-0">
-                                        {addr.label}
-                                    </h4>
-                                    {addr.isDefault && (
-                                        <span className="px-2 py-0.5 bg-green-500 text-white text-[9px] md:text-[10px] uppercase font-black rounded-lg tracking-wide shadow-sm shadow-green-100 animate-in zoom-in-95 duration-300">
-                                            PRINCIPAL
-                                        </span>
-                                    )}
-                                </div>
-                                <p className="text-[11px] md:text-[13px] font-bold text-gray-800 m-0 leading-tight">
-                                    {addr.street}
-                                    {addr.house && `, ${addr.house}`}
-                                    {addr.apartment && `, ${addr.apartment}`}
-                                </p>
-                                <div className="flex items-center gap-2 mt-1">
-                                    <p className="text-[10px] md:text-xs font-medium text-gray-500 m-0">
-                                        {addr.postalCode} • {addr.city} •{' '}
-                                        <span className="opacity-70 font-bold">{addr.phone}</span>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex items-center flex-wrap gap-2 mb-0.5">
+                                        <h4 className="text-sm font-black text-gray-900 m-0">
+                                            {addr.label}
+                                        </h4>
+                                        {addr.isDefault && (
+                                            <span className="text-[10px] uppercase font-extrabold text-emerald-600 tracking-wide">
+                                                • Principal
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-xs font-bold text-gray-700 m-0 leading-snug">
+                                        {addr.street}
+                                        {addr.house && `, ${addr.house}`}
+                                        {addr.apartment && `, ${addr.apartment}`}
                                     </p>
+                                    <div className="flex items-center flex-wrap gap-2 mt-1">
+                                        <p className="text-[11px] font-medium text-gray-400 m-0">
+                                            {addr.postalCode} • {addr.city} • {addr.phone}
+                                        </p>
 
-                                    {/* Zone Info Highlights */}
-                                    {(() => {
-                                        const zone = detectZone(
-                                            (addr as any).lat,
-                                            (addr as any).lon,
-                                            deliveryZones,
-                                            addr.postalCode
-                                        );
-                                        if (!zone) return null;
-                                        return (
-                                            <div className="flex items-center gap-1 bg-gray-50/80 px-2 py-0.5 rounded-lg border border-gray-100 shadow-sm animate-in fade-in slide-in-from-left-2 duration-300">
-                                                <div
-                                                    className="w-1.5 h-1.5 rounded-full"
-                                                    style={{ backgroundColor: zone.color }}
-                                                />
-                                                <span className="text-[9px] font-black text-gray-900 uppercase tracking-tighter">
-                                                    {zone.name}
+                                        {/* Zone Info Highlights */}
+                                        {(() => {
+                                            const zone = detectZone(
+                                                (addr as any).lat,
+                                                (addr as any).lon,
+                                                deliveryZones,
+                                                addr.postalCode
+                                            );
+                                            if (!zone) return null;
+                                            return (
+                                                <span className="inline-flex items-center gap-1 text-[10px] font-extrabold text-gray-600">
+                                                    <span>•</span>
+                                                    <span
+                                                        className="w-1.5 h-1.5 rounded-full"
+                                                        style={{ backgroundColor: zone.color }}
+                                                    />
+                                                    <span>
+                                                        {zone.name} ({zone.cost.toFixed(2)}€)
+                                                    </span>
                                                 </span>
-                                                <span className="text-[8px] font-bold text-gray-400 ml-0.5">
-                                                    • {zone.cost.toFixed(2)}€
-                                                </span>
-                                            </div>
-                                        );
-                                    })()}
+                                            );
+                                        })()}
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-1 shrink-0">
+                            <div className="flex items-center gap-1.5 shrink-0">
                                 {!addr.isDefault && (
                                     <button
                                         onClick={() => setDefaultAddress(addr.id)}
-                                        className="h-9 w-9 md:h-11 md:w-auto md:px-5 bg-white border border-gray-100 text-gray-400 rounded-2xl text-[9px] md:text-[10px] font-black uppercase tracking-widest hover:bg-green-50 hover:text-green-600 hover:border-green-100 transition-all flex items-center justify-center gap-2 shadow-sm group/btn shrink-0"
+                                        className="h-8 px-2.5 bg-gray-50 hover:bg-emerald-50 text-gray-500 hover:text-emerald-600 rounded-lg text-[10px] font-extrabold uppercase tracking-wider transition-colors flex items-center justify-center gap-1 border-none cursor-pointer"
                                         title="Establecer como predeterminada"
                                     >
-                                        <Star
-                                            size={14}
-                                            strokeWidth={2}
-                                            className="transition-transform group-hover/btn:scale-110"
-                                        />
-                                        <span className="hidden md:inline">Principal</span>
+                                        <Star size={13} strokeWidth={2} />
+                                        <span className="hidden sm:inline">Principal</span>
                                     </button>
                                 )}
                                 <button
                                     onClick={() => startEditing(addr)}
-                                    className="h-9 w-9 md:h-11 md:w-11 flex items-center justify-center bg-white border border-gray-100 text-gray-400 rounded-2xl hover:text-gray-900 hover:border-gray-900 transition-all shadow-sm"
+                                    className="h-8 w-8 flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-500 hover:text-gray-900 rounded-lg transition-colors border-none cursor-pointer"
+                                    title="Editar"
                                 >
-                                    <Pencil size={16} strokeWidth={1.5} />
+                                    <Pencil size={14} strokeWidth={2} />
                                 </button>
                                 <button
                                     onClick={() => setAddressToDelete(addr.id)}
-                                    className="h-9 w-9 md:h-11 md:w-11 flex items-center justify-center bg-orange-50/50 text-orange-400 border border-orange-50 rounded-2xl hover:bg-orange-600 hover:text-white hover:border-orange-600 transition-all shadow-sm"
+                                    className="h-8 w-8 flex items-center justify-center bg-gray-50 hover:bg-red-50 text-gray-400 hover:text-red-600 rounded-lg transition-colors border-none cursor-pointer"
+                                    title="Eliminar"
                                 >
-                                    <Trash2 size={16} strokeWidth={1.5} />
+                                    <Trash2 size={14} strokeWidth={2} />
                                 </button>
                             </div>
                         </div>

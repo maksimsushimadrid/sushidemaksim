@@ -835,8 +835,8 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                             if (e.target === e.currentTarget) setIsModalOpen(false);
                         }}
                     >
-                        <div className="bg-white sm:rounded-[40px] shadow-2xl w-full max-w-2xl relative animate-in zoom-in-95 duration-500 border border-white flex flex-col min-h-screen sm:min-h-0 max-h-[90vh] overflow-hidden">
-                            <div className="flex-shrink-0 p-8 md:p-10 border-b border-gray-100 flex justify-between items-center bg-white/95 backdrop-blur-xl z-20">
+                        <div className="bg-white sm:rounded-2xl shadow-2xl w-full max-w-2xl relative animate-in zoom-in-95 duration-500 border border-white flex flex-col min-h-screen sm:min-h-0 max-h-[90vh] overflow-hidden">
+                            <div className="flex-shrink-0 p-5 sm:p-6 md:p-8 border-b border-gray-100 flex justify-between items-center bg-white/95 backdrop-blur-xl z-20">
                                 <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight uppercase">
                                     {editingItem ? t.modal.edit : t.modal.add}
                                 </h2>
@@ -848,7 +848,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                                 </button>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-8 md:p-10 custom-scrollbar">
+                            <div className="flex-1 overflow-y-auto p-5 sm:p-6 md:p-8 custom-scrollbar">
                                 <form id="menu-form" onSubmit={handleSave} className="space-y-6">
                                     {formError && (
                                         <div className="bg-orange-50 text-orange-600 p-4 rounded-2xl text-xs font-black uppercase tracking-widest border border-orange-100 flex items-center gap-3 animate-in shake">
@@ -1253,7 +1253,7 @@ export default function AdminMenu({ language = 'es' }: AdminMenuProps) {
                             if (e.target === e.currentTarget) setItemToDelete(null);
                         }}
                     >
-                        <div className="relative bg-white rounded-[32px] p-10 max-sm:p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
+                        <div className="relative bg-white rounded-2xl p-10 max-sm:p-8 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                             <div className="text-center">
                                 <div className="w-20 h-20 bg-orange-50 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-orange-100">
                                     <Trash2 size={36} strokeWidth={2.5} />

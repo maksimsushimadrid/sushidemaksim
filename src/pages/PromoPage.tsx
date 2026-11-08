@@ -226,7 +226,7 @@ export default function PromoPage() {
                 )}
 
                 {/* Referral Static Banner */}
-                <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 mb-6 md:mb-10 relative overflow-hidden shadow-xl flex flex-col lg:flex-row items-center gap-6 lg:gap-10 group isolate">
+                <div className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 mb-6 md:mb-10 relative overflow-hidden shadow-xl flex flex-col lg:flex-row items-center gap-6 lg:gap-10 group isolate">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none"></div>
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full -ml-32 -mb-32 blur-3xl pointer-events-none"></div>
 
@@ -243,24 +243,35 @@ export default function PromoPage() {
                             <strong className="text-white">5 Maksim Coins</strong> (5€)
                             automáticamente!
                         </p>
-                        <div className="bg-white/10 backdrop-blur-sm border border-white/15 rounded-2xl p-3.5 sm:p-4 mb-5 sm:mb-7 text-left max-w-xl mx-auto lg:mx-0">
-                            <div className="text-[10px] font-black uppercase tracking-widest text-white mb-1.5">
-                                Condiciones de la promoción:
+                        <div className="border-t border-white/20 pt-3.5 sm:pt-4 mb-5 sm:mb-7 text-left max-w-xl mx-auto lg:mx-0">
+                            <div className="text-[10px] font-black uppercase tracking-widest text-white/90 mb-2">
+                                ¿Cómo funciona y condiciones?
                             </div>
-                            <ul className="space-y-1 text-[11px] sm:text-xs text-white/85 font-medium m-0 p-0 list-none">
+                            <ul className="space-y-1.5 text-[11px] sm:text-xs text-white/90 font-medium m-0 p-0 list-none leading-relaxed">
                                 <li>
-                                    • Tu amigo debe iniciar sesión o registrarse y aplicar tu código{' '}
-                                    <span className="font-mono font-bold text-white">REF-...</span>{' '}
-                                    en la cesta en su <strong>primer pedido</strong>.
+                                    • <strong className="text-white">Para tu amigo:</strong> Debe
+                                    iniciar sesión o registrarse y aplicar tu código{' '}
+                                    <span className="font-mono font-bold text-white">
+                                        {user
+                                            ? `REF-${user.id.substring(0, 8).toUpperCase()}`
+                                            : 'REF-...'}
+                                    </span>{' '}
+                                    en la cesta antes de realizar su{' '}
+                                    <strong className="text-white">primer pedido</strong> (-15% de
+                                    descuento directo).
                                 </li>
                                 <li>
-                                    • Los <strong>5 Maksim Coins (5€)</strong> se abonan en tu
-                                    cuenta una vez que el pedido de tu amigo se marque como{' '}
-                                    <strong>entregado</strong>.
+                                    • <strong className="text-white">Para ti:</strong> Recibirás{' '}
+                                    <strong className="text-white">5 Maksim Coins (5€)</strong>{' '}
+                                    automáticamente en tu saldo cuando el pedido de tu amigo sea
+                                    marcado como <strong className="text-white">entregado</strong>.
                                 </li>
                                 <li>
-                                    • No acumulable con otros códigos promocionales en el mismo
-                                    pedido ni válido para auto-invitaciones.
+                                    • <strong className="text-white">Uso de Coins:</strong> Puedes
+                                    pagar hasta el{' '}
+                                    <strong className="text-white">20% del total</strong> de tus
+                                    próximos pedidos con tus Maksim Coins (1 Coin = 1€). No válido
+                                    para auto-invitaciones.
                                 </li>
                             </ul>
                         </div>
@@ -273,56 +284,71 @@ export default function PromoPage() {
                         </Link>
                     </div>
 
-                    <div className="w-full max-w-[240px] sm:max-w-[280px] shrink-0 relative z-10 mx-auto aspect-square bg-white/10 backdrop-blur-md rounded-2xl sm:rounded-3xl border-2 sm:border-4 border-white/20 flex flex-col items-center justify-center shadow-xl p-4 group-hover:scale-105 transition-transform duration-700">
-                        <div className="text-4xl sm:text-5xl mb-2 drop-shadow-xl">🤝</div>
-                        <div className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none mb-1">
-                            5 COINS
+                    <div className="w-full lg:w-auto shrink-0 relative z-10 border-t lg:border-t-0 lg:border-l border-white/20 pt-5 lg:pt-0 lg:pl-10 flex flex-row lg:flex-col items-center justify-around lg:justify-center gap-4 sm:gap-8 text-center">
+                        <div className="flex flex-col items-center">
+                            <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-[0.2em] text-purple-200 mb-1">
+                                Tú recibes
+                            </span>
+                            <div className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-none drop-shadow-md">
+                                +5€
+                            </div>
+                            <span className="mt-1.5 inline-block text-[10px] sm:text-[11px] text-white/90 uppercase font-extrabold tracking-widest">
+                                5 Maksim Coins
+                            </span>
+                            <span className="text-[10px] text-white/65 font-medium mt-0.5">
+                                Al entregarse su pedido
+                            </span>
                         </div>
-                        <div className="text-[9px] sm:text-[10px] text-white/80 uppercase font-black tracking-widest">
-                            Para ti (al entregarse)
-                        </div>
-                        <div className="w-12 h-0.5 bg-white/20 my-2.5 sm:my-3 rounded-full"></div>
-                        <div className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-none mb-1">
-                            -15%
-                        </div>
-                        <div className="text-[9px] sm:text-[10px] text-white/80 uppercase font-black tracking-widest">
-                            Para tu amigo (1er pedido)
+
+                        <div className="w-px h-16 lg:w-20 lg:h-px bg-white/20 shrink-0"></div>
+
+                        <div className="flex flex-col items-center">
+                            <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-[0.2em] text-purple-200 mb-1">
+                                Tu amigo recibe
+                            </span>
+                            <div className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-none drop-shadow-md">
+                                -15%
+                            </div>
+                            <span className="mt-1.5 inline-block text-[10px] sm:text-[11px] text-white/90 uppercase font-extrabold tracking-widest">
+                                Descuento directo
+                            </span>
+                            <span className="text-[10px] text-white/65 font-medium mt-0.5">
+                                En su primer pedido
+                            </span>
                         </div>
                     </div>
                 </div>
 
                 {/* Maksim Coins Info Banner */}
-                <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 mb-6 md:mb-10 shadow-lg border border-orange-100 flex flex-col lg:flex-row gap-5 lg:gap-8 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-96 h-96 bg-orange-500/5 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none group-hover:bg-orange-500/10 transition-colors"></div>
-
-                    <div className="lg:w-1/3 flex flex-col justify-center relative z-10 text-center lg:text-left border-b lg:border-b-0 lg:border-r border-gray-100 pb-4 lg:pb-0 lg:pr-6">
-                        <div className="inline-block bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-black mb-2.5 sm:mb-3 uppercase tracking-[0.2em] shadow-sm self-center lg:self-start">
+                <div className="bg-white rounded-2xl p-5 sm:p-6 md:p-8 mb-6 md:mb-10 shadow-sm border border-gray-100 flex flex-col lg:flex-row gap-6 lg:gap-8 relative overflow-hidden">
+                    <div className="lg:w-1/3 flex flex-col justify-center relative z-10 text-left border-b lg:border-b-0 lg:border-r border-gray-100 pb-5 lg:pb-0 lg:pr-8">
+                        <span className="text-[10px] font-black text-orange-600 mb-1.5 uppercase tracking-[0.2em]">
                             SISTEMA DE PUNTOS
-                        </div>
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 tracking-tight leading-tight mb-2 sm:mb-3">
+                        </span>
+                        <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight leading-tight mb-2">
                             Maksim Coins
                         </h2>
-                        <p className="text-gray-500 font-medium text-xs sm:text-sm leading-relaxed">
+                        <p className="text-gray-500 font-medium text-xs sm:text-sm leading-relaxed m-0">
                             Tu saldo virtual de fidelidad. Acumula monedas con tus compras e
                             invitaciones y úsalas para descontar hasta un 20% en tus próximos
                             pedidos.
                         </p>
-                        <p className="text-[10px] sm:text-xs font-bold text-gray-400 mt-2 sm:mt-3 uppercase tracking-widest">
+                        <div className="text-xs font-extrabold text-orange-600 mt-3 uppercase tracking-widest">
                             1 Coin = 1,00€
-                        </p>
+                        </div>
                     </div>
 
-                    <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 relative z-10">
-                        <div className="bg-orange-50/50 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-orange-100 flex flex-col hover:bg-orange-50 transition-colors">
-                            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-lg sm:text-xl mb-2 sm:mb-3 border border-orange-100">
-                                📥
+                    <div className="lg:w-2/3 grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-gray-100 relative z-10">
+                        <div className="pb-5 sm:pb-0 sm:pr-6 flex flex-col">
+                            <div className="flex items-center gap-2 mb-2.5">
+                                <span className="text-lg leading-none">📥</span>
+                                <h3 className="text-base sm:text-lg font-black text-gray-900 tracking-tight m-0">
+                                    Cómo ganar
+                                </h3>
                             </div>
-                            <h3 className="text-base sm:text-lg font-black text-gray-900 tracking-tight mb-1.5">
-                                Cómo ganar
-                            </h3>
-                            <ul className="space-y-2 text-gray-600 text-xs sm:text-sm font-medium mt-1">
-                                <li className="flex items-start gap-1.5">
-                                    <span className="text-orange-500 mt-0.5 text-base leading-none">
+                            <ul className="space-y-2 text-gray-600 text-xs sm:text-sm font-medium m-0 p-0 list-none">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-orange-500 font-bold leading-snug">
                                         •
                                     </span>
                                     <span>
@@ -334,29 +360,32 @@ export default function PromoPage() {
                                         con tu cuenta.
                                     </span>
                                 </li>
-                                <li className="flex items-start gap-1.5">
-                                    <span className="text-orange-500 mt-0.5 text-base leading-none">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-orange-500 font-bold leading-snug">
                                         •
                                     </span>
                                     <span>
                                         Gana <strong className="text-gray-900">5 Coins (5€)</strong>{' '}
                                         por cada amigo invitado que reciba su primer pedido usando
                                         tu código{' '}
-                                        <span className="font-mono font-bold">REF-...</span>.
+                                        <span className="font-mono font-bold text-gray-900">
+                                            REF-...
+                                        </span>
+                                        .
                                     </span>
                                 </li>
                             </ul>
                         </div>
-                        <div className="bg-emerald-50/50 p-3.5 sm:p-5 rounded-xl sm:rounded-2xl border border-emerald-100 flex flex-col hover:bg-emerald-50 transition-colors">
-                            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-lg sm:text-xl mb-2 sm:mb-3 border border-emerald-100">
-                                🛒
+                        <div className="pt-5 sm:pt-0 sm:pl-6 flex flex-col">
+                            <div className="flex items-center gap-2 mb-2.5">
+                                <span className="text-lg leading-none">🛒</span>
+                                <h3 className="text-base sm:text-lg font-black text-gray-900 tracking-tight m-0">
+                                    Cómo gastar y condiciones
+                                </h3>
                             </div>
-                            <h3 className="text-base sm:text-lg font-black text-gray-900 tracking-tight mb-1.5">
-                                Cómo gastar y condiciones
-                            </h3>
-                            <ul className="space-y-2 text-gray-600 text-xs sm:text-sm font-medium mt-1">
-                                <li className="flex items-start gap-1.5">
-                                    <span className="text-emerald-500 mt-0.5 text-base leading-none">
+                            <ul className="space-y-2 text-gray-600 text-xs sm:text-sm font-medium m-0 p-0 list-none">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-emerald-600 font-bold leading-snug">
                                         •
                                     </span>
                                     <span>
@@ -365,8 +394,8 @@ export default function PromoPage() {
                                         <strong className="text-gray-900">"Usar mis Coins"</strong>.
                                     </span>
                                 </li>
-                                <li className="flex items-start gap-1.5">
-                                    <span className="text-emerald-500 mt-0.5 text-base leading-none">
+                                <li className="flex items-start gap-2">
+                                    <span className="text-emerald-600 font-bold leading-snug">
                                         •
                                     </span>
                                     <span>
@@ -383,25 +412,27 @@ export default function PromoPage() {
                 </div>
 
                 {/* Loyalty & Automatic Rewards Overview */}
-                <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 mb-6 md:mb-10 shadow-lg border border-gray-100">
-                    <div className="text-center max-w-2xl mx-auto mb-6">
-                        <div className="inline-block bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-black mb-2.5 uppercase tracking-[0.2em]">
+                <div className="bg-white rounded-2xl p-5 sm:p-6 md:p-8 mb-6 md:mb-10 shadow-sm border border-gray-100">
+                    <div className="pb-5 mb-5 border-b border-gray-100">
+                        <span className="text-[10px] font-black text-orange-600 uppercase tracking-[0.2em] block mb-1">
                             BENEFICIOS PARA USUARIOS REGISTRADOS
-                        </div>
-                        <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight mb-2">
+                        </span>
+                        <h2 className="text-2xl sm:text-3xl font-black text-gray-900 tracking-tight mb-1.5">
                             Programa de Fidelidad y Regalos Automáticos
                         </h2>
-                        <p className="text-gray-500 text-xs sm:text-sm font-medium">
+                        <p className="text-gray-500 text-xs sm:text-sm font-medium m-0">
                             Regístrate gratis y recibe cupones automáticos en tu perfil y por correo
                             electrónico.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <div className="p-4 rounded-2xl bg-orange-50/50 border border-orange-100 flex flex-col">
-                            <div className="text-2xl mb-2">🎁</div>
-                            <div className="text-[10px] font-black uppercase tracking-wider text-orange-600 mb-1">
-                                Oferta de Bienvenida
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:gap-6">
+                        <div className="py-4 first:pt-0 last:pb-0 sm:py-0 flex flex-col">
+                            <div className="flex items-center gap-2 mb-1.5">
+                                <span className="text-xl">🎁</span>
+                                <span className="text-[10px] font-black uppercase tracking-wider text-orange-600">
+                                    Oferta de Bienvenida
+                                </span>
                             </div>
                             <h3 className="text-base font-black text-gray-900 mb-1">
                                 -10% en tu 1er Pedido
@@ -409,16 +440,17 @@ export default function PromoPage() {
                             <p className="text-xs text-gray-600 font-medium leading-relaxed flex-1 mb-2">
                                 Recibe un código de -10% al registrarte y verificar tu cuenta.
                             </p>
-                            <div className="text-[10px] text-gray-400 font-bold border-t border-orange-100 pt-2">
-                                Condiciones: Pedido mínimo 20,00€ (subtotal) • Válido por 7 días • 1
-                                uso.
+                            <div className="text-[11px] text-gray-400 font-medium">
+                                Pedido mínimo 20,00€ • Válido 7 días
                             </div>
                         </div>
 
-                        <div className="p-4 rounded-2xl bg-amber-50/50 border border-amber-100 flex flex-col">
-                            <div className="text-2xl mb-2">⭐</div>
-                            <div className="text-[10px] font-black uppercase tracking-wider text-amber-600 mb-1">
-                                Fidelidad • Cada 5 Pedidos
+                        <div className="py-4 first:pt-0 last:pb-0 sm:py-0 flex flex-col">
+                            <div className="flex items-center gap-2 mb-1.5">
+                                <span className="text-xl">⭐</span>
+                                <span className="text-[10px] font-black uppercase tracking-wider text-amber-600">
+                                    Cada 5 Pedidos
+                                </span>
                             </div>
                             <h3 className="text-base font-black text-gray-900 mb-1">
                                 -5% de Descuento
@@ -427,16 +459,17 @@ export default function PromoPage() {
                                 Al completar tu 4º, 9º, 14º... pedido entregado, recibes un cupón
                                 para tu siguiente pedido.
                             </p>
-                            <div className="text-[10px] text-gray-400 font-bold border-t border-amber-100 pt-2">
-                                Condiciones: Se cuentan pedidos entregados • Válido por 7 días • 1
-                                uso.
+                            <div className="text-[11px] text-gray-400 font-medium">
+                                Pedidos entregados • Válido 7 días
                             </div>
                         </div>
 
-                        <div className="p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 flex flex-col">
-                            <div className="text-2xl mb-2">🍣</div>
-                            <div className="text-[10px] font-black uppercase tracking-wider text-emerald-600 mb-1">
-                                Fidelidad • Cada 10 Pedidos
+                        <div className="py-4 first:pt-0 last:pb-0 sm:py-0 flex flex-col">
+                            <div className="flex items-center gap-2 mb-1.5">
+                                <span className="text-xl">🍣</span>
+                                <span className="text-[10px] font-black uppercase tracking-wider text-emerald-600">
+                                    Cada 10 Pedidos
+                                </span>
                             </div>
                             <h3 className="text-base font-black text-gray-900 mb-1">
                                 Roll Dulce de Regalo
@@ -445,16 +478,17 @@ export default function PromoPage() {
                                 Al completar tu 9º, 19º, 29º... pedido entregado, te regalamos un
                                 código para un Roll dulce gratis en tu 10º pedido.
                             </p>
-                            <div className="text-[10px] text-gray-400 font-bold border-t border-emerald-100 pt-2">
-                                Condiciones: Añade el postre gratis al aplicar el código • Válido
-                                por 30 días.
+                            <div className="text-[11px] text-gray-400 font-medium">
+                                Postre gratis en cesta • Válido 30 días
                             </div>
                         </div>
 
-                        <div className="p-4 rounded-2xl bg-pink-50/50 border border-pink-100 flex flex-col">
-                            <div className="text-2xl mb-2">🎂</div>
-                            <div className="text-[10px] font-black uppercase tracking-wider text-pink-600 mb-1">
-                                Regalo de Cumpleaños
+                        <div className="py-4 first:pt-0 last:pb-0 sm:py-0 flex flex-col">
+                            <div className="flex items-center gap-2 mb-1.5">
+                                <span className="text-xl">🎂</span>
+                                <span className="text-[10px] font-black uppercase tracking-wider text-pink-600">
+                                    Cumpleaños
+                                </span>
                             </div>
                             <h3 className="text-base font-black text-gray-900 mb-1">
                                 -10% Especial Cumpleaños
@@ -463,8 +497,8 @@ export default function PromoPage() {
                                 Añade tu fecha de nacimiento en tu perfil y recibe un cupón especial
                                 en tu semana de cumpleaños.
                             </p>
-                            <div className="text-[10px] text-gray-400 font-bold border-t border-pink-100 pt-2">
-                                Condiciones: Fecha guardada en perfil • Válido por 30 días • 1 uso.
+                            <div className="text-[11px] text-gray-400 font-medium">
+                                Fecha en perfil • Válido 30 días
                             </div>
                         </div>
                     </div>
@@ -478,7 +512,7 @@ export default function PromoPage() {
                     return (
                         <div
                             key={banner.id}
-                            className="rounded-2xl sm:rounded-3xl p-5 sm:p-8 md:p-12 mb-6 md:mb-10 relative overflow-hidden shadow-xl flex flex-col lg:flex-row items-center gap-6 lg:gap-10 group isolate bg-orange-500 shadow-orange-500/20"
+                            className="rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 mb-6 md:mb-10 relative overflow-hidden shadow-xl flex flex-col lg:flex-row items-center gap-6 lg:gap-10 group isolate bg-orange-500 shadow-orange-500/20"
                         >
                             {/* Text Content */}
                             <div className="flex-1 relative z-10 w-full text-center lg:text-left">

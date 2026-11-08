@@ -16,7 +16,7 @@ export function AboutSection() {
                     style={{ willChange: 'opacity, transform', backfaceVisibility: 'hidden' }}
                     className="relative px-4"
                 >
-                    <div className="rounded-[2rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl skew-y-1 aspect-[4/3]">
+                    <div className="rounded-2xl overflow-hidden shadow-2xl skew-y-1 aspect-[4/3]">
                         <SafeImage
                             src="/blog_post_chef_hands.webp"
                             getOptimizedUrl={(url: string) => getOptimizedImageUrl(url, 800)}

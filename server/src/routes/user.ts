@@ -16,7 +16,17 @@ import { strictLimiter } from '../middleware/rateLimiters.js';
 import { processImage } from '../utils/imageProcessor.js';
 import { formatUser } from '../utils/helpers.js';
 
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 },
+    fileFilter: (_req, file, cb) => {
+        if (/^image\/(jpeg|jpg|png|webp|gif|avif)$/i.test(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Formato de imagen no válido'));
+        }
+    },
+});
 
 const router = Router();
 router.use(authMiddleware);
@@ -535,7 +545,32 @@ router.get(
             await supabase.from('user_favorites').delete().in('id', duplicateRowIds);
         }
 
-        res.json({ favorites: items });
+        // Attach total likesCount per favorite item
+        const itemIds = items.map(i => Number(i.id)).filter(Boolean);
+        const likesMap: Record<number, number> = {};
+        if (itemIds.length > 0) {
+            const { data: allFavs } = await supabase
+                .from('user_favorites')
+                .select('menu_item_id, user_id')
+                .not('user_id', 'is', null)
+                .in('menu_item_id', itemIds);
+            const seenPairs = new Set<string>();
+            for (const row of allFavs || []) {
+                const mId = Number(row.menu_item_id);
+                if (!mId || !row.user_id) continue;
+                const key = `${mId}:${row.user_id}`;
+                if (seenPairs.has(key)) continue;
+                seenPairs.add(key);
+                likesMap[mId] = (likesMap[mId] || 0) + 1;
+            }
+        }
+
+        res.json({
+            favorites: items.map(item => ({
+                ...item,
+                likesCount: likesMap[Number(item.id)] || 1,
+            })),
+        });
     })
 );
 
@@ -552,6 +587,7 @@ router.post(
             .eq('user_id', req.userId)
             .eq('menu_item_id', menuItemId);
 
+        let isFavorite = false;
         if (existingRows && existingRows.length > 0) {
             await supabase
                 .from('user_favorites')
@@ -560,7 +596,7 @@ router.post(
                     'id',
                     existingRows.map(r => r.id)
                 );
-            res.json({ isFavorite: false });
+            isFavorite = false;
         } else {
             // Track in analytics (ignore error if table not migrated yet)
             await supabase.from('menu_item_analytics').insert({
@@ -572,8 +608,17 @@ router.post(
             await supabase
                 .from('user_favorites')
                 .insert({ user_id: req.userId, menu_item_id: menuItemId });
-            res.json({ isFavorite: true });
+            isFavorite = true;
         }
+
+        const { data: itemFavs } = await supabase
+            .from('user_favorites')
+            .select('user_id')
+            .not('user_id', 'is', null)
+            .eq('menu_item_id', menuItemId);
+        const uniqueUsers = new Set((itemFavs || []).filter(r => r.user_id).map(r => r.user_id));
+
+        res.json({ isFavorite, likesCount: uniqueUsers.size });
     })
 );
 

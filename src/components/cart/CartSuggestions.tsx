@@ -58,7 +58,7 @@ export default function CartSuggestions({
     if (suggestions.length === 0) return null;
 
     return (
-        <div className="bg-white/60 backdrop-blur-md rounded-[24px] shadow-xl shadow-gray-900/5 p-4 md:p-6 animate-in fade-in slide-in-from-bottom-4 duration-700 border border-white/50">
+        <div className="bg-white/60 backdrop-blur-md rounded-xl shadow-xl shadow-gray-900/5 p-4 md:p-6 animate-in fade-in slide-in-from-bottom-4 duration-700 border border-white/50">
             <h3 className="text-[13px] md:text-sm font-black mb-4 flex items-center gap-2 uppercase tracking-[0.15em] text-gray-800">
                 Completa tu pedido
             </h3>
@@ -66,9 +66,9 @@ export default function CartSuggestions({
                 {suggestions.map(item => (
                     <div
                         key={String(item.id)}
-                        className="group flex items-center gap-2 p-1.5 bg-white/40 hover:bg-white rounded-[18px] transition-all duration-300 border border-transparent hover:border-gray-100 hover:shadow-lg hover:shadow-gray-200/40"
+                        className="group flex items-center gap-2 p-1.5 bg-white/40 hover:bg-white rounded-xl transition-all duration-300 border border-transparent hover:border-gray-100 hover:shadow-lg hover:shadow-gray-200/40"
                     >
-                        <div className="w-12 h-12 md:w-14 md:h-14 bg-gray-50 rounded-[14px] overflow-hidden flex-shrink-0 flex items-center justify-center border border-gray-100/50">
+                        <div className="w-12 h-12 md:w-14 md:h-14 bg-gray-50 rounded-xl overflow-hidden flex-shrink-0 flex items-center justify-center border border-gray-100/50">
                             <SafeImage
                                 src={item.image}
                                 alt={item.name}
@@ -114,7 +114,7 @@ export default function CartSuggestions({
 
                         <button
                             onClick={() => handleAddToCart(item, getQuantity(item.id), true)}
-                            className="bg-gray-900 text-white rounded-[14px] w-9 h-9 md:w-10 md:h-10 hover:bg-orange-600 active:scale-90 transition-all duration-300 shadow-md flex items-center justify-center border-none cursor-pointer"
+                            className="bg-gray-900 text-white rounded-xl w-9 h-9 md:w-10 md:h-10 hover:bg-orange-600 active:scale-90 transition-all duration-300 shadow-md flex items-center justify-center border-none cursor-pointer"
                             title="Añadir al pedido"
                         >
                             <Plus size={18} strokeWidth={2.5} />

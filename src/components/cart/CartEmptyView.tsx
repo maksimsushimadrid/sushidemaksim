@@ -32,8 +32,8 @@ export default function CartEmptyView({
         <div className="min-h-[85vh] mesh-bg px-2 md:px-6 py-8 flex flex-col">
             <div className="max-w-4xl mx-auto text-center py-8 md:py-12 w-full flex-1 flex flex-col justify-center">
                 <div className="flex justify-center mb-8">
-                    <div className="w-28 h-28 bg-white rounded-[40px] flex items-center justify-center animate-float shadow-2xl shadow-orange-500/10 border border-white/50 relative">
-                        <div className="absolute inset-0 bg-orange-500/5 rounded-[40px] blur-xl"></div>
+                    <div className="w-28 h-28 bg-white rounded-2xl flex items-center justify-center animate-float shadow-2xl shadow-orange-500/10 border border-white/50 relative">
+                        <div className="absolute inset-0 bg-orange-500/5 rounded-2xl blur-xl"></div>
                         <ShoppingCart
                             size={48}
                             className="text-orange-500 relative z-10"
@@ -93,7 +93,7 @@ export default function CartEmptyView({
                                 ? [1, 2, 3, 4, 5, 6].map(i => (
                                       <div
                                           key={i}
-                                          className="bg-white rounded-[32px] p-4 space-y-4 border border-gray-100"
+                                          className="bg-white rounded-2xl p-4 space-y-4 border border-gray-100"
                                       >
                                           <div className="aspect-[4/3] bg-gray-100 animate-pulse rounded-2xl" />
                                           <div className="space-y-2">
@@ -109,7 +109,7 @@ export default function CartEmptyView({
                                 : popularItems.map(item => (
                                       <div
                                           key={item.id}
-                                          className="premium-card premium-card-hover group relative flex flex-col h-full rounded-[28px] md:rounded-[36px] overflow-hidden bg-white/60 backdrop-blur-sm shadow-xl shadow-gray-900/5"
+                                          className="premium-card premium-card-hover group relative flex flex-col h-full rounded-2xl overflow-hidden bg-white/60 backdrop-blur-sm shadow-xl shadow-gray-900/5"
                                       >
                                           <div className="aspect-[4/3] bg-gray-50 overflow-hidden relative border-b border-gray-100">
                                               <SafeImage
@@ -149,7 +149,7 @@ export default function CartEmptyView({
                                                   </span>
                                                   <button
                                                       onClick={() => handleAddToCart(item)}
-                                                      className={`h-9 w-9 md:h-12 md:w-auto md:px-6 rounded-xl md:rounded-2xl font-black text-sm transition-all duration-300 flex items-center justify-center gap-2 border-none cursor-pointer flex-shrink-0 ${
+                                                      className={`h-9 w-9 md:h-12 md:w-auto md:px-6 rounded-2xl font-black text-sm transition-all duration-300 flex items-center justify-center gap-2 border-none cursor-pointer flex-shrink-0 ${
                                                           addedItems.has(item.id)
                                                               ? 'bg-green-500 text-white scale-105'
                                                               : 'bg-gray-900 text-white hover:bg-orange-600 hover:shadow-xl hover:shadow-orange-500/20 active:scale-90 shadow-lg'

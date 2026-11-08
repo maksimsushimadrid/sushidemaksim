@@ -87,7 +87,7 @@ export default function FavoritesTab() {
                     {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
                         <div
                             key={i}
-                            className="bg-white border border-gray-100 rounded-[32px] overflow-hidden space-y-4 shadow-sm pb-6"
+                            className="bg-white border border-gray-100 rounded-2xl overflow-hidden space-y-4 shadow-sm pb-6"
                         >
                             <div className="h-[130px] md:h-[190px] skeleton rounded-none" />
                             <div className="px-6 space-y-3">
@@ -107,26 +107,24 @@ export default function FavoritesTab() {
 
     if (favorites.length === 0) {
         return (
-            <div className="space-y-8 animate-in fade-in duration-500">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-6">
-                    <h2 className="text-2xl font-black text-gray-900 tracking-tight m-0">
+            <div className="bg-white border border-gray-100 shadow-sm rounded-3xl p-5 sm:p-6 md:p-8 space-y-6 animate-in fade-in duration-500">
+                <div className="border-b border-gray-100 pb-4">
+                    <h2 className="text-lg md:text-xl font-black text-gray-900 tracking-tight m-0">
                         Mis Favoritos
                     </h2>
                 </div>
-                <div className="bg-gray-50 rounded-[40px] p-16 text-center border-2 border-dashed border-gray-200">
-                    <div className="w-20 h-20 bg-white rounded-3xl shadow-xl flex items-center justify-center mx-auto mb-6 text-3xl">
-                        ❤️
-                    </div>
-                    <h3 className="text-xl font-black text-gray-900 mb-2">
+                <div className="py-10 text-center">
+                    <div className="text-3xl mb-3">❤️</div>
+                    <h3 className="text-base font-black text-gray-900 mb-1">
                         Aún no tienes favoritos
                     </h3>
-                    <p className="text-gray-500 text-sm max-w-xs mx-auto mb-8 leading-relaxed">
+                    <p className="text-gray-400 text-xs max-w-xs mx-auto mb-5 leading-relaxed">
                         Añade tus platos favoritos desde la carta para tenerlos siempre a mano y
                         realizar pedidos más rápido.
                     </p>
                     <button
                         onClick={() => (window.location.href = '/menu')}
-                        className="inline-flex items-center gap-2 px-8 py-3 bg-orange-600 text-white rounded-xl font-bold text-sm hover:bg-orange-700 transition-all shadow-lg shadow-orange-100"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 bg-orange-600 text-white rounded-xl font-bold text-xs hover:bg-orange-700 transition-all border-none cursor-pointer"
                     >
                         Nuestra Carta
                     </button>
@@ -136,22 +134,7 @@ export default function FavoritesTab() {
     }
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-2 sm:px-3 md:px-0">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 pb-5 mb-6">
-                <div>
-                    <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight m-0 flex items-center gap-2">
-                        Mis Favoritos
-                        <span className="w-5 h-5 md:w-6 md:h-6 bg-orange-600 text-white text-[10px] md:text-xs font-black rounded-full shadow-md shadow-orange-100 flex items-center justify-center shrink-0 not-italic">
-                            {favorites.length}
-                        </span>
-                    </h2>
-                    <p className="text-gray-500 text-xs md:text-sm mt-1">
-                        Tus platos preferidos listos para pedir
-                    </p>
-                </div>
-            </div>
-
+        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4">
                 {favorites.map(item => (
                     <ProductCard

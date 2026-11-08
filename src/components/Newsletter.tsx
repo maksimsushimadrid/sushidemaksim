@@ -32,7 +32,7 @@ export default function Newsletter() {
                 viewport={{ once: true, amount: 0.2 }}
                 transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
                 style={{ willChange: 'opacity, transform', backfaceVisibility: 'hidden' }}
-                className="max-w-7xl mx-auto bg-black rounded-[2.5rem] md:rounded-[3.5rem] px-5 py-8 md:p-16 text-center relative overflow-hidden shadow-2xl"
+                className="max-w-7xl mx-auto bg-black rounded-2xl px-5 py-8 md:p-16 text-center relative overflow-hidden shadow-2xl"
             >
                 {/* Background Decorations */}
                 <div className="absolute top-0 right-0 w-80 h-80 bg-orange-600/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-[100px]" />

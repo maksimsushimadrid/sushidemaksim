@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Clock, RefreshCcw, Shield } from 'lucide-react';
+import { Clock, RefreshCcw } from 'lucide-react';
 import { useCart } from '../../hooks/useCart';
 import { useAuth } from '../../hooks/useAuth';
 import { useOrdersQuery } from '../../hooks/queries/useOrders';
@@ -127,7 +127,7 @@ export default function OrdersTab() {
                 {[1, 2, 3].map(i => (
                     <div
                         key={i}
-                        className="bg-white border border-gray-100 rounded-[30px] p-6 space-y-6"
+                        className="bg-white border border-gray-100 rounded-2xl p-6 space-y-6"
                     >
                         <div className="flex justify-between items-start">
                             <div className="space-y-2">
@@ -166,17 +166,17 @@ export default function OrdersTab() {
     }
 
     return (
-        <div className="space-y-4 md:space-y-5 animate-in fade-in duration-500 pb-10 px-2 md:px-0">
-            <div className="px-2 md:px-1 border-b border-gray-100 pb-4 mb-2">
-                <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight m-0">
+        <div className="space-y-4 animate-in fade-in duration-500">
+            <div className="border-b border-gray-100 pb-4">
+                <h2 className="text-lg md:text-xl font-black text-gray-900 tracking-tight m-0">
                     Mis Pedidos
                 </h2>
-                <p className="text-gray-400 text-[10px] md:text-xs font-medium">
+                <p className="text-gray-400 text-[11px] md:text-xs font-medium m-0 mt-0.5">
                     Historial y seguimiento en tiempo real
                 </p>
             </div>
 
-            <div className="space-y-3 md:space-y-4 px-2 md:px-0">
+            <div className="divide-y divide-gray-100">
                 {orders.map((order: Order) => (
                     <div
                         key={order.id}
@@ -185,13 +185,13 @@ export default function OrdersTab() {
                                 `/track/${order.id}?phone=${encodeURIComponent(order.phoneNumber)}`
                             )
                         }
-                        className="bg-white border border-white md:border-gray-100 rounded-[28px] md:rounded-[30px] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden cursor-pointer group/card"
+                        className="py-5 first:pt-1 last:pb-0 cursor-pointer group/card transition-colors"
                     >
-                        {/* Header: More compact, no background */}
-                        <div className="px-3 md:px-5 pt-4 md:pt-5 pb-2 md:pb-3 flex items-start justify-between">
+                        {/* Header */}
+                        <div className="flex items-start justify-between gap-3 mb-3">
                             <div className="space-y-1">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[9px] md:text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                <div className="flex items-center flex-wrap gap-2">
+                                    <span className="text-xs font-black text-gray-900 uppercase tracking-wider">
                                         #
                                         {typeof order.id === 'string' && order.id.includes('-')
                                             ? order.id.slice(0, 8).toUpperCase()
@@ -199,8 +199,8 @@ export default function OrdersTab() {
                                     </span>
                                     {getStatusBadge(order.status, order.deliveryType)}
                                 </div>
-                                <div className="flex items-center gap-2 text-[9px] md:text-[10px] font-bold text-gray-400 opacity-80">
-                                    <Clock size={10} strokeWidth={1.5} />
+                                <div className="flex items-center gap-1.5 text-[11px] font-medium text-gray-400">
+                                    <Clock size={11} strokeWidth={1.8} />
                                     {(() => {
                                         const d = new Date(order.createdAt);
                                         const validDate = isNaN(d.getTime())
@@ -221,84 +221,70 @@ export default function OrdersTab() {
                                     })()}
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <Link
-                                    to={`/track/${order.id}?phone=${encodeURIComponent(order.phoneNumber)}`}
-                                    onClick={e => e.stopPropagation()}
-                                    className="bg-gray-50 text-gray-500 px-3 py-1.5 rounded-xl border border-gray-100 flex items-center gap-1.5 shadow-sm text-[9px] md:text-[10px] font-black hover:bg-orange-50 hover:text-orange-600 hover:border-orange-100 transition-all no-underline"
-                                >
-                                    <span>👁️</span>
-                                    Detalles
-                                </Link>
-                            </div>
-                        </div>
 
-                        {/* Order Summary */}
-                        <div className="px-3 md:px-5 pb-4 flex items-end justify-between border-b border-gray-50/50">
-                            <div>
-                                <div className="text-xl md:text-2xl font-black text-gray-900 flex items-baseline gap-0.5 tracking-tighter">
+                            <div className="text-right shrink-0">
+                                <div className="text-lg md:text-xl font-black text-gray-900 flex items-baseline justify-end gap-0.5 tracking-tight leading-none">
                                     {order.total.toFixed(2).replace('.', ',')}
                                     <span className="text-xs text-orange-600 font-black">€</span>
                                 </div>
-                                <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest leading-none">
+                                <span className="text-[10px] font-bold text-gray-400">
                                     {order.items?.reduce(
                                         (s: number, i: any) => s + i.quantity,
                                         0
                                     ) ?? 0}{' '}
-                                    unidades
+                                    uds.
                                 </span>
                             </div>
                         </div>
 
-                        {/* Items List: Minimal, no extra background */}
-                        <div className="px-3 md:px-5 py-4 md:py-5 space-y-3">
-                            <div className="space-y-2">
-                                {order.items?.map((item: any, i: number) => (
-                                    <div
-                                        key={i}
-                                        className="flex items-center justify-between text-xs"
-                                    >
-                                        <div className="flex items-center gap-2 overflow-hidden">
-                                            <span className="text-[9px] md:text-[10px] font-black text-gray-400 shrink-0 w-4 text-center">
-                                                {item.quantity}
-                                            </span>
-                                            <span className="text-[11px] md:text-xs font-bold text-gray-600 truncate opacity-80 group-hover:opacity-100">
-                                                {item.name}
-                                            </span>
-                                        </div>
-                                        <span className="text-[11px] md:text-xs font-black text-gray-300 shrink-0 tabular-nums">
-                                            {(item.priceAtTime * item.quantity)
-                                                .toFixed(2)
-                                                .replace('.', ',')}{' '}
-                                            €
+                        {/* Items List */}
+                        <div className="space-y-1.5 mb-3">
+                            {order.items?.map((item: any, i: number) => (
+                                <div
+                                    key={i}
+                                    className="flex items-center justify-between text-xs gap-2"
+                                >
+                                    <div className="flex items-center gap-2 min-w-0">
+                                        <span className="text-[11px] font-black text-gray-400 shrink-0">
+                                            {item.quantity}×
+                                        </span>
+                                        <span className="text-xs font-semibold text-gray-700 truncate">
+                                            {item.name}
                                         </span>
                                     </div>
-                                ))}
-                            </div>
+                                    <span className="text-xs font-bold text-gray-400 shrink-0 tabular-nums">
+                                        {(item.priceAtTime * item.quantity)
+                                            .toFixed(2)
+                                            .replace('.', ',')}{' '}
+                                        €
+                                    </span>
+                                </div>
+                            ))}
 
                             {order.deliveryFee && order.deliveryFee > 0 ? (
-                                <div className="mt-2 pt-2 border-t border-gray-50 flex items-center justify-between text-[11px] md:text-xs">
-                                    <span className="text-gray-400 font-bold uppercase tracking-widest text-[9px]">
-                                        Gastos de Envío
-                                    </span>
-                                    <span className="font-black text-gray-500">
+                                <div className="flex items-center justify-between text-xs pt-1 text-gray-400">
+                                    <span className="text-[11px] font-medium">Gastos de envío</span>
+                                    <span className="text-xs font-bold">
                                         {order.deliveryFee.toFixed(2).replace('.', ',')} €
                                     </span>
                                 </div>
                             ) : null}
+                        </div>
 
-                            {order.notes && (
-                                <div className="mt-2 py-2 px-3 bg-amber-50/50 rounded-xl border-l-2 border-amber-300 flex items-start gap-2">
-                                    <Shield
-                                        size={10}
-                                        strokeWidth={1.5}
-                                        className="text-amber-500 shrink-0 mt-0.5"
-                                    />
-                                    <p className="text-[9px] md:text-[10px] font-bold text-amber-700 m-0 leading-relaxed italic opacity-90">
-                                        {order.notes}
-                                    </p>
-                                </div>
-                            )}
+                        {order.notes && (
+                            <p className="text-[11px] font-medium text-amber-700 m-0 mb-3 italic">
+                                Nota: {order.notes}
+                            </p>
+                        )}
+
+                        <div className="flex items-center justify-between gap-3 pt-1">
+                            <Link
+                                to={`/track/${order.id}?phone=${encodeURIComponent(order.phoneNumber)}`}
+                                onClick={e => e.stopPropagation()}
+                                className="text-xs font-extrabold text-gray-500 hover:text-orange-600 transition-colors no-underline"
+                            >
+                                Ver seguimiento →
+                            </Link>
 
                             <button
                                 onClick={e => {
@@ -306,19 +292,19 @@ export default function OrdersTab() {
                                     handleRepeatOrder(order);
                                 }}
                                 disabled={isRepeating === order.id}
-                                className={`mt-3 w-full h-10 md:h-11 rounded-xl font-black text-[10px] md:text-xs uppercase tracking-[0.1em] md:tracking-[0.15em] transition-all flex items-center justify-center gap-2
+                                className={`px-4 py-2 rounded-xl font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 border-none cursor-pointer
                                     ${
                                         isRepeating === order.id
-                                            ? 'bg-gray-50 text-gray-300 cursor-not-allowed border border-gray-100'
-                                            : 'bg-gray-900 text-white hover:bg-orange-600 shadow-xl shadow-gray-100 hover:shadow-orange-200 active:scale-[0.98]'
+                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                            : 'bg-gray-900 text-white hover:bg-orange-600 active:scale-95'
                                     }`}
                             >
                                 <RefreshCcw
-                                    size={14}
-                                    strokeWidth={1.5}
+                                    size={13}
+                                    strokeWidth={2}
                                     className={isRepeating === order.id ? 'animate-spin' : ''}
                                 />
-                                {isRepeating === order.id ? 'Añadiendo...' : 'Repetir'}
+                                {isRepeating === order.id ? 'Añadiendo...' : 'Repetir pedido'}
                             </button>
                         </div>
                     </div>

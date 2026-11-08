@@ -10,7 +10,8 @@ import { sendOrderReceiptEmail } from '../utils/email.js';
 import { orderLimiter } from '../middleware/rateLimiters.js';
 import { idempotency } from '../middleware/idempotency.js';
 import { isStoreOpen, isTimeWithinBusinessHours } from '../utils/storeStatus.js';
-import { formatOrder } from '../utils/helpers.js';
+import { formatOrder, escapeHtml } from '../utils/helpers.js';
+import { findActiveSecretPromo } from '../utils/secretPromos.js';
 
 const router = Router();
 
@@ -157,13 +158,15 @@ router.post(
                 .json({ error: 'La cesta está vacía o artículos no encontrados' });
         }
 
-        // 2. Calculate subtotal (exclude gifts)
-        const subtotal = cartItems.reduce(
+        // 2. Calculate subtotal (verify gift eligibility after promo check)
+        const paidSubtotal = cartItems.reduce(
             (sum, item: any) => sum + (item.is_gift ? 0 : item.menu_items.price * item.quantity),
             0
         );
+        let subtotal = paidSubtotal;
         let finalTotal = subtotal;
         let usedPromoId = null;
+        let hasValidDessertGiftPromo = false;
 
         // Verify Coins Balance
         if (coinsSpent > 0) {
@@ -183,9 +186,14 @@ router.post(
         }
 
         if (promoCode) {
-            if (promoCode === 'TEST10') {
+            const secretPromo = await findActiveSecretPromo(promoCode);
+            if (!config.isProd && promoCode === 'TEST10') {
                 finalTotal = finalTotal * 0.9; // 10% discount
                 notesToSave += notesToSave ? ` | [PROMO: TEST10 (-10%)]` : `[PROMO: TEST10 (-10%)]`;
+            } else if (secretPromo) {
+                finalTotal = finalTotal * (1 - secretPromo.discountPercentage / 100);
+                const promoTag = `[PROMO: ${secretPromo.code} (-${secretPromo.discountPercentage}%)]`;
+                notesToSave += notesToSave ? ` | ${promoTag}` : promoTag;
             } else if (promoCode.startsWith('REF-') && promoCode.length > 5 && req.userId) {
                 const referrerIdFragment = promoCode.split('-')[1]?.trim() || '';
                 if (/^[0-9a-f]{8}$/i.test(referrerIdFragment)) {
@@ -281,10 +289,36 @@ router.post(
 
                     finalTotal = finalTotal * (1 - promo.discount_percentage / 100);
                     usedPromoId = promo.id;
+                    if (promo.code.startsWith('DESSERT')) {
+                        hasValidDessertGiftPromo = true;
+                    }
                     const promoNoteLabel = promo.code.startsWith('DESSERT')
                         ? `[PROMO: ${promo.code} (REGALO ROLL DULCE)]`
                         : `[PROMO: ${promo.code} (-${promo.discount_percentage}%)]`;
                     notesToSave += notesToSave ? ` | ${promoNoteLabel}` : promoNoteLabel;
+                }
+            }
+        }
+
+        // Enforce server-side gift validation: only allow at most 1 gift unit when a valid DESSERT promo is applied
+        let giftClaimed = false;
+        for (const item of cartItems) {
+            if (item.is_gift) {
+                const isEligibleGift =
+                    hasValidDessertGiftPromo &&
+                    !giftClaimed &&
+                    item.quantity === 1 &&
+                    String(item.menu_items?.name || '')
+                        .toLowerCase()
+                        .includes('roll dulce');
+                if (isEligibleGift) {
+                    giftClaimed = true;
+                } else {
+                    item.is_gift = false;
+                    item.gift_label = null;
+                    const extraCost = (item.menu_items?.price || 0) * item.quantity;
+                    subtotal += extraCost;
+                    finalTotal += extraCost;
                 }
             }
         }
@@ -931,8 +965,9 @@ router.post(
             }
         }
 
-        // Simple 10% for testing if needed
-        if (promoCode === 'TEST10') finalTotal *= 0.9;
+        // Simple 10% for testing if needed (Dev/Test only) & secret 15% promo
+        if (!config.isProd && promoCode === 'TEST10') finalTotal *= 0.9;
+        if (promoCode === 'WELOVEYOU15') finalTotal *= 0.85;
 
         let serverEstimatedTime = '30-60 min';
         if (isScheduled && scheduledDate && scheduledTime) {
@@ -1064,21 +1099,25 @@ router.post(
 router.get(
     '/share/:id',
     asyncHandler(async (req: Request, res: Response) => {
-        const { id } = req.params;
+        const rawId = String(req.params.id || '').trim();
+        if (!/^[a-zA-Z0-9-]+$/.test(rawId)) {
+            return res.redirect('/');
+        }
         const { data: order } = await supabase
             .from('orders')
             .select('notes, total')
-            .eq('id', id)
+            .eq('id', rawId)
             .single();
 
         // Extract sender name from notes [De parte de: Name]
         const senderMatch = order?.notes?.match(/\[De parte de: (.*?)\]/);
-        const senderName = senderMatch ? senderMatch[1] : 'Tu amigo(a)';
+        const senderName = escapeHtml(senderMatch ? senderMatch[1] : 'Tu amigo(a)');
 
         // Ensure image URL is absolute and uses HTTPS for Telegram
         const fUrl = config.frontendUrl.replace(/\/$/, '');
         const pandaImg = `${fUrl}/hungry-panda.webp`;
-        const finalDest = `${fUrl}/pay-for-friend/${id}`;
+        const finalDest = `${fUrl}/pay-for-friend/${encodeURIComponent(rawId)}`;
+        const safeFinalDest = escapeHtml(finalDest);
 
         const html = `
 <!DOCTYPE html>
@@ -1098,7 +1137,7 @@ router.get(
     <meta property="og:image:width" content="600">
     <meta property="og:image:height" content="600">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="${finalDest}">
+    <meta property="og:url" content="${safeFinalDest}">
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
@@ -1109,8 +1148,8 @@ router.get(
     <meta property="og:site_name" content="Sushi de Maksim">
     
     <!-- Redirection -->
-    <meta http-equiv="refresh" content="0; url=${finalDest}">
-    <script>window.location.href = "${finalDest}";</script>
+    <meta http-equiv="refresh" content="0; url=${safeFinalDest}">
+    <script>window.location.href = ${JSON.stringify(finalDest)};</script>
     <style>
         body { font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #fdfbf7; color: #666; }
         .loader { text-align: center; }

@@ -19,7 +19,7 @@ export default function RefundPolicyPage() {
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="bg-white rounded-3xl p-8 md:p-12 shadow-xl shadow-orange-900/5 border border-orange-100"
+                        className="bg-white rounded-3xl p-5 sm:p-6 md:p-8 shadow-xl shadow-orange-900/5 border border-orange-100"
                     >
                         <div className="flex items-center gap-4 mb-8">
                             <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-600 shrink-0">

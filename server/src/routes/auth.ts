@@ -36,7 +36,13 @@ router.post(
     authLimiter,
     validateResource(registerSchema),
     asyncHandler(async (req, res: Response) => {
-        const { name, email, phone, password, redirectTo } = req.body;
+        const { name, email, phone, password, redirectTo: rawRedirectTo } = req.body;
+        const redirectTo =
+            typeof rawRedirectTo === 'string' &&
+            rawRedirectTo.startsWith('/') &&
+            !rawRedirectTo.startsWith('//')
+                ? rawRedirectTo
+                : undefined;
 
         const { data: existing } = await supabase
             .from('users')

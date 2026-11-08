@@ -39,7 +39,7 @@ export const CartSkeleton = () => (
                 {/* Summary Skeleton */}
                 <div className="flex flex-col gap-8">
                     {/* Suggestions placeholder */}
-                    <div className="bg-white/60 backdrop-blur-md rounded-[24px] shadow-xl shadow-gray-900/5 p-4 md:p-6 border border-white/50">
+                    <div className="bg-white/60 backdrop-blur-md rounded-xl shadow-xl shadow-gray-900/5 p-4 md:p-6 border border-white/50">
                         <div className="h-6 w-32 skeleton rounded-lg mb-4" />
                         <div className="space-y-4">
                             {[1, 2].map(i => (
@@ -56,7 +56,7 @@ export const CartSkeleton = () => (
                     </div>
 
                     {/* Totals card */}
-                    <div className="bg-white md:rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 space-y-6 rounded-t-[32px] md:border-none border-t border-gray-100">
+                    <div className="bg-white md:rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-5 md:p-6 space-y-6 rounded-t-2xl md:border-none border-t border-gray-100">
                         <div className="h-6 w-24 skeleton rounded-lg" />
                         <div className="space-y-4 pt-2">
                             <div className="flex justify-between">

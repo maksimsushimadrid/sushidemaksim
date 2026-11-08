@@ -16,6 +16,7 @@ import {
     userIdParamSchema,
 } from '../schemas/user.schema.js';
 import { toStr } from '../utils/queryHelpers.js';
+import { getSecretPromoCodes, saveSecretPromoCodes } from '../utils/secretPromos.js';
 import { getOrdersSchema, updateOrderStatusSchema } from '../schemas/order.schema.js';
 import {
     createMenuItemSchema,
@@ -60,7 +61,17 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 // Use memory storage for Multer (Vercel has read-only filesystem)
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 },
+    fileFilter: (_req, file, cb) => {
+        if (/^image\/(jpeg|jpg|png|webp|gif|avif)$/i.test(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Formato de imagen no válido'));
+        }
+    },
+});
 
 const router = Router();
 
@@ -436,7 +447,7 @@ router.get(
         }
 
         if (search) {
-            const sanitizedSearch = search.replace(/,/g, ' ').trim();
+            const sanitizedSearch = search.replace(/[,()]/g, ' ').trim();
 
             // Find matching users by email or name
             const { data: matchedUsers } = await supabase
@@ -914,12 +925,15 @@ router.get(
             let query = getBaseQuery();
 
             if (search) {
-                const isUUID = search.includes('-') && search.length > 20;
+                const sanitizedSearch = search.replace(/[,()]/g, ' ').trim();
+                const isUUID = sanitizedSearch.includes('-') && sanitizedSearch.length > 20;
 
                 if (isUUID) {
-                    query = query.eq('id', search);
+                    query = query.eq('id', sanitizedSearch);
                 } else {
-                    query = query.or(`email.ilike.%${search}%,name.ilike.%${search}%`);
+                    query = query.or(
+                        `email.ilike.%${sanitizedSearch}%,name.ilike.%${sanitizedSearch}%`
+                    );
                 }
             }
 
@@ -963,12 +977,15 @@ router.get(
             let query = getBaseQuery({ count: 'exact' });
 
             if (search) {
-                const isUUID = search.includes('-') && search.length > 20;
+                const sanitizedSearch = search.replace(/[,()]/g, ' ').trim();
+                const isUUID = sanitizedSearch.includes('-') && sanitizedSearch.length > 20;
 
                 if (isUUID) {
-                    query = query.eq('id', search);
+                    query = query.eq('id', sanitizedSearch);
                 } else {
-                    query = query.or(`email.ilike.%${search}%,name.ilike.%${search}%`);
+                    query = query.or(
+                        `email.ilike.%${sanitizedSearch}%,name.ilike.%${sanitizedSearch}%`
+                    );
                 }
             }
 
@@ -2328,17 +2345,112 @@ router.get(
 router.get(
     '/promo-codes',
     asyncHandler(async (_req: Request, res: Response) => {
-        const { data: promoCodes, error } = await supabase
-            .from('promo_codes')
-            .select('*')
-            .order('created_at', { ascending: false });
+        const [{ data: promoCodes, error }, secretCodes, { data: promoOrders }] = await Promise.all(
+            [
+                supabase.from('promo_codes').select('*').order('created_at', { ascending: false }),
+                getSecretPromoCodes(),
+                supabase
+                    .from('orders')
+                    .select('notes')
+                    .neq('status', 'cancelled')
+                    .ilike('notes', '%[PROMO:%'),
+            ]
+        );
 
         if (error) {
             console.error('❌ Error fetching promo codes:', error);
             return res.status(500).json({ error: 'Failed to fetch promo codes' });
         }
 
-        res.json({ promoCodes });
+        const orderNotes = (promoOrders || []).map((o: any) => String(o.notes || ''));
+        const secretPromoCodes = secretCodes.map(sc => {
+            const usageCount = orderNotes.filter(n => n.includes(`[PROMO: ${sc.code} (`)).length;
+            return {
+                ...sc,
+                usageCount,
+            };
+        });
+
+        res.json({ promoCodes, secretPromoCodes });
+    })
+);
+
+// POST /api/admin/promo-codes/secret
+router.post(
+    '/promo-codes/secret',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const rawCode = String(req.body?.code || '')
+            .trim()
+            .toUpperCase()
+            .replace(/[^A-Z0-9_-]/g, '');
+        const pct = Math.min(
+            90,
+            Math.max(1, Math.round(Number(req.body?.discountPercentage || 15)))
+        );
+
+        if (!rawCode || rawCode.length < 3 || rawCode.length > 32) {
+            return res.status(400).json({ error: 'El código debe tener entre 3 y 32 caracteres' });
+        }
+
+        const codes = await getSecretPromoCodes();
+        const existingIdx = codes.findIndex(c => c.code === rawCode);
+
+        if (existingIdx >= 0) {
+            codes[existingIdx] = {
+                ...codes[existingIdx],
+                discountPercentage: pct,
+                active: true,
+            };
+        } else {
+            codes.unshift({
+                code: rawCode,
+                discountPercentage: pct,
+                active: true,
+                createdAt: new Date().toISOString(),
+            });
+        }
+
+        await saveSecretPromoCodes(codes);
+        res.json({ secretPromoCodes: codes });
+    })
+);
+
+// PATCH /api/admin/promo-codes/secret/:code
+router.patch(
+    '/promo-codes/secret/:code',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const targetCode = String(req.params.code || '')
+            .trim()
+            .toUpperCase();
+        const codes = await getSecretPromoCodes();
+        const idx = codes.findIndex(c => c.code === targetCode);
+
+        if (idx === -1) {
+            return res.status(404).json({ error: 'Código no encontrado' });
+        }
+
+        codes[idx] = {
+            ...codes[idx],
+            active: typeof req.body?.active === 'boolean' ? req.body.active : !codes[idx].active,
+        };
+
+        await saveSecretPromoCodes(codes);
+        res.json({ secretPromoCodes: codes });
+    })
+);
+
+// DELETE /api/admin/promo-codes/secret/:code
+router.delete(
+    '/promo-codes/secret/:code',
+    asyncHandler(async (req: AuthRequest, res: Response) => {
+        const targetCode = String(req.params.code || '')
+            .trim()
+            .toUpperCase();
+        const codes = await getSecretPromoCodes();
+        const filtered = codes.filter(c => c.code !== targetCode);
+
+        await saveSecretPromoCodes(filtered);
+        res.json({ secretPromoCodes: filtered });
     })
 );
 

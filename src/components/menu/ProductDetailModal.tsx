@@ -13,6 +13,7 @@ import { User } from '../../types';
 import { triggerHaptic } from '../../utils/haptics';
 import { useScrollLock } from '../../hooks/useScrollLock';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../../context/ToastContext';
 
 import { PRODUCT_VIDEO_OVERRIDES } from '../../constants/tableOverrides';
 
@@ -57,6 +58,7 @@ export default function ProductDetailModal({
     onRemoveItem,
 }: ProductDetailModalProps) {
     const navigate = useNavigate();
+    const { info: showInfo } = useToast();
     const [quantity, setQuantity] = useState(cartQuantity > 0 ? cartQuantity : 1);
 
     // Lock body scroll and stop Lenis smooth scrolling while modal is mounted
@@ -180,7 +182,7 @@ export default function ProductDetailModal({
                 role="dialog"
                 aria-modal="true"
                 aria-label={item.name}
-                className="relative bg-white w-full sm:max-w-lg rounded-t-[32px] sm:rounded-[32px] max-h-[90vh] sm:max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-gray-100 z-10 pointer-events-auto transform-gpu"
+                className="relative bg-white w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl max-h-[90vh] sm:max-h-[85vh] flex flex-col overflow-hidden shadow-2xl border border-gray-100 z-10 pointer-events-auto transform-gpu"
             >
                 {/* Pull Indicator Area (Mobile Drag Handle) */}
                 <div
@@ -241,21 +243,40 @@ export default function ProductDetailModal({
                             <Share2 size={16} />
                         </button>
 
-                        {user && onToggleFavorite && (
+                        {onToggleFavorite && (
                             <button
+                                type="button"
                                 onClick={e => {
                                     e.preventDefault();
                                     e.stopPropagation();
+                                    triggerHaptic();
+                                    if (!user) {
+                                        showInfo(
+                                            'Inicia sesión para añadir este plato a tus favoritos'
+                                        );
+                                        return;
+                                    }
                                     onToggleFavorite(item.id);
                                 }}
-                                className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-md shadow-md flex items-center justify-center text-gray-700 hover:bg-white transition-transform active:scale-90 border-none cursor-pointer"
+                                className={`h-9 ${
+                                    (item.likesCount || 0) > 0 ? 'px-3 gap-1.5' : 'w-9'
+                                } rounded-full bg-white/90 backdrop-blur-md shadow-md flex items-center justify-center text-gray-700 hover:bg-white transition-transform active:scale-90 cursor-pointer border-none group/fav`}
                                 title="Favorito"
                             >
                                 <Heart
-                                    size={18}
-                                    className={isFavorite ? 'text-orange-500' : 'text-gray-400'}
+                                    size={17}
+                                    className={
+                                        isFavorite
+                                            ? 'text-orange-500'
+                                            : 'text-gray-400 group-hover/fav:text-orange-500 transition-colors'
+                                    }
                                     fill={isFavorite ? 'currentColor' : 'none'}
                                 />
+                                {(item.likesCount || 0) > 0 && (
+                                    <span className="text-xs font-black text-gray-800 leading-none tabular-nums">
+                                        {item.likesCount}
+                                    </span>
+                                )}
                             </button>
                         )}
                         <button

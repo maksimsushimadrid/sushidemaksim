@@ -65,7 +65,7 @@ export default function VerifyPage() {
                 robots="noindex, nofollow"
             />
 
-            <div className="max-w-md w-full bg-white rounded-[32px] p-8 md:p-12 shadow-2xl text-center border border-gray-100 animate-in fade-in zoom-in duration-500">
+            <div className="max-w-md w-full bg-white rounded-2xl p-5 sm:p-6 md:p-8 shadow-2xl text-center border border-gray-100 animate-in fade-in zoom-in duration-500">
                 {status === 'success' && (
                     <div className="flex flex-col items-center">
                         <div className="w-20 h-20 bg-green-50 rounded-3xl flex items-center justify-center mb-6 text-green-500 shadow-inner border-2 border-white">

@@ -41,7 +41,7 @@ export default function ReservationModal({ isOpen, onClose }: ReservationModalPr
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="reservation-modal-title"
-                        className="relative w-[92%] max-w-sm bg-white rounded-[2.5rem] shadow-2xl flex flex-col border border-white/20 my-4 max-h-[calc(100dvh-2rem)]"
+                        className="relative w-[92%] max-w-sm bg-white rounded-2xl shadow-2xl flex flex-col border border-white/20 my-4 max-h-[calc(100dvh-2rem)]"
                     >
                         {/* Compact Header */}
                         <div className="px-6 pt-5 pb-1 flex items-center justify-between shrink-0">

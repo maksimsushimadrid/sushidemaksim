@@ -66,7 +66,7 @@ export default function DeleteConfirmationModal({
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="relative bg-white rounded-[32px] p-8 max-sm:p-6 max-w-sm w-full shadow-2xl overflow-hidden"
+                        className="relative bg-white rounded-2xl p-8 max-sm:p-6 max-w-sm w-full shadow-2xl overflow-hidden"
                     >
                         {/* Decorative background element */}
                         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 w-32 h-32 bg-orange-50 rounded-full blur-3xl opacity-50" />

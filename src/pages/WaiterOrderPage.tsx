@@ -474,7 +474,7 @@ export default function WaiterOrderPage() {
                             initial={{ scale: 0.9, opacity: 0, y: 20 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="bg-white w-full max-w-sm rounded-[32px] overflow-hidden shadow-2xl relative z-10 border border-gray-100"
+                            className="bg-white w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl relative z-10 border border-gray-100"
                         >
                             <div className="p-5 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
                                 <div>
@@ -614,7 +614,7 @@ export default function WaiterOrderPage() {
                             animate={{ y: 0 }}
                             exit={{ y: '100%' }}
                             transition={{ type: 'spring', damping: 25, stiffness: 250 }}
-                            className="bg-white w-full max-w-md rounded-t-[32px] overflow-hidden shadow-2xl relative z-10 border-t border-gray-100 pb-8"
+                            className="bg-white w-full max-w-md rounded-t-2xl overflow-hidden shadow-2xl relative z-10 border-t border-gray-100 pb-8"
                         >
                             {/* Drag/Visual Handle */}
                             <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto my-3" />

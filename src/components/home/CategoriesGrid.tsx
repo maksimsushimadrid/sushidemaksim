@@ -19,7 +19,7 @@ const CategoryCard = memo(({ id, name, image, index }: CategoryCardProps) => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: index * 0.1 }}
-            className="group relative h-40 md:h-56 rounded-[2rem] overflow-hidden cursor-pointer bg-gray-100"
+            className="group relative h-40 md:h-56 rounded-2xl overflow-hidden cursor-pointer bg-gray-100"
         >
             <Link to={`/menu?category=${id}`} className="absolute inset-0 z-10" />
 
@@ -91,7 +91,7 @@ export function CategoriesGrid({ categoryList, hasCategories, isLoading }: Categ
                         Array.from({ length: 8 }).map((_, idx) => (
                             <div
                                 key={idx}
-                                className="h-40 md:h-56 rounded-[2rem] bg-[#1a1a1a] animate-pulse skeleton"
+                                className="h-40 md:h-56 rounded-2xl bg-[#1a1a1a] animate-pulse skeleton"
                             />
                         ))
                     ) : (

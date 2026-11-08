@@ -264,7 +264,7 @@ export default function DeliveryForm({
     };
 
     return (
-        <div className="bg-white md:rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.03)] md:shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] px-3 py-5 md:p-6 mx-0 md:mx-0 rounded-[28px]">
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-6">
             <h2 className="text-lg md:text-xl font-bold mb-4 flex items-center gap-2">
                 <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-black">
                     2
@@ -272,7 +272,7 @@ export default function DeliveryForm({
                 Entrega
             </h2>
 
-            <div className="flex bg-gray-100/50 p-1.5 rounded-[22px] mb-6 border border-gray-100 relative">
+            <div className="flex bg-gray-100/50 p-1.5 rounded-xl mb-6 border border-gray-100 relative">
                 <button
                     type="button"
                     data-testid="delivery-type-delivery"
@@ -561,7 +561,7 @@ export default function DeliveryForm({
                                                 value={searchQuery}
                                                 onChange={e => setSearchQuery(e.target.value)}
                                                 placeholder="Introduce tu dirección (Calle y número)..."
-                                                className="w-full bg-gray-50 border border-gray-200 rounded-[20px] pl-12 pr-12 py-3.5 text-sm font-bold outline-none focus:border-orange-400 focus:bg-white focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition-all placeholder:text-gray-400 placeholder:font-normal"
+                                                className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-12 pr-12 py-3.5 text-sm font-bold outline-none focus:border-orange-400 focus:bg-white focus:shadow-[0_0_0_3px_rgba(242,101,34,0.1)] transition-all placeholder:text-gray-400 placeholder:font-normal"
                                             />
                                             {searchQuery && (
                                                 <button
@@ -627,7 +627,7 @@ export default function DeliveryForm({
                                             type="button"
                                             onClick={handleAddressClick}
                                             data-testid="address-input"
-                                            className="w-full py-3.5 bg-white border-2 border-dashed border-gray-200 hover:border-orange-500 hover:bg-orange-50/10 text-gray-600 rounded-[20px] font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-[0.98]"
+                                            className="w-full py-3.5 bg-white border-2 border-dashed border-gray-200 hover:border-orange-500 hover:bg-orange-50/10 text-gray-600 rounded-xl font-bold text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-[0.98]"
                                         >
                                             <MapPin size={14} className="text-orange-500" />O
                                             seleccionar en el mapa
@@ -640,7 +640,7 @@ export default function DeliveryForm({
                                                 type="button"
                                                 onClick={handleAddressClick}
                                                 data-testid="address-display"
-                                                className="flex-1 bg-gray-50/80 backdrop-blur-sm rounded-[24px] md:rounded-[32px] p-3.5 md:p-6 border border-gray-100 flex items-center justify-between group hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500"
+                                                className="flex-1 bg-gray-50/80 backdrop-blur-sm rounded-2xl p-3.5 md:p-6 border border-gray-100 flex items-center justify-between group hover:bg-white hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-500"
                                             >
                                                 <div className="flex items-center gap-3 md:gap-6 overflow-hidden">
                                                     <div className="shrink-0 group-hover:scale-110 transition-all duration-500">
@@ -653,7 +653,7 @@ export default function DeliveryForm({
                                                             {apartment ? `, ${apartment}` : ''}
                                                         </p>
                                                         <div className="flex flex-wrap items-center gap-1.5 md:gap-3 mt-1 md:mt-1.5">
-                                                            <div className="flex items-center gap-1.5 bg-white/80 px-2.5 py-1 md:px-4 md:py-2 rounded-xl md:rounded-2xl shadow-sm border border-gray-100 max-w-full">
+                                                            <div className="flex items-center gap-1.5 bg-white/80 px-2.5 py-1 md:px-4 md:py-2 rounded-2xl shadow-sm border border-gray-100 max-w-full">
                                                                 <div
                                                                     className="w-1.5 h-1.5 rounded-full shrink-0"
                                                                     style={{
@@ -667,7 +667,7 @@ export default function DeliveryForm({
                                                                         'Zona no detectada'}
                                                                 </span>
                                                             </div>
-                                                            <div className="flex items-center gap-1.5 bg-gray-100/50 px-2 py-1 md:px-3 md:py-1.5 rounded-xl md:rounded-2xl border border-gray-100">
+                                                            <div className="flex items-center gap-1.5 bg-gray-100/50 px-2 py-1 md:px-3 md:py-1.5 rounded-2xl border border-gray-100">
                                                                 <span className="text-[9px] md:text-xs font-bold text-gray-400 uppercase tracking-widest whitespace-nowrap">
                                                                     CP {postalCode}
                                                                 </span>
@@ -700,7 +700,7 @@ export default function DeliveryForm({
                                                         selectedZone: null,
                                                     });
                                                 }}
-                                                className="w-12 h-12 md:w-16 md:h-16 rounded-[20px] md:rounded-[28px] bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center shadow-sm hover:shadow transition-all shrink-0 cursor-pointer border-none"
+                                                className="w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-red-50 hover:bg-red-100 text-red-600 flex items-center justify-center shadow-sm hover:shadow transition-all shrink-0 cursor-pointer border-none"
                                                 title="Cambiar dirección"
                                             >
                                                 <X size={20} strokeWidth={2.5} />

@@ -50,6 +50,13 @@ html.lenis body {
 }
 
 @layer base {
+    :root {
+        --radius-card: 1rem; /* 16px - rounded-2xl */
+        --radius-modal: 1.5rem; /* 24px - rounded-3xl */
+        --radius-control: 0.75rem; /* 12px - rounded-xl */
+        --radius-badge: 0.5rem; /* 8px - rounded-lg */
+    }
+
     body {
         @apply antialiased text-gray-900;
         background-color: transparent;
@@ -101,7 +108,7 @@ html.lenis body {
     }
 
     .premium-card {
-        @apply bg-white rounded-3xl border border-gray-100 duration-500 ease-out;
+        @apply bg-white rounded-2xl border border-gray-100 duration-500 ease-out;
         transition:
             border-color 500ms ease-out,
             box-shadow 500ms ease-out,
@@ -110,6 +117,22 @@ html.lenis body {
             0 4px 6px -1px rgba(0, 0, 0, 0.02),
             0 2px 4px -1px rgba(0, 0, 0, 0.01);
         -webkit-tap-highlight-color: transparent;
+    }
+
+    .ui-card {
+        @apply bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sm:p-6;
+    }
+
+    .ui-modal {
+        @apply bg-white rounded-2xl sm:rounded-3xl border border-gray-100 shadow-2xl p-5 sm:p-7;
+    }
+
+    .ui-input {
+        @apply w-full bg-gray-50 focus:bg-white border border-gray-200 focus:border-orange-500 rounded-xl px-3.5 py-2.5 text-sm font-semibold outline-none transition-all;
+    }
+
+    .ui-btn {
+        @apply rounded-xl px-4 py-2.5 font-bold text-sm transition-all active:scale-[0.98];
     }
 
     @media (hover: hover) {
@@ -220,7 +243,7 @@ html.lenis body {
 
 /* Modal input with icon — compact style */
 .modal-input {
-    @apply w-full py-2 pl-9 pr-3 border border-gray-200 rounded-lg text-base md:text-[13px] outline-none transition-all duration-200 bg-gray-50 focus:border-orange-600 focus:ring-[3px] focus:ring-orange-600/10 focus:bg-white;
+    @apply w-full py-2 pl-9 pr-3 border border-gray-200 rounded-xl text-base md:text-[13px] outline-none transition-all duration-200 bg-gray-50 focus:border-orange-600 focus:ring-[3px] focus:ring-orange-600/10 focus:bg-white;
 }
 
 .modal-input-pwd {
@@ -487,7 +510,7 @@ input[type='time'] {
 }
 
 .metallic-card {
-    @apply bg-white/40 backdrop-blur-md border border-white/30 rounded-3xl;
+    @apply bg-white/40 backdrop-blur-md border border-white/30 rounded-2xl;
     box-shadow:
         0 10px 40px -10px rgba(0, 0, 0, 0.05),
         0 2px 4px -1px rgba(0, 0, 0, 0.02),

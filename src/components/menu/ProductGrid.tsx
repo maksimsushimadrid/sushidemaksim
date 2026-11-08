@@ -52,7 +52,7 @@ export default function ProductGrid({
 
     if (items.length === 0) {
         return (
-            <div className="text-center py-24 bg-white rounded-[40px] border border-dashed border-gray-200 shadow-sm">
+            <div className="text-center py-24 bg-white rounded-2xl border border-dashed border-gray-200 shadow-sm">
                 <div className="text-6xl mb-6">🙊</div>
                 <h3 className="text-xl font-black text-gray-900 mb-2">
                     {search

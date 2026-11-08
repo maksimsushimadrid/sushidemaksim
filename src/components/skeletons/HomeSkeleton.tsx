@@ -82,7 +82,7 @@ export const HomeSkeleton = () => (
                         {[1, 2].map(i => (
                             <div
                                 key={i}
-                                className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-gray-50 flex flex-col items-center gap-4 h-[100px]"
+                                className="bg-white p-8 rounded-2xl shadow-xl border border-gray-50 flex flex-col items-center gap-4 h-[100px]"
                             >
                                 <div className="flex items-center gap-2">
                                     <div className="w-8 h-8 rounded-lg bg-gray-200 animate-pulse" />
@@ -111,7 +111,7 @@ export const HomeSkeleton = () => (
                     {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
                         <div
                             key={i}
-                            className="h-40 md:h-56 bg-gray-100 rounded-[2rem] animate-pulse relative overflow-hidden"
+                            className="h-40 md:h-56 bg-gray-100 rounded-2xl animate-pulse relative overflow-hidden"
                         >
                             <div className="absolute top-5 left-5 h-[20px] md:h-[24px] w-2/3 bg-gray-200 rounded-lg" />
                         </div>
@@ -123,7 +123,7 @@ export const HomeSkeleton = () => (
         {/* Promo Banner Section */}
         <section className="px-4 py-6 md:py-12">
             <div className="max-w-7xl mx-auto">
-                <div className="h-[280px] md:h-[224px] rounded-[2.5rem] bg-gray-100 animate-pulse" />
+                <div className="h-[280px] md:h-[224px] rounded-2xl bg-gray-100 animate-pulse" />
             </div>
         </section>
 
@@ -165,7 +165,7 @@ export const HomeSkeleton = () => (
         {/* Reservation Section (AboutSection fallback) */}
         <section className="py-10 md:py-20 px-4 bg-white overflow-hidden">
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                <div className="h-[300px] md:h-[500px] rounded-[3rem] bg-gray-100 animate-pulse order-last lg:order-first" />
+                <div className="h-[300px] md:h-[500px] rounded-2xl bg-gray-100 animate-pulse order-last lg:order-first" />
                 <div className="text-center lg:text-left space-y-6 w-full">
                     <div className="h-[16px] w-48 bg-gray-200 rounded-full mx-auto lg:mx-0 animate-pulse mb-4" />
                     <div className="h-[40px] md:h-[60px] w-3/4 mx-auto lg:mx-0 bg-gray-200 rounded-2xl animate-pulse mb-6" />

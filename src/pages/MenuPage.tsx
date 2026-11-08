@@ -444,7 +444,7 @@ export default function MenuPage() {
                             <MenuItemsSkeleton showHeader />
                         </div>
                     ) : isError ? (
-                        <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50 rounded-[32px] border-2 border-dashed border-gray-100 animate-in fade-in zoom-in-95 duration-500">
+                        <div className="flex flex-col items-center justify-center py-20 bg-gray-50/50 rounded-2xl border-2 border-dashed border-gray-100 animate-in fade-in zoom-in-95 duration-500">
                             <span className="text-5xl mb-6 drop-shadow-lg">🍱</span>
                             <h3 className="text-xl font-black text-gray-900 mb-2 uppercase tracking-tight">
                                 Algo salió mal

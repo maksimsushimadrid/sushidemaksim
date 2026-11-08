@@ -19,14 +19,14 @@ export const MenuItemsSkeleton = ({ showHeader = false }: { showHeader?: boolean
             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
                 <div
                     key={i}
-                    className="bg-white rounded-[24px] md:rounded-[32px] overflow-hidden border border-gray-100 flex flex-col h-full relative"
+                    className="bg-white rounded-2xl overflow-hidden border border-gray-100 flex flex-col h-full relative"
                 >
                     {/* Action Buttons Placeholders */}
                     <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10">
-                        <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl skeleton opacity-10 bg-gray-900" />
+                        <div className="w-8 h-8 md:w-9 md:h-9 rounded-2xl skeleton opacity-10 bg-gray-900" />
                     </div>
                     <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10">
-                        <div className="w-8 h-8 md:w-9 md:h-9 rounded-xl md:rounded-2xl skeleton opacity-10 bg-gray-900" />
+                        <div className="w-8 h-8 md:w-9 md:h-9 rounded-2xl skeleton opacity-10 bg-gray-900" />
                     </div>
 
                     {/* Image Container Skeleton */}
@@ -93,7 +93,7 @@ export const MenuSkeleton = () => (
                             <div className="h-10 md:h-12 w-56 md:w-80 skeleton rounded-2xl opacity-10 bg-gray-900" />
                             <div className="h-4 w-40 md:w-48 skeleton rounded-lg opacity-5 bg-gray-500" />
                         </div>
-                        <div className="h-12 md:h-14 w-full md:w-[448px] skeleton rounded-[20px] md:rounded-[24px] opacity-10 bg-gray-900" />
+                        <div className="h-12 md:h-14 w-full md:w-[448px] skeleton rounded-xl opacity-10 bg-gray-900" />
                     </div>
                 </div>
 

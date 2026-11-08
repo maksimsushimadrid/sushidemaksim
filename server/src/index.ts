@@ -7,6 +7,8 @@ import { fileURLToPath } from 'url';
 import { config } from './config.js';
 import { supabase } from './db/supabase.js';
 import { escapeHtml, isValidUUID } from './utils/helpers.js';
+import { authMiddleware } from './middleware/auth.js';
+import { adminMiddleware } from './middleware/admin.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { generalLimiter } from './middleware/rateLimiters.js';
 import authRoutes from './routes/auth.js';
@@ -218,7 +220,7 @@ app.get('/api/health', (_req, res) => {
     });
 });
 
-app.get('/api/health/full', async (_req, res) => {
+app.get('/api/health/full', authMiddleware, adminMiddleware, async (_req, res) => {
     try {
         const { data, error } = await supabase.from('menu_items').select('count').limit(1);
         if (error) throw error;
@@ -238,7 +240,7 @@ app.get('/api/health/full', async (_req, res) => {
 });
 
 // ─── 404 Handler ──────────────────────────────────────────────────────────────
-app.get('/api/health/smtp', async (_req, res) => {
+app.get('/api/health/smtp', authMiddleware, adminMiddleware, async (_req, res) => {
     try {
         const { transporter } = await import('./utils/email.js');
         await transporter.verify();

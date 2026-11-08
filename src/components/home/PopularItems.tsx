@@ -11,6 +11,9 @@ interface PopularItemsProps {
     onShare: (item: MenuItem, e: React.MouseEvent) => void;
     onAddToCart: (item: any, e?: any, quantity?: number) => void;
     isLoading?: boolean;
+    user?: any;
+    favorites?: Set<number>;
+    onToggleFavorite?: (id: number) => void;
 }
 
 export function PopularItems({
@@ -19,6 +22,9 @@ export function PopularItems({
     onShare,
     onAddToCart,
     isLoading,
+    user = null,
+    favorites,
+    onToggleFavorite,
 }: PopularItemsProps) {
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -105,9 +111,9 @@ export function PopularItems({
                                     >
                                         <ProductCard
                                             item={item as any}
-                                            user={null}
-                                            isFavorite={false}
-                                            onToggleFavorite={() => {}}
+                                            user={user}
+                                            isFavorite={favorites ? favorites.has(item.id) : false}
+                                            onToggleFavorite={onToggleFavorite || (() => {})}
                                             onShare={onShare}
                                             onAddToCart={onAddToCart}
                                             isAdded={cartItemIds.has(String(item.id))}

@@ -1,8 +1,8 @@
 export const GenericSkeleton = () => (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center pt-20">
-        <div className="bg-white p-12 md:p-20 rounded-[60px] max-w-lg w-full shadow-2xl space-y-8 flex flex-col items-center border border-gray-100 animate-in fade-in duration-500">
+        <div className="bg-white p-12 md:p-20 rounded-2xl max-w-lg w-full shadow-2xl space-y-8 flex flex-col items-center border border-gray-100 animate-in fade-in duration-500">
             {/* Generic placeholder icon */}
-            <div className="w-24 h-24 skeleton rounded-[40px] mb-4 shadow-sm" />
+            <div className="w-24 h-24 skeleton rounded-2xl mb-4 shadow-sm" />
 
             {/* Generic title & content */}
             <div className="space-y-4 w-full text-center">

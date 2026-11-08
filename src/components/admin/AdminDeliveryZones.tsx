@@ -481,7 +481,7 @@ export default function AdminDeliveryZones({ language = 'es' }: Props) {
                             if (e.target === e.currentTarget) setIsModalOpen(false);
                         }}
                     >
-                        <div className="bg-white rounded-[32px] shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 border border-white flex flex-col max-h-[90vh]">
+                        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 border border-white flex flex-col max-h-[90vh]">
                             <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
                                 <h2 className="text-xl font-bold text-gray-900">{t.modal.title}</h2>
                                 <button

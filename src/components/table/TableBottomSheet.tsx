@@ -206,7 +206,7 @@ export const TableBottomSheet: React.FC<TableBottomSheetProps> = ({
                                     onAddToCart(item, undefined, selectedOption);
                                     onClose();
                                 }}
-                                className="w-full h-16 bg-orange-600 text-white rounded-[20px] font-black text-lg tracking-widest uppercase hover:bg-orange-700 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-xl shadow-orange-950/20"
+                                className="w-full h-16 bg-orange-600 text-white rounded-xl font-black text-lg tracking-widest uppercase hover:bg-orange-700 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-xl shadow-orange-950/20"
                             >
                                 <Plus size={24} strokeWidth={3} />
                                 ADD TO ORDER — {item.price.toFixed(2)}€

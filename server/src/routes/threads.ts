@@ -1,30 +1,80 @@
 import { Router, Request, Response } from 'express';
 import axios from 'axios';
+import jwt from 'jsonwebtoken';
 import { config } from '../config.js';
 import { supabase } from '../db/supabase.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { adminMiddleware } from '../middleware/admin.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
+import { escapeHtml } from '../utils/helpers.js';
 
 const router = Router();
 
-// 1. Start Authorization
-router.get('/auth', (req: Request, res: Response) => {
-    const appId = config.threads.appId;
-    // We'll use the server URL for callback
-    const redirectUri = `${config.frontendUrl}/api/threads/callback`;
+// 1. Start Authorization (Admin Only)
+router.get(
+    '/auth',
+    asyncHandler(async (req: Request, res: Response) => {
+        const headerToken = req.headers.authorization?.startsWith('Bearer ')
+            ? req.headers.authorization.slice(7)
+            : '';
+        const rawToken =
+            headerToken || (typeof req.query.token === 'string' ? req.query.token : '');
 
-    const authUrl = `https://www.threads.net/oauth/authorize?client_id=${appId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=threads_basic&response_type=code`;
+        if (!rawToken) {
+            return res.status(401).json({ error: 'Token de acceso requerido' });
+        }
 
-    res.redirect(authUrl);
-});
+        let userId: string;
+        try {
+            const payload = jwt.verify(rawToken, config.jwtSecret) as { userId: string };
+            userId = payload.userId;
+        } catch {
+            return res.status(401).json({ error: 'Token inválido o expirado' });
+        }
 
-// 2. Callback from Threads
+        const { data: user } = await supabase
+            .from('users')
+            .select('role, is_superadmin')
+            .eq('id', userId)
+            .single();
+
+        if (!user || (user.role !== 'admin' && !user.is_superadmin)) {
+            return res
+                .status(403)
+                .json({ error: 'Acceso denegado: se requieren permisos de administrador' });
+        }
+
+        const appId = config.threads.appId;
+        const redirectUri = `${config.frontendUrl}/api/threads/callback`;
+        const stateToken = jwt.sign({ purpose: 'threads_oauth', userId }, config.jwtSecret, {
+            expiresIn: '15m',
+        });
+
+        const authUrl = `https://www.threads.net/oauth/authorize?client_id=${appId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=threads_basic&response_type=code&state=${encodeURIComponent(stateToken)}`;
+
+        res.redirect(authUrl);
+    })
+);
+
+// 2. Callback from Threads (Verify signed OAuth state)
 router.get('/callback', async (req: Request, res: Response) => {
-    const { code } = req.query;
+    const { code, state } = req.query;
 
     if (!code) {
         return res.status(400).send('No authorization code provided');
+    }
+
+    if (!state || typeof state !== 'string') {
+        return res.status(403).send('Invalid or missing OAuth state');
+    }
+
+    try {
+        const decodedState = jwt.verify(state, config.jwtSecret) as { purpose?: string };
+        if (decodedState.purpose !== 'threads_oauth') {
+            return res.status(403).send('Invalid OAuth state token');
+        }
+    } catch {
+        return res.status(403).send('Expired or invalid OAuth state token');
     }
 
     try {
@@ -72,14 +122,14 @@ router.get('/callback', async (req: Request, res: Response) => {
 
         if (upsertError) {
             console.error('DEBUG: Upsert Error:', upsertError);
-            return res.status(500).send(`Failed to save token: ${upsertError.message}`);
+            return res.status(500).send(`Failed to save token: ${escapeHtml(upsertError.message)}`);
         }
 
         console.log('DEBUG: Threads token saved successfully!');
         res.send('Successfully connected to Threads! You can close this window.');
     } catch (error: any) {
         console.error('Threads Auth Error:', error.response?.data || error.message);
-        res.status(500).send(`Auth Error: ${error.message}`);
+        res.status(500).send(`Auth Error: ${escapeHtml(String(error.message || 'Unknown error'))}`);
     }
 });
 

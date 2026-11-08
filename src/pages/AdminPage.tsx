@@ -8,9 +8,11 @@ import {
     Users,
     Menu as MenuIcon,
     HelpCircle,
-    ShoppingBag,
-    DollarSign,
-    Activity,
+    UtensilsCrossed,
+    Tag,
+    MessageSquare,
+    Settings,
+    Mail,
     X,
     ArrowLeft,
     BarChart3,
@@ -627,18 +629,18 @@ export default function AdminPage() {
                 icon: Package,
                 badge: pendingCount > 0 ? pendingCount : null,
             },
-            { id: 'menu', label: t.nav.menu, icon: MenuIcon },
+            { id: 'menu', label: t.nav.menu, icon: UtensilsCrossed },
             {
                 id: 'users',
                 label: t.nav.users,
                 icon: Users,
                 badge: newUsersCount > 0 ? newUsersCount : null,
             },
-            { id: 'promos', label: t.nav.promos, icon: ShoppingBag },
+            { id: 'promos', label: t.nav.promos, icon: Tag },
             {
                 id: 'tablon',
                 label: t.nav.tablon,
-                icon: Activity,
+                icon: MessageSquare,
                 badge:
                     (pendingTablonData?.posts?.length || 0) +
                         (pendingTablonCategoriesData?.categories?.length || 0) >
@@ -647,7 +649,7 @@ export default function AdminPage() {
                           (pendingTablonCategoriesData?.categories?.length || 0)
                         : null,
             },
-            { id: 'settings', label: t.nav.settings, icon: DollarSign },
+            { id: 'settings', label: t.nav.settings, icon: Settings },
             {
                 id: 'reservations',
                 label: t.nav.reservations,
@@ -655,7 +657,7 @@ export default function AdminPage() {
                 badge: unviewedResCount > 0 ? unviewedResCount : null,
             },
             { id: 'delivery', label: t.nav.delivery, icon: MapIcon },
-            { id: 'newsletter', label: t.nav.newsletter, icon: Bell },
+            { id: 'newsletter', label: t.nav.newsletter, icon: Mail },
             { id: 'guide', label: t.nav.guide, icon: BookOpen },
         ],
         [
@@ -757,19 +759,19 @@ export default function AdminPage() {
 
                 {/* Sidebar */}
                 <aside
-                    className={`fixed top-0 bottom-0 left-0 w-[280px] md:w-60 bg-white/95 backdrop-blur-xl border-r border-gray-200 flex flex-col z-modal transition-transform duration-300 shadow-2xl
+                    className={`fixed top-0 bottom-0 left-0 w-[230px] md:w-52 bg-white/95 backdrop-blur-xl border-r border-gray-200 flex flex-col z-modal transition-transform duration-300 shadow-2xl
                     ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}
                 >
-                    <div className="p-4 border-b border-gray-100">
-                        <div className="flex flex-col gap-3">
+                    <div className="px-3 py-3 border-b border-gray-100">
+                        <div className="flex flex-col">
                             <img
                                 src="/logo.svg"
                                 alt="Sushi de Maksim"
-                                className="h-10 w-auto object-contain brightness-0 opacity-70"
+                                className="h-9 w-auto object-contain brightness-0 opacity-75"
                             />
                         </div>
                     </div>
-                    <nav className="flex-1 p-4 space-y-1 overflow-y-auto no-scrollbar">
+                    <nav className="flex-1 px-2 py-2.5 space-y-0.5 overflow-y-auto no-scrollbar">
                         {navLinks.map(tab => {
                             const Icon = tab.icon;
                             const isActive = activeTab === tab.id;
@@ -783,17 +785,17 @@ export default function AdminPage() {
                                             navigator.vibrate(5);
                                         }
                                     }}
-                                    className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl font-bold text-sm transition-all relative group
+                                    className={`w-full flex items-center justify-between px-2.5 py-2 rounded-xl font-bold text-[13px] transition-all relative group
                                     ${
                                         isActive
-                                            ? 'text-slate-900 bg-white/50 shadow-sm border border-white/50'
-                                            : 'text-slate-500 hover:bg-white/30 hover:text-slate-900'
+                                            ? 'text-slate-900 bg-orange-50/80 shadow-sm border border-orange-100/80'
+                                            : 'text-slate-600 hover:bg-orange-50/40 hover:text-slate-900'
                                     }`}
                                 >
                                     {isActive && (
                                         <motion.div
                                             layoutId="admin-nav-active"
-                                            className="absolute inset-0 bg-gradient-to-r from-white/80 to-transparent rounded-xl"
+                                            className="absolute inset-0 bg-gradient-to-r from-orange-50/90 to-white/60 rounded-xl"
                                             transition={{
                                                 type: 'spring',
                                                 bounce: 0.2,
@@ -801,13 +803,17 @@ export default function AdminPage() {
                                             }}
                                         />
                                     )}
-                                    <div className="flex items-center gap-2.5 relative z-10 w-full">
+                                    <div className="flex items-center gap-2 relative z-10 w-full">
                                         <Icon
-                                            size={20}
+                                            size={18}
                                             strokeWidth={isActive ? 2.5 : 2}
-                                            className={`shrink-0 transition-transform group-hover:scale-110 ${isActive ? 'text-slate-900' : 'text-slate-400'}`}
+                                            className={`shrink-0 transition-transform group-hover:scale-110 ${
+                                                isActive
+                                                    ? 'text-orange-600'
+                                                    : 'text-orange-500 group-hover:text-orange-600'
+                                            }`}
                                         />
-                                        <span className="flex-1 text-left leading-[1.2] py-0.5">
+                                        <span className="flex-1 text-left leading-[1.2] py-0.5 truncate">
                                             {tab.label}
                                         </span>
                                         {(tab as any).badge && (
@@ -820,19 +826,19 @@ export default function AdminPage() {
                             );
                         })}
                     </nav>
-                    <div className="p-4 border-t border-gray-100 mt-auto">
+                    <div className="p-2.5 border-t border-gray-100 mt-auto">
                         <button
                             onClick={() => navigate('/menu')}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-3 metallic-button rounded-xl active:scale-[0.98]"
+                            className="w-full flex items-center justify-center gap-1.5 px-3 py-2 text-[11px] metallic-button rounded-lg active:scale-[0.98]"
                         >
-                            <ArrowLeft size={16} strokeWidth={2} />
+                            <ArrowLeft size={14} strokeWidth={2.5} />
                             {t.ui.backToShop}
                         </button>
                     </div>
                 </aside>
 
                 {/* Main Content */}
-                <main className="flex-1 min-w-0 md:ml-60 p-1.5 sm:p-3 md:p-4 flex flex-col min-h-screen">
+                <main className="flex-1 min-w-0 md:ml-52 p-1.5 sm:p-3 md:p-4 flex flex-col min-h-screen">
                     <div className="w-full flex-1 flex flex-col">
                         {/* Top Bar */}
                         <div className="flex flex-col gap-3 sm:flex-row sm:justify-between sm:items-center mb-6 pb-4 border-b border-gray-100">

@@ -4,9 +4,9 @@ export const TrackSkeleton = () => (
             {/* Back button skeleton */}
             <div className="h-4 w-20 skeleton rounded-lg mb-8" />
 
-            <div className="bg-white rounded-[40px] shadow-lg border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                 {/* Header Skeleton */}
-                <div className="bg-orange-600/10 p-8 md:p-12 border-b border-gray-100">
+                <div className="bg-orange-600/10 p-5 sm:p-6 md:p-8 border-b border-gray-100">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                         <div className="space-y-4">
                             <div className="h-4 w-32 skeleton rounded opacity-40" />
@@ -16,7 +16,7 @@ export const TrackSkeleton = () => (
                     </div>
                 </div>
 
-                <div className="p-8 md:p-12 space-y-12">
+                <div className="p-5 sm:p-6 md:p-8 space-y-12">
                     {/* Stepper Skeleton */}
                     <div className="h-20 w-full skeleton rounded-3xl" />
 
@@ -34,7 +34,7 @@ export const TrackSkeleton = () => (
                         </div>
 
                         {/* Summary Skeleton */}
-                        <div className="bg-gray-50 rounded-[32px] p-8 border border-white space-y-6">
+                        <div className="bg-gray-50 rounded-2xl p-8 border border-white space-y-6">
                             <div className="h-4 w-48 skeleton rounded opacity-40" />
                             <div className="space-y-4">
                                 {[1, 2, 3].map(i => (

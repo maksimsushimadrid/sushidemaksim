@@ -3,7 +3,7 @@ const Skeleton = ({ className }: { className?: string }) => (
 );
 
 export const TableProductCardSkeleton = () => (
-    <div className="bg-neutral-900/40 rounded-[32px] overflow-hidden border border-white/5 flex flex-col h-full">
+    <div className="bg-neutral-900/40 rounded-2xl overflow-hidden border border-white/5 flex flex-col h-full">
         {/* Image Placeholder */}
         <div className="aspect-square w-full bg-neutral-800/10 animate-pulse" />
 

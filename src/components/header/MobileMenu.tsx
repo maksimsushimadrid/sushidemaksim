@@ -212,7 +212,7 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                                     })
                                                 );
                                             }}
-                                            className="w-full bg-gray-900 text-white border-none py-3.5 rounded-[20px] font-black text-[14px] cursor-pointer active:scale-[0.98] transition-transform shadow-lg shadow-gray-900/20 flex items-center justify-center gap-2"
+                                            className="w-full bg-gray-900 text-white border-none py-3.5 rounded-xl font-black text-[14px] cursor-pointer active:scale-[0.98] transition-transform shadow-lg shadow-gray-900/20 flex items-center justify-center gap-2"
                                         >
                                             INICIAR SESIÓN
                                         </button>

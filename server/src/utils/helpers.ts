@@ -5,7 +5,7 @@ import { timingSafeEqual } from 'crypto';
  */
 
 /** Cleanly maps a menu item from DB (snake_case) to Frontend (camelCase) - PUBLIC version */
-export function formatMenuItem(item: any) {
+export function formatMenuItem(item: any, likesCount?: number) {
     if (!item) return null;
     return {
         id: item.id,
@@ -23,6 +23,7 @@ export function formatMenuItem(item: any) {
         isChefChoice: !!item.is_chef_choice,
         isNew: !!item.is_new,
         allergens: Array.isArray(item.allergens) ? item.allergens : [],
+        likesCount: Number(likesCount ?? item.likes_count ?? item.likesCount ?? 0),
     };
 }
 
@@ -141,6 +142,9 @@ export function formatOrder(o: any, userStats: any = null) {
         estimatedDeliveryTime: o.estimated_delivery_time,
         promoCode: o.promo_code,
         deliveryType: o.delivery_type,
+        deviceType: o.device_type || undefined,
+        osName: o.os_name || undefined,
+        browserName: o.browser_name || undefined,
         items,
         users: o.users
             ? {

@@ -51,7 +51,7 @@ export default function ReservationPage() {
                         initial={{ opacity: 0, x: -30 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.2 }}
-                        className="lg:col-span-4 bg-white rounded-[2.5rem] p-8 md:p-10 shadow-xl border border-white/20"
+                        className="lg:col-span-4 bg-white rounded-2xl p-5 sm:p-6 md:p-8 shadow-xl border border-white/20"
                     >
                         <h2 className="text-2xl font-black text-gray-900 mb-6 uppercase tracking-tight">
                             Información <span className="text-orange-600 italic">Útil</span>
@@ -117,7 +117,7 @@ export default function ReservationPage() {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
-                        className="lg:col-span-8 bg-white rounded-[3rem] p-8 md:p-12 shadow-2xl border border-white/20"
+                        className="lg:col-span-8 bg-white rounded-2xl p-5 sm:p-6 md:p-8 shadow-2xl border border-white/20"
                     >
                         <ReservationForm className="max-w-2xl mx-auto" />
                     </motion.div>

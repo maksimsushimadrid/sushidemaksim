@@ -20,7 +20,7 @@ interface AdminSettingsProps {
 
 const SETTINGS_TRANSLATIONS = {
     ru: {
-        title: 'Настройки контактов',
+        title: 'Настройки',
         saveBtn: 'Сохранить изменения',
         savingBtn: 'Сохранение...',
         loading: 'Загрузка настроек...',
@@ -107,7 +107,7 @@ const SETTINGS_TRANSLATIONS = {
         holidayActiveBadge: 'АКТИВНО',
     },
     es: {
-        title: 'Configuración de Contactos',
+        title: 'Ajustes',
         saveBtn: 'Guardar Cambios',
         savingBtn: 'Guardando...',
         loading: 'Cargando ajustes...',
@@ -458,31 +458,30 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 </button>
             </div>
 
-            <div className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl sm:rounded-[32px] shadow-sm border border-gray-100">
+            <div className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
                 <div className="flex items-center gap-3 text-orange-600 border-l-4 border-orange-100 pl-3 sm:pl-4 mb-4 sm:mb-8">
                     <h3 className="font-black text-xs uppercase tracking-[0.15em]">
                         {t.generalInfo}
                     </h3>
                 </div>
-                <div className="flex flex-row items-center justify-between gap-3 p-3 sm:p-5 md:p-6 bg-orange-50/50 rounded-xl sm:rounded-2xl border border-orange-100 mb-3 sm:mb-4">
-                    <div className="flex-1 min-w-0 pr-1">
-                        <h4 className="text-xs sm:text-sm font-black text-orange-900 uppercase tracking-tight mb-0.5 sm:mb-1">
-                            {t.isTodayClosed}
-                        </h4>
-                        <p className="text-[10px] sm:text-[11px] text-orange-800/80 font-medium leading-snug">
-                            {t.isTodayClosedDesc}
-                        </p>
-                    </div>
-                    <div className="shrink-0 flex items-center">
-                        <label className="relative inline-flex items-center cursor-pointer">
+                <div className="divide-y divide-gray-100 border border-gray-100 rounded-2xl bg-gray-50/40 mb-6 sm:mb-8">
+                    <div className="flex items-center justify-between gap-4 p-4 sm:px-6 sm:py-4">
+                        <div className="flex-1 min-w-0">
+                            <h4 className="text-xs sm:text-sm font-black text-gray-900 uppercase tracking-tight mb-0.5">
+                                {t.isTodayClosed}
+                            </h4>
+                            <p className="text-[11px] text-gray-500 font-medium leading-snug">
+                                {t.isTodayClosedDesc}
+                            </p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer shrink-0">
                             <input
                                 type="checkbox"
-                                checked={localSettings.isTodayClosed}
+                                checked={Boolean(localSettings.isTodayClosed)}
                                 onChange={e =>
                                     setLocalSettings({
                                         ...localSettings,
                                         isTodayClosed: e.target.checked,
-                                        // If orders are closed, pickup only loses its meaning
                                         isPickupOnly: e.target.checked
                                             ? false
                                             : localSettings.isPickupOnly,
@@ -490,30 +489,27 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                 }
                                 className="sr-only peer"
                             />
-                            <div className="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:start-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-orange-600"></div>
+                            <div className="relative w-12 h-7 bg-gray-200 rounded-full peer peer-checked:bg-orange-600 transition-colors after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:rounded-full after:h-[22px] after:w-[22px] after:shadow-sm after:transition-transform peer-checked:after:translate-x-5" />
                         </label>
                     </div>
-                </div>
 
-                <div className="flex flex-row items-center justify-between gap-3 p-3 sm:p-5 md:p-6 bg-orange-50/50 rounded-xl sm:rounded-2xl border border-orange-100 mb-3 sm:mb-4">
-                    <div className="flex-1 min-w-0 pr-1">
-                        <h4 className="text-xs sm:text-sm font-black text-orange-900 uppercase tracking-tight mb-0.5 sm:mb-1">
-                            {t.isPickupOnly}
-                        </h4>
-                        <p className="text-[10px] sm:text-[11px] text-orange-800/80 font-medium leading-snug">
-                            {t.isPickupOnlyDesc}
-                        </p>
-                    </div>
-                    <div className="shrink-0 flex items-center">
-                        <label className="relative inline-flex items-center cursor-pointer">
+                    <div className="flex items-center justify-between gap-4 p-4 sm:px-6 sm:py-4">
+                        <div className="flex-1 min-w-0">
+                            <h4 className="text-xs sm:text-sm font-black text-gray-900 uppercase tracking-tight mb-0.5">
+                                {t.isPickupOnly}
+                            </h4>
+                            <p className="text-[11px] text-gray-500 font-medium leading-snug">
+                                {t.isPickupOnlyDesc}
+                            </p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer shrink-0">
                             <input
                                 type="checkbox"
-                                checked={localSettings.isPickupOnly}
+                                checked={Boolean(localSettings.isPickupOnly)}
                                 onChange={e =>
                                     setLocalSettings({
                                         ...localSettings,
                                         isPickupOnly: e.target.checked,
-                                        // If pickup only is enabled, we are definitely NOT closed
                                         isTodayClosed: e.target.checked
                                             ? false
                                             : localSettings.isTodayClosed,
@@ -521,31 +517,23 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                 }
                                 className="sr-only peer"
                             />
-                            <div
-                                className="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer 
-                                           peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full 
-                                           peer-checked:after:border-white after:content-[''] after:absolute 
-                                           after:top-1 after:start-[4px] after:bg-white after:border-gray-300 
-                                           after:border after:rounded-full after:h-6 after:w-6 after:transition-all 
-                                           peer-checked:bg-orange-600"
-                            ></div>
+                            <div className="relative w-12 h-7 bg-gray-200 rounded-full peer peer-checked:bg-orange-600 transition-colors after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:rounded-full after:h-[22px] after:w-[22px] after:shadow-sm after:transition-transform peer-checked:after:translate-x-5" />
                         </label>
                     </div>
-                </div>
-                <div className="flex flex-row items-center justify-between gap-3 p-3 sm:p-5 md:p-6 bg-orange-50/50 rounded-xl sm:rounded-2xl border border-orange-100 mb-4 sm:mb-8">
-                    <div className="flex-1 min-w-0 pr-1">
-                        <h4 className="text-xs sm:text-sm font-black text-orange-900 uppercase tracking-tight mb-0.5 sm:mb-1">
-                            {t.isReservationsTodayClosed}
-                        </h4>
-                        <p className="text-[10px] sm:text-[11px] text-orange-800/80 font-medium leading-snug">
-                            {t.isReservationsTodayClosedDesc}
-                        </p>
-                    </div>
-                    <div className="shrink-0 flex items-center">
-                        <label className="relative inline-flex items-center cursor-pointer">
+
+                    <div className="flex items-center justify-between gap-4 p-4 sm:px-6 sm:py-4">
+                        <div className="flex-1 min-w-0">
+                            <h4 className="text-xs sm:text-sm font-black text-gray-900 uppercase tracking-tight mb-0.5">
+                                {t.isReservationsTodayClosed}
+                            </h4>
+                            <p className="text-[11px] text-gray-500 font-medium leading-snug">
+                                {t.isReservationsTodayClosedDesc}
+                            </p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer shrink-0">
                             <input
                                 type="checkbox"
-                                checked={localSettings.isReservationsTodayClosed}
+                                checked={Boolean(localSettings.isReservationsTodayClosed)}
                                 onChange={e =>
                                     setLocalSettings({
                                         ...localSettings,
@@ -554,14 +542,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                                 }
                                 className="sr-only peer"
                             />
-                            <div
-                                className="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer 
-                                           peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full 
-                                           peer-checked:after:border-white after:content-[''] after:absolute 
-                                           after:top-1 after:start-[4px] after:bg-white after:border-gray-300 
-                                           after:border after:rounded-full after:h-6 after:w-6 after:transition-all 
-                                           peer-checked:bg-orange-600"
-                            ></div>
+                            <div className="relative w-12 h-7 bg-gray-200 rounded-full peer peer-checked:bg-orange-600 transition-colors after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:rounded-full after:h-[22px] after:w-[22px] after:shadow-sm after:transition-transform peer-checked:after:translate-x-5" />
                         </label>
                     </div>
                 </div>
@@ -772,211 +753,162 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 </div>
 
                 {/* Holiday & Seasonal Themes Configuration */}
-                <div className="p-3.5 sm:p-5 md:p-6 bg-purple-50/40 rounded-xl sm:rounded-2xl border border-purple-200/70 mb-4 sm:mb-8 space-y-4 sm:space-y-6 text-left">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <div>
-                            <h4 className="text-sm font-black text-purple-950 uppercase tracking-tight mb-1 flex items-center gap-2">
-                                <Sparkles size={16} className="text-purple-600" />
-                                {t.holidayThemeTitle}
-                            </h4>
-                            <p className="text-[11px] text-purple-900/80 font-medium">
-                                {t.holidayThemeDesc}
-                            </p>
-                        </div>
-                        <span className="text-2xl select-none self-end sm:self-auto">🎃 / ❄️</span>
-                    </div>
-
-                    {/* LIVE STATUS BANNER */}
-                    {(() => {
-                        const summary = getActiveThemeSummary();
-                        return (
-                            <div className="bg-white/90 backdrop-blur-sm border border-purple-200/80 rounded-xl p-3 sm:p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                                <div className="space-y-1">
-                                    <div className="flex items-center gap-2">
-                                        <span className="relative flex h-2.5 w-2.5">
-                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                                        </span>
-                                        <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-purple-950">
-                                            {t.holidayLiveActive}{' '}
-                                            <span className="text-purple-700 underline decoration-purple-300 underline-offset-2">
-                                                {summary.effectiveName}
-                                            </span>
-                                        </span>
+                {(() => {
+                    const summary = getActiveThemeSummary();
+                    const isAutoSelected = (localSettings.holidayTheme || 'auto') === 'auto';
+                    return (
+                        <div className="mb-8 pt-6 border-t border-gray-100 space-y-5 text-left">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                <div>
+                                    <div className="flex items-center gap-2.5 text-purple-700 border-l-4 border-purple-200 pl-3 sm:pl-4 mb-1">
+                                        <Sparkles size={15} className="text-purple-600" />
+                                        <h3 className="font-black text-xs uppercase tracking-[0.15em]">
+                                            {t.holidayThemeTitle}
+                                        </h3>
                                     </div>
-                                    <div className="flex flex-wrap items-center gap-2 text-[10px] text-gray-500 font-medium pl-4">
-                                        <span>
-                                            Фон:{' '}
-                                            <strong className="text-gray-700 font-bold">
-                                                {summary.wallpaper === 'Halloween'
-                                                    ? '🎃 Хэллоуин'
-                                                    : '🍣 Стандартные суши'}
-                                            </strong>
-                                        </span>
-                                        <span>•</span>
-                                        <span>
-                                            Анимации:{' '}
-                                            <strong
-                                                className={
-                                                    summary.animations
-                                                        ? 'text-emerald-600 font-bold'
-                                                        : 'text-gray-500 font-bold'
-                                                }
-                                            >
-                                                {summary.animations ? '✨ Включены' : 'Выключены'}
-                                            </strong>
-                                        </span>
-                                    </div>
+                                    <p className="text-[11px] text-gray-500 font-medium pl-4">
+                                        {t.holidayThemeDesc}
+                                    </p>
                                 </div>
 
-                                <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+                                <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-center shrink-0">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-purple-50 text-purple-900 text-[11px] font-bold">
+                                        <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                                        <span>{summary.effectiveName}</span>
+                                    </div>
                                     <a
                                         href="/"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-95 text-white text-[11px] font-black uppercase tracking-wider shadow-sm transition-all"
+                                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-700 active:scale-95 text-white text-[11px] font-black uppercase tracking-wider transition-all"
                                     >
                                         <ExternalLink size={13} />
                                         {t.holidayPreviewBtn}
                                     </a>
                                 </div>
                             </div>
-                        );
-                    })()}
 
-                    {/* Explanatory Admin Note */}
-                    <div className="text-[10px] text-purple-800/90 bg-purple-100/50 border border-purple-200/50 rounded-lg px-3 py-2 leading-relaxed">
-                        💡 {t.holidayAdminNotice}
-                    </div>
-
-                    {/* Presets Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
-                        {[
-                            {
-                                id: 'auto',
-                                title: t.holidayThemeAuto,
-                                subtitle: t.holidayThemeAutoSub,
-                                icon: '🗓️',
-                                badge: 'Auto',
-                            },
-                            {
-                                id: 'halloween_wallpaper',
-                                title: t.holidayThemeHalloweenWallpaper,
-                                subtitle: t.holidayThemeHalloweenWallpaperSub,
-                                icon: '🍂',
-                                badge: 'Fondo',
-                            },
-                            {
-                                id: 'halloween',
-                                title: t.holidayThemeHalloween,
-                                subtitle: t.holidayThemeHalloweenSub,
-                                icon: '🎃',
-                                badge: 'Completo',
-                            },
-                            {
-                                id: 'new_year',
-                                title: t.holidayThemeNewYear,
-                                subtitle: t.holidayThemeNewYearSub,
-                                icon: '❄️',
-                                badge: 'Invierno',
-                            },
-                            {
-                                id: 'christmas',
-                                title: t.holidayThemeChristmas,
-                                subtitle: t.holidayThemeChristmasSub,
-                                icon: '🎄',
-                                badge: 'Navidad',
-                            },
-                            {
-                                id: 'none',
-                                title: t.holidayThemeNone,
-                                subtitle: t.holidayThemeNoneSub,
-                                icon: '🍣',
-                                badge: 'Original',
-                            },
-                        ].map(preset => {
-                            const isSelected = (localSettings.holidayTheme || 'auto') === preset.id;
-                            return (
-                                <button
-                                    key={preset.id}
-                                    type="button"
-                                    onClick={() => handleSelectThemePreset(preset.id)}
-                                    className={`p-2.5 sm:p-3.5 md:p-4 rounded-xl text-left border transition-all cursor-pointer flex flex-col justify-between relative group ${
-                                        isSelected
-                                            ? 'bg-white border-purple-500 ring-2 ring-purple-500/25 shadow-md shadow-purple-100'
-                                            : 'bg-white/70 border-purple-100 hover:bg-white hover:border-purple-300 hover:shadow-sm'
-                                    }`}
-                                >
-                                    <div className="flex items-start justify-between w-full mb-1 sm:mb-2">
-                                        <span className="text-xl sm:text-2xl">{preset.icon}</span>
-                                        <span
-                                            className={`text-[8px] sm:text-[9px] font-black uppercase px-2 py-0.5 rounded-full ${
+                            {/* Presets Grid */}
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
+                                {[
+                                    {
+                                        id: 'auto',
+                                        title: t.holidayThemeAuto,
+                                        subtitle: t.holidayThemeAutoSub,
+                                        icon: '🗓️',
+                                    },
+                                    {
+                                        id: 'halloween_wallpaper',
+                                        title: t.holidayThemeHalloweenWallpaper,
+                                        subtitle: t.holidayThemeHalloweenWallpaperSub,
+                                        icon: '🍂',
+                                    },
+                                    {
+                                        id: 'halloween',
+                                        title: t.holidayThemeHalloween,
+                                        subtitle: t.holidayThemeHalloweenSub,
+                                        icon: '🎃',
+                                    },
+                                    {
+                                        id: 'new_year',
+                                        title: t.holidayThemeNewYear,
+                                        subtitle: t.holidayThemeNewYearSub,
+                                        icon: '❄️',
+                                    },
+                                    {
+                                        id: 'christmas',
+                                        title: t.holidayThemeChristmas,
+                                        subtitle: t.holidayThemeChristmasSub,
+                                        icon: '🎄',
+                                    },
+                                    {
+                                        id: 'none',
+                                        title: t.holidayThemeNone,
+                                        subtitle: t.holidayThemeNoneSub,
+                                        icon: '🍣',
+                                    },
+                                ].map(preset => {
+                                    const isSelected =
+                                        (localSettings.holidayTheme || 'auto') === preset.id;
+                                    return (
+                                        <button
+                                            key={preset.id}
+                                            type="button"
+                                            onClick={() => handleSelectThemePreset(preset.id)}
+                                            className={`p-3.5 sm:p-4 rounded-2xl text-left border transition-all cursor-pointer flex items-start gap-3 ${
                                                 isSelected
-                                                    ? 'bg-purple-600 text-white shadow-sm'
-                                                    : 'bg-purple-100 text-purple-700'
+                                                    ? 'bg-purple-50/60 border-purple-500 ring-2 ring-purple-500/20 shadow-sm'
+                                                    : 'bg-gray-50/40 border-gray-100 hover:bg-white hover:border-purple-200'
                                             }`}
                                         >
-                                            {isSelected
-                                                ? `✓ ${t.holidayActiveBadge}`
-                                                : preset.badge}
-                                        </span>
-                                    </div>
-                                    <div>
-                                        <div className="text-[11px] sm:text-xs font-black text-gray-900 mb-0.5 leading-snug">
-                                            {preset.title}
-                                        </div>
-                                        <div className="text-[9px] sm:text-[10px] text-gray-500 font-medium leading-tight">
-                                            {preset.subtitle}
-                                        </div>
-                                    </div>
-                                </button>
-                            );
-                        })}
-                    </div>
-
-                    {/* Additional Options */}
-                    <div className="pt-3 sm:pt-4 border-t border-purple-100 grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-4 items-center">
-                        {/* Animation Toggle */}
-                        <div className="flex items-center justify-between p-2.5 sm:p-3.5 bg-white rounded-xl border border-purple-100">
-                            <div>
-                                <div className="text-xs font-black text-gray-900">
-                                    {t.holidayAnimationsLabel}
-                                </div>
-                                <div className="text-[10px] text-gray-500 font-medium">
-                                    {t.holidayAnimationsDesc}
-                                </div>
+                                            <span className="text-2xl shrink-0 mt-0.5">
+                                                {preset.icon}
+                                            </span>
+                                            <div className="flex-1 min-w-0">
+                                                <div className="flex items-center justify-between gap-2 mb-0.5">
+                                                    <span className="text-xs font-black text-gray-900 truncate">
+                                                        {preset.title}
+                                                    </span>
+                                                    {isSelected && (
+                                                        <span className="text-[9px] font-black uppercase px-2 py-0.5 rounded-full bg-purple-600 text-white shrink-0">
+                                                            ✓ {t.holidayActiveBadge}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <p className="text-[10px] text-gray-500 font-medium leading-snug">
+                                                    {preset.subtitle}
+                                                </p>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
                             </div>
-                            <label className="relative inline-flex items-center cursor-pointer ml-3 shrink-0">
-                                <input
-                                    type="checkbox"
-                                    checked={Boolean(localSettings.holidayAnimationsEnabled)}
-                                    onChange={e => handleToggleAnimations(e.target.checked)}
-                                    className="sr-only peer"
-                                />
-                                <div
-                                    className="w-12 h-7 bg-gray-200 peer-focus:outline-none rounded-full peer 
-                                               peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] 
-                                               after:absolute after:top-0.5 after:start-[3px] after:bg-white after:border-gray-300 
-                                               after:border after:rounded-full after:h-6 after:w-6 after:transition-all 
-                                               peer-checked:bg-purple-600"
-                                ></div>
-                            </label>
-                        </div>
 
-                        {/* Date Picker: Wallpaper until date */}
-                        <div className="p-2.5 sm:p-3.5 bg-white rounded-xl border border-purple-100 space-y-1">
-                            <label className="block text-[9px] sm:text-[10px] font-black text-purple-900 uppercase tracking-wider">
-                                {t.holidayDateNotice}
-                            </label>
-                            <input
-                                type="date"
-                                value={localSettings.holidayWallpaperUntil || '2026-11-01'}
-                                onChange={e => handleWallpaperDateChange(e.target.value)}
-                                className="w-full bg-purple-50/50 border border-purple-100 rounded-lg px-2.5 py-1.5 text-xs font-bold text-gray-900 outline-none focus:border-purple-400 cursor-pointer"
-                            />
+                            {/* Animation Toggle & Optional Auto Date */}
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-2">
+                                <div className="flex items-center justify-between md:justify-start gap-4">
+                                    <div>
+                                        <div className="text-xs font-black text-gray-900">
+                                            {t.holidayAnimationsLabel}
+                                        </div>
+                                        <div className="text-[10px] text-gray-500 font-medium">
+                                            {t.holidayAnimationsDesc}
+                                        </div>
+                                    </div>
+                                    <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                                        <input
+                                            type="checkbox"
+                                            checked={Boolean(
+                                                localSettings.holidayAnimationsEnabled
+                                            )}
+                                            onChange={e => handleToggleAnimations(e.target.checked)}
+                                            className="sr-only peer"
+                                        />
+                                        <div className="relative w-12 h-7 bg-gray-200 rounded-full peer peer-checked:bg-purple-600 transition-colors after:content-[''] after:absolute after:top-[3px] after:left-[3px] after:bg-white after:rounded-full after:h-[22px] after:w-[22px] after:shadow-sm after:transition-transform peer-checked:after:translate-x-5" />
+                                    </label>
+                                </div>
+
+                                {isAutoSelected && (
+                                    <div className="flex items-center gap-3">
+                                        <label className="text-[10px] font-black text-gray-500 uppercase tracking-wider">
+                                            {t.holidayDateNotice}
+                                        </label>
+                                        <input
+                                            type="date"
+                                            value={
+                                                localSettings.holidayWallpaperUntil || '2026-11-01'
+                                            }
+                                            onChange={e =>
+                                                handleWallpaperDateChange(e.target.value)
+                                            }
+                                            className="bg-gray-50 border border-gray-200 rounded-xl px-3 py-1.5 text-xs font-bold text-gray-900 outline-none focus:border-purple-400 cursor-pointer"
+                                        />
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
-                </div>
+                    );
+                })()}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-6 md:gap-8 text-pretty">
                     <div className="space-y-2">
@@ -1146,7 +1078,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 </div>
             </div>
 
-            <div className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl sm:rounded-[32px] shadow-sm border border-gray-100">
+            <div className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
                 <div className="flex justify-between items-center mb-4 sm:mb-8">
                     <div className="flex items-center gap-3 text-orange-600 border-l-4 border-orange-100 pl-3 sm:pl-4">
                         <h3 className="font-black text-xs uppercase tracking-[0.15em]">
@@ -1229,7 +1161,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                         ))}
                     {(!Array.isArray(localSettings.socialLinks) ||
                         localSettings.socialLinks.length === 0) && (
-                        <div className="md:col-span-2 py-10 text-center bg-gray-50 rounded-[32px] border border-dashed border-gray-200">
+                        <div className="md:col-span-2 py-10 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-200">
                             <p className="text-xs font-black text-gray-400 uppercase tracking-widest">
                                 {t.noSocials}
                             </p>
@@ -1238,7 +1170,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                 </div>
             </div>
 
-            <div className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl sm:rounded-[32px] shadow-sm border border-gray-100">
+            <div className="bg-white p-3.5 sm:p-6 md:p-8 rounded-2xl shadow-sm border border-gray-100">
                 <div className="flex items-center gap-3 text-gray-400 border-l-4 border-gray-100 pl-4 mb-6">
                     <h3 className="font-black text-xs uppercase tracking-[0.15em]">
                         {t.scheduleTitle}
@@ -1257,7 +1189,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                             // ignore parsing errors while typing
                         }
                     }}
-                    className="w-full h-64 border border-gray-100 rounded-[24px] px-6 py-6 text-xs font-mono font-bold outline-none focus:border-orange-400 focus:bg-white bg-gray-50/50 shadow-inner custom-scrollbar"
+                    className="w-full h-64 border border-gray-100 rounded-xl px-6 py-6 text-xs font-mono font-bold outline-none focus:border-orange-400 focus:bg-white bg-gray-50/50 shadow-inner custom-scrollbar"
                 />
             </div>
 
@@ -1271,7 +1203,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                         className="fixed left-3 right-3 bottom-[max(12px,env(safe-area-inset-bottom))] md:left-auto md:right-8 md:bottom-8 md:max-w-[420px] z-toast pointer-events-auto"
                     >
                         <div
-                            className={`flex items-center gap-3 md:gap-4 px-4 py-3 md:px-6 md:py-4 rounded-2xl md:rounded-[24px] shadow-2xl border-2 ${
+                            className={`flex items-center gap-3 md:gap-4 px-4 py-3 md:px-6 md:py-4 rounded-2xl md:rounded-xl shadow-2xl border-2 ${
                                 saveStatus === 'success'
                                     ? 'bg-green-600 border-green-500 text-white'
                                     : 'bg-orange-600 border-orange-500 text-white'
@@ -1315,7 +1247,7 @@ export default function AdminSettings({ language = 'es' }: AdminSettingsProps) {
                         className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300"
                         onClick={() => setSocialToRemove(null)}
                     />
-                    <div className="relative bg-white rounded-[32px] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
+                    <div className="relative bg-white rounded-2xl p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                         <div className="text-center">
                             <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-orange-50">
                                 <Trash2 size={36} strokeWidth={2.5} />

@@ -527,7 +527,7 @@ export default function ContactsPage() {
                         initial={{ opacity: 0, x: -30 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
-                        className="lg:col-span-12 xl:col-span-5 bg-gray-50 px-4 py-8 md:p-10 rounded-[2rem] border border-gray-100 relative overflow-hidden order-2 xl:order-1 scroll-mt-24"
+                        className="lg:col-span-12 xl:col-span-5 bg-gray-50 px-4 py-8 md:p-10 rounded-2xl border border-gray-100 relative overflow-hidden order-2 xl:order-1 scroll-mt-24"
                     >
                         <div className="relative z-10">
                             <h2 className="text-2xl md:text-3xl font-black mb-2 tracking-tight">
@@ -552,7 +552,7 @@ export default function ContactsPage() {
                                             {...register('name')}
                                             disabled={submitting}
                                             placeholder="Nombre completo"
-                                            className={`w-full bg-white border ${errors.name ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-orange-500'} px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none transition-all font-medium text-base disabled:opacity-50`}
+                                            className={`w-full bg-white border ${errors.name ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-orange-500'} px-5 py-3 md:py-4 rounded-2xl outline-none transition-all font-medium text-base disabled:opacity-50`}
                                         />
                                         <AnimatePresence>
                                             {errors.name && (
@@ -577,7 +577,7 @@ export default function ContactsPage() {
                                             {...register('email')}
                                             disabled={submitting}
                                             placeholder="tu@email.com"
-                                            className={`w-full bg-white border ${errors.email ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-orange-500'} px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none transition-all font-medium text-base disabled:opacity-50`}
+                                            className={`w-full bg-white border ${errors.email ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-orange-500'} px-5 py-3 md:py-4 rounded-2xl outline-none transition-all font-medium text-base disabled:opacity-50`}
                                         />
                                         <AnimatePresence>
                                             {errors.email && (
@@ -603,7 +603,7 @@ export default function ContactsPage() {
                                         {...register('message')}
                                         disabled={submitting}
                                         placeholder="¿En qué podemos ayudarte?"
-                                        className={`w-full bg-white border ${errors.message ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-orange-500'} px-5 py-3 md:py-4 rounded-xl md:rounded-2xl outline-none transition-all font-medium resize-none text-base disabled:opacity-50`}
+                                        className={`w-full bg-white border ${errors.message ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-orange-500'} px-5 py-3 md:py-4 rounded-2xl outline-none transition-all font-medium resize-none text-base disabled:opacity-50`}
                                     ></textarea>
                                     <AnimatePresence>
                                         {errors.message && (
@@ -637,7 +637,7 @@ export default function ContactsPage() {
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="w-full bg-gray-900 text-white font-black py-4 md:py-5 rounded-xl md:rounded-2xl hover:bg-black transition-all shadow-lg flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
+                                    className="w-full bg-gray-900 text-white font-black py-4 md:py-5 rounded-2xl hover:bg-black transition-all shadow-lg flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed"
                                 >
                                     {submitting ? (
                                         <>
@@ -660,7 +660,7 @@ export default function ContactsPage() {
                             initial={{ opacity: 0, scale: 0.98 }}
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }}
-                            className="bg-white rounded-[2rem] overflow-hidden border border-gray-100 h-[300px] md:h-[450px] shadow-sm relative group z-10"
+                            className="bg-white rounded-2xl overflow-hidden border border-gray-100 h-[300px] md:h-[450px] shadow-sm relative group z-10"
                         >
                             <div className="w-full h-full relative z-10">
                                 <MapContainer
@@ -747,7 +747,7 @@ export default function ContactsPage() {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: 0.2 }}
-                            className="bg-gray-50 p-5 md:p-8 rounded-[2rem] border border-gray-100"
+                            className="bg-gray-50 p-5 md:p-8 rounded-2xl border border-gray-100"
                         >
                             <div className="flex items-center gap-3 mb-6">
                                 <Clock size={20} className="text-gray-900" />
@@ -854,7 +854,7 @@ export default function ContactsPage() {
                     viewport={{ once: true }}
                     className="max-w-7xl mx-auto px-4 md:px-6"
                 >
-                    <div className="bg-orange-600 rounded-[2rem] md:rounded-[3rem] px-5 py-10 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-orange-200">
+                    <div className="bg-orange-600 rounded-2xl px-5 py-10 md:p-24 text-center text-white relative overflow-hidden shadow-2xl shadow-orange-200">
                         <div className="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/asfalt-dark.png')] opacity-10"></div>
                         <div className="relative z-10 max-w-3xl mx-auto">
                             <h2 className="text-2xl md:text-6xl font-black mb-6 md:mb-8 leading-tight tracking-tighter">
@@ -866,7 +866,7 @@ export default function ContactsPage() {
                             </p>
                             <Link
                                 to="/menu"
-                                className="inline-block w-full sm:w-auto bg-white text-orange-600 px-10 md:px-12 py-4 md:py-5 rounded-xl md:rounded-2xl font-black tracking-tighter hover:scale-105 transition-transform shadow-xl"
+                                className="inline-block w-full sm:w-auto bg-white text-orange-600 px-10 md:px-12 py-4 md:py-5 rounded-2xl font-black tracking-tighter hover:scale-105 transition-transform shadow-xl"
                             >
                                 HACER MI PEDIDO
                             </Link>

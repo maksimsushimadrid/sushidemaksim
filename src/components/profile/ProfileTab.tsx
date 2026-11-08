@@ -326,97 +326,99 @@ export default function ProfileTab({ user, updateProfile }: Props) {
     };
 
     return (
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-10 px-2 md:px-0">
+        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header with Actions */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gray-100 pb-4">
-                <div className="text-center sm:text-left">
-                    <h2 className="text-xl md:text-2xl font-black text-gray-900 tracking-tight m-0">
+            <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4">
+                <div>
+                    <h2 className="text-lg md:text-xl font-black text-gray-900 tracking-tight m-0">
                         {isEditing ? 'Editar Perfil' : 'Datos Personales'}
                     </h2>
-                    <p className="text-gray-500 text-[11px] md:text-xs mt-0.5">
+                    <p className="text-gray-400 text-[11px] md:text-xs m-0 mt-0.5 font-medium">
                         Gestiona tu información básica y seguridad
                     </p>
                 </div>
 
-                <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
+                <div className="flex items-center gap-2 shrink-0">
                     {!isEditing ? (
                         <button
                             onClick={startEditing}
-                            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2 bg-gray-900 text-white rounded-xl font-black text-xs md:text-sm hover:bg-orange-600 transition-all shadow-lg shadow-gray-200 active:scale-95"
+                            className="flex items-center justify-center gap-1.5 px-4 py-2 bg-gray-900 text-white rounded-xl font-extrabold text-xs hover:bg-orange-600 transition-all active:scale-95 cursor-pointer border-none"
                         >
-                            <Edit3 size={16} strokeWidth={1.5} /> Editar
+                            <Edit3 size={14} strokeWidth={2} /> Editar
                         </button>
                     ) : (
                         <>
                             <button
                                 onClick={() => setIsEditing(false)}
-                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-gray-100 text-gray-500 rounded-xl font-black text-[10px] md:text-sm hover:bg-gray-200 transition-all active:scale-95"
+                                className="flex items-center justify-center gap-1.5 px-3.5 py-2 bg-gray-100 text-gray-600 rounded-xl font-extrabold text-xs hover:bg-gray-200 transition-all active:scale-95 cursor-pointer border-none"
                             >
-                                <X size={14} strokeWidth={1.5} /> <span>CANCELAR</span>
+                                <X size={14} strokeWidth={2} /> <span>Cancelar</span>
                             </button>
                             <button
                                 type="submit"
                                 form="profile-form"
-                                className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-3 md:py-2.5 bg-orange-600 text-white rounded-xl font-black text-[10px] md:text-sm hover:bg-orange-700 transition-all shadow-lg shadow-orange-100 active:scale-95"
+                                className="flex items-center justify-center gap-1.5 px-4 py-2 bg-orange-600 text-white rounded-xl font-extrabold text-xs hover:bg-orange-700 transition-all active:scale-95 cursor-pointer border-none"
                             >
-                                <Save size={14} strokeWidth={1.5} /> GUARDAR
+                                <Save size={14} strokeWidth={2} /> Guardar
                             </button>
                         </>
                     )}
                 </div>
             </div>
 
-            {/* Profile Completion Card */}
-            <div className="bg-white rounded-3xl p-5 border border-gray-100 shadow-sm relative overflow-hidden group">
-                <div className="flex items-center justify-between gap-4 mb-3">
-                    <div>
-                        <h3 className="text-sm font-black text-gray-900 uppercase tracking-wider m-0">
-                            Progreso de tu perfil
-                        </h3>
-                        <p className="text-[11px] text-gray-500 font-semibold m-0 mt-0.5 uppercase tracking-tight">
-                            Completa tu perfil para asegurar tu cuenta y conseguir Maksim Coins
-                        </p>
+            {/* Profile Completion Section - Flat (No Nested Box) */}
+            {completionPct < 100 && (
+                <div className="pb-5 border-b border-gray-100">
+                    <div className="flex items-center justify-between gap-4 mb-2">
+                        <div>
+                            <h3 className="text-xs font-extrabold text-gray-900 uppercase tracking-wider m-0">
+                                Progreso de tu perfil
+                            </h3>
+                            <p className="text-[11px] text-gray-400 font-medium m-0">
+                                Completa tu perfil para asegurar tu cuenta y recibir regalos
+                            </p>
+                        </div>
+                        <span className="text-sm font-black text-orange-600 leading-none">
+                            {completionPct}%
+                        </span>
                     </div>
-                    <span className="text-xl font-black text-orange-600 leading-none">
-                        {completionPct}%
-                    </span>
-                </div>
 
-                <div className="h-3 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50 mb-4">
-                    <div
-                        className="h-full rounded-full bg-gradient-to-r from-orange-500 to-orange-600 shadow-[0_0_8px_rgba(242,101,34,0.3)] transition-all duration-500"
-                        style={{ width: `${completionPct}%` }}
-                    />
-                </div>
+                    <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                        <div
+                            className="h-full rounded-full bg-orange-500 transition-all duration-500"
+                            style={{ width: `${completionPct}%` }}
+                        />
+                    </div>
 
-                {missingFields.length > 0 && (
-                    <div className="space-y-2.5 pt-1">
-                        {missingFields.map(f => (
-                            <div
-                                key={f.field}
-                                className="flex items-center justify-between bg-orange-50/20 border border-orange-100/30 rounded-xl p-3"
-                            >
-                                <span className="text-xs font-semibold text-gray-700 leading-snug">
-                                    {f.label}
-                                </span>
-                                <button
-                                    type="button"
-                                    onClick={() => handleCompleteField(f.field)}
-                                    className="px-4 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-black text-[10px] uppercase tracking-wider transition-all border-none cursor-pointer"
+                    {missingFields.length > 0 && (
+                        <div className="divide-y divide-gray-100 mt-3">
+                            {missingFields.map(f => (
+                                <div
+                                    key={f.field}
+                                    className="flex items-center justify-between gap-3 py-2 first:pt-0 last:pb-0"
                                 >
-                                    Completar
-                                </button>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
+                                    <span className="text-xs font-medium text-gray-600 leading-snug">
+                                        {f.label}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleCompleteField(f.field)}
+                                        className="text-xs font-extrabold text-orange-600 hover:text-orange-700 bg-transparent border-none p-0 cursor-pointer shrink-0"
+                                    >
+                                        Completar →
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
 
-            {/* Information Grid Wrapped in Form */}
+            {/* Information Grid Wrapped in Form - Flat */}
             <form
                 id="profile-form"
                 onSubmit={saveProfile}
-                className="grid grid-cols-1 md:grid-cols-2 gap-4"
+                className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-5"
             >
                 {[
                     {
@@ -462,18 +464,18 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                 ].map(field => (
                     <div
                         key={field.label}
-                        className="group p-3.5 rounded-2xl border border-gray-50 bg-gray-50/50 hover:bg-white hover:border-orange-100 hover:shadow-xl hover:shadow-gray-100 transition-all duration-300 flex flex-col"
+                        className="pb-3.5 border-b border-gray-100 flex flex-col justify-between"
                     >
-                        <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5 group-hover:text-orange-500 transition-colors">
-                            <field.icon size={11} strokeWidth={1.5} />
+                        <label className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5">
+                            <field.icon size={12} strokeWidth={2} className="text-orange-500" />
                             {field.label}
                         </label>
 
                         {isEditing ? (
-                            <div className="flex flex-col gap-1 flex-1">
+                            <div className="flex flex-col gap-1">
                                 {field.label === 'Teléfono' ? (
-                                    <div className="flex items-center bg-white border border-gray-200 rounded-xl focus-within:ring-2 focus-within:ring-orange-600/20 focus-within:border-orange-600 transition-all shadow-sm overflow-hidden h-[46px]">
-                                        <div className="pl-4 pr-2 text-gray-400 font-bold text-sm select-none border-r border-gray-100 h-full flex items-center bg-gray-50">
+                                    <div className="flex items-center bg-gray-50 border border-gray-200 rounded-xl focus-within:bg-white focus-within:border-orange-500 transition-all overflow-hidden h-[42px]">
+                                        <div className="pl-3.5 pr-2 text-gray-400 font-bold text-sm select-none border-r border-gray-200 h-full flex items-center">
                                             +34
                                         </div>
                                         <input
@@ -487,7 +489,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                                     .slice(0, 9);
                                                 field.setter(val ? `+34${val}` : '');
                                             }}
-                                            className="w-full bg-transparent border-none px-4 py-3 text-sm font-bold outline-none text-gray-900"
+                                            className="w-full bg-transparent border-none px-3 py-2 text-sm font-bold outline-none text-gray-900"
                                             placeholder="600 000 000"
                                             maxLength={9}
                                         />
@@ -516,57 +518,52 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                         disabled={(field as any).disabled}
                                         min={(field as any).min}
                                         max={(field as any).max}
-                                        className={`w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 focus:border-orange-600 outline-none transition-all shadow-sm h-[42px] ${(field as any).disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : ''}`}
+                                        className={`w-full bg-gray-50 focus:bg-white border border-gray-200 rounded-xl px-3.5 py-2 text-sm font-bold focus:border-orange-500 outline-none transition-all h-[42px] ${(field as any).disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
                                         placeholder={`Introduce tu ${field.label.toLowerCase()}`}
                                     />
                                 )}
                                 {['Nombre Completo', 'Teléfono', 'Fecha de Cumpleaños'].includes(
                                     field.label
                                 ) && (
-                                    <p className="text-[10px] text-orange-600/70 mt-1 font-bold animate-in fade-in slide-in-from-top-1 flex items-center gap-1">
+                                    <p className="text-[10px] text-gray-400 mt-1 font-medium m-0 flex items-center gap-1">
                                         <Shield size={10} className="text-orange-500" />
                                         Solo se puede cambiar una vez cada 30 días.
                                     </p>
                                 )}
                                 {field.label === 'Correo Electrónico' && (
-                                    <p className="text-[10px] text-gray-400 mt-2 font-medium flex items-center gap-1.5 opacity-80">
-                                        Para cambiar tu email, contacta con
+                                    <p className="text-[10px] text-gray-400 mt-1 font-medium m-0 flex items-center gap-1">
+                                        Para cambiar tu email, contacta por{' '}
                                         <a
                                             href="https://wa.me/34631920312?text=Hola,%20me%20gustar%C3%ADa%20solicitar%20un%20cambio%20de%20correo%20electr%C3%B3nico%20para%20mi%20cuenta."
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-emerald-600 font-black hover:underline flex items-center gap-1"
+                                            className="text-emerald-600 font-bold hover:underline"
                                         >
                                             WhatsApp
                                         </a>
                                     </p>
                                 )}
-                                {field.label.includes('Cumpleaños') &&
-                                    !['Nombre Completo', 'Teléfono'].includes(field.label) && (
-                                        <p className="text-[10px] text-gray-500 mt-1 font-medium animate-in fade-in slide-in-from-top-1">
-                                            🎁 ¡Te enviaremos un regalo especial en tu día!
-                                        </p>
-                                    )}
                             </div>
                         ) : (
-                            <div className="flex items-center justify-between min-h-[32px]">
-                                <p className="text-sm font-black text-gray-900 m-0">
+                            <div className="flex items-center justify-between gap-2 min-h-[28px]">
+                                <p className="text-sm font-bold text-gray-900 m-0 truncate">
                                     {field.value}
                                 </p>
                                 {field.label === 'Correo Electrónico' && (
-                                    <div className="flex flex-col items-end gap-1.5">
-                                        <div
-                                            className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter ${user.isVerified ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'} border-none`}
+                                    <div className="flex items-center gap-2 shrink-0">
+                                        <span
+                                            className={`text-[10px] font-extrabold uppercase ${user.isVerified ? 'text-emerald-600' : 'text-amber-600'}`}
                                         >
-                                            {user.isVerified ? 'Verificado' : 'Sin verificar'}
-                                        </div>
+                                            {user.isVerified ? '✓ Verificado' : 'Sin verificar'}
+                                        </span>
+                                        <span className="text-gray-200">•</span>
                                         <a
                                             href="https://wa.me/34631920312?text=Hola,%20me%20gustar%C3%ADa%20solicitar%20un%20cambio%20de%20correo%20electr%C3%B3nico%20para%20mi%20cuenta."
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-[9px] text-emerald-600 font-black hover:underline"
+                                            className="text-[10px] text-gray-400 hover:text-emerald-600 font-bold hover:underline"
                                         >
-                                            Solicitar cambio
+                                            Cambiar
                                         </a>
                                     </div>
                                 )}
@@ -576,49 +573,51 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                 ))}
             </form>
 
-            {/* Avatar Selection (Only when editing) */}
+            {/* Avatar Selection (Only when editing) - Flat Section */}
             {isEditing && (
-                <div className="px-4 py-8 md:p-10 bg-gray-900 rounded-[40px] text-white overflow-hidden relative shadow-2xl">
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-orange-600 rounded-full blur-[100px] opacity-20 -mr-32 -mt-32" />
-                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-600 rounded-full blur-[100px] opacity-10 -ml-32 -mb-32" />
-
-                    <h3 className="text-sm font-black uppercase tracking-[0.2em] text-white/50 mb-8 flex items-center gap-3">
-                        <div className="w-2 h-2 bg-orange-600 rounded-full animate-ping" />
-                        Avatar & Foto
-                    </h3>
-
-                    <div className="flex flex-col items-center justify-center p-8 mb-10 bg-white/5 rounded-[40px] border border-white/10 backdrop-blur-md relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl -mr-16 -mt-16" />
-
-                        <div className="relative mb-6">
-                            <div className="w-32 h-32 md:w-36 md:h-36 rounded-[42px] bg-gray-800 border-4 border-white/20 shadow-2xl flex items-center justify-center overflow-hidden transition-all duration-500 group-hover:scale-105 group-hover:border-orange-500">
-                                {editAvatar && editAvatar.startsWith('http') ? (
-                                    <SafeImage
-                                        src={editAvatar}
-                                        getOptimizedUrl={getSharpAvatar}
-                                        alt="Avatar"
-                                        className="w-full h-full object-cover"
-                                        fallbackContent={
-                                            <div className="text-5xl md:text-6xl select-none font-black text-white/90">
-                                                {currentInitials}
-                                            </div>
-                                        }
-                                    />
-                                ) : (
-                                    <div className="text-5xl md:text-6xl select-none font-black text-white/90">
-                                        {editAvatar || currentInitials}
-                                    </div>
-                                )}
-
-                                {isUploading && (
-                                    <div className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center">
-                                        <div className="w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin" />
-                                    </div>
-                                )}
+                <div className="pt-2 border-b border-gray-100 pb-6" id="avatar-grid">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+                        <div className="flex items-center gap-4">
+                            <div className="relative shrink-0">
+                                <div className="w-16 h-16 rounded-2xl bg-gray-100 border border-gray-200 flex items-center justify-center overflow-hidden">
+                                    {editAvatar && editAvatar.startsWith('http') ? (
+                                        <SafeImage
+                                            src={editAvatar}
+                                            getOptimizedUrl={getSharpAvatar}
+                                            alt="Avatar"
+                                            className="w-full h-full object-cover"
+                                            fallbackContent={
+                                                <div className="text-2xl select-none font-black text-gray-700">
+                                                    {currentInitials}
+                                                </div>
+                                            }
+                                        />
+                                    ) : (
+                                        <div className="text-2xl select-none font-black text-gray-700">
+                                            {editAvatar || currentInitials}
+                                        </div>
+                                    )}
+                                    {isUploading && (
+                                        <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+                                            <div className="w-5 h-5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                                        </div>
+                                    )}
+                                </div>
                             </div>
+                            <div>
+                                <h3 className="text-xs font-extrabold uppercase tracking-wider text-gray-900 m-0">
+                                    Avatar y foto de perfil
+                                </h3>
+                                <p className="text-[11px] text-gray-400 font-medium m-0 mt-0.5">
+                                    Sube tu propia foto o elige un icono de la colección
+                                </p>
+                            </div>
+                        </div>
 
-                            <label className="absolute -bottom-2 -right-2 w-11 h-11 bg-white text-gray-900 rounded-2xl flex items-center justify-center shadow-xl cursor-pointer hover:bg-orange-600 hover:text-white transition-all transform hover:scale-110 active:scale-90 group/cam">
-                                <Camera size={20} />
+                        <div className="flex items-center gap-2">
+                            <label className="flex items-center gap-1.5 px-3.5 py-2 bg-gray-900 hover:bg-orange-600 text-white rounded-xl text-xs font-bold cursor-pointer transition-colors">
+                                <Camera size={14} />
+                                <span>Subir foto</span>
                                 <input
                                     type="file"
                                     accept="image/*"
@@ -627,74 +626,39 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                     disabled={isUploading}
                                 />
                             </label>
-                        </div>
-
-                        <div className="flex flex-col items-center gap-3">
-                            <h4 className="text-sm font-black text-white uppercase tracking-wider m-0">
-                                {editAvatar && editAvatar.startsWith('http')
-                                    ? 'Tu foto personalizada'
-                                    : 'Personaliza tu avatar'}
-                            </h4>
-                            <div className="flex gap-2">
-                                {editAvatar && editAvatar.startsWith('http') && (
-                                    <button
-                                        onClick={() => setEditAvatar('')}
-                                        className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-orange-500/20 text-[10px] font-black uppercase text-white rounded-xl border border-white/10 transition-all"
-                                    >
-                                        <Trash2 size={12} /> Quitar Foto
-                                    </button>
-                                )}
-                                {!editAvatar.startsWith('http') && editAvatar !== '' && (
-                                    <button
-                                        onClick={() => setEditAvatar('')}
-                                        className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-[10px] font-black uppercase text-white rounded-xl border border-white/10 transition-all"
-                                    >
-                                        <RotateCcw size={12} /> Resetear
-                                    </button>
-                                )}
-                            </div>
+                            {editAvatar !== '' && (
+                                <button
+                                    type="button"
+                                    onClick={() => setEditAvatar('')}
+                                    className="flex items-center gap-1.5 px-3 py-2 bg-gray-100 hover:bg-gray-200 text-xs font-bold text-gray-600 rounded-xl border-none cursor-pointer transition-colors"
+                                >
+                                    <RotateCcw size={13} />
+                                    <span>Original ({currentInitials})</span>
+                                </button>
+                            )}
                         </div>
                     </div>
 
-                    <div className="space-y-8 relative z-10" id="avatar-grid">
-                        <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-3 ml-1">
-                                Original
-                            </p>
-                            <motion.button
-                                whileHover={{ scale: 1.05 }}
-                                whileTap={{ scale: 0.95 }}
-                                type="button"
-                                onClick={() => setEditAvatar('')}
-                                className={`w-14 h-14 rounded-2xl flex items-center justify-center text-sm font-black transition-all border-2
-                                    ${editAvatar === '' ? 'bg-orange-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.4)]' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}`}
-                            >
-                                {editName.substring(0, 2).toUpperCase() || '??'}
-                            </motion.button>
-                        </div>
-
+                    <div className="space-y-4">
                         {AVATAR_CATEGORIES.map(category => (
                             <div key={category.name}>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-white/30 mb-4 ml-1">
+                                <p className="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-2 m-0">
                                     {category.name}
                                 </p>
-                                <div className="flex flex-wrap gap-2 sm:gap-3">
+                                <div className="flex flex-wrap gap-1.5 sm:gap-2">
                                     {category.icons.map(avatar => (
-                                        <motion.button
+                                        <button
                                             key={`${category.name}-${avatar}`}
-                                            whileHover={{ scale: 1.15, rotate: 5 }}
-                                            whileTap={{ scale: 0.9 }}
                                             type="button"
                                             onClick={() => setEditAvatar(avatar)}
-                                            className={`w-14 h-14 rounded-2xl text-2xl flex items-center justify-center transition-all border-2
-                                                ${
-                                                    editAvatar === avatar
-                                                        ? 'bg-orange-600 border-white shadow-[0_0_20px_rgba(239,68,68,0.5)] scale-110 z-10'
-                                                        : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30'
-                                                }`}
+                                            className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl text-lg sm:text-xl flex items-center justify-center transition-all cursor-pointer border ${
+                                                editAvatar === avatar
+                                                    ? 'bg-orange-50 border-orange-500 scale-105'
+                                                    : 'bg-gray-50 border-gray-100 hover:bg-gray-100'
+                                            }`}
                                         >
                                             {avatar}
-                                        </motion.button>
+                                        </button>
                                     ))}
                                 </div>
                             </div>
@@ -703,49 +667,45 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                 </div>
             )}
 
-            {/* Security Section */}
-            <div className="pt-8 border-t border-gray-100">
+            {/* Security Section - Flat Row */}
+            <div className="pt-1 border-b border-gray-100 pb-5">
                 {!showChangePassword ? (
-                    <div className="bg-amber-50 rounded-[32px] p-6 flex flex-col sm:flex-row items-center justify-between gap-6 border border-amber-100">
-                        <div className="flex items-center gap-4 text-center sm:text-left">
-                            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600">
-                                <Shield size={24} strokeWidth={1.5} />
-                            </div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                            <Shield size={18} strokeWidth={2} className="text-amber-500 shrink-0" />
                             <div>
-                                <h4 className="text-sm font-black text-amber-900 uppercase tracking-tight m-0">
+                                <h4 className="text-xs sm:text-sm font-extrabold text-gray-900 m-0">
                                     Seguridad de la cuenta
                                 </h4>
-                                <p className="text-xs text-amber-700 mt-0.5 m-0 opacity-80">
-                                    Tu contraseña se actualizó hace tiempo
+                                <p className="text-[11px] text-gray-400 m-0">
+                                    Actualiza tu contraseña periódicamente para mantener tu cuenta
+                                    segura
                                 </p>
                             </div>
                         </div>
                         <button
                             onClick={() => setShowChangePassword(true)}
-                            className="w-full sm:w-auto px-8 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-black text-sm transition-all shadow-lg shadow-amber-200"
+                            className="self-start sm:self-auto text-xs font-extrabold text-orange-600 hover:text-orange-700 bg-transparent border-none p-0 cursor-pointer shrink-0"
                         >
-                            Cambiar Contraseña
+                            Cambiar contraseña →
                         </button>
                     </div>
                 ) : (
-                    <form
-                        id="password-form"
-                        onSubmit={handleChangePassword}
-                        className="bg-gray-50 rounded-[32px] p-8 border border-gray-100"
-                    >
-                        <div className="flex items-center justify-between mb-8">
-                            <h4 className="text-lg font-black text-gray-900 m-0">
+                    <form id="password-form" onSubmit={handleChangePassword} className="space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h4 className="text-sm font-black text-gray-900 m-0">
                                 Cambio de Contraseña
                             </h4>
                             <button
+                                type="button"
                                 onClick={() => setShowChangePassword(false)}
-                                className="text-gray-400 hover:text-gray-600"
+                                className="text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer p-1"
                             >
-                                <X size={20} strokeWidth={1.5} />
+                                <X size={18} strokeWidth={2} />
                             </button>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {[
                                 {
                                     label: 'Contraseña Actual',
@@ -770,7 +730,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                 },
                             ].map(f => (
                                 <div key={f.label}>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 px-1">
+                                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5">
                                         {f.label}
                                     </label>
                                     <div className="relative">
@@ -778,18 +738,18 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                                             ref={f.ref}
                                             type={f.show ? 'text' : 'password'}
                                             name={f.name}
-                                            className="w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-orange-600/20 outline-none transition-all"
+                                            className="w-full bg-gray-50 focus:bg-white border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm font-bold focus:border-orange-500 outline-none transition-all"
                                         />
                                         {f.label !== 'Confirmar Nueva Contraseña' && (
                                             <button
                                                 type="button"
                                                 onClick={() => f.toggle(!f.show)}
-                                                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 bg-transparent border-none cursor-pointer"
                                             >
                                                 {f.show ? (
-                                                    <EyeOff size={16} strokeWidth={1.5} />
+                                                    <EyeOff size={15} strokeWidth={1.8} />
                                                 ) : (
-                                                    <Eye size={16} strokeWidth={1.5} />
+                                                    <Eye size={15} strokeWidth={1.8} />
                                                 )}
                                             </button>
                                         )}
@@ -798,43 +758,45 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                             ))}
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-3 mt-8">
+                        <div className="flex items-center gap-2 pt-1">
                             <button
                                 type="submit"
-                                className="flex-1 sm:flex-none px-8 py-3.5 bg-orange-600 text-white rounded-xl font-black text-xs md:text-sm hover:bg-orange-700 transition-all shadow-xl shadow-orange-100 active:scale-95"
+                                className="px-5 py-2 bg-orange-600 text-white rounded-xl font-extrabold text-xs hover:bg-orange-700 transition-all active:scale-95 cursor-pointer border-none"
                             >
-                                ACTUALIZAR
+                                Actualizar contraseña
                             </button>
                             <button
+                                type="button"
                                 onClick={() => setShowChangePassword(false)}
-                                className="flex-1 sm:flex-none px-8 py-3.5 bg-gray-100 text-gray-500 rounded-xl font-black text-xs md:text-sm hover:bg-gray-200 hover:text-gray-900 transition-all active:scale-95"
+                                className="px-4 py-2 bg-gray-100 text-gray-600 rounded-xl font-extrabold text-xs hover:bg-gray-200 transition-all active:scale-95 cursor-pointer border-none"
                             >
-                                CANCELAR
+                                Cancelar
                             </button>
                         </div>
                     </form>
                 )}
             </div>
 
-            {/* Danger Zone */}
-            <div className="pt-12 border-t border-gray-100">
-                <div className="bg-orange-50 rounded-[32px] p-8 border border-orange-100 flex flex-col md:flex-row items-center justify-between gap-6">
-                    <div className="text-center md:text-left">
-                        <h4 className="text-lg font-black text-orange-900 m-0 flex items-center gap-2 justify-center md:justify-start">
-                            <Trash2 size={20} strokeWidth={1.5} /> ZONA DE PELIGRO
+            {/* Danger Zone - Flat Row */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+                <div className="flex items-center gap-3">
+                    <Trash2 size={18} strokeWidth={2} className="text-red-500 shrink-0" />
+                    <div>
+                        <h4 className="text-xs sm:text-sm font-extrabold text-gray-900 m-0">
+                            Eliminar cuenta
                         </h4>
-                        <p className="text-sm text-orange-700 mt-2 m-0 font-medium">
-                            Tu cuenta se marcará para eliminación. Tienes 30 días para recuperarla
-                            simplemente iniciando sesión.
+                        <p className="text-[11px] text-gray-400 m-0">
+                            Se marcará para eliminación con 30 días para recuperarla iniciando
+                            sesión
                         </p>
                     </div>
-                    <button
-                        onClick={() => setShowDeleteConfirm(true)}
-                        className="w-full md:w-auto px-8 py-3.5 bg-white text-orange-600 border-2 border-orange-200 hover:border-orange-600 hover:bg-orange-600 hover:text-white rounded-xl font-black text-xs md:text-sm transition-all shadow-lg shadow-orange-100 active:scale-95 whitespace-nowrap"
-                    >
-                        Eliminar mi cuenta
-                    </button>
                 </div>
+                <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="self-start sm:self-auto text-xs font-extrabold text-red-600 hover:text-red-700 bg-transparent border-none p-0 cursor-pointer shrink-0"
+                >
+                    Eliminar mi cuenta →
+                </button>
             </div>
 
             {/* Delete Confirmation Modal */}
@@ -850,7 +812,7 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                     <motion.div
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        className="relative bg-white rounded-[40px] p-8 md:p-10 max-w-md w-full shadow-2xl overflow-hidden"
+                        className="relative bg-white rounded-2xl p-5 sm:p-6 md:p-8 max-w-md w-full shadow-2xl overflow-hidden"
                     >
                         <div className="absolute top-0 left-0 w-full h-2 bg-orange-600" />
                         <div className="text-center">

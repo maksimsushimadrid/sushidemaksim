@@ -965,7 +965,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                             className="absolute inset-0 bg-gray-900/60 backdrop-blur-sm animate-in fade-in duration-300"
                             onClick={() => setUserToDelete(null)}
                         />
-                        <div className="relative bg-white rounded-[32px] p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
+                        <div className="relative bg-white rounded-2xl p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                             <div className="text-center">
                                 <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner">
                                     <Trash2 size={40} strokeWidth={2.5} />
@@ -1022,7 +1022,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                             if (e.target === e.currentTarget) setUserToChangeRole(null);
                         }}
                     >
-                        <div className="relative bg-white rounded-[32px] p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
+                        <div className="relative bg-white rounded-2xl p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                             <div className="text-center">
                                 <div className="w-20 h-20 bg-amber-50 text-amber-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-amber-100">
                                     <Shield size={40} strokeWidth={2.5} />
@@ -1124,7 +1124,7 @@ export default function AdminUsers({ language = 'es' }: AdminUsersProps) {
                             if (e.target === e.currentTarget) setUserToVerify(null);
                         }}
                     >
-                        <div className="relative bg-white rounded-[32px] p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
+                        <div className="relative bg-white rounded-2xl p-10 max-w-md w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                             <div className="text-center">
                                 <div className="w-20 h-20 bg-blue-50 text-blue-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-blue-100">
                                     <CheckCircle size={40} strokeWidth={2.5} />

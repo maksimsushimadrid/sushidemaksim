@@ -3,7 +3,14 @@ import { useQuery } from '@tanstack/react-query';
 import { Helmet } from 'react-helmet-async';
 import SEO from '../components/SEO';
 import { useCart } from '../hooks/useCart';
-import { usePopularItems, useCategories, MenuItem } from '../hooks/queries/useMenu';
+import { useAuth } from '../hooks/useAuth';
+import {
+    usePopularItems,
+    useCategories,
+    useFavorites,
+    useToggleFavorite,
+    MenuItem,
+} from '../hooks/queries/useMenu';
 import ShareModal from '../components/menu/ShareModal';
 import { getOptimizedImageUrl } from '../utils/images';
 import { useSettings } from '../hooks/queries/useSettings';
@@ -40,6 +47,9 @@ const ReviewsSEO = lazy(() => import('../components/ReviewsSEO'));
 
 export default function HomePage() {
     const { items, addItem } = useCart();
+    const { user } = useAuth();
+    const { data: favorites } = useFavorites(user);
+    const { mutate: toggleFavorite } = useToggleFavorite();
 
     const [sharingItem, setSharingItem] = useState<MenuItem | null>(null);
     const [copying, setCopying] = useState(false);
@@ -303,6 +313,9 @@ export default function HomePage() {
                     onShare={handleShare}
                     onAddToCart={handleAddToCart}
                     isLoading={itemsLoading}
+                    user={user}
+                    favorites={favorites as Set<number>}
+                    onToggleFavorite={toggleFavorite}
                 />
             </Suspense>
 

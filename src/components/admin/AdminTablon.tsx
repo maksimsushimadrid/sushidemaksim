@@ -109,7 +109,8 @@ export default function AdminTablon({ language }: AdminTablonProps) {
             window.location.hostname === 'localhost'
                 ? 'http://localhost:3001'
                 : window.location.origin;
-        window.open(`${adminUrl}/api/threads/auth`, '_blank');
+        const token = localStorage.getItem('sushi_token') || '';
+        window.open(`${adminUrl}/api/threads/auth?token=${encodeURIComponent(token)}`, '_blank');
     };
 
     const handleDisconnectThreads = async () => {

@@ -13,6 +13,29 @@ export function invalidateMenuCache(): void {
     // No-op since we rely on Vercel Edge caching headers now
 }
 
+/** Helper to fetch distinct user favorite counts per menu_item_id */
+async function getLikesCountMap(itemIds?: number[]): Promise<Record<number, number>> {
+    let favQuery = supabase
+        .from('user_favorites')
+        .select('menu_item_id, user_id')
+        .not('user_id', 'is', null);
+    if (itemIds && itemIds.length > 0) {
+        favQuery = favQuery.in('menu_item_id', itemIds);
+    }
+    const { data: favRows } = await favQuery;
+    const seenPairs = new Set<string>();
+    const counts: Record<number, number> = {};
+    for (const row of favRows || []) {
+        const mId = Number(row.menu_item_id);
+        if (!mId || !row.user_id) continue;
+        const pairKey = `${mId}:${row.user_id}`;
+        if (seenPairs.has(pairKey)) continue;
+        seenPairs.add(pairKey);
+        counts[mId] = (counts[mId] || 0) + 1;
+    }
+    return counts;
+}
+
 // GET /api/menu/popular — returns top 6 items based on 90d ABC revenue analysis
 router.get(
     '/popular',
@@ -53,6 +76,8 @@ router.get(
             .slice(0, 6)
             .map(([id]) => Number(id));
 
+        const likesMap = await getLikesCountMap();
+
         // 4. Fetch their active menu_items data
         let formatted: any[] = [];
         if (topItemIds.length > 0) {
@@ -63,7 +88,7 @@ router.get(
 
             const itemsMap: Record<number, any> = {};
             (menuItems || []).forEach(item => {
-                itemsMap[item.id] = formatMenuItem(item);
+                itemsMap[item.id] = formatMenuItem(item, likesMap[item.id] || 0);
             });
 
             // Re-sort to match revenue map order
@@ -85,7 +110,10 @@ router.get(
 
             const { data: fallbacks } = await fallbackQuery;
             if (fallbacks) {
-                formatted = [...formatted, ...fallbacks.map(formatMenuItem)];
+                formatted = [
+                    ...formatted,
+                    ...fallbacks.map(item => formatMenuItem(item, likesMap[item.id] || 0)),
+                ];
             }
         }
 
@@ -120,7 +148,7 @@ router.get(
         }
 
         if (hasSearch) {
-            const term = search.trim();
+            const term = search.replace(/[,()]/g, ' ').trim();
             query = query.or(`name.ilike.%${term}%,description.ilike.%${term}%`);
         }
 
@@ -128,12 +156,13 @@ router.get(
 
         if (error) throw error;
 
-        const formatted = (items || []).map(formatMenuItem);
+        const likesMap = await getLikesCountMap((items || []).map(i => Number(i.id)));
+        const formatted = (items || []).map(item => formatMenuItem(item, likesMap[item.id] || 0));
         const result = { items: formatted, total: formatted.length };
 
         res.set(
             'Cache-Control',
-            hasSearch ? 'private, no-cache' : 'public, max-age=300, s-maxage=600'
+            hasSearch ? 'private, no-cache' : 'public, max-age=15, s-maxage=30'
         );
         res.json(result);
     })
@@ -212,8 +241,9 @@ router.get(
             return res.status(404).json({ error: 'Producto no encontrado' });
         }
 
-        res.set('Cache-Control', 'public, max-age=300, s-maxage=600');
-        res.json({ item: formatMenuItem(item) });
+        const likesMap = await getLikesCountMap([Number(item.id)]);
+        res.set('Cache-Control', 'public, max-age=15, s-maxage=30');
+        res.json({ item: formatMenuItem(item, likesMap[item.id] || 0) });
     })
 );
 

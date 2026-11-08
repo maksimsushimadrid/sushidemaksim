@@ -53,7 +53,7 @@ export default function CartItemList({
     const grossTotal = subtotal + effectiveDeliveryCost + tipAmount;
     const netTotal = Math.max(0, grossTotal - totalDiscounts);
     return (
-        <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 mb-6 overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-6 overflow-hidden">
             <div className="flex items-center justify-between p-4 pb-2 border-b border-gray-50 bg-gray-50/30">
                 <div className="flex items-center gap-2">
                     <span className="w-6 h-6 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center text-xs font-black">
@@ -188,36 +188,6 @@ export default function CartItemList({
                                 </div>
                             )}
 
-                            {(item.id === '115' || item.menuItemId === 115) && (
-                                <div className="mb-2 w-full max-w-full">
-                                    <div className="relative flex items-center w-full max-w-[220px]">
-                                        <select
-                                            value={item.selectedOption || 'Cerveza de Calabaza'}
-                                            onChange={e => {
-                                                triggerHaptic();
-                                                updateQuantity(
-                                                    item.id,
-                                                    item.quantity,
-                                                    item.cartItemId,
-                                                    e.target.value
-                                                );
-                                            }}
-                                            className="w-full text-[11px] font-bold bg-white border border-gray-200 rounded-lg pl-2.5 pr-7 py-1.5 outline-none text-gray-700 focus:border-orange-300 focus:ring-1 focus:ring-orange-200 shadow-xs transition-all cursor-pointer hover:bg-gray-50 active:scale-95 truncate appearance-none"
-                                        >
-                                            <option value="Cerveza de Calabaza">
-                                                🎃 Cerveza de Calabaza (Pumpkin Ale)
-                                            </option>
-                                            <option value="Cerveza Artesana Clásica">
-                                                🍺 Cerveza Artesana Clásica
-                                            </option>
-                                        </select>
-                                        <ChevronDown
-                                            size={14}
-                                            className="absolute right-2 text-gray-400 pointer-events-none"
-                                        />
-                                    </div>
-                                </div>
-                            )}
                             <div className="flex items-center justify-between gap-1 md:gap-4 mt-1">
                                 <div className="flex items-center bg-gray-50 rounded-lg p-1 border border-gray-100">
                                     <button

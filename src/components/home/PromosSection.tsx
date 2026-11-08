@@ -51,7 +51,7 @@ export function PromosSection({ activePromos }: PromosSectionProps) {
                                 whileInView={{ opacity: 1 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: idx * 0.15 }}
-                                className="relative overflow-hidden rounded-[2.5rem] bg-orange-500 p-8 md:p-12 shadow-xl shadow-orange-500/20"
+                                className="relative overflow-hidden rounded-2xl bg-orange-500 p-5 sm:p-6 md:p-8 shadow-xl shadow-orange-500/20"
                             >
                                 {promo.image_url && (
                                     <div className="absolute inset-0 z-0">
@@ -105,7 +105,7 @@ export function PromosSection({ activePromos }: PromosSectionProps) {
                     {activePromos.length > 2 && (
                         <div className="text-center">
                             <Link
-                                to="/promos"
+                                to="/promo"
                                 className="inline-flex items-center gap-2 text-orange-600 font-black text-sm uppercase tracking-widest hover:underline"
                             >
                                 <Sparkles size={16} />
@@ -127,7 +127,7 @@ export function PromosSection({ activePromos }: PromosSectionProps) {
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
-                    className="relative overflow-hidden rounded-[2.5rem] bg-orange-500 p-8 md:p-12 shadow-xl shadow-orange-500/20"
+                    className="relative overflow-hidden rounded-2xl bg-orange-500 p-5 sm:p-6 md:p-8 shadow-xl shadow-orange-500/20"
                 >
                     <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-orange-600/10 to-transparent pointer-events-none"></div>
                     <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">

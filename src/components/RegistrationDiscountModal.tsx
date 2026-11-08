@@ -109,7 +109,7 @@ export default function RegistrationDiscountModal({
                             mass: 0.8,
                         }}
                         onClick={e => e.stopPropagation()}
-                        className="relative w-full max-w-[380px] sm:max-w-[420px] max-h-[92vh] overflow-y-auto bg-white rounded-[28px] sm:rounded-[32px] shadow-[0_25px_60px_-15px_rgba(242,101,34,0.35),0_10px_30px_rgba(0,0,0,0.2)] border border-orange-100"
+                        className="relative w-full max-w-[380px] sm:max-w-[420px] max-h-[92vh] overflow-y-auto bg-white rounded-2xl shadow-[0_25px_60px_-15px_rgba(242,101,34,0.35),0_10px_30px_rgba(0,0,0,0.2)] border border-orange-100"
                     >
                         {/* Top decorative gradient bar */}
                         <div className="h-1.5 w-full bg-gradient-to-r from-orange-500 via-amber-500 to-orange-600" />

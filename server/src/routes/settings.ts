@@ -20,8 +20,9 @@ router.get(
                 return res.json({});
             }
 
-            // Convert array of rows to a single object map with camelCase keys
+            // Convert array of rows to a single object map with camelCase keys (excluding secret keys)
             const settingsMap = settings.reduce((acc: any, curr: any) => {
+                if (curr.key === 'secret_promo_codes') return acc;
                 const camelKey = curr.key.replace(/_([a-z0-9])/g, (g: any) => g[1].toUpperCase());
                 try {
                     acc[camelKey] =

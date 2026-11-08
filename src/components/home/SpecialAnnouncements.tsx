@@ -1,7 +1,7 @@
 import { memo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Beer, ChefHat, Sparkles, ShoppingBag, Check, ArrowRight, Flame } from 'lucide-react';
+import { ChefHat, ShoppingBag, Check, ArrowRight } from 'lucide-react';
 import SafeImage from '../common/SafeImage';
 import { useCart } from '../../hooks/useCart';
 import { useMenu } from '../../hooks/queries/useMenu';
@@ -14,7 +14,7 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
     const [justAdded, setJustAdded] = useState(false);
     const [isAdding, setIsAdding] = useState(false);
 
-    const handleOrderPumpkinBeer = async (e: React.MouseEvent) => {
+    const handleOrderCraftBeer = async (e: React.MouseEvent) => {
         e.preventDefault();
         if (isAdding) return;
 
@@ -24,24 +24,24 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
         const beerItem = menuItems.find(i => i.id === 115);
         const sushiItem: SushiItem = {
             id: '115',
-            name: 'Cerveza de Calabaza (Pumpkin Ale)',
+            name: beerItem?.name || 'Cerveza Artesana (0.33L)',
             description:
                 beerItem?.description ||
-                'Cerveza artesana de calabaza edición limitada de autor (0.33L)',
+                'Cerveza artesana de elaboración propia (0.33L). Sabores diferentes para cada temporada.',
             price: beerItem?.price ?? 6,
-            image: '/images/announcements/pumpkin-beer-033.webp',
+            image: beerItem?.image || '/images/announcements/craft-beer-033.webp',
             category: 'bebidas',
         };
 
         try {
-            await addItem(sushiItem, 1, 'Cerveza de Calabaza');
+            await addItem(sushiItem, 1);
             setJustAdded(true);
             setTimeout(() => {
                 setJustAdded(false);
                 setIsAdding(false);
             }, 2000);
         } catch (error) {
-            console.error('Error adding pumpkin beer to cart:', error);
+            console.error('Error adding craft beer to cart:', error);
             setIsAdding(false);
         }
     };
@@ -60,13 +60,13 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
         >
             <div className="max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-                    {/* Announcement 1: Pumpkin Beer 0.33L */}
+                    {/* Announcement 1: Craft Beer 0.33L */}
                     <motion.article
                         initial={{ opacity: 0, y: 15 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, amount: 0.1 }}
                         transition={{ duration: 0.5 }}
-                        className="group relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-zinc-900/95 via-zinc-950 to-amber-950/30 border border-amber-500/20 hover:border-amber-500/40 shadow-2xl transition-all duration-300 flex flex-col sm:flex-row items-stretch"
+                        className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-zinc-900/95 via-zinc-950 to-amber-950/30 border border-amber-500/20 hover:border-amber-500/40 shadow-2xl transition-all duration-300 flex flex-col sm:flex-row items-stretch"
                     >
                         {/* Ambient glow */}
                         <div className="absolute -top-16 -right-16 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-amber-500/20 transition-all duration-500" />
@@ -74,15 +74,14 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
                         {/* Image Showcase */}
                         <div className="relative sm:w-48 lg:w-56 h-48 sm:h-auto shrink-0 overflow-hidden bg-black/60">
                             <SafeImage
-                                src="/images/announcements/pumpkin-beer-033.webp"
-                                alt="Cerveza Artesanal Pumpkin Ale 0.33L - Sushi de Maksim"
+                                src="/images/announcements/craft-beer-033.webp"
+                                alt="Cerveza Artesana 0.33L - Sushi de Maksim"
                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                                 optimize={false}
                                 loading="lazy"
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent sm:bg-gradient-to-r sm:from-transparent sm:to-zinc-950/80 pointer-events-none" />
                             <div className="absolute top-3 left-3 flex items-center gap-1 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10 text-[10px] font-black text-amber-400 uppercase tracking-wider">
-                                <Beer size={11} />
                                 <span>Botella 0.33L</span>
                             </div>
                         </div>
@@ -92,7 +91,6 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
                             <div>
                                 <div className="flex items-center gap-2 mb-2">
                                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[10px] font-black uppercase tracking-wider">
-                                        <Flame size={10} className="text-orange-400" />
                                         Edición Limitada
                                     </span>
                                     <span className="text-[11px] font-bold text-zinc-400">
@@ -101,9 +99,9 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
                                 </div>
 
                                 <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight leading-snug">
-                                    Cerveza Artesana{' '}
+                                    Cerveza{' '}
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
-                                        Pumpkin Ale
+                                        Artesana
                                     </span>
                                 </h3>
 
@@ -113,16 +111,16 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
 
                                 <p className="text-zinc-300 text-xs sm:text-sm mt-2 leading-relaxed font-normal">
                                     Elaboramos nuestra propia cerveza artesanal en lote limitado.
-                                    Receta de autor con notas de calabaza asada y sutiles especias,
-                                    creada para maridar con nuestro sushi.
+                                    Sabores diferentes para cada temporada, creada para maridar con
+                                    nuestro sushi.
                                 </p>
 
                                 <div className="flex flex-wrap gap-1.5 mt-3">
                                     <span className="px-2 py-0.5 rounded-md bg-white/5 text-zinc-300 text-[10px] font-semibold border border-white/5">
-                                        🍺 Receta del Chef
+                                        Receta del Chef
                                     </span>
                                     <span className="px-2 py-0.5 rounded-md bg-white/5 text-zinc-300 text-[10px] font-semibold border border-white/5">
-                                        ✨ Notas tostadas
+                                        Sabores diferentes para cada temporada
                                     </span>
                                 </div>
                             </div>
@@ -131,7 +129,7 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
                             <div className="flex items-center gap-2 mt-4 pt-3 border-t border-white/5">
                                 <button
                                     type="button"
-                                    onClick={handleOrderPumpkinBeer}
+                                    onClick={handleOrderCraftBeer}
                                     disabled={isAdding}
                                     className={`flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl font-black text-[11px] uppercase tracking-wider shadow-md transition-all cursor-pointer border-none ${
                                         justAdded
@@ -168,7 +166,7 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true, amount: 0.1 }}
                         transition={{ duration: 0.5, delay: 0.1 }}
-                        className="group relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-zinc-900/95 via-zinc-950 to-orange-950/30 border border-orange-500/20 hover:border-orange-500/40 shadow-2xl transition-all duration-300 flex flex-col sm:flex-row items-stretch"
+                        className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-zinc-900/95 via-zinc-950 to-orange-950/30 border border-orange-500/20 hover:border-orange-500/40 shadow-2xl transition-all duration-300 flex flex-col sm:flex-row items-stretch"
                     >
                         {/* Ambient glow */}
                         <div className="absolute -top-16 -right-16 w-48 h-48 bg-orange-500/10 rounded-full blur-2xl pointer-events-none group-hover:bg-orange-500/20 transition-all duration-500" />
@@ -184,7 +182,6 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent sm:bg-gradient-to-r sm:from-transparent sm:to-zinc-950/80 pointer-events-none" />
                             <div className="absolute top-3 left-3 flex items-center gap-1 bg-black/70 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/10 text-[10px] font-black text-emerald-400 uppercase tracking-wider">
-                                <Sparkles size={11} />
                                 <span>Showcooking</span>
                             </div>
                         </div>
@@ -194,7 +191,6 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
                             <div>
                                 <div className="flex items-center gap-2 mb-2">
                                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-black uppercase tracking-wider">
-                                        <ChefHat size={10} className="text-emerald-400" />
                                         Chef Privado
                                     </span>
                                     <span className="text-[11px] font-bold text-zinc-400">
@@ -217,10 +213,10 @@ export const SpecialAnnouncements = memo(function SpecialAnnouncements() {
 
                                 <div className="flex flex-wrap gap-1.5 mt-3">
                                     <span className="px-2 py-0.5 rounded-md bg-white/5 text-zinc-300 text-[10px] font-semibold border border-white/5">
-                                        🍣 En tu domicilio o finca
+                                        En tu domicilio o finca
                                     </span>
                                     <span className="px-2 py-0.5 rounded-md bg-white/5 text-zinc-300 text-[10px] font-semibold border border-white/5">
-                                        🍱 Menús a medida
+                                        Menús a medida
                                     </span>
                                 </div>
                             </div>

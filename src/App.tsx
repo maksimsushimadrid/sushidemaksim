@@ -287,6 +287,14 @@ function App() {
                                                 }
                                             />
                                             <Route
+                                                path="/promos"
+                                                element={
+                                                    <PageWrapper skeleton={<PromoSkeleton />}>
+                                                        <PromoPage />
+                                                    </PageWrapper>
+                                                }
+                                            />
+                                            <Route
                                                 path="/profile"
                                                 element={
                                                     <PageWrapper skeleton={<ProfileSkeleton />}>

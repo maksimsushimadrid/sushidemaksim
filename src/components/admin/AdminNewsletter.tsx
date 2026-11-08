@@ -17,7 +17,7 @@ interface AdminNewsletterProps {
 
 const TRANSLATIONS = {
     ru: {
-        title: 'Подписчики рассылки',
+        title: 'Рассылка',
         email: 'Email',
         date: 'Дата подписки',
         total: 'Всего подписчиков',
@@ -27,7 +27,7 @@ const TRANSLATIONS = {
         refresh: 'Обновить',
     },
     es: {
-        title: 'Suscriptores Newsletter',
+        title: 'Newsletter',
         email: 'Email',
         date: 'Fecha de suscripción',
         total: 'Total de suscriptores',
@@ -127,7 +127,7 @@ export default function AdminNewsletter({ language = 'es' }: AdminNewsletterProp
                 />
             </div>
 
-            <div className="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                 <div className="overflow-x-auto no-scrollbar">
                     <table className="w-full text-left border-collapse">
                         <thead>

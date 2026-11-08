@@ -97,7 +97,7 @@ export default function OrderStepper({
                             <motion.div
                                 animate={isCurrent ? { scale: [1, 1.05, 1] } : {}}
                                 transition={isCurrent ? { repeat: Infinity, duration: 2 } : {}}
-                                className={`w-8 h-8 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center shadow-sm transition-colors border ${
+                                className={`w-8 h-8 md:w-12 md:h-12 rounded-2xl flex items-center justify-center shadow-sm transition-colors border ${
                                     isCurrent
                                         ? 'bg-green-600 text-white border-green-400'
                                         : isActive

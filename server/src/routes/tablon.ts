@@ -15,7 +15,17 @@ import {
 import { processImage } from '../utils/imageProcessor.js';
 import { formatTablonPost, formatTablonComment } from '../utils/helpers.js';
 
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 },
+    fileFilter: (_req, file, cb) => {
+        if (/^image\/(jpeg|jpg|png|webp|gif|avif)$/i.test(file.mimetype)) {
+            cb(null, true);
+        } else {
+            cb(new Error('Formato de imagen no válido'));
+        }
+    },
+});
 const router = Router();
 
 // ─── PUBLIC (with optional auth) ──────────────────────────────────────────────

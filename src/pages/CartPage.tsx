@@ -982,7 +982,7 @@ export default function CartPage() {
 
                         {isAuthenticated && user && !user.phone && (
                             <div className="mb-6 animate-in fade-in slide-in-from-top-4 duration-300">
-                                <div className="bg-amber-50 border border-amber-100 rounded-[24px] p-4 md:p-5 shadow-sm">
+                                <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 md:p-5 shadow-sm">
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                         <div>
                                             <h3 className="font-black text-amber-900 leading-none mb-1.5 text-[15px] uppercase tracking-wider">
@@ -1007,7 +1007,7 @@ export default function CartPage() {
 
                         {isAuthenticated && user && !user.birthDate && (
                             <div className="mb-6 animate-in fade-in slide-in-from-top-4 duration-300">
-                                <div className="bg-orange-550/10 bg-orange-50 border border-orange-100 rounded-[24px] p-4 md:p-5 shadow-sm">
+                                <div className="bg-orange-550/10 bg-orange-50 border border-orange-100 rounded-xl p-4 md:p-5 shadow-sm">
                                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                         <div>
                                             <h3 className="font-black text-orange-950 leading-none mb-1.5 text-[15px] uppercase tracking-wider">

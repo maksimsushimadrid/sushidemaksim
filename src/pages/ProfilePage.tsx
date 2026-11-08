@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     User,
@@ -17,9 +17,14 @@ import {
     Clock,
     Check,
     BellRing,
+    Share2,
+    Camera,
 } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/useAuth';
+import { USER_QUERY_KEY } from '../hooks/queries/useUser';
 import { usePushNotifications } from '../hooks/usePushNotifications';
+import { useToast } from '../context/ToastContext';
 import SEO from '../components/SEO';
 import { getSharpAvatar } from '../utils/avatar';
 import ProfileTab from '../components/profile/ProfileTab';
@@ -46,9 +51,59 @@ export default function ProfilePage() {
     } = useAuth();
 
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const [searchParams, setSearchParams] = useSearchParams();
     const [copiedCode, setCopiedCode] = useState<string | null>(null);
-    const { isSupported, isSubscribed, subscribeToPush } = usePushNotifications();
+    const [isUploadingHeroPhoto, setIsUploadingHeroPhoto] = useState(false);
+    const heroPhotoInputRef = useRef<HTMLInputElement>(null);
+    const { isSupported, isSubscribed, isSubscribing, subscribeToPush } = usePushNotifications();
+    const { success: showSuccess, error: showError } = useToast();
+
+    const handleHeroPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) {
+            showError('La imagen no debe superar los 5MB');
+            return;
+        }
+
+        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+            showError('Formato no permitido. Usa JPG, PNG o WebP');
+            return;
+        }
+
+        try {
+            setIsUploadingHeroPhoto(true);
+            const formData = new FormData();
+            formData.append('avatar', file);
+
+            const res = await api.formData('/user/upload-avatar', formData);
+            if (!res.url) throw new Error('No se recibió la URL de la imagen');
+
+            await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
+            await updateProfile({ avatar: res.url });
+            showSuccess('¡Foto de perfil subida con éxito! 📸');
+        } catch (err: any) {
+            showError(err.message || 'Error al subir la imagen');
+        } finally {
+            setIsUploadingHeroPhoto(false);
+            if (e.target) e.target.value = '';
+        }
+    };
+
+    const handleActivatePush = async () => {
+        const res = await subscribeToPush();
+        if (res.ok) {
+            showSuccess('¡Notificaciones activadas correctamente! 🔔');
+        } else if (res.reason === 'denied') {
+            showError(
+                'Las notificaciones están bloqueadas en tu navegador. Actívalas en los ajustes del sitio (icono 🔒 en la barra de direcciones).'
+            );
+        } else if (res.reason) {
+            showError('No se pudieron activar las notificaciones en este momento.');
+        }
+    };
 
     // Initial tab from URL or state or default
     const getInitialTab = (): TabId => {
@@ -159,7 +214,7 @@ export default function ProfilePage() {
     if (!isAuthenticated || !user) {
         return (
             <div className="min-h-screen bg-transparent flex items-center justify-center p-6">
-                <div className="max-w-md w-full bg-white rounded-[40px] p-8 sm:p-12 shadow-2xl text-center border border-gray-100">
+                <div className="max-w-md w-full bg-white rounded-2xl p-8 sm:p-12 shadow-2xl text-center border border-gray-100">
                     <div className="w-20 h-20 sm:w-24 sm:h-24 bg-orange-50 rounded-3xl flex items-center justify-center mx-auto mb-6 sm:mb-8 text-3xl sm:text-4xl shadow-inner border-2 border-white">
                         🔒
                     </div>
@@ -307,6 +362,25 @@ export default function ProfilePage() {
         setTimeout(() => setCopiedCode(null), 2000);
     };
 
+    const shareReferralCode = async (code: string) => {
+        const shareUrl = `${window.location.origin}/menu`;
+        const shareText = `¡Usa mi código de invitación ${code} en Sushi de Maksim y llévate un 15% de descuento en tu primer pedido! 🍣`;
+        if (typeof navigator !== 'undefined' && navigator.share) {
+            try {
+                await navigator.share({
+                    title: '¡15% de descuento en Sushi de Maksim!',
+                    text: shareText,
+                    url: shareUrl,
+                });
+                return;
+            } catch (err: any) {
+                if (err?.name === 'AbortError') return;
+            }
+        }
+        navigator.clipboard.writeText(`${shareText} ${shareUrl}`);
+        showSuccess('¡Enlace de invitación copiado para compartir!');
+    };
+
     return (
         <div className="min-h-screen bg-transparent flex flex-col overflow-x-hidden">
             <SEO
@@ -350,6 +424,34 @@ export default function ProfilePage() {
 
                 {/* Bottom Dark Gradient for Legibility of Overlaid Information */}
                 <div className="absolute inset-x-0 bottom-0 h-[85%] bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C]/80 via-45% to-transparent z-[3] pointer-events-none" />
+
+                {/* Centered Add Photo Button in Open Hero Space */}
+                <div className="flex-1 flex items-center justify-center relative z-10 py-6">
+                    <input
+                        ref={heroPhotoInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        onChange={handleHeroPhotoUpload}
+                        className="hidden"
+                    />
+                    <button
+                        type="button"
+                        disabled={isUploadingHeroPhoto}
+                        onClick={() => heroPhotoInputRef.current?.click()}
+                        className="group flex flex-col items-center justify-center gap-2 text-white/85 hover:text-white transition-all active:scale-95 cursor-pointer bg-transparent border-none p-3 disabled:opacity-50"
+                    >
+                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/10 group-hover:bg-white/20 backdrop-blur-md border border-white/25 flex items-center justify-center shadow-2xl transition-all group-hover:scale-105">
+                            <Camera size={24} strokeWidth={2} className="text-white" />
+                        </div>
+                        <span className="text-xs sm:text-sm font-extrabold uppercase tracking-widest drop-shadow-md">
+                            {isUploadingHeroPhoto
+                                ? 'Subiendo...'
+                                : user.avatar && user.avatar.startsWith('http')
+                                  ? 'Cambiar foto'
+                                  : 'Añadir foto'}
+                        </span>
+                    </button>
+                </div>
 
                 {/* Information Layer Overlaid on Top of the Photo */}
                 <div className="max-w-7xl mx-auto w-full relative z-10">
@@ -424,36 +526,46 @@ export default function ProfilePage() {
             </div>
 
             {/* Main Content Area */}
-            <main className="flex-1 max-w-7xl mx-auto w-full px-2 md:px-4 pt-6 pb-20 relative z-20">
-                {/* Push Notifications Prompt - Clean & Slim */}
+            <main className="flex-1 max-w-7xl mx-auto w-full px-3 sm:px-4 md:px-6 pt-6 pb-20 relative z-20">
+                {/* Push Notifications Prompt - Flat & Clean */}
                 {isSupported && !isSubscribed && (
                     <motion.div
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mb-5 flex items-center justify-between gap-3 px-4 py-2.5 bg-blue-50/90 border border-blue-200/60 rounded-2xl text-blue-950 shadow-sm"
+                        onClick={handleActivatePush}
+                        className="mb-5 flex items-center justify-between gap-3 px-4 sm:px-5 py-3.5 bg-white hover:bg-gray-50/90 border border-gray-100 rounded-2xl shadow-sm transition-colors cursor-pointer group"
                     >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                            <BellRing size={16} className="text-blue-600 shrink-0" />
+                        <div className="flex items-center gap-3 min-w-0">
+                            <BellRing
+                                size={18}
+                                className="text-orange-600 shrink-0 group-hover:scale-110 transition-transform"
+                            />
                             <div className="min-w-0">
-                                <p className="text-xs font-bold text-gray-900 m-0 truncate">
+                                <p className="text-xs sm:text-sm font-bold text-gray-900 m-0 leading-snug">
                                     Activa las notificaciones
                                 </p>
-                                <p className="text-[10px] text-gray-500 m-0 truncate hidden sm:block">
+                                <p className="text-[11px] text-gray-500 m-0 leading-snug">
                                     Recibe avisos sobre el estado de tu pedido en tiempo real
                                 </p>
                             </div>
                         </div>
                         <button
-                            onClick={subscribeToPush}
-                            className="px-3.5 py-1.5 bg-blue-600 hover:bg-blue-700 active:scale-95 text-white rounded-xl text-xs font-bold shadow-sm transition-all shrink-0 cursor-pointer"
+                            type="button"
+                            disabled={isSubscribing}
+                            onClick={e => {
+                                e.stopPropagation();
+                                handleActivatePush();
+                            }}
+                            className="text-xs font-extrabold text-orange-600 group-hover:text-orange-700 flex items-center gap-1 shrink-0 bg-transparent border-none p-0 cursor-pointer disabled:opacity-50"
                         >
-                            Activar
+                            {isSubscribing ? 'Activando...' : 'Activar'}
+                            <ChevronRight size={15} strokeWidth={2.5} />
                         </button>
                     </motion.div>
                 )}
 
                 {/* Loyalty Program Section - Unified & Clean */}
-                <div className="mb-6 bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-gray-100">
+                <div className="mb-5 bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-gray-100">
                     <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
                         <div>
                             <h3 className="text-sm font-extrabold text-gray-900 m-0 uppercase tracking-tight">
@@ -463,7 +575,7 @@ export default function ProfilePage() {
                                 Descuentos y regalos automáticos acumulando pedidos entregados
                             </p>
                         </div>
-                        <span className="text-xs font-bold text-orange-600 bg-orange-50 px-2.5 py-1 rounded-full shrink-0">
+                        <span className="text-xs font-bold text-orange-600 shrink-0">
                             {user.orderCount || 0} pedidos
                         </span>
                     </div>
@@ -473,9 +585,11 @@ export default function ProfilePage() {
                         <div>
                             <div className="flex items-center justify-between gap-3 mb-2">
                                 <div className="flex items-center gap-2.5">
-                                    <div className="w-8 h-8 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center shrink-0">
-                                        <Percent size={16} strokeWidth={2.5} />
-                                    </div>
+                                    <Percent
+                                        size={16}
+                                        strokeWidth={2.5}
+                                        className="text-orange-600 shrink-0"
+                                    />
                                     <div>
                                         <div className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">
                                             Próximo descuento 5%
@@ -516,15 +630,15 @@ export default function ProfilePage() {
 
                             {/* Active Loyalty Promo Code */}
                             {loyaltyCode && (
-                                <div className="mt-3 p-2.5 bg-orange-50/80 rounded-xl border border-orange-100 flex items-center justify-between gap-3">
+                                <div className="mt-3 pt-2.5 border-t border-dashed border-gray-200 flex items-center justify-between gap-3">
                                     <div className="min-w-0">
-                                        <span className="text-[10px] font-bold text-orange-700 uppercase tracking-wide block">
+                                        <span className="text-[11px] font-bold text-orange-600 uppercase tracking-wide block">
                                             Tu código -{loyaltyCode.discountPercentage || 5}%:{' '}
-                                            <span className="font-mono text-xs font-black">
+                                            <span className="font-mono text-xs font-black text-gray-900">
                                                 {loyaltyCode.code}
                                             </span>
                                         </span>
-                                        <span className="text-[9px] text-gray-500 block">
+                                        <span className="text-[10px] text-gray-400 block">
                                             Válido 7 días • Un solo uso • Expira:{' '}
                                             {getExpiryString(
                                                 loyaltyCode.code,
@@ -534,20 +648,20 @@ export default function ProfilePage() {
                                     </div>
                                     <button
                                         onClick={() => copyToClipboard(loyaltyCode.code)}
-                                        className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+                                        className={`text-xs font-extrabold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer bg-transparent border-none p-0 ${
                                             copiedCode === loyaltyCode.code
-                                                ? 'bg-emerald-600 text-white'
-                                                : 'bg-orange-600 text-white hover:bg-orange-700'
+                                                ? 'text-emerald-600'
+                                                : 'text-orange-600 hover:text-orange-700'
                                         }`}
                                     >
                                         {copiedCode === loyaltyCode.code ? (
                                             <>
-                                                <ClipboardCheck size={13} strokeWidth={2.5} />
+                                                <ClipboardCheck size={14} strokeWidth={2.5} />
                                                 <span>Copiado</span>
                                             </>
                                         ) : (
                                             <>
-                                                <Copy size={13} strokeWidth={2.5} />
+                                                <Copy size={14} strokeWidth={2.5} />
                                                 <span>Copiar</span>
                                             </>
                                         )}
@@ -562,9 +676,11 @@ export default function ProfilePage() {
                         <div>
                             <div className="flex items-center justify-between gap-3 mb-2">
                                 <div className="flex items-center gap-2.5">
-                                    <div className="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                                        <Gift size={16} strokeWidth={2.5} />
-                                    </div>
+                                    <Gift
+                                        size={16}
+                                        strokeWidth={2.5}
+                                        className="text-amber-600 shrink-0"
+                                    />
                                     <div>
                                         <div className="text-xs sm:text-sm font-bold text-gray-900 leading-tight">
                                             Roll dulce de regalo 🍣
@@ -605,15 +721,15 @@ export default function ProfilePage() {
 
                             {/* Active Dessert Promo Code */}
                             {dessertCode && (
-                                <div className="mt-3 p-2.5 bg-amber-50/80 rounded-xl border border-amber-100 flex items-center justify-between gap-3">
+                                <div className="mt-3 pt-2.5 border-t border-dashed border-gray-200 flex items-center justify-between gap-3">
                                     <div className="min-w-0">
-                                        <span className="text-[10px] font-bold text-amber-700 uppercase tracking-wide block">
+                                        <span className="text-[11px] font-bold text-amber-600 uppercase tracking-wide block">
                                             Tu código regalo (Roll dulce gratis):{' '}
-                                            <span className="font-mono text-xs font-black">
+                                            <span className="font-mono text-xs font-black text-gray-900">
                                                 {dessertCode.code}
                                             </span>
                                         </span>
-                                        <span className="text-[9px] text-gray-500 block">
+                                        <span className="text-[10px] text-gray-400 block">
                                             Válido 30 días • Añade automáticamente el postre al
                                             carrito • Expira:{' '}
                                             {getExpiryString(
@@ -624,20 +740,20 @@ export default function ProfilePage() {
                                     </div>
                                     <button
                                         onClick={() => copyToClipboard(dessertCode.code)}
-                                        className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 ${
+                                        className={`text-xs font-extrabold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer bg-transparent border-none p-0 ${
                                             copiedCode === dessertCode.code
-                                                ? 'bg-emerald-600 text-white'
-                                                : 'bg-amber-600 text-white hover:bg-amber-700'
+                                                ? 'text-emerald-600'
+                                                : 'text-amber-600 hover:text-amber-700'
                                         }`}
                                     >
                                         {copiedCode === dessertCode.code ? (
                                             <>
-                                                <ClipboardCheck size={13} strokeWidth={2.5} />
+                                                <ClipboardCheck size={14} strokeWidth={2.5} />
                                                 <span>Copiado</span>
                                             </>
                                         ) : (
                                             <>
-                                                <Copy size={13} strokeWidth={2.5} />
+                                                <Copy size={14} strokeWidth={2.5} />
                                                 <span>Copiar</span>
                                             </>
                                         )}
@@ -654,150 +770,140 @@ export default function ProfilePage() {
                     </div>
                 </div>
 
-                {/* Invite a Friend Section */}
-                <div className="mb-8">
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="bg-gradient-to-br from-purple-600 to-indigo-600 rounded-[32px] p-6 shadow-xl border border-white/20 relative overflow-hidden group text-white"
-                    >
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl group-hover:bg-white/20 transition-colors" />
+                {/* Invite a Friend Section - Unified & Flat (No Nested Blocks) */}
+                <div className="mb-5 bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-gray-100">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100">
+                        <div>
+                            <div className="flex items-center gap-2 mb-1">
+                                <span className="text-base">🤝</span>
+                                <h3 className="text-sm font-extrabold text-gray-900 uppercase tracking-tight m-0">
+                                    Invita y gana
+                                </h3>
+                            </div>
+                            <p className="text-xs text-gray-500 font-medium m-0 leading-relaxed">
+                                Regala a un amigo un{' '}
+                                <strong className="text-gray-900">15% de descuento</strong> en su
+                                primer pedido y llévate{' '}
+                                <strong className="text-orange-600">5 Maksim Coins (5€)</strong>{' '}
+                                cuando lo reciba.
+                            </p>
+                        </div>
 
-                        <div className="flex items-start justify-between gap-4 relative z-10">
-                            <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-2xl">🤝</span>
-                                    <h3 className="text-xl font-black uppercase tracking-tight m-0">
-                                        Invita y Gana
-                                    </h3>
-                                </div>
-                                <p className="text-sm font-medium text-white/90 mb-4 leading-relaxed max-w-lg">
-                                    Regala a un amigo un{' '}
-                                    <strong className="text-white">15% de descuento</strong> en su
-                                    primer pedido y llévate{' '}
-                                    <strong className="text-white">5 Maksim Coins</strong> (5€)
-                                    cuando lo reciba.
-                                </p>
-
-                                <div className="bg-black/20 rounded-2xl p-4 border border-white/10 backdrop-blur-sm flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
-                                    <div>
-                                        <div className="text-[10px] font-bold text-white/70 uppercase tracking-widest mb-1">
-                                            Tu código de invitación
-                                        </div>
-                                        <div className="text-xl font-black font-mono tracking-wider">
-                                            REF-{user.id.substring(0, 8).toUpperCase()}
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={() =>
-                                            copyToClipboard(
-                                                `REF-${user.id.substring(0, 8).toUpperCase()}`
-                                            )
-                                        }
-                                        className={`p-3 rounded-xl shadow-lg active:scale-95 transition-all flex items-center justify-center min-w-[48px] ${
-                                            copiedCode ===
+                        <div className="flex flex-col items-center text-center gap-3 shrink-0 pt-3 sm:pt-0 border-t sm:border-t-0 border-gray-100 w-full sm:w-auto">
+                            <div>
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-0.5">
+                                    Tu código de invitación
+                                </span>
+                                <span className="text-lg sm:text-xl font-black font-mono text-gray-900 tracking-wider block">
+                                    REF-{user.id.substring(0, 8).toUpperCase()}
+                                </span>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2.5 w-full max-w-[280px] sm:w-[260px]">
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        copyToClipboard(
                                             `REF-${user.id.substring(0, 8).toUpperCase()}`
-                                                ? 'bg-green-500 text-white shadow-green-900/20'
-                                                : 'bg-white text-purple-600 hover:bg-gray-50'
-                                        }`}
-                                    >
-                                        {copiedCode ===
-                                        `REF-${user.id.substring(0, 8).toUpperCase()}` ? (
-                                            <ClipboardCheck size={20} strokeWidth={2.5} />
-                                        ) : (
-                                            <Copy size={20} strokeWidth={2.5} />
-                                        )}
-                                    </button>
-                                </div>
-
-                                <div className="mt-4 bg-white/10 rounded-2xl p-3.5 border border-white/10 text-[11px] text-white/85 space-y-1.5 leading-relaxed">
-                                    <div className="font-black uppercase tracking-wider text-white text-[10px] mb-1">
-                                        ¿Cómo funciona y condiciones?
-                                    </div>
-                                    <div>
-                                        • <strong>Para tu amigo:</strong> Debe iniciar sesión o
-                                        registrarse y aplicar tu código{' '}
-                                        <span className="font-mono font-bold">
-                                            REF-{user.id.substring(0, 8).toUpperCase()}
-                                        </span>{' '}
-                                        en la cesta antes de realizar su{' '}
-                                        <strong>primer pedido</strong> (-15% de descuento directo).
-                                    </div>
-                                    <div>
-                                        • <strong>Para ti:</strong> Recibirás{' '}
-                                        <strong>5 Maksim Coins (5€)</strong> automáticamente en tu
-                                        saldo cuando el pedido de tu amigo sea marcado como{' '}
-                                        <strong>entregado</strong>.
-                                    </div>
-                                    <div>
-                                        • <strong>Uso de Coins:</strong> Puedes pagar hasta el{' '}
-                                        <strong>20% del total</strong> de tus próximos pedidos con
-                                        tus Maksim Coins (1 Coin = 1€). No válido para
-                                        auto-invitaciones.
-                                    </div>
-                                </div>
-
-                                {friends.length > 0 && (
-                                    <div className="mt-6 pt-6 border-t border-white/10">
-                                        <h4 className="text-xs font-black uppercase tracking-widest text-white/80 mb-4">
-                                            Tus amigos invitados ({friends.length})
-                                        </h4>
-                                        <div className="space-y-3">
-                                            {friends.map((friend, idx) => (
-                                                <div
-                                                    key={idx}
-                                                    className="flex items-center justify-between bg-black/10 rounded-xl p-3 border border-white/5"
-                                                >
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm">
-                                                            👤
-                                                        </div>
-                                                        <div>
-                                                            <div className="text-sm font-bold text-white leading-none mb-1">
-                                                                {friend.name}
-                                                            </div>
-                                                            <div className="text-[10px] text-white/60 font-medium">
-                                                                {new Date(
-                                                                    friend.date
-                                                                ).toLocaleDateString('es-ES')}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    {friend.rewarded ? (
-                                                        <div className="bg-green-500/20 text-green-300 border border-green-500/30 px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
-                                                            <Check size={12} strokeWidth={3} />
-                                                            +5 Coins
-                                                        </div>
-                                                    ) : (
-                                                        <div className="bg-white/10 text-white/70 border border-white/10 px-2 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
-                                                            <Clock size={12} strokeWidth={2} />
-                                                            Pendiente de entrega
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
+                                        )
+                                    }
+                                    className={`w-full py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none ${
+                                        copiedCode ===
+                                        `REF-${user.id.substring(0, 8).toUpperCase()}`
+                                            ? 'bg-emerald-600 text-white'
+                                            : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
+                                    }`}
+                                >
+                                    {copiedCode ===
+                                    `REF-${user.id.substring(0, 8).toUpperCase()}` ? (
+                                        <>
+                                            <ClipboardCheck size={14} strokeWidth={2.5} />
+                                            <span>Copiado</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Copy size={14} strokeWidth={2.5} />
+                                            <span>Copiar</span>
+                                        </>
+                                    )}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        shareReferralCode(
+                                            `REF-${user.id.substring(0, 8).toUpperCase()}`
+                                        )
+                                    }
+                                    className="w-full py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5 cursor-pointer border-none bg-orange-600 hover:bg-orange-700 text-white"
+                                >
+                                    <Share2 size={14} strokeWidth={2.5} />
+                                    <span>Compartir</span>
+                                </button>
                             </div>
                         </div>
-                    </motion.div>
+                    </div>
+
+                    <div className="mt-3 flex items-center justify-between gap-2">
+                        <span className="text-[11px] text-gray-400 font-medium">
+                            Código válido para el primer pedido de tu amigo.
+                        </span>
+                        <Link
+                            to="/promo"
+                            className="text-[11px] font-extrabold text-orange-600 hover:text-orange-700 flex items-center gap-0.5 no-underline shrink-0"
+                        >
+                            <span>¿Cómo funciona?</span>
+                            <ChevronRight size={13} strokeWidth={2.5} />
+                        </Link>
+                    </div>
+
+                    {friends.length > 0 && (
+                        <div className="mt-4 pt-4 border-t border-gray-100">
+                            <h4 className="text-[10px] font-extrabold uppercase tracking-wider text-gray-400 mb-2.5 m-0">
+                                Tus amigos invitados ({friends.length})
+                            </h4>
+                            <div className="divide-y divide-gray-100">
+                                {friends.map((friend, idx) => (
+                                    <div
+                                        key={idx}
+                                        className="flex items-center justify-between py-2.5 first:pt-0 last:pb-0"
+                                    >
+                                        <div>
+                                            <div className="text-xs font-bold text-gray-900">
+                                                {friend.name}
+                                            </div>
+                                            <div className="text-[10px] text-gray-400 font-medium">
+                                                {new Date(friend.date).toLocaleDateString('es-ES')}
+                                            </div>
+                                        </div>
+                                        {friend.rewarded ? (
+                                            <span className="text-emerald-600 text-[10px] font-black uppercase tracking-wider flex items-center gap-1">
+                                                <Check size={12} strokeWidth={3} />
+                                                +5 Coins
+                                            </span>
+                                        ) : (
+                                            <span className="text-gray-400 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                                                <Clock size={12} strokeWidth={2} />
+                                                Pendiente de entrega
+                                            </span>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                 </div>
 
-                {/* Additional Active Coupons Section */}
+                {/* Additional Active Coupons Section - Flat Rows */}
                 {(welcomeCode || birthdayCode || (otherCodes && otherCodes.length > 0)) && (
                     <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="mb-8 p-6 bg-white rounded-[40px] shadow-xl border border-white relative overflow-hidden"
+                        className="mb-6 bg-white rounded-3xl p-5 sm:p-6 shadow-sm border border-gray-100"
                     >
-                        <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600">
-                                <Tag size={20} strokeWidth={2.5} />
-                            </div>
+                        <div className="flex items-center gap-2.5 pb-3.5 mb-3.5 border-b border-gray-100">
+                            <Tag size={16} strokeWidth={2.5} className="text-orange-600 shrink-0" />
                             <div>
-                                <h3 className="text-lg font-black text-gray-900 tracking-tight m-0">
-                                    Mis Cupones Disponibles
+                                <h3 className="text-sm font-extrabold text-gray-900 uppercase tracking-tight m-0">
+                                    Mis cupones disponibles
                                 </h3>
                                 <p className="text-[11px] text-gray-400 font-medium m-0">
                                     Copia tu código y aplícalo en la cesta antes de finalizar el
@@ -805,77 +911,92 @@ export default function ProfilePage() {
                                 </p>
                             </div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                        <div className="divide-y divide-gray-100">
                             {welcomeCode && (
-                                <div className="p-4 bg-gradient-to-br from-orange-50 to-white border border-orange-100 rounded-3xl relative overflow-hidden group">
-                                    <div className="mb-2 flex justify-between items-start">
-                                        <div className="px-2 py-0.5 bg-orange-100 text-orange-600 text-[9px] font-black rounded-lg uppercase tracking-wider">
-                                            Bienvenida -{welcomeCode.discountPercentage || 10}%
+                                <div className="py-3 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
+                                    <div className="min-w-0">
+                                        <div className="flex items-center gap-2 mb-0.5">
+                                            <span className="font-mono text-sm font-black text-gray-900">
+                                                {welcomeCode.code}
+                                            </span>
+                                            <span className="text-[10px] font-extrabold text-orange-600 uppercase">
+                                                Bienvenida -{welcomeCode.discountPercentage || 10}%
+                                            </span>
                                         </div>
-                                        <button
-                                            onClick={() => copyToClipboard(welcomeCode.code)}
-                                            className={`p-2 rounded-lg transition-all flex items-center gap-1.5 ${
-                                                copiedCode === welcomeCode.code
-                                                    ? 'bg-green-500 text-white'
-                                                    : 'hover:bg-orange-600 hover:text-white text-orange-600'
-                                            }`}
-                                        >
-                                            {copiedCode === welcomeCode.code ? (
-                                                <ClipboardCheck size={12} strokeWidth={3} />
-                                            ) : (
-                                                <Copy size={12} strokeWidth={3} />
+                                        <p className="text-[11px] text-gray-500 font-medium m-0 leading-snug">
+                                            Pedido mínimo de 20,00€ (subtotal). Válido 7 días tras
+                                            el registro. Expira el:{' '}
+                                            {getExpiryString(
+                                                welcomeCode.code,
+                                                welcomeCode.createdAt
                                             )}
-                                        </button>
+                                        </p>
                                     </div>
-                                    <div className="text-lg font-black text-gray-900 mb-1">
-                                        {welcomeCode.code}
-                                    </div>
-                                    <p className="text-[10px] text-gray-500 font-medium leading-tight mb-2">
-                                        Pedido mínimo de 20,00€ (subtotal). Válido durante 7 días
-                                        tras el registro. Un solo uso, no acumulable con otros
-                                        códigos.
-                                    </p>
-                                    <div className="flex items-center gap-1.5 text-[9px] font-black text-orange-500 uppercase tracking-tighter">
-                                        <div className="w-1 h-1 rounded-full bg-orange-400 animate-pulse" />
-                                        Expira el:{' '}
-                                        {getExpiryString(welcomeCode.code, welcomeCode.createdAt)}
-                                    </div>
+                                    <button
+                                        onClick={() => copyToClipboard(welcomeCode.code)}
+                                        className={`text-xs font-extrabold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer bg-transparent border-none p-0 ${
+                                            copiedCode === welcomeCode.code
+                                                ? 'text-emerald-600'
+                                                : 'text-orange-600 hover:text-orange-700'
+                                        }`}
+                                    >
+                                        {copiedCode === welcomeCode.code ? (
+                                            <>
+                                                <ClipboardCheck size={14} strokeWidth={2.5} />
+                                                <span>Copiado</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Copy size={14} strokeWidth={2.5} />
+                                                <span>Copiar</span>
+                                            </>
+                                        )}
+                                    </button>
                                 </div>
                             )}
 
                             {birthdayCode && (
-                                <div className="p-4 bg-gradient-to-br from-pink-50 to-white border border-pink-100 rounded-3xl relative overflow-hidden group">
-                                    <div className="mb-2 flex justify-between items-start">
-                                        <div className="px-2 py-0.5 bg-pink-100 text-pink-600 text-[9px] font-black rounded-lg uppercase tracking-wider">
-                                            Cumpleaños -{birthdayCode.discountPercentage || 10}% 🎉
+                                <div className="py-3 first:pt-0 last:pb-0 flex items-center justify-between gap-4">
+                                    <div className="min-w-0">
+                                        <div className="flex items-center gap-2 mb-0.5">
+                                            <span className="font-mono text-sm font-black text-gray-900">
+                                                {birthdayCode.code}
+                                            </span>
+                                            <span className="text-[10px] font-extrabold text-pink-600 uppercase">
+                                                Cumpleaños -{birthdayCode.discountPercentage || 10}%
+                                                🎉
+                                            </span>
                                         </div>
-                                        <button
-                                            onClick={() => copyToClipboard(birthdayCode.code)}
-                                            className={`p-2 rounded-lg transition-all flex items-center gap-1.5 ${
-                                                copiedCode === birthdayCode.code
-                                                    ? 'bg-green-500 text-white'
-                                                    : 'hover:bg-pink-600 hover:text-white text-pink-600'
-                                            }`}
-                                        >
-                                            {copiedCode === birthdayCode.code ? (
-                                                <ClipboardCheck size={12} strokeWidth={3} />
-                                            ) : (
-                                                <Copy size={12} strokeWidth={3} />
+                                        <p className="text-[11px] text-gray-500 font-medium m-0 leading-snug">
+                                            ¡Feliz cumpleaños! Un solo uso, válido 30 días. Expira
+                                            el:{' '}
+                                            {getExpiryString(
+                                                birthdayCode.code,
+                                                birthdayCode.createdAt
                                             )}
-                                        </button>
+                                        </p>
                                     </div>
-                                    <div className="text-lg font-black text-gray-900 mb-1">
-                                        {birthdayCode.code}
-                                    </div>
-                                    <p className="text-[10px] text-gray-500 font-medium leading-tight mb-2">
-                                        ¡Feliz cumpleaños! Descuento especial de un solo uso válido
-                                        durante 30 días desde su emisión.
-                                    </p>
-                                    <div className="flex items-center gap-1.5 text-[9px] font-black text-pink-500 uppercase tracking-tighter">
-                                        <div className="w-1 h-1 rounded-full bg-pink-400 animate-pulse" />
-                                        Expira el:{' '}
-                                        {getExpiryString(birthdayCode.code, birthdayCode.createdAt)}
-                                    </div>
+                                    <button
+                                        onClick={() => copyToClipboard(birthdayCode.code)}
+                                        className={`text-xs font-extrabold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer bg-transparent border-none p-0 ${
+                                            copiedCode === birthdayCode.code
+                                                ? 'text-emerald-600'
+                                                : 'text-pink-600 hover:text-pink-700'
+                                        }`}
+                                    >
+                                        {copiedCode === birthdayCode.code ? (
+                                            <>
+                                                <ClipboardCheck size={14} strokeWidth={2.5} />
+                                                <span>Copiado</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Copy size={14} strokeWidth={2.5} />
+                                                <span>Copiar</span>
+                                            </>
+                                        )}
+                                    </button>
                                 </div>
                             )}
 
@@ -883,56 +1004,60 @@ export default function ProfilePage() {
                                 otherCodes.map(promo => (
                                     <div
                                         key={promo.code}
-                                        className="p-4 bg-gray-50 border border-gray-100 rounded-3xl group"
+                                        className="py-3 first:pt-0 last:pb-0 flex items-center justify-between gap-4"
                                     >
-                                        <div className="mb-2 flex justify-between items-start">
-                                            <div className="px-2 py-0.5 bg-gray-200 text-gray-600 text-[9px] font-black rounded-lg uppercase tracking-wider">
-                                                Bonificación Especial -{promo.discountPercentage}%
+                                        <div className="min-w-0">
+                                            <div className="flex items-center gap-2 mb-0.5">
+                                                <span className="font-mono text-sm font-black text-gray-900">
+                                                    {promo.code}
+                                                </span>
+                                                <span className="text-[10px] font-extrabold text-gray-600 uppercase">
+                                                    Bonificación -{promo.discountPercentage}%
+                                                </span>
                                             </div>
-                                            <button
-                                                onClick={() => copyToClipboard(promo.code)}
-                                                className={`p-2 rounded-lg transition-all flex items-center gap-1.5 ${
-                                                    copiedCode === promo.code
-                                                        ? 'bg-green-500 text-white'
-                                                        : 'hover:bg-gray-900 hover:text-white text-gray-500'
-                                                }`}
-                                            >
-                                                {copiedCode === promo.code ? (
-                                                    <ClipboardCheck size={12} strokeWidth={3} />
-                                                ) : (
-                                                    <Copy size={12} strokeWidth={3} />
-                                                )}
-                                            </button>
+                                            <p className="text-[11px] text-gray-500 font-medium m-0 leading-snug">
+                                                -{promo.discountPercentage}% de descuento especial
+                                                de un solo uso.
+                                                {getExpiryString(promo.code, promo.createdAt)
+                                                    ? ` Expira el: ${getExpiryString(promo.code, promo.createdAt)}`
+                                                    : ''}
+                                            </p>
                                         </div>
-                                        <div className="text-lg font-black text-gray-900 mb-1">
-                                            {promo.code}
-                                        </div>
-                                        <p className="text-[10px] text-gray-500 font-medium leading-tight mb-2">
-                                            -{promo.discountPercentage}% de descuento especial de un
-                                            solo uso (no acumulable con otros cupones).
-                                        </p>
-                                        {getExpiryString(promo.code, promo.createdAt) && (
-                                            <div className="flex items-center gap-1.5 text-[9px] font-black text-gray-500 uppercase tracking-tighter">
-                                                <div className="w-1 h-1 rounded-full bg-gray-400 animate-pulse" />
-                                                Expira el:{' '}
-                                                {getExpiryString(promo.code, promo.createdAt)}
-                                            </div>
-                                        )}
+                                        <button
+                                            onClick={() => copyToClipboard(promo.code)}
+                                            className={`text-xs font-extrabold transition-colors flex items-center gap-1.5 shrink-0 cursor-pointer bg-transparent border-none p-0 ${
+                                                copiedCode === promo.code
+                                                    ? 'text-emerald-600'
+                                                    : 'text-orange-600 hover:text-orange-700'
+                                            }`}
+                                        >
+                                            {copiedCode === promo.code ? (
+                                                <>
+                                                    <ClipboardCheck size={14} strokeWidth={2.5} />
+                                                    <span>Copiado</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Copy size={14} strokeWidth={2.5} />
+                                                    <span>Copiar</span>
+                                                </>
+                                            )}
+                                        </button>
                                     </div>
                                 ))}
                         </div>
                     </motion.div>
                 )}
 
-                <div className="flex flex-col lg:flex-row gap-6">
+                <div className="flex flex-col lg:flex-row gap-5">
                     {/* Navigation Sidebar */}
                     <aside
-                        className="lg:w-80 shrink-0 sticky z-40 mb-5 lg:mb-0 transition-[top] duration-300"
+                        className="lg:w-72 shrink-0 sticky z-40 mb-1 lg:mb-0 transition-[top] duration-300"
                         style={{
                             top: 'calc(var(--header-height, 64px) + 12px)',
                         }}
                     >
-                        <div className="bg-white/95 md:bg-white backdrop-blur-xl border border-gray-100 md:border-white shadow-sm md:shadow-2xl rounded-2xl md:rounded-[32px] p-1.5 md:p-2 flex md:block overflow-x-auto no-scrollbar gap-1.5 md:gap-2 snap-x snap-mandatory scroll-px-1.5">
+                        <div className="bg-white/95 backdrop-blur-xl border border-gray-100 shadow-sm rounded-2xl p-1.5 grid grid-cols-4 lg:flex lg:flex-col gap-1.5">
                             {tabs.map(tab => {
                                 const Icon = tab.icon;
                                 const isActive = activeTab === tab.id;
@@ -940,40 +1065,46 @@ export default function ProfilePage() {
                                     <button
                                         key={tab.id}
                                         id={`tab-${tab.id}`}
+                                        type="button"
+                                        title={tab.label}
+                                        aria-label={tab.label}
                                         onClick={() => handleTabChange(tab.id)}
-                                        className={`shrink-0 md:w-full flex items-center gap-2 md:gap-3.5 py-2 px-3 md:p-3.5 rounded-xl md:rounded-2xl transition-all duration-300 group snap-center relative scroll-mx-1.5
+                                        className={`w-full flex items-center justify-center lg:justify-start gap-3 py-3 px-3.5 rounded-xl transition-all duration-200 group relative cursor-pointer border-none bg-transparent
                                             ${
                                                 isActive
                                                     ? 'text-white'
-                                                    : 'hover:bg-gray-50 text-gray-500 hover:text-gray-900 border border-transparent'
+                                                    : 'hover:bg-gray-50 text-gray-500 hover:text-gray-900'
                                             }`}
                                     >
                                         {isActive && (
                                             <motion.div
                                                 layoutId="profile-tab-active"
-                                                className="absolute inset-0 bg-orange-600 shadow-md shadow-orange-200/60 ring-2 md:ring-4 ring-orange-600/5 rounded-xl md:rounded-2xl"
+                                                className="absolute inset-0 bg-orange-600 rounded-xl"
                                                 transition={{
                                                     type: 'spring',
-                                                    bounce: 0.2,
-                                                    duration: 0.6,
+                                                    bounce: 0.15,
+                                                    duration: 0.5,
                                                 }}
                                             />
                                         )}
-                                        <div
-                                            className={`relative z-10 w-7 h-7 md:w-10 md:h-10 rounded-lg md:rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shrink-0
-                                            ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-400'}`}
-                                        >
-                                            <Icon size={15} strokeWidth={2} />
-                                        </div>
-                                        <span
-                                            className={`relative z-20 font-black text-xs md:text-sm whitespace-nowrap uppercase tracking-wider transition-transform ${isActive ? 'md:translate-x-0.5' : ''}`}
-                                        >
+                                        <Icon
+                                            size={20}
+                                            strokeWidth={2.2}
+                                            className={`relative z-10 shrink-0 transition-colors ${
+                                                isActive
+                                                    ? 'text-white'
+                                                    : 'text-gray-500 group-hover:text-gray-900'
+                                            }`}
+                                        />
+                                        <span className="hidden lg:inline relative z-10 font-extrabold text-sm whitespace-nowrap uppercase tracking-wider">
                                             {tab.label}
                                         </span>
                                         <ChevronRight
                                             size={14}
-                                            strokeWidth={1.5}
-                                            className={`hidden md:block ml-auto transition-all ${isActive ? 'rotate-90 opacity-100' : 'opacity-20'}`}
+                                            strokeWidth={2}
+                                            className={`hidden lg:block relative z-10 ml-auto transition-all ${
+                                                isActive ? 'rotate-90 opacity-100' : 'opacity-20'
+                                            }`}
                                         />
                                     </button>
                                 );
@@ -983,34 +1114,38 @@ export default function ProfilePage() {
 
                     {/* Content Section */}
                     <div className="flex-1 min-w-0" id="profile-content">
-                        <div className="bg-transparent md:bg-white/90 md:backdrop-blur-xl md:border md:border-white md:shadow-2xl rounded-none md:rounded-[32px] md:overflow-hidden">
-                            <div className="p-0 md:p-8">
-                                <AnimatePresence mode="wait">
-                                    <motion.div
-                                        key={activeTab}
-                                        initial={{ opacity: 0, y: 10 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -10 }}
-                                        transition={{ duration: 0.2 }}
-                                    >
-                                        {activeTab === 'profile' && (
-                                            <ProfileTab user={user} updateProfile={updateProfile} />
-                                        )}
-                                        {activeTab === 'addresses' && (
-                                            <AddressesTab
-                                                addresses={user.addresses}
-                                                deliveryZones={deliveryZones}
-                                                addAddress={addAddress}
-                                                editAddress={editAddress}
-                                                removeAddress={removeAddress}
-                                                setDefaultAddress={setDefaultAddress}
-                                            />
-                                        )}
-                                        {activeTab === 'orders' && <OrdersTab />}
-                                        {activeTab === 'favorites' && <FavoritesTab />}
-                                    </motion.div>
-                                </AnimatePresence>
-                            </div>
+                        <div
+                            className={
+                                activeTab === 'favorites'
+                                    ? ''
+                                    : 'bg-white border border-gray-100 shadow-sm rounded-3xl p-5 sm:p-6 md:p-8'
+                            }
+                        >
+                            <AnimatePresence mode="wait">
+                                <motion.div
+                                    key={activeTab}
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    {activeTab === 'profile' && (
+                                        <ProfileTab user={user} updateProfile={updateProfile} />
+                                    )}
+                                    {activeTab === 'addresses' && (
+                                        <AddressesTab
+                                            addresses={user.addresses}
+                                            deliveryZones={deliveryZones}
+                                            addAddress={addAddress}
+                                            editAddress={editAddress}
+                                            removeAddress={removeAddress}
+                                            setDefaultAddress={setDefaultAddress}
+                                        />
+                                    )}
+                                    {activeTab === 'orders' && <OrdersTab />}
+                                    {activeTab === 'favorites' && <FavoritesTab />}
+                                </motion.div>
+                            </AnimatePresence>
                         </div>
                     </div>
                 </div>

@@ -61,7 +61,7 @@ export default function RegistrationPrompt() {
                     initial={{ scale: 0.9, opacity: 0, y: 40 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.9, opacity: 0, y: 40 }}
-                    className="relative bg-white w-full max-w-[340px] sm:max-w-md rounded-[32px] overflow-hidden shadow-2xl"
+                    className="relative bg-white w-full max-w-[340px] sm:max-w-md rounded-2xl overflow-hidden shadow-2xl"
                 >
                     {/* Top Accent */}
                     <div className="h-2 bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700" />

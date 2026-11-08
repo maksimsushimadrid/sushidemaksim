@@ -1667,24 +1667,97 @@ export default function AdminOrders({
                                                         </motion.button>
                                                     )}
 
-                                                    <div className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between">
-                                                        <div className="flex items-center gap-3">
-                                                            <Globe
-                                                                size={18}
-                                                                strokeWidth={2}
-                                                                className="text-gray-300"
-                                                            />
-                                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
-                                                                {t.origin}
-                                                            </span>
-                                                        </div>
-                                                        <div className="flex items-center gap-2.5 bg-green-50 px-3 py-1.5 rounded-xl border border-green-100 shadow-sm">
-                                                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse ring-4 ring-green-100"></span>
-                                                            <p className="text-[10px] font-black text-green-700 uppercase tracking-widest">
-                                                                {t.webDirect}
-                                                            </p>
-                                                        </div>
-                                                    </div>
+                                                    {(() => {
+                                                        const rawDevice = (
+                                                            order.deviceType || ''
+                                                        ).toLowerCase();
+                                                        const rawOs =
+                                                            order.osName &&
+                                                            order.osName.toLowerCase() !== 'unknown'
+                                                                ? order.osName
+                                                                : '';
+                                                        const rawBrowser =
+                                                            order.browserName &&
+                                                            order.browserName.toLowerCase() !==
+                                                                'unknown'
+                                                                ? order.browserName
+                                                                      .replace(/^Mobile\s+/i, '')
+                                                                      .trim()
+                                                                : '';
+
+                                                        const isMobileOrTablet =
+                                                            rawDevice === 'mobile' ||
+                                                            rawDevice === 'tablet' ||
+                                                            rawOs === 'iOS' ||
+                                                            rawOs === 'Android';
+                                                        const isDesktop =
+                                                            rawDevice === 'desktop' ||
+                                                            rawOs === 'macOS' ||
+                                                            rawOs === 'Windows' ||
+                                                            rawOs === 'Linux';
+
+                                                        const deviceShortLabel =
+                                                            rawDevice === 'tablet'
+                                                                ? language === 'ru'
+                                                                    ? 'Планшет'
+                                                                    : 'Tablet'
+                                                                : isMobileOrTablet
+                                                                  ? language === 'ru'
+                                                                      ? 'Моб.'
+                                                                      : 'Móvil'
+                                                                  : isDesktop
+                                                                    ? language === 'ru'
+                                                                        ? 'ПК'
+                                                                        : 'PC'
+                                                                    : '';
+
+                                                        const devicePart =
+                                                            deviceShortLabel && rawOs
+                                                                ? `${deviceShortLabel} (${rawOs})`
+                                                                : rawOs || deviceShortLabel;
+
+                                                        const originLabel =
+                                                            devicePart && rawBrowser
+                                                                ? `${devicePart} • ${rawBrowser}`
+                                                                : devicePart ||
+                                                                  rawBrowser ||
+                                                                  t.webDirect;
+
+                                                        return (
+                                                            <div className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between gap-2">
+                                                                <div className="flex items-center gap-2.5 shrink-0">
+                                                                    {isMobileOrTablet ? (
+                                                                        <Smartphone
+                                                                            size={18}
+                                                                            strokeWidth={2}
+                                                                            className="text-gray-400"
+                                                                        />
+                                                                    ) : isDesktop ? (
+                                                                        <Monitor
+                                                                            size={18}
+                                                                            strokeWidth={2}
+                                                                            className="text-gray-400"
+                                                                        />
+                                                                    ) : (
+                                                                        <Globe
+                                                                            size={18}
+                                                                            strokeWidth={2}
+                                                                            className="text-gray-300"
+                                                                        />
+                                                                    )}
+                                                                    <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-400">
+                                                                        {t.origin}
+                                                                    </span>
+                                                                </div>
+                                                                <div className="flex items-center gap-2 bg-green-50 px-3 py-1.5 rounded-xl border border-green-100 shadow-sm">
+                                                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse ring-4 ring-green-100 shrink-0"></span>
+                                                                    <p className="text-[10px] font-black text-green-700 uppercase tracking-wider">
+                                                                        {originLabel}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })()}
                                                 </div>
                                             </div>
                                         );

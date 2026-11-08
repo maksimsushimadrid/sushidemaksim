@@ -46,7 +46,7 @@ interface AdminPromosProps {
 
 const PROMOS_TRANSLATIONS = {
     ru: {
-        title: 'Управление Акциями',
+        title: 'Акции',
         newPromo: 'Добавить акцию',
         editPromo: 'Редактировать акцию',
         addPromo: 'Создать акцию',
@@ -149,7 +149,7 @@ const PROMOS_TRANSLATIONS = {
         },
     },
     es: {
-        title: 'Gestión de Promos',
+        title: 'Promociones',
         newPromo: 'Añadir Promo',
         editPromo: 'Editar Promo',
         addPromo: 'Crear Promo',
@@ -419,6 +419,10 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
     const [activeTab, setActiveTab] = useState<'banners' | 'loyalty' | 'promoCodes'>('banners');
     const [generatedCode, setGeneratedCode] = useState<string | null>(null);
     const [isCopying, setIsCopying] = useState(false);
+    const [secretCodeInput, setSecretCodeInput] = useState('');
+    const [secretDiscountInput, setSecretDiscountInput] = useState('15');
+    const [copiedSecretCode, setCopiedSecretCode] = useState<string | null>(null);
+    const [isSavingSecret, setIsSavingSecret] = useState(false);
     const [isEditing, setIsEditing] = useState<any>(null);
     const [form, setForm] = useState({
         title: '',
@@ -482,6 +486,13 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
     });
 
     const allPromoCodes = useMemo(() => promoCodesData?.promoCodes || [], [promoCodesData]);
+    const secretPromoCodes = useMemo(
+        () =>
+            promoCodesData?.secretPromoCodes || [
+                { code: 'WELOVEYOU15', discountPercentage: 15, active: true, usageCount: 0 },
+            ],
+        [promoCodesData]
+    );
 
     const upsertMutation = useMutation({
         mutationFn: (payload: any) => {
@@ -590,7 +601,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
-            <div className="flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-[32px] border border-gray-100 shadow-sm gap-6 mb-8">
+            <div className="flex flex-col md:flex-row justify-between items-center bg-white p-6 rounded-2xl border border-gray-100 shadow-sm gap-6 mb-8">
                 <div className="flex flex-col gap-1">
                     <h2 className="text-2xl font-black text-gray-900 tracking-tight uppercase flex items-center gap-3">
                         <Layout className="text-orange-600" size={24} strokeWidth={3} />
@@ -688,7 +699,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                         </div>
                         <form
                             onSubmit={handleSave}
-                            className="sticky top-8 bg-white p-8 rounded-[32px] shadow-sm border border-gray-100 space-y-6"
+                            className="sticky top-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-100 space-y-6"
                         >
                             <div className="space-y-4">
                                 <div className="space-y-1">
@@ -975,7 +986,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
 
                     {/* Table Column — Drag-and-Drop Sortable */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white rounded-[32px] shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
                             <div className="bg-gray-50/50 border-b border-gray-100 px-3.5 md:px-8 py-3 md:py-5 flex items-center">
                                 <div className="w-10" />
                                 <span className="flex-1 text-[10px] font-black text-gray-400 uppercase tracking-widest">
@@ -1031,9 +1042,195 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                     </div>
                 </div>
             ) : activeTab === 'promoCodes' ? (
-                <div className="animate-in fade-in zoom-in-95 duration-300">
-                    <div className="max-w-2xl mx-auto bg-white rounded-[40px] p-12 border border-gray-100 shadow-sm text-center">
-                        <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-[32px] flex items-center justify-center mx-auto mb-8 shadow-inner border border-orange-50">
+                <div className="animate-in fade-in zoom-in-95 duration-300 space-y-8">
+                    {/* Secret Permanent Promo Codes Section */}
+                    <div className="max-w-2xl mx-auto bg-white rounded-2xl p-6 md:p-8 border border-gray-100 shadow-sm">
+                        <div className="flex items-start justify-between gap-4 mb-6">
+                            <div>
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-purple-50 text-purple-600 text-[10px] font-black uppercase tracking-widest mb-2 border border-purple-100">
+                                    <span>
+                                        {language === 'ru'
+                                            ? '🔒 Скрыты от посетителей сайта'
+                                            : '🔒 Ocultos en la web pública'}
+                                    </span>
+                                </div>
+                                <h3 className="text-lg md:text-xl font-black text-gray-900 uppercase tracking-tight">
+                                    {language === 'ru'
+                                        ? 'Секретные постоянные промокоды'
+                                        : 'Códigos Secretos Permanentes'}
+                                </h3>
+                                <p className="text-[11px] font-bold text-gray-400 mt-1">
+                                    {language === 'ru'
+                                        ? 'Многоразовые коды без срока давности (например, WELOVEYOU15). Работают в корзине, но нигде не отображаются на сайте.'
+                                        : 'Códigos reutilizables sin caducidad (ej. WELOVEYOU15). Funcionan en la cesta pero no se muestran en la web.'}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* Add Secret Code Form */}
+                        <form
+                            onSubmit={async e => {
+                                e.preventDefault();
+                                const cleanCode = secretCodeInput
+                                    .trim()
+                                    .toUpperCase()
+                                    .replace(/[^A-Z0-9_-]/g, '');
+                                if (!cleanCode || cleanCode.length < 3) return;
+                                setIsSavingSecret(true);
+                                try {
+                                    await api.post('/admin/promo-codes/secret', {
+                                        code: cleanCode,
+                                        discountPercentage: Number(secretDiscountInput) || 15,
+                                    });
+                                    setSecretCodeInput('');
+                                    refetchPromoCodes();
+                                } catch {
+                                    alert(t.alerts.errorSaving);
+                                } finally {
+                                    setIsSavingSecret(false);
+                                }
+                            }}
+                            className="flex flex-col sm:flex-row gap-3 mb-6 p-4 bg-gray-50 rounded-2xl border border-gray-100"
+                        >
+                            <div className="flex-1">
+                                <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 pl-1">
+                                    {language === 'ru' ? 'Код (латиница/цифры)' : 'Código'}
+                                </label>
+                                <input
+                                    type="text"
+                                    value={secretCodeInput}
+                                    onChange={e =>
+                                        setSecretCodeInput(
+                                            e.target.value.toUpperCase().replace(/[^A-Z0-9_-]/g, '')
+                                        )
+                                    }
+                                    placeholder={
+                                        language === 'ru'
+                                            ? 'Например: VIP20, BLOGGER15'
+                                            : 'Ej: VIP20, BLOGGER15'
+                                    }
+                                    maxLength={32}
+                                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs font-black text-gray-900 uppercase tracking-wider outline-none focus:border-orange-500"
+                                />
+                            </div>
+                            <div className="w-full sm:w-28">
+                                <label className="block text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1 pl-1">
+                                    {language === 'ru' ? 'Скидка %' : 'Dto %'}
+                                </label>
+                                <input
+                                    type="number"
+                                    min={1}
+                                    max={90}
+                                    value={secretDiscountInput}
+                                    onChange={e => setSecretDiscountInput(e.target.value)}
+                                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-black text-gray-900 text-center outline-none focus:border-orange-500"
+                                />
+                            </div>
+                            <div className="flex items-end">
+                                <button
+                                    type="submit"
+                                    disabled={isSavingSecret || secretCodeInput.trim().length < 3}
+                                    className="w-full sm:w-auto px-5 py-2.5 bg-gray-900 hover:bg-orange-600 disabled:opacity-40 text-white rounded-xl font-black text-[10px] uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 h-[38px]"
+                                >
+                                    <Plus size={14} strokeWidth={3} />
+                                    <span>{language === 'ru' ? 'Добавить' : 'Añadir'}</span>
+                                </button>
+                            </div>
+                        </form>
+
+                        {/* Secret Codes List */}
+                        <div className="divide-y divide-gray-100 border border-gray-100 rounded-2xl overflow-hidden">
+                            {secretPromoCodes.map((sc: any) => (
+                                <div
+                                    key={sc.code}
+                                    className="px-4 py-3.5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 bg-white hover:bg-gray-50/60 transition-colors"
+                                >
+                                    <div className="flex items-center gap-3 min-w-0">
+                                        <span
+                                            className={`font-black text-sm tracking-wider px-3 py-1 rounded-xl border ${
+                                                sc.active
+                                                    ? 'bg-purple-50 text-purple-700 border-purple-200'
+                                                    : 'bg-gray-100 text-gray-400 border-gray-200 line-through'
+                                            }`}
+                                        >
+                                            {sc.code}
+                                        </span>
+                                        <span className="text-xs font-black text-orange-600 bg-orange-50 px-2.5 py-1 rounded-lg border border-orange-100">
+                                            -{sc.discountPercentage}%
+                                        </span>
+                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                                            {language === 'ru'
+                                                ? `Заказов: ${sc.usageCount || 0}`
+                                                : `Pedidos: ${sc.usageCount || 0}`}
+                                        </span>
+                                    </div>
+
+                                    <div className="flex items-center gap-2 ml-auto">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(sc.code);
+                                                setCopiedSecretCode(sc.code);
+                                                setTimeout(() => setCopiedSecretCode(null), 1800);
+                                            }}
+                                            className="px-2.5 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-[10px] font-black uppercase tracking-wider transition-colors cursor-pointer"
+                                        >
+                                            {copiedSecretCode === sc.code
+                                                ? language === 'ru'
+                                                    ? 'Скопировано'
+                                                    : 'Copiado'
+                                                : language === 'ru'
+                                                  ? 'Копировать'
+                                                  : 'Copiar'}
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            onClick={async () => {
+                                                await api.patch(
+                                                    `/admin/promo-codes/secret/${encodeURIComponent(sc.code)}`,
+                                                    { active: !sc.active }
+                                                );
+                                                refetchPromoCodes();
+                                            }}
+                                            className={`px-2.5 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-colors cursor-pointer ${
+                                                sc.active
+                                                    ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
+                                                    : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                                            }`}
+                                        >
+                                            {sc.active
+                                                ? language === 'ru'
+                                                    ? 'Активен'
+                                                    : 'Activo'
+                                                : language === 'ru'
+                                                  ? 'Выключен'
+                                                  : 'Inactivo'}
+                                        </button>
+
+                                        {sc.code !== 'WELOVEYOU15' && (
+                                            <button
+                                                type="button"
+                                                onClick={async () => {
+                                                    await api.delete(
+                                                        `/admin/promo-codes/secret/${encodeURIComponent(sc.code)}`
+                                                    );
+                                                    refetchPromoCodes();
+                                                }}
+                                                className="p-1.5 rounded-lg bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors cursor-pointer"
+                                                title={language === 'ru' ? 'Удалить' : 'Eliminar'}
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="max-w-2xl mx-auto bg-white rounded-2xl p-12 border border-gray-100 shadow-sm text-center">
+                        <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-orange-50">
                             <Sparkles size={40} strokeWidth={2.5} />
                         </div>
 
@@ -1069,7 +1266,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                                     <motion.div
                                         initial={{ opacity: 0, y: 20 }}
                                         animate={{ opacity: 1, y: 0 }}
-                                        className="mt-12 p-8 bg-gray-50 rounded-[32px] border border-gray-100 relative overflow-hidden"
+                                        className="mt-12 p-8 bg-gray-50 rounded-2xl border border-gray-100 relative overflow-hidden"
                                     >
                                         <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
                                             <Sparkles size={80} />
@@ -1120,7 +1317,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                         </div>
                     </div>
 
-                    <div className="mt-12 max-w-2xl mx-auto bg-orange-50/50 rounded-[32px] p-8 border border-orange-100/50 flex items-start gap-6">
+                    <div className="mt-12 max-w-2xl mx-auto bg-orange-50/50 rounded-2xl p-8 border border-orange-100/50 flex items-start gap-6">
                         <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
                             <HelpCircle className="text-orange-500" size={24} />
                         </div>
@@ -1137,7 +1334,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                     </div>
 
                     {allPromoCodes.length > 0 && (
-                        <div className="mt-12 max-w-2xl mx-auto bg-white rounded-[32px] border border-gray-100 shadow-sm overflow-hidden">
+                        <div className="mt-12 max-w-2xl mx-auto bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
                             <div className="bg-gray-50/50 border-b border-gray-100 px-4 md:px-8 py-3.5 md:py-5">
                                 <h4 className="text-xs font-black text-gray-900 uppercase tracking-widest">
                                     {language === 'ru' ? 'Все промокоды' : 'Todos los códigos'}
@@ -1297,7 +1494,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                         />
                     </div>
 
-                    <div className="mt-8 bg-black/5 rounded-[40px] p-10 border border-black/5 flex flex-col items-center text-center">
+                    <div className="mt-8 bg-black/5 rounded-2xl p-10 border border-black/5 flex flex-col items-center text-center">
                         <div className="w-16 h-16 bg-white rounded-3xl flex items-center justify-center mb-6 shadow-xl shadow-black/5">
                             <Sparkles className="text-orange-500" size={32} />
                         </div>
@@ -1319,7 +1516,7 @@ export default function AdminPromos({ language = 'es' }: AdminPromosProps) {
                         if (e.target === e.currentTarget) setPromoToDelete(null);
                     }}
                 >
-                    <div className="relative bg-white rounded-[32px] p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
+                    <div className="relative bg-white rounded-2xl p-10 max-w-sm w-full shadow-2xl animate-in zoom-in-95 duration-200 border border-white">
                         <div className="text-center">
                             <div className="w-20 h-20 bg-orange-100 text-orange-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-inner border border-orange-50">
                                 <Trash2 size={36} strokeWidth={2.5} />
@@ -1373,7 +1570,7 @@ function LoyaltyCard({
     t,
 }: any) {
     return (
-        <div className="bg-white rounded-[32px] p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 group relative overflow-hidden flex flex-col h-full">
+        <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 group relative overflow-hidden flex flex-col h-full">
             <div
                 className={`absolute top-0 right-0 w-32 h-32 ${color} opacity-[0.03] rounded-bl-[100px] transition-all group-hover:w-36 group-hover:h-36`}
             />
