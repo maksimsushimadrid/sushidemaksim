@@ -161,11 +161,10 @@ export default function Header() {
             ? 'Perfil'
             : 'Página';
 
-    // Attention and scroll-aware animation for unauthenticated gift box
+    // Attention and scroll-aware animation for floating action buttons
     useEffect(() => {
-        if (isAuthenticated) return;
-
         const triggerGiftAttention = () => {
+            if (isAuthenticated) return;
             setIsBouncing(true);
             if (isBouncingTimer.current) clearTimeout(isBouncingTimer.current);
             isBouncingTimer.current = setTimeout(() => {
@@ -191,35 +190,41 @@ export default function Header() {
                 clearTimeout(scrollStopTimer.current);
             }
 
+            // Return both size and opacity after 5 seconds of no scrolling
             scrollStopTimer.current = setTimeout(() => {
                 setIsScrolling(false);
-                // After 3s of no scrolling, box expands to normal size and shakes playfully
-                shakeAfterScrollTimer.current = setTimeout(() => {
-                    triggerGiftAttention();
-                }, 120);
-            }, 3000);
+                if (!isAuthenticated) {
+                    shakeAfterScrollTimer.current = setTimeout(() => {
+                        triggerGiftAttention();
+                    }, 120);
+                }
+            }, 5000);
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
 
         // First gentle shake after 3.5s, then periodic wiggle every 12 seconds when idle
-        const initialTimer = setTimeout(triggerGiftAttention, 3500);
-        const interval = setInterval(() => {
-            setIsScrolling(scrolling => {
-                if (!scrolling) {
-                    triggerGiftAttention();
-                }
-                return scrolling;
-            });
-        }, 12000);
+        let initialTimer: ReturnType<typeof setTimeout> | null = null;
+        let interval: ReturnType<typeof setInterval> | null = null;
+        if (!isAuthenticated) {
+            initialTimer = setTimeout(triggerGiftAttention, 3500);
+            interval = setInterval(() => {
+                setIsScrolling(scrolling => {
+                    if (!scrolling) {
+                        triggerGiftAttention();
+                    }
+                    return scrolling;
+                });
+            }, 12000);
+        }
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
             if (scrollStopTimer.current) clearTimeout(scrollStopTimer.current);
             if (shakeAfterScrollTimer.current) clearTimeout(shakeAfterScrollTimer.current);
             if (isBouncingTimer.current) clearTimeout(isBouncingTimer.current);
-            clearTimeout(initialTimer);
-            clearInterval(interval);
+            if (initialTimer) clearTimeout(initialTimer);
+            if (interval) clearInterval(interval);
         };
     }, [isAuthenticated]);
 
@@ -465,22 +470,23 @@ export default function Header() {
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: 60, opacity: 0 }}
                         transition={{ type: 'spring', damping: 22, stiffness: 260 }}
-                        className={`fixed top-1/2 right-3 md:right-4 -translate-y-1/2 z-40 select-none ${
+                        className={`fixed top-[62%] right-3 md:right-4 -translate-y-1/2 z-40 select-none ${
                             isAuthenticated && user ? 'md:hidden' : ''
                         }`}
                     >
-                        {/* Smooth size reduction during scroll with spring bounce-back */}
+                        {/* Smooth size reduction & translucent fade during scroll with 5s restore */}
                         <motion.div
                             animate={{
-                                scale: isScrolling ? 0.74 : 1,
-                                opacity: isScrolling ? 0.85 : 1,
+                                scale: isScrolling ? 0.72 : 1,
+                                opacity: isScrolling ? 0.35 : 1,
                             }}
+                            whileHover={{ scale: 1, opacity: 1 }}
                             transition={{
                                 type: 'spring',
-                                damping: 14,
-                                stiffness: 240,
+                                damping: 16,
+                                stiffness: 220,
                             }}
-                            className="origin-center flex flex-col items-end gap-3"
+                            className="origin-right flex flex-col items-end gap-2.5"
                         >
                             {/* Guest state: Floating Profile / Menu FAB Button above the gift box */}
                             {(!isAuthenticated || !user) && (
