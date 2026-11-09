@@ -30,6 +30,7 @@ import { TableMenuSkeleton } from './components/skeletons/TableMenuSkeleton';
 import { GenericSkeleton } from './components/skeletons/GenericSkeleton';
 import { usePageTracking } from './hooks/usePageTracking';
 import { useMagicLogin } from './hooks/useMagicLogin';
+import { useScreenSwipeNavigation } from './hooks/useScreenSwipeNavigation';
 import { safeReload } from './utils/reload';
 
 // Lazy-loaded pages with retry logic
@@ -140,6 +141,11 @@ function PageTracker() {
     return null;
 }
 
+function ScreenSwipeNavigator() {
+    useScreenSwipeNavigation();
+    return null;
+}
+
 function ShareRedirect() {
     const { id } = useParams();
     return <Navigate to={id ? `/menu?item=${id}#item-${id}` : '/menu'} replace />;
@@ -197,6 +203,7 @@ function App() {
                         <CartProvider>
                             <Schema />
                             <PageTracker />
+                            <ScreenSwipeNavigator />
                             <div className="min-h-[100svh] flex flex-col transition-colors duration-500 overflow-x-clip bg-transparent">
                                 <Analytics />
                                 <SpeedInsights />
