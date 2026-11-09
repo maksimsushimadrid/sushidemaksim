@@ -199,7 +199,7 @@ export function useScreenSwipeNavigation() {
 
                 try {
                     window.dispatchEvent(new CustomEvent('sushi:swiped'));
-                    localStorage.setItem('sushi_swipe_hint_seen_v3', 'true');
+                    localStorage.setItem('sushi_swipe_intro_seen_v1', 'true');
                 } catch {
                     // ignore
                 }

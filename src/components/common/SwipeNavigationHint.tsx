@@ -1,102 +1,145 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Pointer, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Pointer, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { getCycleIndexForPath } from '../../constants/navigation';
+
+const STORAGE_KEY = 'sushi_swipe_intro_seen_v1';
 
 export default function SwipeNavigationHint() {
     const location = useLocation();
     const isCyclePage = getCycleIndexForPath(location.pathname) !== -1;
 
-    const [visible, setVisible] = useState(() => {
-        if (typeof window === 'undefined') return false;
-        return !localStorage.getItem('sushi_swipe_hint_seen_v3');
-    });
+    const [visible, setVisible] = useState(false);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        // Check if already seen or on non-cycle route
+        const alreadySeen = localStorage.getItem(STORAGE_KEY);
+        if (alreadySeen || !isCyclePage) return;
+
+        // Soft delay before appearing so user sees initial page load
+        const timer = setTimeout(() => {
+            setVisible(true);
+        }, 600);
+
+        return () => clearTimeout(timer);
+    }, [isCyclePage]);
+
+    const dismiss = () => {
+        setVisible(false);
+        try {
+            localStorage.setItem(STORAGE_KEY, 'true');
+        } catch {
+            // ignore
+        }
+    };
 
     useEffect(() => {
         if (!visible) return;
 
         // Auto-dismiss after 7 seconds
-        const timer = setTimeout(() => {
-            setVisible(false);
-            localStorage.setItem('sushi_swipe_hint_seen_v3', 'true');
-        }, 7000);
+        const autoDismissTimer = setTimeout(dismiss, 7000);
 
-        // Also dismiss on user swipe or scroll
-        const handleInteraction = () => {
-            setVisible(false);
-            localStorage.setItem('sushi_swipe_hint_seen_v3', 'true');
-        };
-
-        window.addEventListener('sushi:swiped', handleInteraction);
-        window.addEventListener('scroll', handleInteraction, { passive: true, once: true });
+        // Dismiss on swipe event
+        const handleSwipe = () => dismiss();
+        window.addEventListener('sushi:swiped', handleSwipe);
 
         return () => {
-            clearTimeout(timer);
-            window.removeEventListener('sushi:swiped', handleInteraction);
-            window.removeEventListener('scroll', handleInteraction);
+            clearTimeout(autoDismissTimer);
+            window.removeEventListener('sushi:swiped', handleSwipe);
         };
     }, [visible]);
 
-    if (!isCyclePage) return null;
+    if (!visible) return null;
 
     return (
         <AnimatePresence>
             {visible && (
                 <motion.div
-                    initial={{ opacity: 0, y: 16, scale: 0.92 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 12, scale: 0.92 }}
-                    transition={{ duration: 0.22, ease: 'easeOut' }}
-                    onClick={() => {
-                        setVisible(false);
-                        localStorage.setItem('sushi_swipe_hint_seen_v3', 'true');
-                    }}
-                    className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40 md:hidden pointer-events-auto cursor-pointer select-none"
-                    role="status"
-                    aria-label="Desliza para navegar"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    onClick={dismiss}
+                    className="fixed inset-0 z-[100] md:hidden bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-6 select-none cursor-pointer"
+                    role="dialog"
+                    aria-label="Guía de navegación por swipe"
                 >
-                    <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#141414]/95 text-white border border-orange-500/40 shadow-[0_10px_25px_-5px_rgba(0,0,0,0.7),0_0_15px_rgba(242,101,34,0.35)] backdrop-blur-xl">
-                        {/* Left Arrow */}
-                        <motion.div
-                            animate={{ x: [-3, 1, -3] }}
-                            transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}
-                            className="text-orange-400 shrink-0"
-                        >
-                            <ChevronLeft size={14} strokeWidth={2.8} />
-                        </motion.div>
+                    {/* Close button top-right */}
+                    <button
+                        type="button"
+                        onClick={e => {
+                            e.stopPropagation();
+                            dismiss();
+                        }}
+                        className="absolute top-6 right-6 p-2 rounded-full bg-white/10 text-white/80 hover:text-white border border-white/15"
+                        aria-label="Cerrar"
+                    >
+                        <X size={20} />
+                    </button>
 
-                        {/* Animated Finger / Hand */}
-                        <div className="relative flex items-center justify-center w-5 h-5 shrink-0">
+                    <div className="flex flex-col items-center max-w-xs text-center">
+                        {/* Interactive Swipe Track with Animated Hand */}
+                        <div className="relative flex items-center justify-between w-64 h-24 my-4">
+                            {/* Horizontal guide track */}
+                            <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 h-0.5 border-t-2 border-dashed border-orange-500/40" />
+
+                            {/* Left Arrow */}
+                            <motion.div
+                                animate={{ x: [-4, 0, -4] }}
+                                transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}
+                                className="text-orange-400 shrink-0 relative z-10"
+                            >
+                                <ChevronLeft size={32} strokeWidth={2.8} />
+                            </motion.div>
+
+                            {/* Animated Pointing Finger */}
                             <motion.div
                                 animate={{
-                                    x: [-6, 6, -6],
+                                    x: [-45, 45, -45],
                                     rotate: [-8, 8, -8],
                                 }}
                                 transition={{
                                     repeat: Infinity,
-                                    duration: 1.4,
+                                    duration: 1.8,
                                     ease: 'easeInOut',
                                 }}
-                                className="text-orange-400 drop-shadow-[0_0_6px_rgba(242,101,34,0.7)]"
+                                className="relative z-20 flex items-center justify-center"
                             >
-                                <Pointer size={16} strokeWidth={2.2} />
+                                <div className="absolute w-12 h-12 rounded-full bg-orange-500/35 blur-md pointer-events-none" />
+                                <Pointer
+                                    size={52}
+                                    strokeWidth={1.8}
+                                    className="text-white fill-orange-500/30 drop-shadow-[0_4px_16px_rgba(242,101,34,0.95)]"
+                                />
+                            </motion.div>
+
+                            {/* Right Arrow */}
+                            <motion.div
+                                animate={{ x: [4, 0, 4] }}
+                                transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}
+                                className="text-orange-400 shrink-0 relative z-10"
+                            >
+                                <ChevronRight size={32} strokeWidth={2.8} />
                             </motion.div>
                         </div>
 
-                        {/* Text */}
-                        <span className="text-[11px] font-black uppercase tracking-wider whitespace-nowrap text-zinc-100">
-                            Desliza para navegar
-                        </span>
+                        {/* Title text */}
+                        <h3 className="text-xl font-black text-white uppercase tracking-wide leading-snug drop-shadow-md">
+                            Para moverte por el menú, usa el swipe
+                        </h3>
 
-                        {/* Right Arrow */}
-                        <motion.div
-                            animate={{ x: [1, -3, 1] }}
-                            transition={{ repeat: Infinity, duration: 1.4, ease: 'easeInOut' }}
-                            className="text-orange-400 shrink-0"
-                        >
-                            <ChevronRight size={14} strokeWidth={2.8} />
-                        </motion.div>
+                        {/* Subtitle pill */}
+                        <div className="mt-4 px-3.5 py-1.5 rounded-full bg-orange-500/20 border border-orange-400/40 text-orange-300 text-xs font-semibold tracking-wide flex items-center gap-2">
+                            <span>← Desliza a los lados →</span>
+                        </div>
+
+                        {/* Dismiss CTA */}
+                        <p className="mt-6 text-xs text-zinc-400 font-medium">
+                            Toca la pantalla para continuar
+                        </p>
                     </div>
                 </motion.div>
             )}
