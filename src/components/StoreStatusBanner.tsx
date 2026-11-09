@@ -221,16 +221,15 @@ export default function StoreStatusBanner() {
                         animate={{ y: 0, opacity: 1 }}
                         exit={{ y: -10, opacity: 0 }}
                         transition={{ duration: 0.25, ease: 'easeOut' }}
-                        className="absolute top-full inset-x-0 flex justify-center z-30 pointer-events-none -mt-px"
+                        className="absolute top-1.5 inset-x-0 flex justify-center z-30 pointer-events-none"
                     >
                         <button
                             type="button"
                             onClick={handleOpen}
-                            className="pointer-events-auto group inline-flex items-center gap-1.5 px-3.5 py-1 bg-gradient-to-b from-[#18181A]/95 to-[#0E0E10]/95 hover:from-zinc-900 hover:to-black text-amber-300 hover:text-amber-200 text-[10px] sm:text-xs font-bold rounded-b-xl border-b border-x border-white/15 shadow-[0_4px_12px_rgba(0,0,0,0.35)] backdrop-blur-md transition-all active:scale-95 cursor-pointer"
+                            className="pointer-events-auto group inline-flex items-center gap-1.5 px-3 py-1 bg-gradient-to-b from-[#18181A]/95 to-[#0E0E10]/95 hover:from-zinc-900 hover:to-black text-amber-300 hover:text-amber-200 text-[10px] sm:text-xs font-bold rounded-full border border-white/15 shadow-[0_2px_10px_rgba(0,0,0,0.35)] backdrop-blur-md transition-all active:scale-95 cursor-pointer"
                             aria-label="Mostrar aviso de horario"
                             title="Mostrar aviso"
                         >
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
                             <span className="tracking-wide uppercase text-[10px] sm:text-[11px] leading-none">
                                 {statusTitle}
                             </span>

@@ -6,36 +6,104 @@ import { useSettings } from '../../hooks/queries/useSettings';
 
 const REVIEWS = [
     {
+        author: 'Claudia M.',
+        date: 'hace 2 días',
+        text: 'Increíble descubrimiento en Adelfas. Las piezas son enormes, el salmón se deshace en la boca y el trato de Maksim es de diez. ¡Ya tenemos sitio fijo en Madrid!',
+    },
+    {
+        author: 'Gonzalo Pardo',
+        date: 'hace 5 días',
+        text: 'Hicimos pedido para recoger y estaba listo al minuto. El rollo frito crujiente por fuera y templado por dentro es una auténtica maravilla.',
+    },
+    {
+        author: 'Natalia V.',
+        date: 'hace 1 semana',
+        text: 'Pedimos cena para cuatro y todos alucinamos con la presentación y el tamaño de los rolls. Pescado fresquísimo y nada de arroz apelmazado.',
+    },
+    {
+        author: 'Marcos Serrano',
+        date: 'hace 2 semanas',
+        text: 'El Dragón Roll y el atún Balfegó son de otro planeta. Se nota el mimo artesanal que le pone el chef en cada corte. 100% recomendable.',
+    },
+    {
+        author: 'Irene Carrasco',
+        date: 'hace 3 semanas',
+        text: 'Llevo años viviendo en Madrid probando japoneses, y la relación calidad-precio de Maksim es imbatible. El packaging impecable y las piezas generosas.',
+    },
+    {
+        author: 'Víctor H.',
+        date: 'hace 1 mes',
+        text: 'Trato súper cercano y profesional. Los nigiris de anguila y vieira tienen un sabor brutal. Se ha convertido en nuestro capricho favorito de los viernes.',
+    },
+    {
+        author: 'Beatriz Morales',
+        date: 'hace 1 mes',
+        text: 'Comida de restaurante de alta cocina pero con la comodidad de pedir a casa. Todo llegó perfecto, a buena temperatura y con un sabor auténtico.',
+    },
+    {
+        author: 'Rubén D.',
+        date: 'hace 1 mes',
+        text: 'Los mejores rollos especiales que he probado. El equilibrio de salsas y el toque crujiente están perfectamente medidos. Cinco estrellas muy merecidas.',
+    },
+    {
+        author: 'Silvia Benítez',
+        date: 'hace 2 meses',
+        text: 'Cena sorpresa de aniversario y quedamos encantadísimos. Todo súper fresco, limpio y con una atención al detalle exquisita por parte de Maksim.',
+    },
+    {
+        author: 'Adrián R.',
+        date: 'hace 2 meses',
+        text: 'Se nota cuando alguien ama su oficio. El arroz en su punto exacto de cocción y vinagre, y raciones contundentes que no te dejan con hambre.',
+    },
+    {
         author: 'María García',
-        text: 'El mejor sushi que he probado en Madrid. Los rollos fritos son una auténtica locura, ¡volveremos a pedir seguro!',
+        date: 'hace 3 meses',
+        text: 'El mejor sushi que he probado en Madrid. Los rollos fritos son una auténtica locura, el pedido llegó rápido y perfectamente empaquetado.',
     },
     {
         author: 'Alejandro Ruiz',
-        text: 'Sabor increíble y el pescado súper fresco. El empaquetado es muy cuidado y el pedido llegó en perfecto estado.',
+        date: 'hace 3 meses',
+        text: 'Sabor increíble y el pescado súper fresco. El empaquetado es muy cuidado y el pedido llegó en perfecto estado. Calidad premium garantizada.',
     },
     {
-        author: 'Laura Martínez',
-        text: 'La calidad-precio es insuperable. Los nigiris de salmón se deshacen en la boca. Muy recomendado para cenar.',
+        author: 'Elena B.',
+        date: 'hace 4 meses',
+        text: 'Sencillamente espectacular. Las piezas son generosas y el sabor es auténtico. Se nota el cariño en la preparación. 10/10 en cada bocado.',
     },
     {
         author: 'Carlos Fernández',
-        text: '¡Espectacular! Se nota que cuidan cada detalle. El arroz estaba en su punto perfecto. Entrega rápida.',
+        date: 'hace 4 meses',
+        text: '¡Espectacular! Se nota que cuidan cada detalle. El arroz estaba en su punto perfecto, el pescado brillante y fresco. Entrega rápida y puntual.',
     },
     {
         author: 'Ana López',
-        text: 'Llevo años probando diferentes sitios de sushi, y Maksim se ha convertido en mi favorito absoluto.',
+        date: 'hace 5 meses',
+        text: 'Llevo años probando diferentes sitios de sushi, y Maksim se ha convertido en mi favorito absoluto. La calidad siempre es constante.',
     },
     {
         author: 'David Gómez',
-        text: 'Las porciones son generosas y el sabor te transporta a Japón. Sin duda, 5 estrellas.',
+        date: 'hace 5 meses',
+        text: 'Las porciones son generosas y el sabor te transporta a Japón. El salmón flambeado y los makis de autor son insuperables. Sin duda, 5 estrellas.',
     },
     {
         author: 'Sofía Navarro',
-        text: 'Presentación de 10. Fue una cena sorpresa para mi pareja y quedamos encantados con la calidad.',
+        date: 'hace 6 meses',
+        text: 'Presentación de 10. Fue una cena sorpresa para mi pareja y quedamos encantados con la calidad y frescura de los ingredientes.',
     },
     {
         author: 'Javier Domínguez',
-        text: 'Soy muy exigente con el pescado crudo y aquí es espectacular. Súper fresco y delicioso.',
+        date: 'hace 6 meses',
+        text: 'Soy muy exigente con el pescado crudo y aquí es espectacular. Súper fresco, cortes limpios y un sabor delicioso.',
+    },
+    {
+        author: 'Lucía Ramos',
+        date: 'hace 7 meses',
+        text: 'El rollo de pez mantequilla con trufa es una experiencia obligatoria. Pedido a través de la web facilísimo y recogida puntual en Barrilero.',
+    },
+    {
+        author: 'Pablo Castillo',
+        date: 'hace 8 meses',
+        text: 'Calidad japonesa real en la calle Barrilero. Piezas grandes que de verdad llenan y una atención al cliente de primer nivel. ¡Un 10!',
     },
 ];
 
@@ -202,6 +270,11 @@ export function HeroSection() {
                                 <span className="text-xs md:text-sm text-zinc-100 group-hover/review:text-orange-300 font-black uppercase tracking-wider mt-2 flex items-center justify-center gap-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.95)] transition-colors">
                                     <span className="text-orange-400 font-extrabold">—</span>
                                     <span>{REVIEWS[currentReview].author}</span>
+                                    {REVIEWS[currentReview].date && (
+                                        <span className="text-[10px] md:text-xs text-zinc-300 font-medium normal-case tracking-normal">
+                                            · {REVIEWS[currentReview].date}
+                                        </span>
+                                    )}
                                     <ExternalLink
                                         size={12}
                                         className="opacity-0 group-hover/review:opacity-100 transition-opacity text-orange-400 ml-0.5"

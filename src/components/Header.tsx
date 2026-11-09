@@ -21,6 +21,7 @@ import MobileMenu from './header/MobileMenu';
 import { triggerHaptic } from '../utils/haptics';
 import { JapaneseNavIcon } from './header/JapaneseNavIcon';
 import { MOBILE_NAV_CYCLE, getCycleIndexForPath } from '../constants/navigation';
+import StreakerEasterEgg from './common/StreakerEasterEgg';
 
 export default function Header() {
     const { itemCount, total, isLoading: cartLoading } = useCart();
@@ -39,6 +40,7 @@ export default function Header() {
     const [isAvatarDistorting, setIsAvatarDistorting] = useState(false);
     const [isBouncing, setIsBouncing] = useState(false);
     const [isScrolling, setIsScrolling] = useState(false);
+    const [isStreakerActive, setIsStreakerActive] = useState(false);
 
     const scrollStopTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const shakeAfterScrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -185,11 +187,11 @@ export default function Header() {
 
             scrollStopTimer.current = setTimeout(() => {
                 setIsScrolling(false);
-                // When scroll stops, let the box spring to normal size and shake playfully
+                // After 3s of no scrolling, box expands to normal size and shakes playfully
                 shakeAfterScrollTimer.current = setTimeout(() => {
                     triggerGiftAttention();
                 }, 120);
-            }, 180);
+            }, 3000);
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
@@ -568,12 +570,16 @@ export default function Header() {
                                 /* Guest state: 3D Luxury Black & Gold Gift Box with -10% badge matching user reference */
                                 <button
                                     onClick={() => {
-                                        triggerHaptic(20);
+                                        triggerHaptic(25);
                                         setIsAvatarDistorting(true);
+                                        setIsStreakerActive(true);
                                         setTimeout(() => {
                                             setIsAvatarDistorting(false);
+                                        }, 400);
+                                        // Wait for streaker to sprint across screen before opening modal
+                                        setTimeout(() => {
                                             setIsRegistrationDiscountOpen(true);
-                                        }, 280);
+                                        }, 1300);
                                     }}
                                     className="relative w-[68px] h-[68px] flex items-center justify-center cursor-pointer active:scale-90 transition-transform duration-200 group focus:outline-none"
                                     title="¡10% de descuento al registrarte! Toca para abrir tu regalo"
@@ -630,6 +636,12 @@ export default function Header() {
                     </motion.div>
                 </AnimatePresence>
             )}
+
+            {/* Streaker Easter Egg Running Across Screen */}
+            <StreakerEasterEgg
+                isActive={isStreakerActive}
+                onComplete={() => setIsStreakerActive(false)}
+            />
 
             {/* Global Modals triggered from Header */}
             <Suspense fallback={null}>
