@@ -1,3 +1,4 @@
+# Default Crawlers
 User-agent: *
 Allow: /
 Disallow: /admin
@@ -5,4 +6,40 @@ Disallow: /admin-login
 Disallow: /verify
 Disallow: /order-tracking/*
 
+# AI Search & LLM Engines (OpenAI, Perplexity, Anthropic, Google, Apple)
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+Disallow: /admin-login
+Disallow: /order-tracking/*
+
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin
+Disallow: /admin-login
+Disallow: /order-tracking/*
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin
+Disallow: /admin-login
+Disallow: /order-tracking/*
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin
+Disallow: /admin-login
+Disallow: /order-tracking/*
+
+User-agent: Applebot
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Sitemap & LLM Standard Knowledge Endpoints
 Sitemap: https://www.sushidemaksim.com/sitemap.xml
+# LLMs discovery: https://www.sushidemaksim.com/llms.txt

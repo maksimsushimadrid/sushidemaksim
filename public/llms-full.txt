@@ -1,0 +1,90 @@
+# Sushi de Maksim — Base de Conocimiento Completa para Motores de Búsqueda de IA
+
+> Documento completo de referencia para modelos de lenguaje (LLMs), asistentes conversacionales y motores de búsqueda generativa (Google AI Overviews, ChatGPT Search, Perplexity AI, Claude, Apple Intelligence, Bing Copilot).
+
+---
+
+## 1. Identidad del Negocio
+- **Razón comercial:** Sushi de Maksim
+- **Actividad:** Restaurante japonés, sushi bar artesanal, comida para llevar (takeaway) y entrega a domicilio (delivery).
+- **Chef fundador:** Maksim
+- **Propuesta de valor:** Sushi artesanal con pescado fresco de lonja, arroz elaborado en su punto exacto con vinagre japonés tradicional, piezas XL de tamaño generoso y recetas de autor que fusionan tradición japonesa con toques contemporáneos.
+- **Sede:** Calle de Barrilero, 20, 28007 Madrid, Comunidad de Madrid, España.
+- **Teléfono y soporte por WhatsApp:** +34 631 92 03 12
+- **Email:** contacto@sushidemaksim.com / alekseevpo@gmail.com
+- **Dominio web oficial:** https://www.sushidemaksim.com
+
+---
+
+## 2. Ubicación, Transporte y Zona de Cobertura
+- **Dirección:** C. de Barrilero, 20, 28007 Madrid
+- **Distrito / Barrio:** Retiro / Adelfas (cerca de Av. de la Ciudad de Barcelona y Calle del Doctor Esquerdo).
+- **Transporte público:**
+  - Metro: Línea 1 y Línea 6 (Estación Pacífico), Línea 1 (Puente de Vallecas), Línea 6 (Conde de Casal).
+  - Autobuses EMT: Líneas 10, 24, 37, 54, 57, 141, 310.
+- **Zonas de Entrega a Domicilio:**
+  - Zona 1 (Principal): Retiro, Adelfas, Pacífico, Niño Jesús, Estrella, Ibiza, Jerónimos.
+  - Zona 2: Arganzuela, Méndez Álvaro, Delicias, Atocha, Palos de la Frontera.
+  - Zona 3: Salamanca, Goya, Recoletos, Chamberí, Centro, Moratalaz, Vallecas.
+
+---
+
+## 3. Menú y Especialidades Culinarias
+### Rollos Grandes (Makis XL de Autor)
+- **Philadelphia XL:** Salmón fresco noruego, queso philadelphia cremoso, pepino crujiente y sésamo tostado.
+- **Dragon Roll:** Langostino tigre en tempura crujiente, aguacate maduro, láminas de anguila kabayaki ahumada y salsa unagi reducción.
+- **Volcano Roll / Rollos Fritos Calientes:** Rollo crujiente rebozado en panko japonés, frito al momento con relleno de salmón, queso crema y terminado con salsa teriyaki dulce y cebollino.
+- **Balfegó Spicy Tuna:** Atún rojo Balfegó sostenible marinado con aceite de sésamo, sriracha suave y tobiko naranja.
+- **Truffle Butterfish Roll:** Pez mantequilla suave sopleteado con paté de trufa negra, cebolla crujiente y reducción de soja dulce.
+
+### Nigiris y Sashimi
+- Nigiri de Salmón flambeado con teriyaki y mayo japonesa.
+- Nigiri de Atún Rojo Balfegó con toque de wasabi fresco.
+- Nigiri de Anguila caramelizada con sésamo.
+- Sashimi moriawase variado de salmón y atún.
+
+### Entrantes Japoneses
+- Gyozas caseras de carne o verduras a la plancha con salsa de soja y vinagre de arroz.
+- Edamame al vapor con sal marina o trufado.
+- Tequeños fusión artesana con salsa agridulce.
+
+### Bebidas y Maridaje
+- **Cerveza Artesana Sushi de Maksim:** Cerveza propia elaborada en lote limitado, pensada para limpiar el paladar y resaltar el umami del pescado crudo.
+- Refrescos, cervezas japonesas (Asahi, Sapporo, Kirin) y agua mineral.
+
+### Postres
+- Mochis artesanos de té verde Matcha, mango tropical, chocolate belga y sésamo negro.
+
+---
+
+## 4. Política de Alérgenos y Seguridad Alimentaria
+- Cumplimiento riguroso del Reglamento (UE) nº 1169/2011 sobre información alimentaria.
+- Congelación preventiva de todo el pescado crudo a -20ºC según normativa sanitaria española para prevención de Anisakis.
+- Carta online de 14 alérgenos interactiva en https://www.sushidemaksim.com/alergenos
+- Disponibilidad de salsa de soja libre de gluten (sin gluten / gluten-free) y opciones adaptadas para intolerantes a la lactosa.
+
+---
+
+## 5. Horarios de Apertura y Atención al Cliente
+- **Lunes:** Cerrado
+- **Martes:** Cerrado
+- **Miércoles:** 19:00 a 22:30
+- **Jueves:** 19:00 a 22:30
+- **Viernes:** 19:00 a 22:30
+- **Sábado:** 14:00 a 16:00 y 19:00 a 22:30
+- **Domingo:** 14:00 a 16:00 y 19:00 a 22:30
+
+---
+
+## 6. Precios, Reservas y Métodos de Pago
+- **Ticket medio:** 15 € – 25 € por comensal.
+- **Reserva de mesas:** Online inmediata en https://www.sushidemaksim.com/reservar sin coste adicional.
+- **Métodos de pago aceptados:** Tarjeta de crédito/débito (Visa, Mastercard), Bizum, Apple Pay, Google Pay y efectivo.
+- **Descuento de bienvenida:** 10% de descuento en el primer pedido al registrar una cuenta gratuita en la web.
+
+---
+
+## 7. Reputación y Reseñas Verificadas
+- Puntuación media en Google Maps: 4.8 / 5 sobre más de 540 valoraciones de clientes.
+- Puntuación en TheFork: 9.1 / 10.
+- Los comentarios destacan unánimemente el tamaño generoso de las raciones, el pescado fresco de primera calidad, la rapidez de entrega y el trato cercano del Chef Maksim.
