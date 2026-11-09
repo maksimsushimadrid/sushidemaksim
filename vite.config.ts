@@ -189,7 +189,13 @@ export default defineConfig({
     test: {
         globals: true,
         environment: 'jsdom',
-        setupFiles: './src/test/setup.ts',
+        setupFiles: ['./src/test/setup.ts', './server/src/test/setup.ts'],
         include: ['src/**/*.{test,spec}.{ts,tsx}', 'server/src/**/*.{test,spec}.{ts,tsx}'],
+        env: {
+            NODE_ENV: 'test',
+            JWT_SECRET: 'test-jwt-secret-minimum-32-characters-long',
+            SUPABASE_URL: 'https://mock.supabase.co',
+            SUPABASE_KEY: 'mock-supabase-key',
+        },
     },
 });

@@ -30,6 +30,11 @@ jobs:
     test-unit:
         name: 'Unit Tests (Vitest)'
         runs-on: ubuntu-latest
+        env:
+            NODE_ENV: test
+            JWT_SECRET: test-jwt-secret-minimum-32-characters-long
+            SUPABASE_URL: https://mock.supabase.co
+            SUPABASE_KEY: mock-supabase-key
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-node@v4

@@ -3,6 +3,13 @@ import { envSchema } from './schemas/config.schema.js';
 
 const DEFAULT_JWT_SECRET = 'sushi-de-maksim-secret-key-2024-CHANGE-IN-PRODUCTION';
 
+// Safe fallbacks for unit tests
+if (process.env.NODE_ENV === 'test' || process.env.VITEST) {
+    process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret-minimum-32-characters-long';
+    process.env.SUPABASE_URL = process.env.SUPABASE_URL || 'https://mock.supabase.co';
+    process.env.SUPABASE_KEY = process.env.SUPABASE_KEY || 'mock-supabase-key';
+}
+
 // Validate and parse environment variables
 const env = envSchema.parse(process.env);
 

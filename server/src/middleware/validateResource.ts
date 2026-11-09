@@ -1,6 +1,37 @@
 import { Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 
+const SENSITIVE_KEYS = new Set([
+    'password',
+    'currentpassword',
+    'newpassword',
+    'confirmpassword',
+    'token',
+    'refreshtoken',
+    'accesstoken',
+    'secret',
+    'cvv',
+    'cardnumber',
+    'authorization',
+]);
+
+export function sanitizeForLogging(obj: any): any {
+    if (!obj || typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) return obj.map(sanitizeForLogging);
+
+    const sanitized: Record<string, any> = {};
+    for (const [key, value] of Object.entries(obj)) {
+        if (SENSITIVE_KEYS.has(key.toLowerCase())) {
+            sanitized[key] = '[REDACTED]';
+        } else if (value && typeof value === 'object') {
+            sanitized[key] = sanitizeForLogging(value);
+        } else {
+            sanitized[key] = value;
+        }
+    }
+    return sanitized;
+}
+
 /**
  * Middleware for validating request data using Zod schemas.
  *
@@ -27,10 +58,10 @@ export const validateResource =
             message: err.message,
         }));
 
-        // Log validation failures for diagnostics (Best Practice)
+        // Log validation failures for diagnostics, ensuring sensitive credentials are redacted
         console.warn('⚠️ Validation Error for %s:', req.originalUrl, {
             errors,
-            body: req.body,
+            body: sanitizeForLogging(req.body),
         });
 
         return res.status(400).json({
