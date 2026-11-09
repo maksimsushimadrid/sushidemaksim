@@ -536,6 +536,34 @@ router.get(
     })
 );
 
+// GET /api/admin/orders/:id — single order with full details & items
+router.get(
+    '/orders/:id',
+    asyncHandler(async (req: Request, res: Response) => {
+        const orderId = req.params.id;
+        const { data: order, error } = await supabase
+            .from('orders')
+            .select('*, users(name, email, avatar), items:order_items(*)')
+            .eq('id', orderId)
+            .single();
+
+        if (error || !order) {
+            return res.status(404).json({ error: 'Pedido no encontrado' });
+        }
+
+        let userStats = null;
+        if (order.user_id) {
+            const { data: userOrders } = await supabase
+                .from('orders')
+                .select('total, created_at, items:order_items(name, quantity)')
+                .eq('user_id', order.user_id);
+            userStats = calculateUserStats(userOrders || []);
+        }
+
+        res.json({ order: formatOrder(order, userStats) });
+    })
+);
+
 // DELETE /api/admin/orders/:id — Soft-delete an order (mark as archived)
 router.delete(
     '/orders/:id',
@@ -1289,19 +1317,48 @@ router.get(
             ordersByStatus[o.status] = (ordersByStatus[o.status] || 0) + 1;
         });
 
-        // 4. Recent orders (still 5 recent orders)
+        // 4. Recent orders (with full items and customer details)
         const { data: recentOrders } = await supabase
             .from('orders')
-            .select('id, total, status, created_at, users(name, avatar)')
+            .select('*, users(name, email, avatar), items:order_items(*)')
             .eq('is_archived', false)
             .order('created_at', { ascending: false })
-            .limit(5);
+            .limit(8);
 
-        const formattedRecent = (recentOrders || []).map((o: any) => ({
-            ...o,
-            user_name: o.users?.name,
-            user_avatar: o.users?.avatar,
-        }));
+        const recentUserIds = [
+            ...new Set((recentOrders || []).filter(o => o.user_id).map(o => o.user_id)),
+        ];
+        const recentUserStatsMap: Record<string, any> = {};
+        if (recentUserIds.length > 0) {
+            const { data: usersWithOrders } = await supabase
+                .from('users')
+                .select(
+                    'id, created_at, orders(total, created_at, items:order_items(name, quantity))'
+                )
+                .in('id', recentUserIds);
+
+            (usersWithOrders || []).forEach((u: any) => {
+                const stats = calculateUserStats(u.orders || []);
+                recentUserStatsMap[u.id] = {
+                    ...stats,
+                    name: u.name,
+                    email: u.email,
+                    avatar: u.avatar,
+                    registrationDate: u.created_at,
+                };
+            });
+        }
+
+        const formattedRecent = (recentOrders || []).map((o: any) => {
+            const uStats = o.user_id ? recentUserStatsMap[o.user_id] || null : null;
+            const formatted = formatOrder(o, uStats);
+            if (!formatted) return o;
+            return {
+                ...formatted,
+                user_name: formatted.users?.name || o.customer_name || 'Invitado',
+                user_avatar: formatted.users?.avatar || null,
+            };
+        });
 
         // 5. Unified Data Processing (Last 30 days)
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();

@@ -976,6 +976,7 @@ export default function AdminPage() {
                                     loadStats={handleRefetchStats}
                                     setActiveTab={setActiveTab}
                                     language={language}
+                                    onPrintOrder={handlePrintOrder}
                                 />
                             )}
 

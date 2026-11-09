@@ -13,6 +13,7 @@ import {
     Eye,
     Calendar,
     X,
+    Receipt,
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -26,8 +27,8 @@ import {
     YAxis,
     Tooltip,
 } from 'recharts';
-import { useToast } from '../../context/ToastContext';
 import { BUSINESS_HOURS } from '../../utils/storeStatus';
+import OrderDetailsModal from './OrderDetailsModal';
 
 interface AdminDashboardProps {
     stats: any;
@@ -36,6 +37,7 @@ interface AdminDashboardProps {
     loadStats: (isPolling?: boolean) => Promise<void>;
     setActiveTab: (tab: any) => void;
     language?: 'ru' | 'es';
+    onPrintOrder?: (order: any) => void;
 }
 
 const DASHBOARD_TRANSLATIONS = {
@@ -666,13 +668,14 @@ export default function AdminDashboard({
     loadStats,
     setActiveTab,
     language = 'es',
+    onPrintOrder,
 }: AdminDashboardProps) {
     const navigate = useNavigate();
-    const { success } = useToast();
 
     const t = DASHBOARD_TRANSLATIONS[language];
     const dateLocale = language === 'ru' ? 'ru-RU' : 'es-ES';
 
+    const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const rowsPerPage = 30;
     const [selectedWeek, setSelectedWeek] = useState<any>(null);
@@ -946,11 +949,11 @@ export default function AdminDashboard({
                 </div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
-                <div className="metallic-card p-5 hover:shadow-md transition-shadow">
-                    <div className="flex items-center justify-between mb-6 pb-2 border-b border-white/20">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mt-4 sm:mt-6">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-3.5 sm:p-5 hover:shadow-md transition-shadow">
+                    <div className="flex items-center justify-between mb-3 pb-2 border-b border-gray-100">
                         <h3 className="metallic-text uppercase tracking-tight flex items-center gap-2 text-sm">
-                            <div className="w-1.5 h-6 bg-slate-800 rounded-full" />
+                            <div className="w-1.5 h-5 bg-orange-600 rounded-full" />
                             {t.recentOrders}
                         </h3>
                         <button
@@ -962,164 +965,190 @@ export default function AdminDashboard({
                     </div>
 
                     {loading ? (
-                        <div className="space-y-3">
-                            {[1, 2, 3, 4].map(i => (
+                        <div className="space-y-2">
+                            {[1, 2, 3, 4, 5].map(i => (
                                 <div
                                     key={i}
-                                    className="h-14 bg-gray-50/50 rounded-2xl animate-pulse flex items-center px-4 gap-3"
+                                    className="h-11 bg-gray-50/50 rounded-xl animate-pulse flex items-center px-3 gap-3"
                                 >
-                                    <div className="w-10 h-10 rounded-2xl bg-gray-100 shrink-0" />
-                                    <div className="flex-1 space-y-2">
-                                        <div className="h-3 w-1/2 bg-gray-100 rounded" />
+                                    <div className="w-8 h-8 rounded-xl bg-gray-100 shrink-0" />
+                                    <div className="flex-1 space-y-1.5">
+                                        <div className="h-2.5 w-1/2 bg-gray-100 rounded" />
                                         <div className="h-2 w-1/4 bg-gray-100 rounded opacity-50" />
                                     </div>
-                                    <div className="h-4 w-12 bg-gray-100 rounded" />
+                                    <div className="h-3.5 w-12 bg-gray-100 rounded" />
                                 </div>
                             ))}
                         </div>
                     ) : !stats?.recentOrders?.length ? (
-                        <div className="text-center py-16 text-gray-400 font-bold uppercase text-[11px] tracking-widest">
+                        <div className="text-center py-10 text-gray-400 font-bold uppercase text-[11px] tracking-widest">
                             {t.noOrders}
                         </div>
                     ) : (
-                        <div className="space-y-2">
-                            {stats.recentOrders.map((order: any) => (
-                                <div
-                                    key={order.id}
-                                    className="p-3 bg-gray-50/50 rounded-2xl flex items-center justify-between text-left hover:bg-gray-100/80 transition-colors border border-transparent hover:border-gray-100"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div
-                                            className={`w-11 h-11 rounded-2xl flex items-center justify-center text-white font-black text-xs overflow-hidden shrink-0 shadow-sm border border-white
-                                                ${order.user_avatar?.startsWith('http') ? 'bg-white' : order.user_avatar ? 'bg-gray-100 text-[18px]' : 'bg-orange-600'}`}
-                                        >
-                                            {order.user_avatar ? (
-                                                order.user_avatar.startsWith('http') ? (
-                                                    <img
-                                                        src={`${order.user_avatar}${order.user_avatar.includes('?') ? '&' : '?'}t=${Date.now()}`}
-                                                        alt={order.user_name}
-                                                        className="w-full h-full object-cover"
-                                                        onError={e => {
-                                                            (
-                                                                e.currentTarget as HTMLImageElement
-                                                            ).style.display = 'none';
-                                                            e.currentTarget.parentElement!.innerText =
-                                                                (order.user_name || '?')
-                                                                    .split(' ')
-                                                                    .filter(Boolean)
-                                                                    .map((n: string) => n[0])
-                                                                    .join('')
-                                                                    .toUpperCase()
-                                                                    .slice(0, 2);
-                                                        }}
-                                                    />
+                        <div className="space-y-1.5">
+                            {stats.recentOrders.map((order: any) => {
+                                const displayId =
+                                    typeof order.id === 'string' && order.id.includes('-')
+                                        ? order.id.slice(0, 8).toUpperCase()
+                                        : String(order.id).padStart(5, '0');
+
+                                const isMesa = order.deliveryAddress
+                                    ?.toUpperCase()
+                                    .includes('MESA');
+                                const isPickup =
+                                    order.deliveryAddress?.toUpperCase() === 'RECOGIDA' ||
+                                    order.deliveryType === 'pickup';
+
+                                return (
+                                    <div
+                                        key={order.id}
+                                        onClick={() => setSelectedOrder(order)}
+                                        className="p-2 sm:p-2.5 bg-gray-50/70 hover:bg-orange-50/80 rounded-xl flex items-center justify-between text-left transition-all border border-gray-100/80 hover:border-orange-200 cursor-pointer group active:scale-[0.99]"
+                                        title={
+                                            language === 'ru'
+                                                ? 'Нажмите, чтобы открыть чек и данные заказа'
+                                                : 'Haz clic para ver el ticket y detalles'
+                                        }
+                                    >
+                                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                                            <div
+                                                className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-white font-black text-xs overflow-hidden shrink-0 shadow-xs border border-white
+                                                    ${order.user_avatar?.startsWith('http') ? 'bg-white' : order.user_avatar ? 'bg-gray-100 text-[16px]' : 'bg-orange-600'}`}
+                                            >
+                                                {order.user_avatar ? (
+                                                    order.user_avatar.startsWith('http') ? (
+                                                        <img
+                                                            src={`${order.user_avatar}${order.user_avatar.includes('?') ? '&' : '?'}t=${Date.now()}`}
+                                                            alt={order.user_name}
+                                                            className="w-full h-full object-cover"
+                                                            onError={e => {
+                                                                (
+                                                                    e.currentTarget as HTMLImageElement
+                                                                ).style.display = 'none';
+                                                                e.currentTarget.parentElement!.innerText =
+                                                                    (order.user_name || '?')
+                                                                        .split(' ')
+                                                                        .filter(Boolean)
+                                                                        .map((n: string) => n[0])
+                                                                        .join('')
+                                                                        .toUpperCase()
+                                                                        .slice(0, 2);
+                                                            }}
+                                                        />
+                                                    ) : (
+                                                        <span className="select-none text-base">
+                                                            {order.user_avatar}
+                                                        </span>
+                                                    )
                                                 ) : (
-                                                    <span className="select-none text-xl">
-                                                        {order.user_avatar}
+                                                    <span className="select-none text-xs">
+                                                        {(order.user_name || 'Invitado')
+                                                            .split(' ')
+                                                            .filter(Boolean)
+                                                            .map((n: string) => n[0])
+                                                            .join('')
+                                                            .toUpperCase()
+                                                            .slice(0, 2)}
                                                     </span>
-                                                )
-                                            ) : (
-                                                <span className="select-none">
-                                                    {(order.user_name || 'Invitado')
-                                                        .split(' ')
-                                                        .filter(Boolean)
-                                                        .map((n: string) => n[0])
-                                                        .join('')
-                                                        .toUpperCase()
-                                                        .slice(0, 2)}
-                                                </span>
-                                            )}
+                                                )}
+                                            </div>
+
+                                            <div className="min-w-0 flex-1">
+                                                <div className="flex items-center gap-1.5 flex-wrap">
+                                                    <span className="font-black text-gray-900 text-xs sm:text-[13px] leading-tight group-hover:text-orange-600 transition-colors">
+                                                        #{displayId}
+                                                    </span>
+
+                                                    {isMesa ? (
+                                                        <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded bg-red-100 text-red-700">
+                                                            Mesa
+                                                        </span>
+                                                    ) : isPickup ? (
+                                                        <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded bg-amber-100 text-amber-700">
+                                                            Recogida
+                                                        </span>
+                                                    ) : null}
+
+                                                    {order.items?.length > 0 && (
+                                                        <span className="text-[9.5px] font-bold text-gray-400">
+                                                            ({order.items.length}{' '}
+                                                            {language === 'ru' ? 'поз.' : 'uds.'})
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                <p className="text-[11px] text-gray-500 font-bold uppercase tracking-tight truncate max-w-[150px] sm:max-w-[220px]">
+                                                    {order.user_name || t.guest}
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p className="font-black text-gray-900 text-[13px] leading-none mb-1">
-                                                <span
-                                                    className="cursor-pointer active:scale-95 transition-transform inline-block"
-                                                    title={String(order.id)}
-                                                    onClick={() => {
-                                                        navigator.clipboard.writeText(
-                                                            String(order.id)
-                                                        );
-                                                        success(
-                                                            language === 'ru'
-                                                                ? 'ID заказа скопирован'
-                                                                : 'Pedido ID copiado'
-                                                        );
-                                                    }}
-                                                >
-                                                    #
-                                                    {typeof order.id === 'string' &&
-                                                    order.id.includes('-')
-                                                        ? order.id.slice(0, 8).toUpperCase()
-                                                        : String(order.id).padStart(5, '0')}
-                                                </span>
+
+                                        <div className="flex items-center gap-2 shrink-0 ml-2">
+                                            <p className="font-black text-gray-900 text-xs sm:text-sm">
+                                                {Number(order.total).toFixed(2).replace('.', ',')} €
                                             </p>
-                                            <p className="text-[10px] text-gray-400 font-black uppercase tracking-tight truncate max-w-[140px]">
-                                                {order.user_name || t.guest}
-                                            </p>
+                                            <div className="w-6 h-6 rounded-lg bg-white border border-gray-200 group-hover:bg-orange-500 group-hover:border-orange-500 group-hover:text-white text-gray-400 flex items-center justify-center transition-all shadow-xs">
+                                                <Receipt size={12} strokeWidth={2.5} />
+                                            </div>
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="font-black text-gray-900 text-sm">
-                                            {Number(order.total).toFixed(2).replace('.', ',')} €
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 hover:shadow-md transition-shadow">
-                    <h3 className="metallic-text uppercase tracking-tight mb-6 pb-2 border-b border-white/20 flex items-center gap-2 text-sm">
-                        <div className="w-1.5 h-6 bg-slate-800 rounded-full" />
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-3.5 sm:p-5 hover:shadow-md transition-shadow">
+                    <h3 className="metallic-text uppercase tracking-tight mb-3 pb-2 border-b border-gray-100 flex items-center gap-2 text-sm">
+                        <div className="w-1.5 h-5 bg-slate-800 rounded-full" />
                         {t.topProducts}
                     </h3>
 
                     {loading ? (
-                        <div className="space-y-4">
+                        <div className="space-y-2.5">
                             {[1, 2, 3, 4, 5].map(i => (
                                 <div
                                     key={i}
-                                    className="h-12 bg-gray-50/50 rounded-2xl animate-pulse flex items-center px-4 gap-4"
+                                    className="h-10 bg-gray-50/50 rounded-xl animate-pulse flex items-center px-3 gap-3"
                                 >
-                                    <div className="w-8 h-8 rounded-xl bg-gray-100 shrink-0" />
-                                    <div className="flex-1 space-y-2">
+                                    <div className="w-7 h-7 rounded-lg bg-gray-100 shrink-0" />
+                                    <div className="flex-1 space-y-1.5">
                                         <div className="flex justify-between">
-                                            <div className="h-3 w-1/3 bg-gray-100 rounded" />
-                                            <div className="h-3 w-12 bg-gray-100 rounded" />
+                                            <div className="h-2.5 w-1/3 bg-gray-100 rounded" />
+                                            <div className="h-2.5 w-10 bg-gray-100 rounded" />
                                         </div>
-                                        <div className="h-1.5 w-full bg-gray-100 rounded-full" />
+                                        <div className="h-1 w-full bg-gray-100 rounded-full" />
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : !stats?.topItems?.length ? (
-                        <div className="text-center py-16 text-gray-400 font-bold uppercase text-[11px] tracking-widest">
+                        <div className="text-center py-10 text-gray-400 font-bold uppercase text-[11px] tracking-widest">
                             {t.noSales}
                         </div>
                     ) : (
-                        <div className="space-y-4">
+                        <div className="space-y-2">
                             {stats.topItems.map((item: any, idx: number) => (
-                                <div key={idx} className="flex items-center gap-4 group">
-                                    <div className="w-10 h-10 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center font-black text-[14px] shadow-inner group-hover:scale-110 transition-transform">
+                                <div key={idx} className="flex items-center gap-3 group">
+                                    <div className="w-7 h-7 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center font-black text-xs shadow-inner group-hover:scale-105 transition-transform shrink-0">
                                         #{idx + 1}
                                     </div>
-                                    <div className="flex-1">
-                                        <div className="flex justify-between items-center mb-1.5">
-                                            <span className="text-[13px] font-black text-gray-800 uppercase tracking-tight">
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex justify-between items-center mb-1">
+                                            <span className="text-xs font-black text-gray-800 uppercase tracking-tight truncate mr-2">
                                                 {item.name}
                                             </span>
-                                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest bg-gray-50 px-2 py-0.5 rounded-lg">
+                                            <span className="text-[9.5px] font-black text-gray-400 uppercase tracking-wider bg-gray-50 px-1.5 py-0.5 rounded shrink-0">
                                                 {item.sold} {t.sold}
                                             </span>
                                         </div>
-                                        <div className="w-full bg-gray-50 h-2.5 rounded-full overflow-hidden border border-gray-100 shadow-inner p-0.5">
+                                        <div className="w-full bg-gray-50 h-1.5 rounded-full overflow-hidden border border-gray-100 shadow-inner p-0.2">
                                             <div
-                                                className="bg-orange-600 h-full rounded-full transition-all duration-1000 shadow-[0_0_10px_rgba(242,101,34,0.3)]"
+                                                className="bg-orange-600 h-full rounded-full transition-all duration-1000 shadow-[0_0_8px_rgba(242,101,34,0.3)]"
                                                 style={{
                                                     width: `${Math.min(100, (item.sold / (stats.topItems[0].sold || 1)) * 100)}%`,
                                                 }}
-                                            ></div>
+                                            />
                                         </div>
                                     </div>
                                 </div>
@@ -1492,6 +1521,19 @@ export default function AdminDashboard({
                     </div>
                 )}
             </AnimatePresence>
+
+            {/* Order Details & Receipt Modal */}
+            <OrderDetailsModal
+                order={selectedOrder}
+                isOpen={!!selectedOrder}
+                onClose={() => setSelectedOrder(null)}
+                onPrintOrder={onPrintOrder}
+                onViewInOrders={() => {
+                    setSelectedOrder(null);
+                    setActiveTab('orders');
+                }}
+                language={language}
+            />
         </div>
     );
 }
