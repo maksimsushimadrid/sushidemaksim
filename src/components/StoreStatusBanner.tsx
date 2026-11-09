@@ -5,8 +5,19 @@ import { useLocation } from 'react-router-dom';
 import { isStoreOpen, getNextOpeningTime, formatTimeLeft } from '../utils/storeStatus';
 import { useSettings } from '../hooks/queries/useSettings';
 
+const BANNER_STORAGE_KEY = 'store_banner_user_closed';
+
+function getInitialVisibility(): boolean {
+    if (typeof window === 'undefined') return true;
+    try {
+        return sessionStorage.getItem(BANNER_STORAGE_KEY) !== 'true';
+    } catch (_) {
+        return true;
+    }
+}
+
 export default function StoreStatusBanner() {
-    const [isVisible, setIsVisible] = useState(true);
+    const [isVisible, setIsVisible] = useState(getInitialVisibility);
     const [timeLeftDisplay, setTimeLeftDisplay] = useState<string | null>(null);
     const lastOpenedScrollYRef = useRef<number>(typeof window !== 'undefined' ? window.scrollY : 0);
 
@@ -15,6 +26,25 @@ export default function StoreStatusBanner() {
 
     const { data: settings } = useSettings();
 
+    const handleClose = () => {
+        setIsVisible(false);
+        try {
+            sessionStorage.setItem(BANNER_STORAGE_KEY, 'true');
+        } catch {
+            // ignore storage errors
+        }
+    };
+
+    const handleOpen = () => {
+        lastOpenedScrollYRef.current = typeof window !== 'undefined' ? window.scrollY : 0;
+        try {
+            sessionStorage.removeItem(BANNER_STORAGE_KEY);
+        } catch {
+            // ignore storage errors
+        }
+        setIsVisible(true);
+    };
+
     // Automatically hide the curtain when the user starts scrolling
     useEffect(() => {
         if (!isVisible) return;
@@ -22,18 +52,13 @@ export default function StoreStatusBanner() {
         const handleScroll = () => {
             const scrollDelta = Math.abs(window.scrollY - lastOpenedScrollYRef.current);
             if (scrollDelta > 25 || window.scrollY > 40) {
-                setIsVisible(false);
+                handleClose();
             }
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, [isVisible]);
-
-    const handleOpen = () => {
-        lastOpenedScrollYRef.current = typeof window !== 'undefined' ? window.scrollY : 0;
-        setIsVisible(true);
-    };
 
     useEffect(() => {
         const updateCountdown = () => {
@@ -173,7 +198,7 @@ export default function StoreStatusBanner() {
                                     {/* Bright, vivid high-contrast close button */}
                                     <button
                                         type="button"
-                                        onClick={() => setIsVisible(false)}
+                                        onClick={handleClose}
                                         className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/35 active:scale-90 text-white flex items-center justify-center border border-white/40 shadow-sm hover:shadow-white/20 transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/60 shrink-0"
                                         aria-label="Cerrar aviso"
                                         title="Cerrar aviso"
@@ -206,7 +231,7 @@ export default function StoreStatusBanner() {
 
                             {/* Curtain bottom grab handle indicator */}
                             <div
-                                onClick={() => setIsVisible(false)}
+                                onClick={handleClose}
                                 className="flex items-center justify-center pt-2 pb-0.5 cursor-pointer group"
                                 title="Deslizar arriba para cerrar"
                             >
