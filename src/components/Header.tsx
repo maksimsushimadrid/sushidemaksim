@@ -321,7 +321,7 @@ export default function Header() {
                                             className="text-gray-800 group-hover:text-orange-600 transition-colors"
                                         />
                                     </div>
-                                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#121212]/92 backdrop-blur-md text-white text-[7px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-lg border border-white/15 leading-none">
+                                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-neutral-950 text-amber-300 text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full whitespace-nowrap shadow-[0_4px_12px_rgba(0,0,0,0.8)] border border-amber-400/50 leading-none">
                                         PERFIL
                                     </span>
                                 </button>
@@ -412,7 +412,7 @@ export default function Header() {
                                     </motion.div>
 
                                     {/* Subtitle label under floating avatar */}
-                                    <span className="absolute -bottom-3.5 left-1/2 -translate-x-1/2 bg-[#121212]/92 backdrop-blur-md text-white text-[8px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full whitespace-nowrap shadow-lg border border-white/15 leading-none">
+                                    <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-neutral-950 text-amber-300 text-[9.5px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full whitespace-nowrap shadow-[0_4px_14px_rgba(0,0,0,0.85)] border border-amber-400/50 leading-none">
                                         {user.name.split(' ')[0]}
                                     </span>
                                 </button>
