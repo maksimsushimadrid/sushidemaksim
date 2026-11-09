@@ -165,10 +165,10 @@ app.get(['/compartir/item/:id', '/api/compartir/item/:id'], async (req, res) => 
         if (!imageUrl) imageUrl = `${fUrl}/og-image-v18.jpg`;
 
         const userAgent = (req.headers['user-agent'] || '').toLowerCase();
+        // Distinguish crawler bots (TelegramBot, Twitterbot, facebookexternalhit) from real mobile in-app browsers
         const isBot =
-            /bot|crawl|spider|facebook|twitter|whatsapp|telegram|slack|discord|pinterest|google|preview|applebot/i.test(
-                userAgent
-            );
+            /bot|crawl|spider|facebookexternalhit|whatsapp\/\d|vkshare/i.test(userAgent) &&
+            !/mobile\/|telegram-ios|telegram-android|safari|chrome|firefox/i.test(userAgent);
 
         const html = `<!DOCTYPE html>
 <html lang="es" prefix="og: http://ogp.me/ns#">
@@ -194,18 +194,27 @@ app.get(['/compartir/item/:id', '/api/compartir/item/:id'], async (req, res) => 
     <meta name="twitter:title" content="¡Mira este ${safeName} en Sushi de Maksim!">
     <meta name="twitter:description" content="${safeDescription}">
     
-    <!-- Seamless client redirect for human visitors, preserved static preview for crawler bots -->
+    <!-- Instant client redirect for browsers & in-app webviews (bots ignore scripts) -->
+    <script>
+        try {
+            window.location.replace("${finalDest}");
+        } catch (e) {
+            window.location.href = "${finalDest}";
+        }
+    </script>
     ${
-        isBot
-            ? ''
-            : `<script>window.location.replace("${finalDest}");</script>
-    <noscript><meta http-equiv="refresh" content="0; url=${finalDest}"></noscript>`
+        !isBot
+            ? `<noscript><meta http-equiv="refresh" content="0; url=${finalDest}"></noscript>`
+            : ''
     }
 </head>
-<body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #000;">
-    <div style="text-align: center; color: white;">
-        <p style="opacity: 0.6; font-weight: 500;">Cargando ${safeName}...</p>
+<body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; background: #0c0a09; color: white;">
+    <div style="text-align: center; padding: 24px; max-width: 320px;">
+        <div style="width: 44px; height: 44px; margin: 0 auto 16px; border: 3px solid rgba(249,115,22,0.25); border-top-color: #f97316; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+        <p style="font-size: 15px; font-weight: 800; margin: 0 0 16px; letter-spacing: -0.2px;">Abriendo ${safeName}...</p>
+        <a href="${finalDest}" style="display: inline-block; padding: 12px 24px; background: #ea580c; color: white; text-decoration: none; border-radius: 14px; font-weight: 900; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 8px 20px rgba(234,88,12,0.35);">Ver en el menú</a>
     </div>
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 </body>
 </html>`;
 
