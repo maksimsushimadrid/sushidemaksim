@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
-import { ShieldCheck, Menu, Megaphone, Phone, Star, LogOut, X } from 'lucide-react';
+import { ShieldCheck, Menu, Megaphone, Phone, Star, LogOut, X, User } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../context/ToastContext';
 import { GoogleAuthButton } from '../LoginModal';
@@ -202,37 +202,67 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="flex flex-col gap-2">
-                                        <button
-                                            onClick={() => {
-                                                setShowMobileMenu(false);
-                                                document.dispatchEvent(
-                                                    new CustomEvent('custom:openLogin', {
-                                                        detail: { mode: 'login' },
-                                                    })
-                                                );
-                                            }}
-                                            className="w-full bg-gray-900 text-white border-none py-3.5 rounded-xl font-black text-[14px] cursor-pointer active:scale-[0.98] transition-transform shadow-lg shadow-gray-900/20 flex items-center justify-center gap-2"
-                                        >
-                                            INICIAR SESIÓN
-                                        </button>
-                                        <p className="text-center text-[12px] font-medium text-gray-500 my-2.5">
-                                            ¿No tienes cuenta?{' '}
-                                            <button
-                                                onClick={() => {
-                                                    setShowMobileMenu(false);
-                                                    document.dispatchEvent(
-                                                        new CustomEvent('custom:openLogin', {
-                                                            detail: { mode: 'register' },
-                                                        })
-                                                    );
-                                                }}
-                                                className="text-orange-600 font-bold bg-transparent border-none p-0 cursor-pointer hover:underline"
-                                            >
-                                                Regístrate
-                                            </button>
-                                        </p>
-                                        <div className="pt-2">
+                                    <div className="space-y-3">
+                                        {/* Guest Profile Card matching the User Profile Card geometry */}
+                                        <div className="bg-white/90 backdrop-blur-md rounded-3xl flex items-stretch border border-white shadow-sm overflow-hidden">
+                                            {/* Left Avatar / Photo area */}
+                                            <div className="w-24 sm:w-28 shrink-0 flex items-center justify-center bg-gradient-to-br from-orange-50 to-amber-50 border-r border-orange-100/60 self-stretch">
+                                                <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-orange-600 border border-orange-100">
+                                                    <User size={26} strokeWidth={2} />
+                                                </div>
+                                            </div>
+
+                                            {/* Right Content & Actions */}
+                                            <div className="flex-1 min-w-0 p-4 sm:py-4.5 sm:pr-4 flex flex-col justify-center text-left">
+                                                <p className="font-black text-gray-900 text-base leading-snug mb-0.5">
+                                                    ¡Hola! Identifícate
+                                                </p>
+                                                <p className="text-[11px] text-gray-500 font-medium leading-tight mb-3">
+                                                    Para tus pedidos, descuentos y Maksim Coins
+                                                </p>
+                                                <div className="grid grid-cols-2 gap-2 w-full mt-0.5">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setShowMobileMenu(false);
+                                                            document.dispatchEvent(
+                                                                new CustomEvent(
+                                                                    'custom:openLogin',
+                                                                    {
+                                                                        detail: { mode: 'login' },
+                                                                    }
+                                                                )
+                                                            );
+                                                        }}
+                                                        className="h-9 px-2 rounded-xl bg-gray-900 text-white font-black text-[11px] uppercase tracking-wider whitespace-nowrap flex items-center justify-center hover:bg-black transition-all active:scale-95 border-none cursor-pointer shadow-sm"
+                                                    >
+                                                        Iniciar sesión
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setShowMobileMenu(false);
+                                                            document.dispatchEvent(
+                                                                new CustomEvent(
+                                                                    'custom:openLogin',
+                                                                    {
+                                                                        detail: {
+                                                                            mode: 'register',
+                                                                        },
+                                                                    }
+                                                                )
+                                                            );
+                                                        }}
+                                                        className="h-9 px-2 rounded-xl bg-orange-600 text-white font-black text-[11px] uppercase tracking-wider whitespace-nowrap flex items-center justify-center hover:bg-orange-700 transition-all active:scale-95 border-none cursor-pointer shadow-sm"
+                                                    >
+                                                        Regístrate
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Google Quick Sign-In */}
+                                        <div className="pt-1">
                                             <GoogleAuthButton
                                                 onSuccess={handleGoogleLogin}
                                                 isLoading={isGoogleLoading}

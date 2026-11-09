@@ -26,7 +26,7 @@ export default function StreakerEasterEgg({ isActive, onComplete }: StreakerEast
                         ease: 'easeInOut',
                     }}
                     onAnimationComplete={onComplete}
-                    className="absolute top-[56%] right-8 -translate-y-1/2 flex flex-col items-center select-none"
+                    className="absolute top-[54%] right-8 -translate-y-1/2 flex flex-col items-center select-none"
                     style={{ willChange: 'transform' }}
                 >
                     {/* Comic speech bubble */}
@@ -36,23 +36,13 @@ export default function StreakerEasterEgg({ isActive, onComplete }: StreakerEast
                             rotate: [-4, 4, -4],
                         }}
                         transition={{ duration: 0.25, repeat: Infinity }}
-                        className="mb-1 -ml-12 px-2.5 py-1 bg-white text-zinc-900 font-black text-xs rounded-xl shadow-xl border-2 border-amber-400 whitespace-nowrap flex items-center gap-1"
+                        className="mb-1 -ml-12 px-2.5 py-1 bg-white text-zinc-900 font-black text-xs rounded-xl shadow-xl border-2 border-amber-400 whitespace-nowrap"
                     >
-                        <span>¡¡¡LIBERTAD!!!</span>
-                        <span className="text-base leading-none">🏃‍♂️💨</span>
+                        ¡¡¡LIBERTAD!!!
                     </motion.div>
 
                     {/* Cartoon Streaker SVG */}
                     <div className="relative w-28 h-36 flex items-center justify-center">
-                        {/* Speed lines / sweat drops flying backwards */}
-                        <motion.div
-                            animate={{ opacity: [0.3, 1, 0.3], x: [10, 20, 10] }}
-                            transition={{ duration: 0.2, repeat: Infinity }}
-                            className="absolute right-0 top-6 text-xl pointer-events-none"
-                        >
-                            💦💨
-                        </motion.div>
-
                         <svg
                             viewBox="0 0 120 160"
                             className="w-full h-full filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)]"
@@ -261,19 +251,6 @@ export default function StreakerEasterEgg({ isActive, onComplete }: StreakerEast
                             </g>
                         </svg>
                     </div>
-
-                    {/* Speed dust clouds at his feet */}
-                    <motion.div
-                        animate={{
-                            opacity: [0.4, 0.9, 0.2],
-                            scale: [0.8, 1.3, 0.7],
-                            x: [15, 30, 20],
-                        }}
-                        transition={{ duration: 0.18, repeat: Infinity }}
-                        className="text-lg leading-none -mt-3 mr-4 pointer-events-none"
-                    >
-                        💨💨
-                    </motion.div>
                 </motion.div>
             </div>
         </AnimatePresence>

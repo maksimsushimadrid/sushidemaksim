@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Gift, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
+import { X, Gift, ArrowRight, CheckCircle2 } from 'lucide-react';
 import { useScrollLock } from '../hooks/useScrollLock';
 import { triggerHaptic } from '../utils/haptics';
 
@@ -134,14 +134,11 @@ export default function RegistrationDiscountModal({
                                 <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-orange-500 via-orange-600 to-amber-500 text-white flex items-center justify-center shadow-md shadow-orange-500/30 transform -rotate-3 hover:rotate-0 transition-transform duration-300">
                                     <Gift size={28} strokeWidth={2.2} />
                                 </div>
-                                <span className="absolute -top-1 -right-1 bg-amber-400 text-zinc-950 p-1 rounded-full shadow-md">
-                                    <Sparkles size={12} strokeWidth={2.5} />
-                                </span>
                             </div>
 
                             {/* Badge */}
                             <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-orange-50 border border-orange-200/60 text-orange-700 text-[10px] sm:text-[11px] font-black uppercase tracking-wider mb-2">
-                                <span>🎉 Descuento de bienvenida</span>
+                                <span>Descuento de bienvenida</span>
                             </div>
 
                             {/* Title */}

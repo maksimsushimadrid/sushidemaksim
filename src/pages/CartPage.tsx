@@ -947,7 +947,7 @@ export default function CartPage() {
                                             <div className="self-start sm:self-center shrink-0">
                                                 <span className="inline-flex items-center gap-1.5 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest px-3.5 py-2 rounded-full shadow-sm hover:shadow transition-all duration-300">
                                                     <span className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
-                                                    🚀 Pedidos Programados Activos
+                                                    Pedidos Programados Activos
                                                 </span>
                                             </div>
                                         </div>

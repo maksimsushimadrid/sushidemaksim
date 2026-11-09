@@ -7,7 +7,6 @@ import SafeImage from '../common/SafeImage';
 import { MenuItem } from '../../hooks/queries/useMenu';
 import { User } from '../../types';
 import { triggerHaptic } from '../../utils/haptics';
-import { useToast } from '../../context/ToastContext';
 
 import ProductDetailModal from './ProductDetailModal';
 
@@ -56,7 +55,6 @@ const ProductCard = React.memo(function ProductCard({
     const [quantity, setQuantity] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const autoOpenedRef = useRef(false);
-    const { info: showToastInfo } = useToast();
 
     const isExtra = item.category === 'extras';
 
@@ -92,47 +90,45 @@ const ProductCard = React.memo(function ProductCard({
             <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10">
                 <button
                     onClick={e => onShare(item, e)}
-                    className="w-8 h-8 md:w-9 md:h-9 rounded-2xl bg-white/90 backdrop-blur-md shadow-lg flex items-center justify-center hover:scale-110 active:scale-90 transition-transform cursor-pointer border-none"
+                    className="w-8 h-8 md:w-9 md:h-9 rounded-2xl bg-orange-500 hover:bg-orange-600 active:scale-90 text-white shadow-md shadow-orange-500/30 flex items-center justify-center transition-all cursor-pointer border-none"
                     title="Compartir"
                 >
-                    <Share2 size={14} className="text-gray-900" />
+                    <Share2 size={14} className="text-white" strokeWidth={2.2} />
                 </button>
             </div>
 
-            <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10">
-                <button
-                    type="button"
-                    onClick={e => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        triggerHaptic();
-                        if (!user) {
-                            showToastInfo('Inicia sesión para añadir este plato a tus favoritos');
-                            return;
-                        }
-                        onToggleFavorite(item.id);
-                    }}
-                    className={`h-8 md:h-9 ${
-                        (item.likesCount || 0) > 0 ? 'px-2.5 gap-1' : 'w-8 md:w-9'
-                    } rounded-2xl bg-white/95 backdrop-blur-md shadow-lg flex items-center justify-center transition-all hover:scale-105 active:scale-90 cursor-pointer border-none z-20 touch-manipulation group/fav`}
-                    title="Favoritos"
-                >
-                    <Heart
-                        size={15}
-                        className={
-                            isFavorite
-                                ? 'text-orange-500'
-                                : 'text-gray-400 group-hover/fav:text-orange-500 transition-colors'
-                        }
-                        fill={isFavorite ? 'currentColor' : 'none'}
-                    />
-                    {(item.likesCount || 0) > 0 && (
-                        <span className="text-[11px] font-black text-gray-800 leading-none tabular-nums">
-                            {item.likesCount}
-                        </span>
-                    )}
-                </button>
-            </div>
+            {user && (
+                <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10">
+                    <button
+                        type="button"
+                        onClick={e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            triggerHaptic();
+                            onToggleFavorite(item.id);
+                        }}
+                        className={`h-8 md:h-9 ${
+                            (item.likesCount || 0) > 0 ? 'px-2.5 gap-1' : 'w-8 md:w-9'
+                        } rounded-2xl bg-white/95 backdrop-blur-md shadow-lg flex items-center justify-center transition-all hover:scale-105 active:scale-90 cursor-pointer border-none z-20 touch-manipulation group/fav`}
+                        title="Favoritos"
+                    >
+                        <Heart
+                            size={15}
+                            className={
+                                isFavorite
+                                    ? 'text-orange-500'
+                                    : 'text-gray-400 group-hover/fav:text-orange-500 transition-colors'
+                            }
+                            fill={isFavorite ? 'currentColor' : 'none'}
+                        />
+                        {(item.likesCount || 0) > 0 && (
+                            <span className="text-[11px] font-black text-gray-800 leading-none tabular-nums">
+                                {item.likesCount}
+                            </span>
+                        )}
+                    </button>
+                </div>
+            )}
 
             {/* Image Container */}
             <div

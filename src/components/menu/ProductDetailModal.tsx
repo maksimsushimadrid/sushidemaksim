@@ -13,7 +13,6 @@ import { User } from '../../types';
 import { triggerHaptic } from '../../utils/haptics';
 import { useScrollLock } from '../../hooks/useScrollLock';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '../../context/ToastContext';
 
 import { PRODUCT_VIDEO_OVERRIDES } from '../../constants/tableOverrides';
 
@@ -58,7 +57,6 @@ export default function ProductDetailModal({
     onRemoveItem,
 }: ProductDetailModalProps) {
     const navigate = useNavigate();
-    const { info: showInfo } = useToast();
     const [quantity, setQuantity] = useState(cartQuantity > 0 ? cartQuantity : 1);
 
     // Lock body scroll and stop Lenis smooth scrolling while modal is mounted
@@ -237,25 +235,19 @@ export default function ProductDetailModal({
                     <div className="absolute top-3 right-3 sm:top-4 sm:right-4 flex items-center gap-2 z-20">
                         <button
                             onClick={handleShareClick}
-                            className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-md shadow-md flex items-center justify-center text-gray-700 hover:text-gray-900 hover:bg-white transition-transform active:scale-90 border-none cursor-pointer"
+                            className="w-9 h-9 rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/25 flex items-center justify-center transition-all active:scale-90 border-none cursor-pointer"
                             title="Compartir"
                         >
-                            <Share2 size={16} />
+                            <Share2 size={16} className="text-white" strokeWidth={2.2} />
                         </button>
 
-                        {onToggleFavorite && (
+                        {onToggleFavorite && user && (
                             <button
                                 type="button"
                                 onClick={e => {
                                     e.preventDefault();
                                     e.stopPropagation();
                                     triggerHaptic();
-                                    if (!user) {
-                                        showInfo(
-                                            'Inicia sesión para añadir este plato a tus favoritos'
-                                        );
-                                        return;
-                                    }
                                     onToggleFavorite(item.id);
                                 }}
                                 className={`h-9 ${

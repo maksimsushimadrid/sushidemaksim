@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, lazy, Suspense } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { X } from 'lucide-react';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { X, User, ShoppingCart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import StoreStatusBanner from './StoreStatusBanner';
@@ -137,6 +137,12 @@ export default function Header() {
     const isProfile = location.pathname === '/profile';
     const isMenu = location.pathname === '/menu' || location.pathname.startsWith('/menu/');
     const isTable = location.pathname === '/table';
+    const isExcludedCartRoute =
+        location.pathname.startsWith('/admin') ||
+        location.pathname.startsWith('/waiter') ||
+        location.pathname.startsWith('/table') ||
+        location.pathname.startsWith('/cart') ||
+        location.pathname.startsWith('/track');
     const isTransparentHeaderPage = (isHome || isProfile) && !isTable;
 
     const navigate = useNavigate();
@@ -459,7 +465,7 @@ export default function Header() {
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: 60, opacity: 0 }}
                         transition={{ type: 'spring', damping: 22, stiffness: 260 }}
-                        className={`fixed top-[58%] right-3 md:right-5 -translate-y-1/2 z-fixed select-none ${
+                        className={`fixed top-[50%] right-4 md:right-5 -translate-y-1/2 z-40 select-none ${
                             isAuthenticated && user ? 'md:hidden' : ''
                         }`}
                     >
@@ -474,8 +480,31 @@ export default function Header() {
                                 damping: 14,
                                 stiffness: 240,
                             }}
-                            className="origin-center"
+                            className="origin-center flex flex-col items-center gap-4"
                         >
+                            {/* Guest state: Floating Profile / Menu FAB Button above the gift box */}
+                            {(!isAuthenticated || !user) && (
+                                <button
+                                    onClick={() => {
+                                        triggerHaptic(20);
+                                        setShowMobileMenu(true);
+                                    }}
+                                    className="relative w-[54px] h-[54px] rounded-full p-[2px] bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-400 shadow-[0_8px_20px_-3px_rgba(242,101,34,0.45),0_2px_8px_rgba(0,0,0,0.2)] flex items-center justify-center cursor-pointer active:scale-95 transition-transform group"
+                                    title="Abrir menú y perfil"
+                                    aria-label="Abrir menú y perfil"
+                                >
+                                    <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white shadow-inner text-gray-800">
+                                        <User
+                                            size={25}
+                                            strokeWidth={2}
+                                            className="text-gray-800 group-hover:text-orange-600 transition-colors"
+                                        />
+                                    </div>
+                                    <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-[#121212]/92 backdrop-blur-md text-white text-[7.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full whitespace-nowrap shadow-lg border border-white/15 leading-none">
+                                        PERFIL
+                                    </span>
+                                </button>
+                            )}
                             {isAuthenticated && user ? (
                                 <button
                                     onClick={() => {
@@ -627,10 +656,40 @@ export default function Header() {
                                     </motion.div>
 
                                     {/* Subtitle luxury badge under gift box */}
-                                    <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 text-amber-300 text-[8.5px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full whitespace-nowrap shadow-[0_4px_12px_rgba(0,0,0,0.6)] border border-amber-400/40 leading-none flex items-center justify-center group-hover:border-amber-300 group-hover:text-amber-200 transition-colors">
+                                    <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 text-amber-300 text-[8px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full whitespace-nowrap shadow-[0_4px_12px_rgba(0,0,0,0.6)] border border-amber-400/40 leading-none flex items-center justify-center group-hover:border-amber-300 group-hover:text-amber-200 transition-colors">
                                         DESCUENTO 10%
                                     </span>
                                 </button>
+                            )}
+
+                            {/* 3. Floating Cart Button: placed directly and safely UNDER the Gift Box in the same flex column */}
+                            {itemCount > 0 && !isExcludedCartRoute && (
+                                <motion.div
+                                    initial={{ scale: 0.8, opacity: 0 }}
+                                    animate={{ scale: 1, opacity: 1 }}
+                                    exit={{ scale: 0.8, opacity: 0 }}
+                                    className="pt-3.5"
+                                >
+                                    <Link
+                                        to="/cart"
+                                        className="flex items-center gap-2 bg-gradient-to-r from-orange-600 to-amber-600 text-white px-3.5 py-2.5 rounded-2xl shadow-[0_10px_25px_-5px_rgba(242,101,34,0.5)] no-underline active:scale-95 transition-all border border-white/20 backdrop-blur-md whitespace-nowrap"
+                                    >
+                                        <div className="relative">
+                                            <ShoppingCart size={20} strokeWidth={1.5} />
+                                            <span className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-sm border border-white/20">
+                                                {itemCount}
+                                            </span>
+                                        </div>
+                                        <div className="flex flex-col items-start leading-none pr-1">
+                                            <span className="text-[9px] font-black uppercase tracking-wider opacity-80 mb-0.5">
+                                                Tu Cesta
+                                            </span>
+                                            <span className="text-sm font-black">
+                                                {total.toFixed(2).replace('.', ',')} €
+                                            </span>
+                                        </div>
+                                    </Link>
+                                </motion.div>
                             )}
                         </motion.div>
                     </motion.div>
