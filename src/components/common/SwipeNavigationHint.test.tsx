@@ -29,9 +29,7 @@ describe('SwipeNavigationHint Component', () => {
             vi.advanceTimersByTime(650);
         });
 
-        expect(
-            screen.getByText(/para moverte por el menú, usa el swipe/i)
-        ).toBeInTheDocument();
+        expect(screen.getByText(/para moverte por el menú, usa el swipe/i)).toBeInTheDocument();
     });
 
     it('dismisses when clicked and stores flag in localStorage', () => {
@@ -60,9 +58,7 @@ describe('SwipeNavigationHint Component', () => {
             vi.advanceTimersByTime(650);
         });
 
-        expect(
-            screen.getByText(/para moverte por el menú, usa el swipe/i)
-        ).toBeInTheDocument();
+        expect(screen.getByText(/para moverte por el menú, usa el swipe/i)).toBeInTheDocument();
 
         act(() => {
             window.dispatchEvent(new CustomEvent('sushi:swiped'));

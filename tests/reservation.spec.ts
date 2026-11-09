@@ -100,8 +100,11 @@ test.describe('Reservation Page Flow', () => {
             // Explicit check for desktop
             await page.goto('/');
             const closeBtn = page.getByRole('button', { name: 'Cerrar aviso' });
-            if (await closeBtn.isVisible()) {
+            try {
+                await closeBtn.waitFor({ state: 'visible', timeout: 2000 });
                 await closeBtn.click();
+            } catch {
+                // Banner might already be closed or not visible
             }
             const headerLink = page.locator('header').getByRole('link', { name: 'Reserva' });
             await expect(headerLink).toBeVisible();

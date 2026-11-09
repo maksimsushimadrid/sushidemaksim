@@ -126,7 +126,7 @@ export default function StoreStatusBanner() {
               : 'Cerrado hoy';
 
     return (
-        <div className="relative h-[18px] z-30 pointer-events-none">
+        <div className="pointer-events-none">
             <AnimatePresence initial={true} mode="wait">
                 {isVisible ? (
                     <motion.div
@@ -138,9 +138,9 @@ export default function StoreStatusBanner() {
                             duration: 0.38,
                             ease: [0.16, 1, 0.3, 1],
                         }}
-                        className="pointer-events-auto absolute top-0 inset-x-0 overflow-hidden bg-gradient-to-b from-[#161514] via-[#100F10] to-[#0A0A0C] border-b border-white/10 shadow-[0_12px_28px_-4px_rgba(0,0,0,0.45)] z-30"
+                        className="pointer-events-auto absolute top-0 inset-x-0 overflow-hidden bg-gradient-to-b from-[#161514] via-[#100F10] to-[#0A0A0C] border-b border-white/10 shadow-[0_12px_28px_-4px_rgba(0,0,0,0.45)] z-40"
                     >
-                        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 pt-2.5 pb-2">
+                        <div className="max-w-7xl mx-auto px-3.5 sm:px-6 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2">
                             {/* Header bar of the curtain */}
                             <div className="flex items-center justify-between gap-3">
                                 {/* Status badge & title */}
@@ -217,31 +217,31 @@ export default function StoreStatusBanner() {
                 ) : (
                     <motion.div
                         key="store-curtain-collapsed"
-                        initial={{ y: -20, opacity: 0 }}
+                        initial={{ y: -10, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: -20, opacity: 0 }}
+                        exit={{ y: -10, opacity: 0 }}
                         transition={{ duration: 0.25, ease: 'easeOut' }}
-                        className="absolute top-0 inset-x-0 flex justify-center z-30"
+                        className="absolute top-full inset-x-0 flex justify-center z-30 pointer-events-none -mt-px"
                     >
                         <button
                             type="button"
                             onClick={handleOpen}
-                            className="pointer-events-auto group -mt-px inline-flex items-center gap-1.5 px-3 py-0.5 bg-gradient-to-b from-[#18181A]/95 to-[#0E0E10]/95 hover:from-zinc-900 hover:to-black text-amber-300 hover:text-amber-200 text-[9px] sm:text-[10px] font-bold rounded-b-lg border-b border-x border-white/10 hover:border-white/20 shadow-[0_2px_8px_-1px_rgba(0,0,0,0.2)] backdrop-blur-md transition-all active:scale-95 cursor-pointer"
+                            className="pointer-events-auto group inline-flex items-center gap-1.5 px-3.5 py-1 bg-gradient-to-b from-[#18181A]/95 to-[#0E0E10]/95 hover:from-zinc-900 hover:to-black text-amber-300 hover:text-amber-200 text-[10px] sm:text-xs font-bold rounded-b-xl border-b border-x border-white/15 shadow-[0_4px_12px_rgba(0,0,0,0.35)] backdrop-blur-md transition-all active:scale-95 cursor-pointer"
                             aria-label="Mostrar aviso de horario"
                             title="Mostrar aviso"
                         >
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-                            <span className="tracking-wide uppercase text-[9px] sm:text-[10px]">
+                            <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
+                            <span className="tracking-wide uppercase text-[10px] sm:text-[11px] leading-none">
                                 {statusTitle}
                             </span>
                             {timeLeftDisplay && (
-                                <span className="text-[9px] text-zinc-400 font-mono hidden xs:inline">
+                                <span className="text-[10px] text-zinc-400 font-mono hidden xs:inline leading-none">
                                     · {timeLeftDisplay}
                                 </span>
                             )}
                             <ChevronDown
-                                size={11}
-                                className="text-amber-400 group-hover:translate-y-0.5 transition-transform"
+                                size={12}
+                                className="text-amber-400 group-hover:translate-y-0.5 transition-transform shrink-0"
                             />
                         </button>
                     </motion.div>
