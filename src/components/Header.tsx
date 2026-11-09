@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, lazy, Suspense } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
-import { X, User, ShoppingCart } from 'lucide-react';
+import { useLocation, Link } from 'react-router-dom';
+import { User, ShoppingCart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import StoreStatusBanner from './StoreStatusBanner';
@@ -19,8 +19,6 @@ import SafeImage from './common/SafeImage';
 import { getSharpAvatar, getDefaultAvatar } from '../utils/avatar';
 import MobileMenu from './header/MobileMenu';
 import { triggerHaptic } from '../utils/haptics';
-import { JapaneseNavIcon } from './header/JapaneseNavIcon';
-import { MOBILE_NAV_CYCLE, getCycleIndexForPath } from '../constants/navigation';
 import StreakerEasterEgg from './common/StreakerEasterEgg';
 
 export default function Header() {
@@ -145,22 +143,6 @@ export default function Header() {
         location.pathname.startsWith('/track');
     const isTransparentHeaderPage = (isHome || isProfile) && !isTable;
 
-    const navigate = useNavigate();
-    const currentPath = location.pathname;
-    const currentIndex = getCycleIndexForPath(currentPath);
-
-    const currentPage = currentIndex !== -1 ? MOBILE_NAV_CYCLE[currentIndex] : null;
-    const nextIndex = currentIndex !== -1 ? (currentIndex + 1) % MOBILE_NAV_CYCLE.length : 0;
-    const nextPage = MOBILE_NAV_CYCLE[nextIndex];
-
-    const currentLabel = currentPage
-        ? currentPage.label
-        : currentPath.includes('cart')
-          ? 'Carrito'
-          : currentPath.includes('profile')
-            ? 'Perfil'
-            : 'Página';
-
     // Attention and scroll-aware animation for floating action buttons
     useEffect(() => {
         const triggerGiftAttention = () => {
@@ -228,59 +210,6 @@ export default function Header() {
         };
     }, [isAuthenticated]);
 
-    const longPressTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const isLongPress = useRef(false);
-
-    const goToNext = () => {
-        triggerHaptic(15);
-        window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
-        if ((window as any).lenis) {
-            try {
-                (window as any).lenis.scrollTo(0, { immediate: true });
-            } catch (_) {
-                // ignore
-            }
-        }
-        navigate(nextPage.path);
-        requestAnimationFrame(() => {
-            window.scrollTo(0, 0);
-        });
-    };
-
-    const handleTouchStart = () => {
-        isLongPress.current = false;
-        longPressTimeout.current = setTimeout(() => {
-            isLongPress.current = true;
-            setShowMobileMenu(true);
-        }, 550);
-    };
-
-    const handleTouchMove = () => {
-        if (longPressTimeout.current) {
-            clearTimeout(longPressTimeout.current);
-            longPressTimeout.current = null;
-        }
-    };
-
-    const handleTouchEnd = () => {
-        if (longPressTimeout.current) {
-            clearTimeout(longPressTimeout.current);
-            longPressTimeout.current = null;
-        }
-    };
-
-    const handleMenuButtonClick = () => {
-        if (isLongPress.current) {
-            isLongPress.current = false;
-            return;
-        }
-        if (showMobileMenu) {
-            setShowMobileMenu(false);
-            return;
-        }
-        goToNext();
-    };
-
     return (
         <>
             <header
@@ -335,125 +264,11 @@ export default function Header() {
                             />
 
                             {!isTable && (
-                                <>
-                                    <CartButton
-                                        itemCount={itemCount}
-                                        total={total}
-                                        cartLoading={cartLoading}
-                                    />
-
-                                    <div className="relative shrink-0">
-                                        <button
-                                            type="button"
-                                            onClick={handleMenuButtonClick}
-                                            onTouchStart={handleTouchStart}
-                                            onTouchMove={handleTouchMove}
-                                            onTouchEnd={handleTouchEnd}
-                                            className={`md:hidden cursor-pointer flex items-center justify-center gap-2 px-3 h-[44px] w-[126px] rounded-full shrink-0 transition-colors duration-200 active:scale-95 select-none ${
-                                                isScrolled || !isHome
-                                                    ? 'bg-white text-zinc-900 border-2 border-orange-500/25 shadow-[0_4px_14px_-2px_rgba(242,101,34,0.18),0_2px_6px_rgba(0,0,0,0.06)] hover:border-orange-500/50'
-                                                    : 'bg-zinc-900/80 text-white border-2 border-orange-500/35 backdrop-blur-xl shadow-[0_4px_16px_-2px_rgba(0,0,0,0.4),0_0_12px_rgba(242,101,34,0.25)] hover:bg-zinc-900/90 hover:border-orange-500/60'
-                                            }`}
-                                            title={
-                                                showMobileMenu
-                                                    ? 'Cerrar menú'
-                                                    : `Ir a ${nextPage.label} (o desliza la pantalla)`
-                                            }
-                                            aria-label="Navegación del menú"
-                                        >
-                                            {showMobileMenu ? (
-                                                <div className="flex items-center justify-center gap-1.5 w-full">
-                                                    <X
-                                                        size={16}
-                                                        strokeWidth={2.5}
-                                                        className="text-orange-500"
-                                                    />
-                                                    <span className="text-[10px] font-black uppercase tracking-wider leading-none">
-                                                        Cerrar
-                                                    </span>
-                                                </div>
-                                            ) : (
-                                                <>
-                                                    <div className="w-5 h-5 flex items-center justify-center shrink-0">
-                                                        <AnimatePresence
-                                                            mode="popLayout"
-                                                            initial={false}
-                                                        >
-                                                            <motion.div
-                                                                key={currentLabel}
-                                                                initial={{
-                                                                    opacity: 0,
-                                                                    scale: 0.8,
-                                                                }}
-                                                                animate={{
-                                                                    opacity: 1,
-                                                                    scale: 1,
-                                                                }}
-                                                                exit={{
-                                                                    opacity: 0,
-                                                                    scale: 0.8,
-                                                                }}
-                                                                transition={{
-                                                                    duration: 0.16,
-                                                                    ease: 'easeOut',
-                                                                }}
-                                                                className={
-                                                                    isScrolled || !isHome
-                                                                        ? 'text-orange-600'
-                                                                        : 'text-orange-400 drop-shadow-sm'
-                                                                }
-                                                            >
-                                                                <JapaneseNavIcon
-                                                                    pageKey={currentLabel}
-                                                                    isScrolled={isScrolled}
-                                                                    isHome={isHome}
-                                                                    size={20}
-                                                                />
-                                                            </motion.div>
-                                                        </AnimatePresence>
-                                                    </div>
-                                                    <div
-                                                        className={`w-px h-4 shrink-0 ${
-                                                            isScrolled || !isHome
-                                                                ? 'bg-zinc-200'
-                                                                : 'bg-white/20'
-                                                        }`}
-                                                    />
-                                                    <div className="w-[66px] flex items-center justify-center overflow-hidden shrink-0">
-                                                        <AnimatePresence
-                                                            mode="popLayout"
-                                                            initial={false}
-                                                        >
-                                                            <motion.span
-                                                                key={currentLabel}
-                                                                initial={{
-                                                                    opacity: 0,
-                                                                    y: 3,
-                                                                }}
-                                                                animate={{ opacity: 1, y: 0 }}
-                                                                exit={{
-                                                                    opacity: 0,
-                                                                    y: -3,
-                                                                }}
-                                                                transition={{
-                                                                    duration: 0.16,
-                                                                    ease: 'easeOut',
-                                                                }}
-                                                                className={`block text-[10px] font-black uppercase tracking-wide text-center w-full leading-none whitespace-nowrap ${
-                                                                    isScrolled || !isHome
-                                                                        ? 'text-orange-600'
-                                                                        : 'text-orange-400 drop-shadow-sm'
-                                                                }`}
-                                                            >
-                                                                {currentLabel}
-                                                            </motion.span>
-                                                        </AnimatePresence>
-                                                    </div>
-                                                </>
-                                            )}
-                                        </button>
-                                    </div>
-                                </>
+                                <CartButton
+                                    itemCount={itemCount}
+                                    total={total}
+                                    cartLoading={cartLoading}
+                                />
                             )}
                         </div>
                     </div>
