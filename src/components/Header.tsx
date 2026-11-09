@@ -148,7 +148,14 @@ export default function Header() {
 
     const currentPage = currentIndex !== -1 ? MOBILE_NAV_CYCLE[currentIndex] : null;
     const nextIndex = currentIndex !== -1 ? (currentIndex + 1) % MOBILE_NAV_CYCLE.length : 0;
+    const prevIndex =
+        currentIndex !== -1
+            ? (currentIndex - 1 + MOBILE_NAV_CYCLE.length) % MOBILE_NAV_CYCLE.length
+            : MOBILE_NAV_CYCLE.length - 1;
+
     const nextPage = MOBILE_NAV_CYCLE[nextIndex];
+    const prevPage = MOBILE_NAV_CYCLE[prevIndex];
+    const [swipeDirection, setSwipeDirection] = useState<'next' | 'prev'>('next');
 
     const currentLabel = currentPage
         ? currentPage.label
@@ -195,35 +202,16 @@ export default function Header() {
 
     const longPressTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isLongPress = useRef(false);
+    const touchStartX = useRef<number | null>(null);
+    const touchStartY = useRef<number | null>(null);
+    const touchStartTime = useRef<number>(0);
+    const hasSwiped = useRef(false);
 
-    const handleTouchStart = () => {
-        isLongPress.current = false;
-        longPressTimeout.current = setTimeout(() => {
-            isLongPress.current = true;
-            setShowMobileMenu(true);
-        }, 550);
-    };
-
-    const handleTouchEnd = () => {
-        if (longPressTimeout.current) {
-            clearTimeout(longPressTimeout.current);
-            longPressTimeout.current = null;
-        }
-    };
-
-    const handleMenuButtonClick = () => {
-        if (showTapHint) {
-            setShowTapHint(false);
-            localStorage.setItem('sushi_cycle_hint_seen_v2', 'true');
-        }
-        if (isLongPress.current) {
-            isLongPress.current = false;
-            return;
-        }
-        if (showMobileMenu) {
-            setShowMobileMenu(false);
-            return;
-        }
+    const navigateToStep = (
+        targetPage: (typeof MOBILE_NAV_CYCLE)[number],
+        dir: 'next' | 'prev'
+    ) => {
+        setSwipeDirection(dir);
         triggerHaptic(15);
         window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
         if ((window as any).lenis) {
@@ -233,10 +221,105 @@ export default function Header() {
                 // ignore
             }
         }
-        navigate(nextPage.path);
+        navigate(targetPage.path);
         requestAnimationFrame(() => {
             window.scrollTo(0, 0);
         });
+    };
+
+    const goToNext = () => navigateToStep(nextPage, 'next');
+    const goToPrev = () => navigateToStep(prevPage, 'prev');
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        isLongPress.current = false;
+        hasSwiped.current = false;
+        if (e.touches.length > 0) {
+            touchStartX.current = e.touches[0].clientX;
+            touchStartY.current = e.touches[0].clientY;
+            touchStartTime.current = Date.now();
+        }
+        longPressTimeout.current = setTimeout(() => {
+            isLongPress.current = true;
+            setShowMobileMenu(true);
+        }, 550);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        if (touchStartX.current === null || touchStartY.current === null) return;
+        const currentX = e.touches[0].clientX;
+        const currentY = e.touches[0].clientY;
+        const deltaX = currentX - touchStartX.current;
+        const deltaY = currentY - touchStartY.current;
+
+        // If finger moves horizontally or vertically, cancel long press
+        if (Math.abs(deltaX) > 10 || Math.abs(deltaY) > 10) {
+            if (longPressTimeout.current) {
+                clearTimeout(longPressTimeout.current);
+                longPressTimeout.current = null;
+            }
+        }
+    };
+
+    const handleTouchEnd = (e: React.TouchEvent) => {
+        if (longPressTimeout.current) {
+            clearTimeout(longPressTimeout.current);
+            longPressTimeout.current = null;
+        }
+
+        if (touchStartX.current !== null && e.changedTouches.length > 0) {
+            const touchEndX = e.changedTouches[0].clientX;
+            const touchEndY = e.changedTouches[0].clientY;
+            const deltaX = touchEndX - touchStartX.current;
+            const deltaY = touchEndY - (touchStartY.current || touchEndY);
+            const elapsed = Date.now() - touchStartTime.current;
+
+            touchStartX.current = null;
+            touchStartY.current = null;
+
+            // Horizontal swipe detection (> 24px and predominantly horizontal)
+            if (
+                Math.abs(deltaX) >= 24 &&
+                Math.abs(deltaX) > Math.abs(deltaY) * 1.2 &&
+                elapsed < 600
+            ) {
+                hasSwiped.current = true;
+                if (showTapHint) {
+                    setShowTapHint(false);
+                    localStorage.setItem('sushi_cycle_hint_seen_v2', 'true');
+                }
+                if (showMobileMenu) {
+                    setShowMobileMenu(false);
+                    return;
+                }
+                if (deltaX < 0) {
+                    // Swiped left <-
+                    goToNext();
+                } else {
+                    // Swiped right ->
+                    goToPrev();
+                }
+            }
+        }
+    };
+
+    const handleMenuButtonClick = () => {
+        if (showTapHint) {
+            setShowTapHint(false);
+            localStorage.setItem('sushi_cycle_hint_seen_v2', 'true');
+        }
+        if (hasSwiped.current) {
+            hasSwiped.current = false;
+            return;
+        }
+        if (isLongPress.current) {
+            isLongPress.current = false;
+            return;
+        }
+        if (showMobileMenu) {
+            setShowMobileMenu(false);
+            return;
+        }
+        goToNext();
     };
 
     return (
@@ -301,13 +384,28 @@ export default function Header() {
                                     />
 
                                     <div className="relative shrink-0">
-                                        <button
+                                        <motion.button
+                                            drag="x"
+                                            dragConstraints={{ left: -12, right: 12 }}
+                                            dragElastic={0.15}
+                                            dragSnapToOrigin
+                                            onDragEnd={(_e, info) => {
+                                                if (info.offset.x < -20 || info.velocity.x < -150) {
+                                                    hasSwiped.current = true;
+                                                    goToNext();
+                                                } else if (
+                                                    info.offset.x > 20 ||
+                                                    info.velocity.x > 150
+                                                ) {
+                                                    hasSwiped.current = true;
+                                                    goToPrev();
+                                                }
+                                            }}
                                             onClick={handleMenuButtonClick}
                                             onTouchStart={handleTouchStart}
+                                            onTouchMove={handleTouchMove}
                                             onTouchEnd={handleTouchEnd}
-                                            onMouseDown={handleTouchStart}
-                                            onMouseUp={handleTouchEnd}
-                                            className={`md:hidden cursor-pointer flex items-center justify-center gap-2 px-3 h-[44px] w-[126px] rounded-full shrink-0 transition-all duration-200 active:scale-95 select-none ${
+                                            className={`md:hidden cursor-pointer flex items-center justify-center gap-2 px-3 h-[44px] w-[126px] rounded-full shrink-0 transition-colors duration-200 active:scale-95 select-none touch-pan-y ${
                                                 isScrolled || !isHome
                                                     ? 'bg-white text-zinc-900 border-2 border-orange-500/25 shadow-[0_4px_14px_-2px_rgba(242,101,34,0.18),0_2px_6px_rgba(0,0,0,0.06)] hover:border-orange-500/50'
                                                     : 'bg-zinc-900/80 text-white border-2 border-orange-500/35 backdrop-blur-xl shadow-[0_4px_16px_-2px_rgba(0,0,0,0.4),0_0_12px_rgba(242,101,34,0.25)] hover:bg-zinc-900/90 hover:border-orange-500/60'
@@ -315,9 +413,9 @@ export default function Header() {
                                             title={
                                                 showMobileMenu
                                                     ? 'Cerrar menú'
-                                                    : `Siguiente: ${nextPage.label}`
+                                                    : `Desliza: ← ${prevPage.label} | ${nextPage.label} →`
                                             }
-                                            aria-label="Navegación del menú"
+                                            aria-label="Navegación del menú por toque o deslizamiento"
                                         >
                                             {showMobileMenu ? (
                                                 <div className="flex items-center justify-center gap-1.5 w-full">
@@ -339,11 +437,29 @@ export default function Header() {
                                                         >
                                                             <motion.div
                                                                 key={currentLabel}
-                                                                initial={{ opacity: 0, scale: 0.8 }}
-                                                                animate={{ opacity: 1, scale: 1 }}
-                                                                exit={{ opacity: 0, scale: 0.8 }}
+                                                                initial={{
+                                                                    opacity: 0,
+                                                                    scale: 0.8,
+                                                                    x:
+                                                                        swipeDirection === 'next'
+                                                                            ? 8
+                                                                            : -8,
+                                                                }}
+                                                                animate={{
+                                                                    opacity: 1,
+                                                                    scale: 1,
+                                                                    x: 0,
+                                                                }}
+                                                                exit={{
+                                                                    opacity: 0,
+                                                                    scale: 0.8,
+                                                                    x:
+                                                                        swipeDirection === 'next'
+                                                                            ? -8
+                                                                            : 8,
+                                                                }}
                                                                 transition={{
-                                                                    duration: 0.14,
+                                                                    duration: 0.16,
                                                                     ease: 'easeOut',
                                                                 }}
                                                                 className={
@@ -375,11 +491,23 @@ export default function Header() {
                                                         >
                                                             <motion.span
                                                                 key={currentLabel}
-                                                                initial={{ opacity: 0, y: 3 }}
-                                                                animate={{ opacity: 1, y: 0 }}
-                                                                exit={{ opacity: 0, y: -3 }}
+                                                                initial={{
+                                                                    opacity: 0,
+                                                                    x:
+                                                                        swipeDirection === 'next'
+                                                                            ? 10
+                                                                            : -10,
+                                                                }}
+                                                                animate={{ opacity: 1, x: 0 }}
+                                                                exit={{
+                                                                    opacity: 0,
+                                                                    x:
+                                                                        swipeDirection === 'next'
+                                                                            ? -10
+                                                                            : 10,
+                                                                }}
                                                                 transition={{
-                                                                    duration: 0.14,
+                                                                    duration: 0.16,
                                                                     ease: 'easeOut',
                                                                 }}
                                                                 className={`block text-[10px] font-black uppercase tracking-wide text-center w-full leading-none whitespace-nowrap ${
@@ -394,7 +522,7 @@ export default function Header() {
                                                     </div>
                                                 </>
                                             )}
-                                        </button>
+                                        </motion.button>
 
                                         {/* Tooltip hint on mobile */}
                                         <AnimatePresence>
@@ -412,9 +540,9 @@ export default function Header() {
                                                         size={12}
                                                         className="text-orange-400"
                                                     />
-                                                    <span>Toca para rotar</span>
+                                                    <span>Toca o desliza</span>
                                                     <span className="text-orange-400 font-black bg-orange-500/20 px-1 py-0.5 rounded text-[9px] border border-orange-400/25">
-                                                        tap tap
+                                                        ← / →
                                                     </span>
                                                 </motion.div>
                                             )}
