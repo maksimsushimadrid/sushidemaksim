@@ -465,7 +465,7 @@ export default function Header() {
                         animate={{ x: 0, opacity: 1 }}
                         exit={{ x: 60, opacity: 0 }}
                         transition={{ type: 'spring', damping: 22, stiffness: 260 }}
-                        className={`fixed top-[50%] right-4 md:right-5 -translate-y-1/2 z-40 select-none ${
+                        className={`fixed top-1/2 right-3 md:right-4 -translate-y-1/2 z-40 select-none ${
                             isAuthenticated && user ? 'md:hidden' : ''
                         }`}
                     >
@@ -480,7 +480,7 @@ export default function Header() {
                                 damping: 14,
                                 stiffness: 240,
                             }}
-                            className="origin-center flex flex-col items-center gap-4"
+                            className="origin-center flex flex-col items-end gap-3"
                         >
                             {/* Guest state: Floating Profile / Menu FAB Button above the gift box */}
                             {(!isAuthenticated || !user) && (
@@ -489,18 +489,18 @@ export default function Header() {
                                         triggerHaptic(20);
                                         setShowMobileMenu(true);
                                     }}
-                                    className="relative w-[54px] h-[54px] rounded-full p-[2px] bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-400 shadow-[0_8px_20px_-3px_rgba(242,101,34,0.45),0_2px_8px_rgba(0,0,0,0.2)] flex items-center justify-center cursor-pointer active:scale-95 transition-transform group"
+                                    className="relative w-[46px] h-[46px] rounded-full p-[2px] bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-400 shadow-[0_6px_16px_-3px_rgba(242,101,34,0.45),0_2px_6px_rgba(0,0,0,0.2)] flex items-center justify-center cursor-pointer active:scale-95 transition-transform group"
                                     title="Abrir menú y perfil"
                                     aria-label="Abrir menú y perfil"
                                 >
                                     <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white shadow-inner text-gray-800">
                                         <User
-                                            size={25}
+                                            size={21}
                                             strokeWidth={2}
                                             className="text-gray-800 group-hover:text-orange-600 transition-colors"
                                         />
                                     </div>
-                                    <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-[#121212]/92 backdrop-blur-md text-white text-[7.5px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full whitespace-nowrap shadow-lg border border-white/15 leading-none">
+                                    <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#121212]/92 backdrop-blur-md text-white text-[7px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-lg border border-white/15 leading-none">
                                         PERFIL
                                     </span>
                                 </button>
@@ -515,7 +515,7 @@ export default function Header() {
                                             setShowMobileMenu(true);
                                         }, 280);
                                     }}
-                                    className="relative w-[62px] h-[62px] rounded-full p-[2px] bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-400 shadow-[0_10px_28px_-4px_rgba(242,101,34,0.55),0_3px_10px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer active:scale-95 transition-transform group"
+                                    className="relative w-[50px] h-[50px] rounded-full p-[2px] bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-400 shadow-[0_8px_20px_-4px_rgba(242,101,34,0.55),0_2px_8px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer active:scale-95 transition-transform group"
                                     title="Abrir perfil y menú"
                                     aria-label="Abrir perfil y menú"
                                 >
@@ -610,12 +610,12 @@ export default function Header() {
                                             setIsRegistrationDiscountOpen(true);
                                         }, 1300);
                                     }}
-                                    className="relative w-[68px] h-[68px] flex items-center justify-center cursor-pointer active:scale-90 transition-transform duration-200 group focus:outline-none"
+                                    className="relative w-[52px] h-[52px] flex items-center justify-center cursor-pointer active:scale-90 transition-transform duration-200 group focus:outline-none"
                                     title="¡10% de descuento al registrarte! Toca para abrir tu regalo"
                                     aria-label="¡10% de descuento al registrarte! Toca para abrir tu regalo"
                                 >
                                     {/* Ambient golden luxury glow behind the box */}
-                                    <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-tr from-amber-500/30 via-yellow-400/25 to-amber-300/10 blur-lg pointer-events-none group-hover:scale-125 transition-transform duration-500" />
+                                    <div className="absolute inset-0 -z-10 rounded-full bg-gradient-to-tr from-amber-500/30 via-yellow-400/25 to-amber-300/10 blur-md pointer-events-none group-hover:scale-125 transition-transform duration-500" />
 
                                     {/* 3D Black & Gold Gift Box from reference */}
                                     <motion.div
@@ -640,7 +640,7 @@ export default function Header() {
                                                   ? { duration: 0.85, ease: 'easeInOut' }
                                                   : { duration: 0.2 }
                                         }
-                                        className="relative w-full h-full flex items-center justify-center filter drop-shadow-[0_12px_22px_rgba(0,0,0,0.55)] group-hover:scale-108 transition-transform duration-300"
+                                        className="relative w-full h-full flex items-center justify-center filter drop-shadow-[0_8px_16px_rgba(0,0,0,0.5)] group-hover:scale-108 transition-transform duration-300"
                                     >
                                         <picture>
                                             <source srcSet="/gift-box-3d.webp" type="image/webp" />
@@ -649,14 +649,14 @@ export default function Header() {
                                                 alt="Regalo 10% de descuento"
                                                 className="w-full h-full object-contain select-none pointer-events-none drop-shadow-[0_4px_10px_rgba(245,158,11,0.25)]"
                                                 draggable={false}
-                                                width={68}
-                                                height={68}
+                                                width={52}
+                                                height={52}
                                             />
                                         </picture>
                                     </motion.div>
 
                                     {/* Subtitle luxury badge under gift box */}
-                                    <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 text-amber-300 text-[8px] font-black uppercase tracking-wide px-2 py-0.5 rounded-full whitespace-nowrap shadow-[0_4px_12px_rgba(0,0,0,0.6)] border border-amber-400/40 leading-none flex items-center justify-center group-hover:border-amber-300 group-hover:text-amber-200 transition-colors">
+                                    <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-neutral-950 via-neutral-900 to-neutral-950 text-amber-300 text-[7px] font-black uppercase tracking-wide px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-[0_4px_12px_rgba(0,0,0,0.6)] border border-amber-400/40 leading-none flex items-center justify-center group-hover:border-amber-300 group-hover:text-amber-200 transition-colors">
                                         DESCUENTO 10%
                                     </span>
                                 </button>
@@ -668,23 +668,23 @@ export default function Header() {
                                     initial={{ scale: 0.8, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                     exit={{ scale: 0.8, opacity: 0 }}
-                                    className="pt-3.5"
+                                    className="pt-2"
                                 >
                                     <Link
                                         to="/cart"
-                                        className="flex items-center gap-2 bg-gradient-to-r from-orange-600 to-amber-600 text-white px-3.5 py-2.5 rounded-2xl shadow-[0_10px_25px_-5px_rgba(242,101,34,0.5)] no-underline active:scale-95 transition-all border border-white/20 backdrop-blur-md whitespace-nowrap"
+                                        className="flex items-center gap-1.5 bg-gradient-to-r from-orange-600 to-amber-600 text-white px-3 py-1.5 rounded-xl shadow-[0_6px_18px_-3px_rgba(242,101,34,0.45)] no-underline active:scale-95 transition-all border border-white/20 backdrop-blur-md whitespace-nowrap"
                                     >
                                         <div className="relative">
-                                            <ShoppingCart size={20} strokeWidth={1.5} />
-                                            <span className="absolute -top-1.5 -right-1.5 bg-black text-white text-[10px] font-black min-w-[18px] h-[18px] px-1 rounded-full flex items-center justify-center shadow-sm border border-white/20">
+                                            <ShoppingCart size={16} strokeWidth={1.5} />
+                                            <span className="absolute -top-1 -right-1 bg-black text-white text-[8.5px] font-black min-w-[15px] h-[15px] px-0.5 rounded-full flex items-center justify-center shadow-sm border border-white/20">
                                                 {itemCount}
                                             </span>
                                         </div>
-                                        <div className="flex flex-col items-start leading-none pr-1">
-                                            <span className="text-[9px] font-black uppercase tracking-wider opacity-80 mb-0.5">
+                                        <div className="flex flex-col items-start leading-none pr-0.5">
+                                            <span className="text-[7.5px] font-black uppercase tracking-wider opacity-85 mb-0.5">
                                                 Tu Cesta
                                             </span>
-                                            <span className="text-sm font-black">
+                                            <span className="text-xs font-black">
                                                 {total.toFixed(2).replace('.', ',')} €
                                             </span>
                                         </div>
