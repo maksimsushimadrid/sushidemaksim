@@ -87,18 +87,20 @@ const ProductCard = React.memo(function ProductCard({
             }`}
         >
             {/* Action Buttons */}
-            <div className="absolute top-2 left-2 md:top-4 md:left-4 z-10">
+            <div className="absolute top-2 left-2 md:top-3 md:left-3 z-10 flex items-center">
                 <button
+                    type="button"
                     onClick={e => onShare(item, e)}
-                    className="w-8 h-8 md:w-9 md:h-9 rounded-2xl bg-orange-500 hover:bg-orange-600 active:scale-90 text-white shadow-md shadow-orange-500/30 flex items-center justify-center transition-all cursor-pointer border-none"
+                    className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-orange-500 hover:bg-orange-600 active:scale-90 text-white shadow-md shadow-orange-500/30 flex items-center justify-center p-0 leading-none transition-all cursor-pointer border-none"
                     title="Compartir"
+                    aria-label="Compartir"
                 >
-                    <Share2 size={14} className="text-white" strokeWidth={2.2} />
+                    <Share2 size={13} className="text-white block shrink-0" strokeWidth={2.2} />
                 </button>
             </div>
 
             {user && (
-                <div className="absolute top-2 right-2 md:top-4 md:right-4 z-10">
+                <div className="absolute top-2 right-2 md:top-3 md:right-3 z-10">
                     <button
                         type="button"
                         onClick={e => {
@@ -107,13 +109,13 @@ const ProductCard = React.memo(function ProductCard({
                             triggerHaptic();
                             onToggleFavorite(item.id);
                         }}
-                        className={`h-8 md:h-9 ${
-                            (item.likesCount || 0) > 0 ? 'px-2.5 gap-1' : 'w-8 md:w-9'
-                        } rounded-2xl bg-white/95 backdrop-blur-md shadow-lg flex items-center justify-center transition-all hover:scale-105 active:scale-90 cursor-pointer border-none z-20 touch-manipulation group/fav`}
+                        className={`h-7 md:h-8 ${
+                            (item.likesCount || 0) > 0 ? 'px-2 gap-1' : 'w-7 md:w-8'
+                        } rounded-full bg-white/95 backdrop-blur-md shadow-md flex items-center justify-center p-0 leading-none transition-all hover:scale-105 active:scale-90 cursor-pointer border-none z-20 touch-manipulation group/fav`}
                         title="Favoritos"
                     >
                         <Heart
-                            size={15}
+                            size={14}
                             className={
                                 isFavorite
                                     ? 'text-orange-500'
@@ -122,7 +124,7 @@ const ProductCard = React.memo(function ProductCard({
                             fill={isFavorite ? 'currentColor' : 'none'}
                         />
                         {(item.likesCount || 0) > 0 && (
-                            <span className="text-[11px] font-black text-gray-800 leading-none tabular-nums">
+                            <span className="text-[10px] font-black text-gray-800 leading-none tabular-nums">
                                 {item.likesCount}
                             </span>
                         )}

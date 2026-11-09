@@ -235,10 +235,15 @@ export default function ProductDetailModal({
                     <div className="absolute top-3 right-3 sm:top-4 sm:right-4 flex items-center gap-2 z-20">
                         <button
                             onClick={handleShareClick}
-                            className="w-9 h-9 rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/25 flex items-center justify-center transition-all active:scale-90 border-none cursor-pointer"
+                            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/25 flex items-center justify-center p-0 leading-none transition-all active:scale-90 border-none cursor-pointer"
                             title="Compartir"
+                            aria-label="Compartir"
                         >
-                            <Share2 size={16} className="text-white" strokeWidth={2.2} />
+                            <Share2
+                                size={15}
+                                className="text-white block shrink-0"
+                                strokeWidth={2.2}
+                            />
                         </button>
 
                         {onToggleFavorite && user && (
