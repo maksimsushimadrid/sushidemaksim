@@ -38,6 +38,11 @@ export default function Header() {
     const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
     const [isAvatarDistorting, setIsAvatarDistorting] = useState(false);
     const [isBouncing, setIsBouncing] = useState(false);
+    const [isScrolling, setIsScrolling] = useState(false);
+
+    const scrollStopTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const shakeAfterScrollTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const isBouncingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const headerRef = useRef<HTMLElement>(null);
 
@@ -148,22 +153,63 @@ export default function Header() {
             ? 'Perfil'
             : 'Página';
 
-    // Periodic playful shake & wiggle for unauthenticated gift box every 10 seconds
+    // Attention and scroll-aware animation for unauthenticated gift box
     useEffect(() => {
         if (isAuthenticated) return;
 
         const triggerGiftAttention = () => {
             setIsBouncing(true);
-            setTimeout(() => {
+            if (isBouncingTimer.current) clearTimeout(isBouncingTimer.current);
+            isBouncingTimer.current = setTimeout(() => {
                 setIsBouncing(false);
-            }, 900);
+            }, 850);
         };
 
-        // First gentle shake after 3.5s, then every 10 seconds
+        let lastScrollY = window.scrollY;
+
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            if (Math.abs(currentScrollY - lastScrollY) > 2) {
+                setIsScrolling(true);
+                setIsBouncing(false);
+                if (shakeAfterScrollTimer.current) {
+                    clearTimeout(shakeAfterScrollTimer.current);
+                    shakeAfterScrollTimer.current = null;
+                }
+                lastScrollY = currentScrollY;
+            }
+
+            if (scrollStopTimer.current) {
+                clearTimeout(scrollStopTimer.current);
+            }
+
+            scrollStopTimer.current = setTimeout(() => {
+                setIsScrolling(false);
+                // When scroll stops, let the box spring to normal size and shake playfully
+                shakeAfterScrollTimer.current = setTimeout(() => {
+                    triggerGiftAttention();
+                }, 120);
+            }, 180);
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
+        // First gentle shake after 3.5s, then periodic wiggle every 12 seconds when idle
         const initialTimer = setTimeout(triggerGiftAttention, 3500);
-        const interval = setInterval(triggerGiftAttention, 10000);
+        const interval = setInterval(() => {
+            setIsScrolling(scrolling => {
+                if (!scrolling) {
+                    triggerGiftAttention();
+                }
+                return scrolling;
+            });
+        }, 12000);
 
         return () => {
+            window.removeEventListener('scroll', handleScroll);
+            if (scrollStopTimer.current) clearTimeout(scrollStopTimer.current);
+            if (shakeAfterScrollTimer.current) clearTimeout(shakeAfterScrollTimer.current);
+            if (isBouncingTimer.current) clearTimeout(isBouncingTimer.current);
             clearTimeout(initialTimer);
             clearInterval(interval);
         };
@@ -415,21 +461,18 @@ export default function Header() {
                             isAuthenticated && user ? 'md:hidden' : ''
                         }`}
                     >
-                        {/* Periodic playful shake & wiggle for gift box every 10s */}
+                        {/* Smooth size reduction during scroll with spring bounce-back */}
                         <motion.div
-                            animate={
-                                isBouncing
-                                    ? {
-                                          rotate: [0, -12, 12, -9, 9, -4, 4, 0],
-                                          y: [0, -8, 1, -6, 0, -2, 0],
-                                          scale: [1, 1.1, 1.1, 1.06, 1.06, 1.02, 1],
-                                      }
-                                    : { rotate: 0, y: 0, scale: 1 }
-                            }
-                            transition={{
-                                duration: 0.85,
-                                ease: 'easeInOut',
+                            animate={{
+                                scale: isScrolling ? 0.74 : 1,
+                                opacity: isScrolling ? 0.85 : 1,
                             }}
+                            transition={{
+                                type: 'spring',
+                                damping: 14,
+                                stiffness: 240,
+                            }}
+                            className="origin-center"
                         >
                             {isAuthenticated && user ? (
                                 <button
@@ -547,9 +590,21 @@ export default function Header() {
                                                       scale: [1, 1.28, 0.92, 1],
                                                       rotate: [0, -12, 12, -6, 0],
                                                   }
-                                                : {}
+                                                : isBouncing && !isScrolling
+                                                  ? {
+                                                        rotate: [0, -14, 14, -10, 10, -5, 5, 0],
+                                                        y: [0, -7, 2, -5, 1, -2, 0],
+                                                        scale: [1, 1.14, 1.14, 1.08, 1.08, 1.02, 1],
+                                                    }
+                                                  : { rotate: 0, y: 0, scale: 1 }
                                         }
-                                        transition={{ duration: 0.35, ease: 'easeOut' }}
+                                        transition={
+                                            isAvatarDistorting
+                                                ? { duration: 0.35, ease: 'easeOut' }
+                                                : isBouncing && !isScrolling
+                                                  ? { duration: 0.85, ease: 'easeInOut' }
+                                                  : { duration: 0.2 }
+                                        }
                                         className="relative w-full h-full flex items-center justify-center filter drop-shadow-[0_12px_22px_rgba(0,0,0,0.55)] group-hover:scale-108 transition-transform duration-300"
                                     >
                                         <picture>
