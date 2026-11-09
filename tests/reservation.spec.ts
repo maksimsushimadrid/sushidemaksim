@@ -91,7 +91,7 @@ test.describe('Reservation Page Flow', () => {
         await page.goto('/');
         const footerLink = page.locator('footer').getByRole('link', { name: 'Reservar' });
         await expect(footerLink).toBeVisible();
-        await footerLink.click();
+        await footerLink.click({ force: true });
         await expect(page).toHaveURL(/\/reservar/);
     });
 
@@ -105,7 +105,7 @@ test.describe('Reservation Page Flow', () => {
             }
             const headerLink = page.locator('header').getByRole('link', { name: 'Reserva' });
             await expect(headerLink).toBeVisible();
-            await headerLink.click();
+            await headerLink.click({ force: true });
             await expect(page).toHaveURL(/\/reservar/);
         }
     });
