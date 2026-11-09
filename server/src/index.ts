@@ -141,17 +141,18 @@ app.get('/invitacion/:id', async (req, res) => {
     }
 });
 
-app.get('/compartir/item/:id', async (req, res) => {
+app.get(['/compartir/item/:id', '/api/compartir/item/:id'], async (req, res) => {
     try {
         const { id } = req.params;
         const { data: item } = await supabase.from('menu_items').select('*').eq('id', id).single();
 
+        const fUrl = 'https://www.sushidemaksim.com';
+        const finalDest = `${fUrl}/menu?item=${encodeURIComponent(id)}#item-${encodeURIComponent(id)}`;
+        const shareUrl = `${fUrl}/compartir/item/${encodeURIComponent(id)}`;
+
         if (!item) return res.redirect('/menu');
         const safeName = escapeHtml(item.name);
         const safeDescription = escapeHtml(item.description);
-
-        const fUrl = config.frontendUrl.replace(/\/$/, '');
-        const finalDest = `${fUrl}/menu#item-${encodeURIComponent(id)}`;
 
         // Format image URL
         let imageUrl = item.image;
@@ -163,6 +164,12 @@ app.get('/compartir/item/:id', async (req, res) => {
         }
         if (!imageUrl) imageUrl = `${fUrl}/og-image-v18.jpg`;
 
+        const userAgent = (req.headers['user-agent'] || '').toLowerCase();
+        const isBot =
+            /bot|crawl|spider|facebook|twitter|whatsapp|telegram|slack|discord|pinterest|google|preview|applebot/i.test(
+                userAgent
+            );
+
         const html = `<!DOCTYPE html>
 <html lang="es" prefix="og: http://ogp.me/ns#">
 <head>
@@ -171,7 +178,7 @@ app.get('/compartir/item/:id', async (req, res) => {
     <title>${safeName} — Sushi de Maksim</title>
     <meta name="description" content="${safeDescription}">
     
-    <!-- WhatsApp / Telegram / Facebook Tags -->
+    <!-- WhatsApp / Telegram / Facebook / Social Preview Tags -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="¡Mira este ${safeName} en Sushi de Maksim!">
     <meta property="og:description" content="${safeDescription}">
@@ -179,7 +186,7 @@ app.get('/compartir/item/:id', async (req, res) => {
     <meta property="og:image:secure_url" content="${imageUrl}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:url" content="${finalDest}">
+    <meta property="og:url" content="${shareUrl}">
     <meta property="og:site_name" content="Sushi de Maksim">
     
     <meta name="twitter:card" content="summary_large_image">
@@ -187,9 +194,13 @@ app.get('/compartir/item/:id', async (req, res) => {
     <meta name="twitter:title" content="¡Mira este ${safeName} en Sushi de Maksim!">
     <meta name="twitter:description" content="${safeDescription}">
     
-    <!-- Redirect to React App -->
-    <meta http-equiv="refresh" content="0; url=${finalDest}">
-    <script>window.location.href = "${finalDest}";</script>
+    <!-- Seamless client redirect for human visitors, preserved static preview for crawler bots -->
+    ${
+        isBot
+            ? ''
+            : `<script>window.location.replace("${finalDest}");</script>
+    <noscript><meta http-equiv="refresh" content="0; url=${finalDest}"></noscript>`
+    }
 </head>
 <body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #000;">
     <div style="text-align: center; color: white;">

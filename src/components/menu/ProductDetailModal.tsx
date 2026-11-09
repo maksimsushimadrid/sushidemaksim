@@ -231,21 +231,24 @@ export default function ProductDetailModal({
                         />
                     )}
 
-                    {/* Top Floating Control Buttons */}
-                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 flex items-center gap-2 z-20">
+                    {/* Top Left Floating Share Button */}
+                    <div className="absolute top-3 left-3 sm:top-4 sm:left-4 z-20">
                         <button
                             onClick={handleShareClick}
-                            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/25 flex items-center justify-center p-0 leading-none transition-all active:scale-90 border-none cursor-pointer"
+                            className="w-9 h-9 rounded-full bg-orange-500 hover:bg-orange-600 text-white shadow-md shadow-orange-500/25 flex items-center justify-center p-0 leading-none transition-all active:scale-90 border-none cursor-pointer"
                             title="Compartir"
                             aria-label="Compartir"
                         >
                             <Share2
-                                size={15}
+                                size={16}
                                 className="text-white block shrink-0"
                                 strokeWidth={2.2}
                             />
                         </button>
+                    </div>
 
+                    {/* Top Right Floating Control Buttons (Favorite & Close) */}
+                    <div className="absolute top-3 right-3 sm:top-4 sm:right-4 flex items-center gap-2 z-20">
                         {onToggleFavorite && user && (
                             <button
                                 type="button"
@@ -280,8 +283,9 @@ export default function ProductDetailModal({
                             onClick={handleClose}
                             className="w-9 h-9 rounded-full bg-white/90 backdrop-blur-md shadow-md flex items-center justify-center text-gray-700 hover:text-gray-900 hover:bg-white transition-transform active:scale-90 border-none cursor-pointer"
                             title="Cerrar"
+                            aria-label="Cerrar"
                         >
-                            <X size={18} />
+                            <X size={18} strokeWidth={2.2} />
                         </button>
                     </div>
 

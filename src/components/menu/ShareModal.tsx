@@ -28,7 +28,8 @@ export default function ShareModal({ item, onClose, onCopy, copying }: ShareModa
     };
 
     const shareUrl = `${SITE_URL}/compartir/item/${item.id}`;
-    const shareText = `¡Mira este ${item.name} en Sushi de Maksim! 🍣\n\n${item.description}\n\nPídelo aquí: ${shareUrl}`;
+    const shareTextForNavigator = `¡Mira este ${item.name} en Sushi de Maksim! 🍣\n\n${item.description}\n\nPídelo aquí:`;
+    const fullShareText = `¡Mira este ${item.name} en Sushi de Maksim! 🍣\n\n${item.description}\n\nPídelo aquí: ${shareUrl}`;
 
     return createPortal(
         <AnimatePresence>
@@ -96,7 +97,7 @@ export default function ShareModal({ item, onClose, onCopy, copying }: ShareModa
                                         trackShare();
                                         navigator.share({
                                             title: item.name,
-                                            text: shareText,
+                                            text: shareTextForNavigator,
                                             url: shareUrl,
                                         });
                                         onClose();
@@ -111,7 +112,7 @@ export default function ShareModal({ item, onClose, onCopy, copying }: ShareModa
                             <button
                                 onClick={() => {
                                     trackShare();
-                                    onCopy(shareText);
+                                    onCopy(fullShareText);
                                 }}
                                 className={`w-full flex items-center justify-center gap-3 py-4 rounded-2xl font-black transition-all border-none cursor-pointer ${
                                     copying
