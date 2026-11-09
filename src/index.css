@@ -59,7 +59,7 @@ html.lenis body {
 
     body {
         @apply antialiased text-gray-900;
-        background-color: transparent;
+        background-color: #fbf7f0;
         overflow-x: clip;
         font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
         min-height: 100%;
@@ -83,6 +83,11 @@ html.lenis body {
         transition:
             opacity 0.5s ease,
             filter 0.5s ease;
+    }
+
+    html.is-table-route body,
+    html.is-tablon-route body {
+        background-color: #0d0d0d !important;
     }
 
     html.is-table-route body::before,

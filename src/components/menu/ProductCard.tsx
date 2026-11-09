@@ -69,7 +69,7 @@ const ProductCard = React.memo(function ProductCard({
         <div
             id={`item-${item.id}`}
             onClick={handleOpenDetails}
-            className={`premium-card group relative flex flex-col h-full rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgba(249,115,22,0.15)] ${
+            className={`premium-card bg-white group relative flex flex-col h-full rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_20px_40px_-15px_rgba(249,115,22,0.15)] ${
                 isHighlighted ? 'highlight-item' : ''
             }`}
         >
@@ -184,7 +184,7 @@ const ProductCard = React.memo(function ProductCard({
             </div>
 
             {/* Info Container */}
-            <div className="p-3 md:p-4 flex flex-col flex-1">
+            <div className="p-3 md:p-4 flex flex-col flex-1 bg-white">
                 <div className="mb-1 md:mb-2 text-left min-h-[56px] md:min-h-0">
                     <h3 className="text-sm md:text-xl font-black text-gray-900 leading-tight line-clamp-2 md:line-clamp-none h-8 md:h-auto md:min-h-[60px]">
                         {item.name}

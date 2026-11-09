@@ -25,11 +25,11 @@ export function getCycleIndexForPath(pathname: string): number {
         pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
 
     if (normalized === '/') return 0;
-    if (normalized === '/menu') return 1;
-    if (normalized === '/promo') return 2;
+    if (normalized === '/menu' || normalized === '/carta') return 1;
+    if (normalized === '/promo' || normalized === '/promos') return 2;
     if (normalized === '/tablon') return 3;
     if (normalized === '/reservar' || normalized === '/reserva') return 4;
-    if (normalized === '/contacts') return 5;
+    if (normalized === '/contacts' || normalized === '/contacto') return 5;
 
     return -1;
 }

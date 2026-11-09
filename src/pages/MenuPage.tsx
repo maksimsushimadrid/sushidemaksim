@@ -380,7 +380,7 @@ export default function MenuPage() {
     const isLoadingInitial = isLoading && items.length === 0;
 
     return (
-        <div className="min-h-screen bg-transparent pb-0 pt-0 flex flex-col">
+        <div className="min-h-screen bg-[#FDFBF7] pb-0 pt-0 flex flex-col">
             <SEO
                 title={
                     activeCategory === 'all'

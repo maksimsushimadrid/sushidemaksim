@@ -15,6 +15,12 @@ export default function SwipeNavigationHint() {
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
+        // Never show swipe tutorial overlay if user navigated directly to an item
+        const searchParams = new URLSearchParams(window.location.search);
+        if (searchParams.has('item') || window.location.hash.includes('item')) {
+            return;
+        }
+
         // Check if already seen or on non-cycle route
         const alreadySeen = localStorage.getItem(STORAGE_KEY);
         if (alreadySeen || !isCyclePage) return;
@@ -25,7 +31,7 @@ export default function SwipeNavigationHint() {
         }, 600);
 
         return () => clearTimeout(timer);
-    }, [isCyclePage]);
+    }, [isCyclePage, location.search, location.hash]);
 
     const dismiss = () => {
         setVisible(false);
