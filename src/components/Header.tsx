@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { X, Compass } from 'lucide-react';
+import { X, Pointer, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
 import StoreStatusBanner from './StoreStatusBanner';
@@ -150,16 +150,26 @@ export default function Header() {
 
     const [showTapHint, setShowTapHint] = useState(() => {
         if (typeof window === 'undefined') return false;
-        return !localStorage.getItem('sushi_cycle_hint_seen_v2');
+        return !localStorage.getItem('sushi_swipe_hint_seen_v3');
     });
 
     useEffect(() => {
         if (!showTapHint) return;
         const timer = setTimeout(() => {
             setShowTapHint(false);
-            localStorage.setItem('sushi_cycle_hint_seen_v2', 'true');
+            localStorage.setItem('sushi_swipe_hint_seen_v3', 'true');
         }, 8000);
-        return () => clearTimeout(timer);
+
+        const dismiss = () => {
+            setShowTapHint(false);
+            localStorage.setItem('sushi_swipe_hint_seen_v3', 'true');
+        };
+
+        window.addEventListener('sushi:swiped', dismiss);
+        return () => {
+            clearTimeout(timer);
+            window.removeEventListener('sushi:swiped', dismiss);
+        };
     }, [showTapHint]);
 
     // Periodic playful shake & wiggle for unauthenticated gift box every 10 seconds
@@ -420,18 +430,49 @@ export default function Header() {
                                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                                     exit={{ opacity: 0, y: -4, scale: 0.94 }}
                                                     transition={{ duration: 0.18 }}
-                                                    className="absolute top-[calc(100%+8px)] right-0 bg-[#161616]/95 backdrop-blur-xl text-white text-[10px] font-bold px-3 py-1.5 rounded-xl shadow-2xl border border-white/15 flex items-center gap-1.5 whitespace-nowrap z-50 pointer-events-none"
+                                                    className="absolute top-[calc(100%+8px)] right-0 bg-[#161616]/95 backdrop-blur-xl text-white text-[10px] font-bold px-3 py-1.5 rounded-xl shadow-2xl border border-white/15 flex items-center gap-1.5 whitespace-nowrap z-50 pointer-events-none select-none"
                                                 >
                                                     {/* Triangle notch pointing to center of 126px button */}
                                                     <div className="absolute -top-1 right-[59px] w-2 h-2 bg-[#161616]/95 rotate-45 border-t border-l border-white/15" />
-                                                    <Compass
-                                                        size={12}
-                                                        className="text-orange-400"
-                                                    />
-                                                    <span>Desliza la pantalla</span>
-                                                    <span className="text-orange-400 font-black bg-orange-500/20 px-1 py-0.5 rounded text-[9px] border border-orange-400/25">
-                                                        ← / →
+                                                    <motion.div
+                                                        animate={{ x: [-2, 1, -2] }}
+                                                        transition={{
+                                                            repeat: Infinity,
+                                                            duration: 1.4,
+                                                            ease: 'easeInOut',
+                                                        }}
+                                                        className="text-orange-400 shrink-0"
+                                                    >
+                                                        <ChevronLeft size={13} strokeWidth={2.5} />
+                                                    </motion.div>
+                                                    <motion.div
+                                                        animate={{
+                                                            x: [-4, 4, -4],
+                                                            rotate: [-6, 6, -6],
+                                                        }}
+                                                        transition={{
+                                                            repeat: Infinity,
+                                                            duration: 1.4,
+                                                            ease: 'easeInOut',
+                                                        }}
+                                                        className="text-orange-400 shrink-0"
+                                                    >
+                                                        <Pointer size={14} strokeWidth={2.2} />
+                                                    </motion.div>
+                                                    <span className="font-bold tracking-wide">
+                                                        Desliza para navegar
                                                     </span>
+                                                    <motion.div
+                                                        animate={{ x: [1, -2, 1] }}
+                                                        transition={{
+                                                            repeat: Infinity,
+                                                            duration: 1.4,
+                                                            ease: 'easeInOut',
+                                                        }}
+                                                        className="text-orange-400 shrink-0"
+                                                    >
+                                                        <ChevronRight size={13} strokeWidth={2.5} />
+                                                    </motion.div>
                                                 </motion.div>
                                             )}
                                         </AnimatePresence>

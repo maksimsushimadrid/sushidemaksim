@@ -9,6 +9,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import CookieConsent from './components/CookieConsent';
 import FloatingCart from './components/FloatingCart';
+import SwipeNavigationHint from './components/common/SwipeNavigationHint';
 import SmoothScroll from './components/SmoothScroll';
 import RegistrationPrompt from './components/RegistrationPrompt';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -217,6 +218,9 @@ function App() {
                                 <ReloadPrompt />
                                 {!isAdminRoute && !isWaiterRoute && !isTableRoute && (
                                     <FloatingCart />
+                                )}
+                                {!isAdminRoute && !isWaiterRoute && !isTableRoute && (
+                                    <SwipeNavigationHint />
                                 )}
                                 {!isAdminRoute && !isWaiterRoute && !isTableRoute && (
                                     <SeasonalAtmosphere />

@@ -197,6 +197,13 @@ export function useScreenSwipeNavigation() {
 
                 triggerHaptic(15);
 
+                try {
+                    window.dispatchEvent(new CustomEvent('sushi:swiped'));
+                    localStorage.setItem('sushi_swipe_hint_seen_v3', 'true');
+                } catch {
+                    // ignore
+                }
+
                 window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
                 if ((window as any).lenis) {
                     try {
