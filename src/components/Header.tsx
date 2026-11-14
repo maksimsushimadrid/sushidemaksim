@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, lazy, Suspense } from 'react';
-import { useLocation, Link } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { User, ShoppingCart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCart } from '../hooks/useCart';
@@ -22,6 +22,7 @@ import { triggerHaptic } from '../utils/haptics';
 import StreakerEasterEgg from './common/StreakerEasterEgg';
 
 export default function Header() {
+    const navigate = useNavigate();
     const { itemCount, total, isLoading: cartLoading } = useCart();
     const { user, isAuthenticated } = useAuth();
     const location = useLocation();
@@ -84,13 +85,26 @@ export default function Header() {
     }, []);
 
     useScrollLock(
-        showMobileMenu || isLoginModalOpen || isReservationModalOpen || isRegistrationDiscountOpen
+        (showMobileMenu && (typeof window === 'undefined' || window.innerWidth < 768)) ||
+            isLoginModalOpen ||
+            isReservationModalOpen ||
+            isRegistrationDiscountOpen
     );
 
-    // Close mobile menu on route change
+    // Close mobile menu on route change or when switching to desktop breakpoint
     useEffect(() => {
         setShowMobileMenu(false);
     }, [location.pathname]);
+
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth >= 768 && showMobileMenu) {
+                setShowMobileMenu(false);
+            }
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [showMobileMenu]);
 
     // Handle global modal events
     useEffect(() => {
@@ -308,11 +322,19 @@ export default function Header() {
                                 <button
                                     onClick={() => {
                                         triggerHaptic(20);
-                                        setShowMobileMenu(true);
+                                        const isDesktop =
+                                            typeof window !== 'undefined' &&
+                                            window.innerWidth >= 768;
+                                        if (isDesktop) {
+                                            setLoginModalMode('login');
+                                            setIsLoginModalOpen(true);
+                                        } else {
+                                            setShowMobileMenu(true);
+                                        }
                                     }}
                                     className="relative w-[46px] h-[46px] rounded-full p-[2px] bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-400 shadow-[0_6px_16px_-3px_rgba(242,101,34,0.45),0_2px_6px_rgba(0,0,0,0.2)] flex items-center justify-center cursor-pointer active:scale-95 transition-transform group"
-                                    title="Abrir menú y perfil"
-                                    aria-label="Abrir menú y perfil"
+                                    title="Iniciar sesión"
+                                    aria-label="Iniciar sesión"
                                 >
                                     <div className="relative w-full h-full rounded-full overflow-hidden flex items-center justify-center bg-white shadow-inner text-gray-800">
                                         <User
@@ -333,12 +355,19 @@ export default function Header() {
                                         setIsAvatarDistorting(true);
                                         setTimeout(() => {
                                             setIsAvatarDistorting(false);
-                                            setShowMobileMenu(true);
+                                            const isDesktop =
+                                                typeof window !== 'undefined' &&
+                                                window.innerWidth >= 768;
+                                            if (isDesktop) {
+                                                navigate('/profile');
+                                            } else {
+                                                setShowMobileMenu(true);
+                                            }
                                         }, 280);
                                     }}
                                     className="relative w-[50px] h-[50px] rounded-full p-[2px] bg-gradient-to-tr from-orange-500 via-amber-500 to-orange-400 shadow-[0_8px_20px_-4px_rgba(242,101,34,0.55),0_2px_8px_rgba(0,0,0,0.25)] flex items-center justify-center cursor-pointer active:scale-95 transition-transform group"
-                                    title="Abrir perfil y menú"
-                                    aria-label="Abrir perfil y menú"
+                                    title="Mi perfil"
+                                    aria-label="Mi perfil"
                                 >
                                     {/* Inner circle container with 3D sphere bulge distortion */}
                                     <motion.div

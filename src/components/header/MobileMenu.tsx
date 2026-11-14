@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link, useLocation } from 'react-router-dom';
@@ -30,6 +30,19 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
     ];
 
     const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+    // Auto-close if screen is resized to desktop width (since MobileMenu is md:hidden)
+    useEffect(() => {
+        if (!showMobileMenu) return;
+        const handleResize = () => {
+            if (typeof window !== 'undefined' && window.innerWidth >= 768) {
+                setShowMobileMenu(false);
+            }
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [showMobileMenu, setShowMobileMenu]);
 
     const handleGoogleLogin = async (response: { access_token: string }) => {
         setIsGoogleLoading(true);
