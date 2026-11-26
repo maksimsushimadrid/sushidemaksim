@@ -45,7 +45,8 @@ export function formatUser(
     avgCheck: number = 0,
     frequency: string = 'N/A',
     favoriteDish: string = 'N/A',
-    promoCodes: any[] = []
+    promoCodes: any[] = [],
+    favoriteDishCount: number = 0
 ) {
     if (!u) return null;
     return {
@@ -68,6 +69,7 @@ export function formatUser(
         avgCheck: avgCheck,
         frequency: frequency,
         favoriteDish: favoriteDish,
+        favoriteDishCount: favoriteDishCount,
         addresses: (addresses || []).map(a => ({
             id: a.id,
             label: a.label,
@@ -376,6 +378,7 @@ export function calculateUserStats(userOrders: any[]) {
         avgCheck,
         frequency,
         favoriteDish,
+        favoriteDishCount: maxQty,
     };
 }
 

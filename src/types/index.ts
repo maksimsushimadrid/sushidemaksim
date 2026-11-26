@@ -81,6 +81,7 @@ export interface UserStats {
     avgCheck: number;
     frequency: string;
     favoriteDish: string;
+    favoriteDishCount?: number;
 }
 
 export interface Order {
@@ -134,6 +135,7 @@ export interface User {
     avgCheck?: number;
     frequency?: string;
     favoriteDish?: string;
+    favoriteDishCount?: number;
     isVerified?: boolean;
     deletedAt?: string;
     coinsBalance?: number;

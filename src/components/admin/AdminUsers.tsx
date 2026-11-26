@@ -282,6 +282,7 @@ const UserRow = memo(
                                             avgCheck: user.avgCheck || 0,
                                             frequency: user.frequency || 'N/A',
                                             favoriteDish: user.favoriteDish || 'N/A',
+                                            favoriteDishCount: user.favoriteDishCount || 0,
                                             registrationDate: user.createdAt,
                                         }}
                                     />

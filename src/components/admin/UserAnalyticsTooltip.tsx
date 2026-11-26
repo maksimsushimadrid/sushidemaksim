@@ -10,6 +10,7 @@ interface UserAnalyticsTooltipProps {
         avgCheck: number;
         frequency: string;
         favoriteDish: string;
+        favoriteDishCount?: number;
         registrationDate?: string;
     };
     language: 'ru' | 'es';
@@ -185,8 +186,21 @@ export const UserAnalyticsTooltip = memo(
                                     {t.favoriteDish}
                                 </span>
                             </div>
-                            <div className="text-gray-900 font-black text-[11px] uppercase tracking-tight line-clamp-1">
-                                {stats.favoriteDish}
+                            <div className="flex items-center justify-between gap-2">
+                                <div className="text-gray-900 font-black text-[11px] uppercase tracking-tight line-clamp-1">
+                                    {stats.favoriteDish}
+                                </div>
+                                {stats.favoriteDish &&
+                                    stats.favoriteDish !== 'N/A' &&
+                                    (stats.favoriteDishCount ?? 0) > 0 && (
+                                        <span className="shrink-0 px-2 py-0.5 rounded-lg bg-orange-50 text-orange-600 border border-orange-100 text-[10px] font-black tabular-nums">
+                                            {language === 'ru'
+                                                ? `${stats.favoriteDishCount} раз`
+                                                : stats.favoriteDishCount === 1
+                                                  ? '1 vez'
+                                                  : `${stats.favoriteDishCount} veces`}
+                                        </span>
+                                    )}
                             </div>
                         </div>
 

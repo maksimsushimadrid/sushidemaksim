@@ -997,7 +997,9 @@ router.get(
                     stats.totalSpent,
                     stats.avgCheck,
                     stats.frequency,
-                    stats.favoriteDish
+                    stats.favoriteDish,
+                    [],
+                    stats.favoriteDishCount
                 );
             });
         } else {
@@ -1039,7 +1041,9 @@ router.get(
                     stats.totalSpent,
                     stats.avgCheck,
                     stats.frequency,
-                    stats.favoriteDish
+                    stats.favoriteDish,
+                    [],
+                    stats.favoriteDishCount
                 );
             });
         }

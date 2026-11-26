@@ -58,6 +58,7 @@ const OrderRowName = memo(
                         avgCheck: stats?.avgCheck || 0,
                         frequency: stats?.frequency || 'N/A',
                         favoriteDish: stats?.favoriteDish || 'N/A',
+                        favoriteDishCount: stats?.favoriteDishCount || 0,
                         registrationDate: stats?.registrationDate,
                     }}
                 />
