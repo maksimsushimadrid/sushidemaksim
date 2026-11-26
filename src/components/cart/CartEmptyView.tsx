@@ -32,7 +32,7 @@ export default function CartEmptyView({
         <div className="min-h-[85vh] mesh-bg px-2 md:px-6 py-8 flex flex-col">
             <div className="max-w-4xl mx-auto text-center py-6 md:py-10 w-full flex-1 flex flex-col justify-center">
                 {/* Branded Kraft Paper Bag with "Tu cesta está vacía" label on it */}
-                <div className="flex justify-center mb-8">
+                <div className="flex flex-col items-center mb-8">
                     <motion.div
                         animate={{
                             rotate: [-4, 4, -4],
@@ -53,13 +53,10 @@ export default function CartEmptyView({
                         style={{ transformOrigin: '50% 8%' }}
                         className="relative w-[330px] sm:w-[380px] md:w-[420px] aspect-square flex items-center justify-center select-none will-change-transform"
                     >
-                        {/* Soft warm ambient shadow behind the bag */}
-                        <div className="absolute inset-10 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
-
                         <img
                             src="/cart-large.webp"
                             alt="Bolsa Sushi de Maksim"
-                            className="w-full h-full object-contain drop-shadow-[0_24px_34px_rgba(74,45,18,0.22)] pointer-events-none"
+                            className="w-full h-full object-contain pointer-events-none"
                         />
 
                         {/* Text directly on the front face of the kraft bag (above the bottom logo text) */}
@@ -76,6 +73,11 @@ export default function CartEmptyView({
                             </p>
                         </div>
                     </motion.div>
+                    {/* Soft natural ground shadow underneath the swaying bag (avoids iOS drop-shadow clipping) */}
+                    <div
+                        aria-hidden="true"
+                        className="w-44 sm:w-52 h-4 -mt-4 rounded-full bg-amber-950/15 blur-xl pointer-events-none"
+                    />
                 </div>
 
                 <div className="flex flex-col items-center gap-4 mb-16">
