@@ -5,6 +5,7 @@
             // --- IMMEDIATE THEME SETUP ---
             // Fix white flash on refresh by setting background color immediately
             (function () {
+                document.documentElement.classList.add('js-enabled');
                 // --- CANONICAL REDIRECT ---
                 const host = window.location.hostname;
                 const isProduction = host !== 'localhost' && !host.includes('vercel.app');
@@ -128,6 +129,9 @@
             #root:empty {
                 min-height: 100vh;
                 background-color: inherit;
+            }
+            html.js-enabled #seo-prerender-content {
+                display: none !important;
             }
         </style>
     </head>
