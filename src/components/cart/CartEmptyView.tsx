@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ShoppingCart, ArrowDown, Flame, Check, Plus } from 'lucide-react';
+import { ArrowDown, Flame, Check, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { getOptimizedImageUrl } from '../../utils/images';
 import SafeImage from '../common/SafeImage';
@@ -30,26 +30,35 @@ export default function CartEmptyView({
 }: CartEmptyViewProps) {
     return (
         <div className="min-h-[85vh] mesh-bg px-2 md:px-6 py-8 flex flex-col">
-            <div className="max-w-4xl mx-auto text-center py-8 md:py-12 w-full flex-1 flex flex-col justify-center">
+            <div className="max-w-4xl mx-auto text-center py-6 md:py-10 w-full flex-1 flex flex-col justify-center">
+                {/* Branded Kraft Paper Bag with "Tu cesta está vacía" label on it */}
                 <div className="flex justify-center mb-8">
-                    <div className="w-28 h-28 bg-white rounded-2xl flex items-center justify-center animate-float shadow-2xl shadow-orange-500/10 border border-white/50 relative">
-                        <div className="absolute inset-0 bg-orange-500/5 rounded-2xl blur-xl"></div>
-                        <ShoppingCart
-                            size={48}
-                            className="text-orange-500 relative z-10"
-                            strokeWidth={1.2}
+                    <div className="relative w-[330px] sm:w-[380px] md:w-[420px] aspect-square flex items-center justify-center animate-float select-none">
+                        {/* Soft warm ambient shadow behind the bag */}
+                        <div className="absolute inset-10 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
+
+                        <img
+                            src="/cart.webp"
+                            alt="Bolsa Sushi de Maksim"
+                            className="w-full h-full object-contain drop-shadow-[0_24px_34px_rgba(74,45,18,0.22)] pointer-events-none"
                         />
+
+                        {/* Printed paper sticker on the front face of the kraft bag */}
+                        <div className="absolute left-[21.5%] right-[21.5%] top-[28%] bottom-[13%] flex flex-col items-center justify-center text-center px-3.5 py-3 sm:px-5 sm:py-4 rounded-xl bg-[#FBF7F0]/90 backdrop-blur-[2px] border border-[#8B5A2B]/15 shadow-[0_6px_20px_rgba(74,45,18,0.12)]">
+                            <h1 className="text-xl sm:text-2xl md:text-[28px] font-black text-gray-900 tracking-tight leading-tight m-0 mb-2">
+                                Tu cesta está vacía
+                            </h1>
+                            <p className="text-xs sm:text-sm font-black text-gray-900 leading-snug m-0 mb-1.5">
+                                Mira lo que tenemos para ti
+                            </p>
+                            <p className="text-[11px] sm:text-xs text-gray-600 font-medium leading-snug m-0">
+                                Añade deliciosos platos o elige una de nuestras sugerencias
+                                favoritas.
+                            </p>
+                        </div>
                     </div>
                 </div>
-                <h1 className="text-4xl md:text-5xl font-black mb-4 text-gray-900 tracking-tight text-shadow-sm">
-                    Tu cesta está vacía
-                </h1>
-                <p className="text-gray-500 mb-10 max-w-sm mx-auto font-medium">
-                    <span className="block text-xl md:text-2xl font-black text-gray-900 mb-2">
-                        Mira lo que tenemos para ti
-                    </span>
-                    Añade deliciosos platos o elige una de nuestras sugerencias favoritas.
-                </p>
+
                 <div className="flex flex-col items-center gap-4 mb-16">
                     <Link
                         to="/menu"
