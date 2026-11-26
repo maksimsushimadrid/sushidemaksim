@@ -956,7 +956,7 @@ export default function LoginModal({
             const res = await login(email, password);
             if (res.success) {
                 onClose();
-                showSuccess('¡Bienvenido de nuevo! 🍣');
+                showSuccess('¡Bienvenido de nuevo!');
                 navigate('/menu');
             } else {
                 showError(res.error || 'Error al iniciar sesión');
@@ -1034,7 +1034,7 @@ export default function LoginModal({
             const res = await loginWithGoogle(response.access_token);
             if (res.success) {
                 onClose();
-                showSuccess('¡Bienvenido de nuevo! 🍣');
+                showSuccess('¡Bienvenido de nuevo!');
                 navigate('/menu');
             } else {
                 showError(res.error || 'Error al entrar con Google');

@@ -50,7 +50,7 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
         setIsGoogleLoading(false);
         if (res.success) {
             setShowMobileMenu(false);
-            showSuccess('¡Bienvenido de nuevo! 🍣');
+            showSuccess('¡Bienvenido de nuevo!');
         } else {
             showError(res.error || 'Error al entrar con Google');
         }

@@ -11,7 +11,19 @@ import { useQuery } from '@tanstack/react-query';
 import { getOptimizedImageUrl } from '../utils/images';
 import { SITE_URL } from '../constants/config';
 import SafeImage from '../components/common/SafeImage';
-import BrandedPlaceholder from '../components/common/BrandedPlaceholder';
+
+const SUSHI_GALLERY_FALLBACKS = [
+    '/sushidemaksim_black_style_photos/Dragon_sushidemaksim_black.webp',
+    '/sushidemaksim_black_style_photos/philadelphia_sushidemaksim_black.webp',
+    '/sushidemaksim_black_style_photos/Volcano_Roll_horneado_sushidemaksim_black.webp',
+];
+
+const SUSHI_BANNER_FALLBACKS = [
+    '/sushidemaksim_black_style_photos/Cubierto_de_amor_black.webp',
+    '/sushidemaksim_black_style_photos/Dragon_sushidemaksim_black.webp',
+    '/sushidemaksim_black_style_photos/philadelphia_sushidemaksim_black.webp',
+    '/hero-poster.webp',
+];
 
 interface PromoItem {
     id: number;
@@ -160,9 +172,10 @@ export default function PromoPage() {
                                                 getOptimizedImageUrl(url, 800)
                                             }
                                             fallbackContent={
-                                                <BrandedPlaceholder
-                                                    icon={promo.icon}
-                                                    color={promo.color}
+                                                <img
+                                                    src={SUSHI_BANNER_FALLBACKS[0]}
+                                                    alt={promo.title}
+                                                    className="absolute inset-0 w-full h-full object-cover"
                                                 />
                                             }
                                         />
@@ -505,9 +518,11 @@ export default function PromoPage() {
                 </div>
 
                 {/* Dynamic Banners */}
-                {banners.map(banner => {
+                {banners.map((banner, bannerIdx) => {
                     const secondaryImages = banner.metadata?.images || [];
                     const hasGallery = secondaryImages.length >= 3;
+                    const bannerFallbackImg =
+                        SUSHI_BANNER_FALLBACKS[bannerIdx % SUSHI_BANNER_FALLBACKS.length];
 
                     return (
                         <div
@@ -516,11 +531,6 @@ export default function PromoPage() {
                         >
                             {/* Text Content */}
                             <div className="flex-1 relative z-10 w-full text-center lg:text-left">
-                                {banner.subtitle && (
-                                    <div className="inline-block bg-white/20 backdrop-blur-md px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] md:text-xs font-black mb-3 sm:mb-4 border border-white/30 uppercase tracking-[0.2em] text-white shadow-sm">
-                                        {banner.subtitle}
-                                    </div>
-                                )}
                                 <h2 className="text-2xl sm:text-4xl md:text-6xl font-black mb-3 sm:mb-4 tracking-tighter leading-tight sm:leading-[0.95] text-white drop-shadow-xl">
                                     {banner.title}
                                 </h2>
@@ -555,10 +565,15 @@ export default function PromoPage() {
                                                             getOptimizedImageUrl(url, 400)
                                                         }
                                                         fallbackContent={
-                                                            <BrandedPlaceholder
-                                                                icon={banner.icon}
-                                                                color="#ffffff"
-                                                                className="scale-50"
+                                                            <img
+                                                                src={
+                                                                    SUSHI_GALLERY_FALLBACKS[
+                                                                        idx %
+                                                                            SUSHI_GALLERY_FALLBACKS.length
+                                                                    ]
+                                                                }
+                                                                alt={`${banner.title} ${idx + 1}`}
+                                                                className="w-full h-full object-cover"
                                                             />
                                                         }
                                                     />
@@ -576,14 +591,18 @@ export default function PromoPage() {
                                 ) : (
                                     <div className="aspect-video lg:aspect-square w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-xl border-4 sm:border-8 border-white/10 relative group-hover:scale-[1.02] transition-transform duration-700">
                                         <SafeImage
-                                            src={banner.image_url || '/logo.svg'}
+                                            src={banner.image_url || bannerFallbackImg}
                                             alt={banner.title}
                                             className="w-full h-full object-cover"
                                             getOptimizedUrl={(url: string) =>
                                                 getOptimizedImageUrl(url, 800)
                                             }
                                             fallbackContent={
-                                                <BrandedPlaceholder icon="🍱" color="#ffffff" />
+                                                <img
+                                                    src={bannerFallbackImg}
+                                                    alt={banner.title}
+                                                    className="w-full h-full object-cover"
+                                                />
                                             }
                                         />
                                         <div className="absolute inset-x-0 bottom-0 p-4 sm:p-6 bg-gradient-to-t from-black/80 to-transparent">
@@ -675,7 +694,11 @@ export default function PromoPage() {
                                                 getOptimizedImageUrl(url, 640)
                                             }
                                             fallbackContent={
-                                                <BrandedPlaceholder icon="🍱" color="#F26522" />
+                                                <img
+                                                    src={SUSHI_BANNER_FALLBACKS[1]}
+                                                    alt={`Oferta ${item.name}`}
+                                                    className="w-full h-full object-cover"
+                                                />
                                             }
                                         />
                                         <div className="absolute top-4 left-4 bg-white/20 backdrop-blur-md border border-white/30 text-white text-[9px] md:text-xs uppercase tracking-[0.2em] font-black px-4 py-2 rounded-full shadow-2xl">
