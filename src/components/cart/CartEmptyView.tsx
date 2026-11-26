@@ -33,7 +33,26 @@ export default function CartEmptyView({
             <div className="max-w-4xl mx-auto text-center py-6 md:py-10 w-full flex-1 flex flex-col justify-center">
                 {/* Branded Kraft Paper Bag with "Tu cesta está vacía" label on it */}
                 <div className="flex justify-center mb-8">
-                    <div className="relative w-[330px] sm:w-[380px] md:w-[420px] aspect-square flex items-center justify-center animate-float select-none">
+                    <motion.div
+                        animate={{
+                            rotate: [-4, 4, -4],
+                            y: [0, -5, 0],
+                        }}
+                        transition={{
+                            rotate: {
+                                repeat: Infinity,
+                                duration: 4.2,
+                                ease: 'easeInOut',
+                            },
+                            y: {
+                                repeat: Infinity,
+                                duration: 2.8,
+                                ease: 'easeInOut',
+                            },
+                        }}
+                        style={{ transformOrigin: '50% 8%' }}
+                        className="relative w-[330px] sm:w-[380px] md:w-[420px] aspect-square flex items-center justify-center select-none will-change-transform"
+                    >
                         {/* Soft warm ambient shadow behind the bag */}
                         <div className="absolute inset-10 bg-orange-500/10 rounded-full blur-3xl pointer-events-none" />
 
@@ -56,7 +75,7 @@ export default function CartEmptyView({
                                 favoritas.
                             </p>
                         </div>
-                    </div>
+                    </motion.div>
                 </div>
 
                 <div className="flex flex-col items-center gap-4 mb-16">
