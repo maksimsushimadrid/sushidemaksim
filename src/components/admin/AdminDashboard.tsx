@@ -425,7 +425,7 @@ const StatCard = ({
                         {isDesktop && (
                             <div
                                 onClick={() => setIsModalOpen(true)}
-                                className="hidden md:block w-20 h-7 overflow-hidden shrink-0 cursor-zoom-in hover:scale-105 active:scale-95 transition-all rounded hover:opacity-85"
+                                className="hidden md:block w-28 lg:w-36 xl:w-40 h-11 lg:h-12 overflow-hidden shrink-0 cursor-zoom-in hover:scale-105 active:scale-95 transition-all rounded-lg hover:opacity-90"
                                 title={
                                     language === 'ru'
                                         ? 'Кликните, чтобы развернуть график'
@@ -440,7 +440,7 @@ const StatCard = ({
                                 >
                                     <AreaChart
                                         data={chartData}
-                                        margin={{ top: 2, right: 2, left: 2, bottom: 2 }}
+                                        margin={{ top: 3, right: 3, left: 3, bottom: 3 }}
                                     >
                                         <defs>
                                             <linearGradient
@@ -453,7 +453,7 @@ const StatCard = ({
                                                 <stop
                                                     offset="5%"
                                                     stopColor={chartInfo.color}
-                                                    stopOpacity={0.2}
+                                                    stopOpacity={0.28}
                                                 />
                                                 <stop
                                                     offset="95%"
@@ -466,7 +466,7 @@ const StatCard = ({
                                             type="monotone"
                                             dataKey="val"
                                             stroke={chartInfo.color}
-                                            strokeWidth={1.5}
+                                            strokeWidth={2}
                                             fillOpacity={1}
                                             fill={`url(#gradient-${chartInfo.id})`}
                                         />
