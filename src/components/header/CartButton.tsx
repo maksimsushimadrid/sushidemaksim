@@ -55,7 +55,10 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
 
     // Easter egg: trigger pop and particle burst when total reaches or exceeds 300€
     useEffect(() => {
-        if (isPopped && !prevPoppedRef.current) {
+        const wasPopped = prevPoppedRef.current;
+        prevPoppedRef.current = isPopped;
+
+        if (isPopped && !wasPopped) {
             setIsBursting(true);
             triggerHaptic(HAPTIC_PATTERNS.ERROR);
             playPopSound();
@@ -64,20 +67,28 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
             }, 700);
             return () => clearTimeout(timer);
         }
-        prevPoppedRef.current = isPopped;
+
+        if (!isPopped) {
+            setIsBursting(false);
+        }
     }, [isPopped]);
 
     useEffect(() => {
-        if (itemCount > prevCountRef.current && !isPopped) {
+        const prevCount = prevCountRef.current;
+        prevCountRef.current = itemCount;
+
+        if (itemCount > prevCount && !isPopped) {
             // Delay bump to sync with flying item arrival (~0.7s flight)
+            let resetTimer: ReturnType<typeof setTimeout> | undefined;
             const delayTimer = setTimeout(() => {
                 setIsCartBumping(true);
-                const resetTimer = setTimeout(() => setIsCartBumping(false), 600);
-                return () => clearTimeout(resetTimer);
+                resetTimer = setTimeout(() => setIsCartBumping(false), 600);
             }, 700);
-            return () => clearTimeout(delayTimer);
+            return () => {
+                clearTimeout(delayTimer);
+                if (resetTimer) clearTimeout(resetTimer);
+            };
         }
-        prevCountRef.current = itemCount;
     }, [itemCount, isPopped]);
 
     // Base scale grows with total: from 1.0 (at 10€) up to 1.55 (at 120€)
@@ -89,6 +100,7 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
 
     const bagVariants = {
         idle: {
+            scale: 1,
             scaleX: baseScale,
             scaleY: baseScale,
             borderRadius: `${15 + scaleRatio * 15}% / 100%`,
@@ -97,6 +109,7 @@ export default function CartButton({ itemCount, total, cartLoading }: CartButton
             opacity: 1,
         },
         bump: {
+            scale: 1,
             // Aggressive horizontal scaling for side bulge
             scaleX: [baseScale, baseScale * bulgeFactor * 1.5, baseScale * 0.9, baseScale],
             scaleY: [baseScale, baseScale * bulgeFactor * 0.7, baseScale * 1.05, baseScale],
