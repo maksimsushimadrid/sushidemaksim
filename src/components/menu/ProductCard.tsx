@@ -204,7 +204,7 @@ const ProductCard = React.memo(function ProductCard({
                         <span className="text-base md:text-xl font-black text-gray-900 whitespace-nowrap">
                             {item.price.toFixed(2).replace('.', ',')} €
                         </span>
-                        {isExtra && !isAdded && (
+                        {isExtra && !isAdded && !(cartQuantity && cartQuantity > 0) && (
                             <div className="flex items-center bg-gray-100 rounded-lg md:rounded-xl px-0.5 py-0.5 mt-1 md:w-fit">
                                 <button
                                     onClick={() => setQuantity(q => Math.max(1, q - 1))}
