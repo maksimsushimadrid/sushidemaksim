@@ -228,7 +228,7 @@ export default function Header() {
         <>
             <header
                 ref={headerRef}
-                className={`fixed top-0 inset-x-0 z-header transition-[background-color,border-color] duration-300
+                className={`fixed top-0 inset-x-0 z-header transform-gpu transition-[background-color,border-color] duration-300
                 ${
                     isTable
                         ? 'bg-[#0A0A0A] border-b border-white/5'
@@ -251,7 +251,7 @@ export default function Header() {
                 {/* Upward backdrop bleed to cover Telegram / iOS in-app browser top inset above fixed top-0 */}
                 <div
                     aria-hidden="true"
-                    className={`pointer-events-none absolute bottom-full inset-x-0 h-[120px] transition-colors duration-300 ${
+                    className={`pointer-events-none absolute bottom-full inset-x-0 h-[80px] transition-colors duration-300 ${
                         isTable
                             ? 'bg-[#0A0A0A]'
                             : isScrolled || !isTransparentHeaderPage

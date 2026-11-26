@@ -249,7 +249,7 @@ export default function MobileMenu({ showMobileMenu, setShowMobileMenu }: Mobile
                                                         }}
                                                         className="h-9 px-2 rounded-xl bg-gray-900 text-white font-black text-[11px] uppercase tracking-wider whitespace-nowrap flex items-center justify-center hover:bg-black transition-all active:scale-95 border-none cursor-pointer shadow-sm"
                                                     >
-                                                        Iniciar sesión
+                                                        Iniciar
                                                     </button>
                                                     <button
                                                         type="button"

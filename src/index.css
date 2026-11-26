@@ -7,8 +7,6 @@ html {
     background-color: #fbf7f0;
     min-height: 100%;
     transition: background-color 0.5s ease;
-    overscroll-behavior: none;
-    overflow-x: clip;
 }
 
 html.is-table-route,
@@ -60,11 +58,8 @@ html.lenis body {
     body {
         @apply antialiased text-gray-900;
         background-color: #fbf7f0;
-        overflow-x: clip;
         font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
         min-height: 100%;
-        overscroll-behavior-y: none;
-        position: relative;
     }
 
     body::before {

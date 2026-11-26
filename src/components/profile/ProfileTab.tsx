@@ -328,8 +328,12 @@ export default function ProfileTab({ user, updateProfile }: Props) {
     return (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header with Actions */}
-            <div className="flex items-center justify-between gap-3 border-b border-gray-100 pb-4">
-                <div>
+            <div
+                className={`flex ${
+                    isEditing ? 'flex-col sm:flex-row sm:items-center' : 'flex-row items-center'
+                } justify-between gap-3 border-b border-gray-100 pb-4`}
+            >
+                <div className="min-w-0">
                     <h2 className="text-lg md:text-xl font-black text-gray-900 tracking-tight m-0">
                         {isEditing ? 'Editar Perfil' : 'Datos Personales'}
                     </h2>
@@ -338,7 +342,11 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                     </p>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div
+                    className={`flex items-center gap-2 shrink-0 ${
+                        isEditing ? 'w-full sm:w-auto' : ''
+                    }`}
+                >
                     {!isEditing ? (
                         <button
                             onClick={startEditing}
@@ -350,14 +358,14 @@ export default function ProfileTab({ user, updateProfile }: Props) {
                         <>
                             <button
                                 onClick={() => setIsEditing(false)}
-                                className="flex items-center justify-center gap-1.5 px-3.5 py-2 bg-gray-100 text-gray-600 rounded-xl font-extrabold text-xs hover:bg-gray-200 transition-all active:scale-95 cursor-pointer border-none"
+                                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2.5 sm:py-2 bg-gray-100 text-gray-600 rounded-xl font-extrabold text-xs hover:bg-gray-200 transition-all active:scale-95 cursor-pointer border-none"
                             >
                                 <X size={14} strokeWidth={2} /> <span>Cancelar</span>
                             </button>
                             <button
                                 type="submit"
                                 form="profile-form"
-                                className="flex items-center justify-center gap-1.5 px-4 py-2 bg-orange-600 text-white rounded-xl font-extrabold text-xs hover:bg-orange-700 transition-all active:scale-95 cursor-pointer border-none"
+                                className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-4 py-2.5 sm:py-2 bg-orange-600 text-white rounded-xl font-extrabold text-xs hover:bg-orange-700 transition-all active:scale-95 cursor-pointer border-none"
                             >
                                 <Save size={14} strokeWidth={2} /> Guardar
                             </button>
