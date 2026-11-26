@@ -24,31 +24,25 @@ export function useOrderRealtime({ userId, orderId, onUpdate }: RealtimeParams) 
 
         if (!channelName) return;
 
-        console.log(`📡 Subscribing to: ${channelName}`);
-
         const channel = supabase.channel(channelName);
 
+        const handleUpdate = () => {
+            if (onUpdate) {
+                onUpdate();
+            }
+
+            queryClient.invalidateQueries({ queryKey: ['orders'] });
+            if (orderId) {
+                queryClient.invalidateQueries({ queryKey: ['order', String(orderId)] });
+            }
+        };
+
         channel
-            .on('broadcast', { event: 'orderStatus_updated' }, ({ payload }) => {
-                console.log('🔔 Received order update broadcast:', payload);
-
-                // 1. Trigger custom callback if provided
-                if (onUpdate) {
-                    onUpdate();
-                }
-
-                // 2. Invalidate TanStack Query if relevant
-                queryClient.invalidateQueries({ queryKey: ['orders'] });
-                if (orderId) {
-                    queryClient.invalidateQueries({ queryKey: ['order', String(orderId)] });
-                }
-            })
-            .subscribe(status => {
-                console.log(`🔌 Channel status (${channelName}): ${status}`);
-            });
+            .on('broadcast', { event: 'order_status_updated' }, handleUpdate)
+            .on('broadcast', { event: 'orderStatus_updated' }, handleUpdate)
+            .subscribe();
 
         return () => {
-            console.log(`📴 Unsubscribing from: ${channelName}`);
             supabase.removeChannel(channel);
         };
     }, [userId, orderId, queryClient, onUpdate]);

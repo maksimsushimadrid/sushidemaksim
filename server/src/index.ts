@@ -7,6 +7,7 @@ import { fileURLToPath } from 'url';
 import { config } from './config.js';
 import { supabase } from './db/supabase.js';
 import { escapeHtml, isValidUUID } from './utils/helpers.js';
+import { logger } from './utils/logger.js';
 import { authMiddleware } from './middleware/auth.js';
 import { adminMiddleware } from './middleware/admin.js';
 import { errorHandler } from './middleware/errorHandler.js';
@@ -34,7 +35,7 @@ import threadsRoutes from './routes/threads.js';
 import notificationsRoutes from './routes/notifications.js';
 
 const app = express();
-console.log('DEBUG: Express app initialized');
+logger.debug('Express app initialized');
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -234,7 +235,7 @@ app.use('/api/merchant', merchantRoutes);
 
 // ─── Health Check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {
-    console.log('DEBUG: /api/health requested');
+    logger.debug('/api/health requested');
     res.json({
         status: 'ok',
         timestamp: new Date().toISOString(),
