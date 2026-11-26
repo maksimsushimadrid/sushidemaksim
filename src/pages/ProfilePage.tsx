@@ -432,7 +432,7 @@ export default function ProfilePage() {
 
             {/* Full-Screen Hero with User Photo Background & Overlay Information */}
             <div
-                className="relative w-full min-h-[82vh] md:min-h-[72vh] flex flex-col justify-end overflow-hidden pb-10 sm:pb-14 px-4 sm:px-6 md:px-8 bg-zinc-950"
+                className="relative w-full min-h-[100svh] md:min-h-[82vh] flex flex-col justify-end overflow-hidden pb-10 sm:pb-14 px-4 sm:px-6 md:px-8 bg-zinc-950"
                 style={{ paddingTop: 'calc(var(--header-height, 64px) + 50px)' }}
             >
                 {/* Big Full-Screen Photo Background */}
@@ -507,7 +507,7 @@ export default function ProfilePage() {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, delay: 0.1 }}
-                                className="flex items-center gap-6 sm:gap-8 py-1"
+                                className="flex flex-wrap items-center gap-x-6 gap-y-4 sm:gap-x-8 py-1"
                             >
                                 <div className="flex flex-col">
                                     <div className="text-white font-black text-3xl sm:text-4xl leading-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
@@ -536,6 +536,36 @@ export default function ProfilePage() {
                                     </div>
                                     <div className="text-zinc-300 text-[10px] sm:text-xs uppercase font-extrabold tracking-wider mt-1.5 opacity-90 drop-shadow">
                                         Maksim Coins
+                                    </div>
+                                </div>
+
+                                <div className="hidden sm:block h-8 w-px bg-white/25" />
+
+                                <div className="flex flex-col basis-full sm:basis-auto min-w-0">
+                                    <div className="flex items-baseline gap-2 min-w-0">
+                                        {user.favoriteDish && user.favoriteDish !== 'N/A' ? (
+                                            <>
+                                                <span className="text-white font-black text-xl sm:text-2xl leading-tight truncate max-w-[260px] sm:max-w-[220px] drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
+                                                    {user.favoriteDish}
+                                                </span>
+                                                {(user.favoriteDishCount ?? 0) > 0 && (
+                                                    <span className="text-orange-400 font-extrabold text-xs sm:text-sm shrink-0 drop-shadow">
+                                                        ×{user.favoriteDishCount}
+                                                    </span>
+                                                )}
+                                            </>
+                                        ) : (
+                                            <span className="text-white/55 font-bold text-lg sm:text-xl leading-tight drop-shadow">
+                                                Por descubrir
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center gap-1.5 text-zinc-300 text-[10px] sm:text-xs uppercase font-extrabold tracking-wider mt-1.5 opacity-90 drop-shadow">
+                                        <Heart
+                                            size={11}
+                                            className="text-orange-400 fill-orange-400 shrink-0"
+                                        />
+                                        <span>Plato favorito</span>
                                     </div>
                                 </div>
                             </motion.div>

@@ -16,7 +16,7 @@ import {
 
 import { sendVerificationEmail, sendGoogleWelcomeEmail } from '../utils/email.js';
 import { authLimiter, strictLimiter } from '../middleware/rateLimiters.js';
-import { formatUser } from '../utils/helpers.js';
+import { formatUser, calculateUserStats } from '../utils/helpers.js';
 
 function setTokenCookie(res: Response, token: string) {
     const isProd = config.nodeEnv === 'production';
@@ -431,12 +431,20 @@ router.get(
 
         if (addrError) throw addrError;
 
-        const { count: orderCount, error: orderError } = await supabase
+        const {
+            data: deliveredOrders,
+            count: orderCount,
+            error: orderError,
+        } = await supabase
             .from('orders')
-            .select('*', { count: 'exact', head: true })
+            .select('id, total, created_at, order_items(name, quantity, menu_item_id)', {
+                count: 'exact',
+            })
             .match({ user_id: req.userId, status: 'delivered' });
 
         if (orderError) throw orderError;
+
+        const stats = calculateUserStats(Array.isArray(deliveredOrders) ? deliveredOrders : []);
 
         const { data: promoCodes, error: promoError } = await supabase
             .from('promo_codes')
@@ -452,11 +460,12 @@ router.get(
                 user,
                 orderCount || 0,
                 addresses || [],
-                0,
-                0,
-                'N/A',
-                'N/A',
-                promoCodes || []
+                stats.totalSpent,
+                stats.avgCheck,
+                stats.frequency,
+                stats.favoriteDish,
+                promoCodes || [],
+                stats.favoriteDishCount
             ),
         });
     })

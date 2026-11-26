@@ -331,13 +331,21 @@ export function calculateUserStats(userOrders: any[]) {
     const totalSpent = userOrders.reduce((sum: number, o: any) => sum + Number(o.total || 0), 0);
     const avgCheck = orderCount > 0 ? Math.round((totalSpent / orderCount) * 100) / 100 : 0;
 
-    // Favorite dish calculation
+    // Favorite dish calculation (excluding delivery fees & tips)
     const dishCounts: Record<string, number> = {};
     userOrders.forEach((o: any) => {
         // Handle both 'order_items' and 'items' (Supabase alias)
         const items = o.order_items || o.items || [];
         items.forEach((item: any) => {
             const name = item.name;
+            if (
+                !name ||
+                Number(item.menu_item_id) === -1 ||
+                name === 'Gastos de Envío' ||
+                name.toLowerCase().includes('propina')
+            ) {
+                return;
+            }
             const qty = Number(item.quantity || 1);
             dishCounts[name] = (dishCounts[name] || 0) + qty;
         });

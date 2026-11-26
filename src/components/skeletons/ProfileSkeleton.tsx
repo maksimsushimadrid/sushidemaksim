@@ -2,7 +2,7 @@ export const ProfileSkeleton = () => (
     <div className="min-h-screen bg-transparent flex flex-col overflow-x-hidden">
         {/* Full-Screen Dark Hero Skeleton - Matching ProfilePage */}
         <div
-            className="relative w-full min-h-[82vh] md:min-h-[72vh] flex flex-col justify-end overflow-hidden pb-10 sm:pb-14 px-4 sm:px-6 md:px-8 bg-zinc-950"
+            className="relative w-full min-h-[100svh] md:min-h-[82vh] flex flex-col justify-end overflow-hidden pb-10 sm:pb-14 px-4 sm:px-6 md:px-8 bg-zinc-950"
             style={{ paddingTop: 'calc(var(--header-height, 64px) + 50px)' }}
         >
             {/* Subtle ambient shimmer background */}
