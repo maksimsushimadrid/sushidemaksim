@@ -12,7 +12,7 @@ export const CartSkeleton = () => (
                 <div className="lg:col-span-2">
                     <div className="bg-white md:rounded-xl shadow-[0_10px_15px_-3px_rgba(0,0,0,0.1)] p-0 md:p-6 overflow-hidden">
                         <div className="flex items-center justify-between mb-4 md:mb-6 px-4 md:px-0 pt-4 md:pt-0">
-                            <div className="h-6 w-38 skeleton rounded-lg" />
+                            <div className="h-6 w-36 skeleton rounded-lg" />
                         </div>
 
                         <div className="flex flex-col gap-4">

@@ -8,27 +8,26 @@ export const PromoSkeleton = () => (
             </div>
         </section>
 
-        <div className="max-w-7xl mx-auto px-2 md:px-4 -mt-12 md:-mt-20 mb-20 relative z-20 space-y-12 md:space-y-20">
-            {/* Dynamic Banner Skeleton 1 */}
-            <div className="bg-gray-50/50 rounded-2xl p-8 md:p-16 flex flex-col lg:flex-row items-center gap-8 lg:gap-20 border border-gray-100 shadow-sm">
-                <div className="flex-1 space-y-6 w-full">
-                    <div className="h-6 w-32 skeleton rounded-full opacity-40" />
-                    <div className="h-16 md:h-24 w-full skeleton rounded-2xl opacity-30" />
-                    <div className="h-4 w-3/4 skeleton rounded-lg opacity-20" />
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 -mt-8 md:-mt-16 mb-12 md:mb-16 relative z-20 space-y-6 md:space-y-10">
+            {/* Referral / Dynamic Banner Skeleton 1 */}
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 flex flex-col lg:flex-row items-center gap-6 lg:gap-10 border border-gray-100 shadow-sm">
+                <div className="flex-1 space-y-4 w-full">
+                    <div className="h-5 w-40 skeleton rounded-full opacity-40" />
+                    <div className="h-10 md:h-12 w-3/4 skeleton rounded-2xl opacity-30" />
+                    <div className="h-4 w-full max-w-xl skeleton rounded-lg opacity-20" />
                     <div className="h-12 w-48 skeleton rounded-2xl opacity-30" />
                 </div>
-                <div className="w-full lg:w-[400px] aspect-video lg:aspect-square skeleton rounded-2xl opacity-20" />
+                <div className="w-full lg:w-[360px] aspect-video lg:aspect-[4/3] skeleton rounded-2xl opacity-20" />
             </div>
 
-            {/* Dynamic Banner Skeleton 2 */}
-            <div className="bg-gray-50/50 rounded-2xl p-8 md:p-16 flex flex-col lg:flex-row items-center gap-8 lg:gap-20 border border-gray-100 shadow-sm">
-                <div className="flex-1 space-y-6 w-full">
-                    <div className="h-6 w-32 skeleton rounded-full opacity-40" />
-                    <div className="h-16 md:h-24 w-full skeleton rounded-2xl opacity-30" />
-                    <div className="h-4 w-3/4 skeleton rounded-lg opacity-20" />
+            {/* Dynamic Banner Skeleton 2 (no top badge) */}
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 flex flex-col lg:flex-row items-center gap-6 lg:gap-10 border border-gray-100 shadow-sm">
+                <div className="flex-1 space-y-4 w-full">
+                    <div className="h-10 md:h-12 w-3/4 skeleton rounded-2xl opacity-30" />
+                    <div className="h-4 w-full max-w-xl skeleton rounded-lg opacity-20" />
                     <div className="h-12 w-48 skeleton rounded-2xl opacity-30" />
                 </div>
-                <div className="w-full lg:w-[400px] aspect-video lg:aspect-square skeleton rounded-2xl opacity-20" />
+                <div className="w-full lg:w-[360px] aspect-video lg:aspect-[4/3] skeleton rounded-2xl opacity-20" />
             </div>
 
             {/* Promo Menu Items Skeleton */}
