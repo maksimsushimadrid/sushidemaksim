@@ -43,15 +43,15 @@ export default function CartEmptyView({
                             className="w-full h-full object-contain drop-shadow-[0_24px_34px_rgba(74,45,18,0.22)] pointer-events-none"
                         />
 
-                        {/* Printed paper sticker on the front face of the kraft bag */}
-                        <div className="absolute left-[21.5%] right-[21.5%] top-[28%] bottom-[13%] flex flex-col items-center justify-center text-center px-3.5 py-3 sm:px-5 sm:py-4 rounded-xl bg-[#FBF7F0]/90 backdrop-blur-[2px] border border-[#8B5A2B]/15 shadow-[0_6px_20px_rgba(74,45,18,0.12)]">
-                            <h1 className="text-xl sm:text-2xl md:text-[28px] font-black text-gray-900 tracking-tight leading-tight m-0 mb-2">
+                        {/* Text directly on the front face of the kraft bag */}
+                        <div className="absolute left-[21.5%] right-[21.5%] top-[28%] bottom-[13%] flex flex-col items-center justify-center text-center px-3.5 py-3 sm:px-5 sm:py-4">
+                            <h1 className="text-xl sm:text-2xl md:text-[28px] font-black text-[#1E140B] tracking-tight leading-tight m-0 mb-2 [text-shadow:0_1px_12px_rgba(255,248,238,0.95),0_0_3px_rgba(255,248,238,0.9)]">
                                 Tu cesta está vacía
                             </h1>
-                            <p className="text-xs sm:text-sm font-black text-gray-900 leading-snug m-0 mb-1.5">
+                            <p className="text-xs sm:text-sm font-black text-[#1E140B] leading-snug m-0 mb-1.5 [text-shadow:0_1px_10px_rgba(255,248,238,0.95),0_0_2px_rgba(255,248,238,0.9)]">
                                 Mira lo que tenemos para ti
                             </p>
-                            <p className="text-[11px] sm:text-xs text-gray-600 font-medium leading-snug m-0">
+                            <p className="text-[11px] sm:text-xs text-[#2C1E12] font-bold leading-snug m-0 [text-shadow:0_1px_10px_rgba(255,248,238,0.95),0_0_2px_rgba(255,248,238,0.9)]">
                                 Añade deliciosos platos o elige una de nuestras sugerencias
                                 favoritas.
                             </p>
