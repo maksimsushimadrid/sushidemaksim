@@ -159,7 +159,7 @@ function slugify(text: string): string {
 }
 
 // ── Guide markdown content (RU + ES) ──────────────────────────────────────────
-const GUIDE_MD_RU = `# 🍣 Инструкция по панели управления — Sushi de Maksim
+const GUIDE_MD_RU = `# Инструкция по панели управления — Sushi de Maksim
 
 > **Адрес:** \`sushidemaksim.com/admin\`
 > **Доступ:** только для пользователей с ролью \`admin\` (Админ) или \`superadmin\` (Владелец). Пользователи с ролью \`waiter\` автоматически перенаправляются в терминал официанта (\`/waiter\`).
@@ -189,7 +189,7 @@ const GUIDE_MD_RU = `# 🍣 Инструкция по панели управл�
 
 ---
 
-## 🔊 Звуковые уведомления
+## Звуковые уведомления
 
 Панель мониторит новые заказы и бронирования в реальном времени через Supabase Realtime:
 
@@ -197,7 +197,7 @@ const GUIDE_MD_RU = `# 🍣 Инструкция по панели управл�
 - **Тройной сигнал (Triple Chirp)** — приоритетный заказ со стола в ресторане (**СТОЛ / MESA**).
 - **Повторное напоминание:** если заказ или бронь остаётся в статусе ожидания дольше **5 минут**, звуковой сигнал повторяется автоматически.
 
-> ⚠️ При первом входе кликните в любом месте экрана, чтобы браузер разблокировал автовоспроизведение звука. Проверить или отключить звук можно кнопками в разделе **Заказы**.
+> При первом входе кликните в любом месте экрана, чтобы браузер разблокировал автовоспроизведение звука. Проверить или отключить звук можно кнопками в разделе **Заказы**.
 
 ---
 
@@ -240,8 +240,8 @@ const GUIDE_MD_RU = `# 🍣 Инструкция по панели управл�
 | **3. Подтверждён** | Заказ подтвержден | Заказ подтвержден | Заказ подтвержден | *«Tu pedido ha sido confirmado.»* |
 | **4. Готовится** | Доставка (Кухня) | Передан кухне | Кухня (Зал) | *«Tu pedido ya está en la cocina.»* |
 | **5. Готов / В пути** | Доставка (В пути) | Готов и ожидает клиента | Зал (Подача) | *«El repartidor ya va hacia tu dirección.»* / *«Tu pedido está listo...»* |
-| **6. Завершён ✅** | Заказ доставлен | Заказ выдан | Заказ подан | *«¡Gracias por tu compra! Que aproveche.»* |
-| **Отмена ❌** | Отменен | Отменен | Отменен | *«Tu pedido ha sido cancelado.»* |
+| **6. Завершён** | Заказ доставлен | Заказ выдан | Заказ подан | *«¡Gracias por tu compra! Que aproveche.»* |
+| **Отмена** | Отменен | Отменен | Отменен | *«Tu pedido ha sido cancelado.»* |
 
 ### Что происходит автоматически при статусе «Заказ доставлен»
 
@@ -294,7 +294,7 @@ const GUIDE_MD_RU = `# 🍣 Инструкция по панели управл�
 | **Восстановить** | Возврат архивного пользователя в список активных |
 | **Удалить навсегда** | Полное необратимое удаление аккаунта, заказов, адресов и избранного (доступно только для архивных аккаунтов) |
 
-> ⚠️ Изменять роли пользователей может только **Владелец (\`superadmin\`)**. Свою собственную роль изменить или удалить нельзя.
+> Изменять роли пользователей может только **Владелец (\`superadmin\`)**. Свою собственную роль изменить или удалить нельзя.
 
 ---
 
@@ -381,14 +381,14 @@ const GUIDE_MD_RU = `# 🍣 Инструкция по панели управл�
 
 ---
 
-## 💡 Полезные советы на каждый день
+## Полезные советы на каждый день
 
 1. **Держите вкладку открытой:** заказы и бронирования обновляются мгновенно без перезагрузки страницы, а экран защищён от угасания (Wake Lock).
 2. **Заказы СТОЛ (MESA)** выделяются красной рамкой и сопровождаются тройным звуковым сигналом — обслуживайте их в приоритетном порядке.
 3. **Подсказки в интерфейсе:** кнопка **«? Показать подсказки»** в верхней панели включает контекстные пояснения в каждом разделе админки.
 `;
 
-const GUIDE_MD_ES = `# 🍣 Manual del Panel de Administración — Sushi de Maksim
+const GUIDE_MD_ES = `# Manual del Panel de Administración — Sushi de Maksim
 
 > **Dirección:** \`sushidemaksim.com/admin\`
 > **Acceso:** exclusivo para usuarios con rol \`admin\` (Administrador) o \`superadmin\` (Owner). Los usuarios con rol \`waiter\` son redirigidos automáticamente al terminal de camarero (\`/waiter\`).
@@ -418,7 +418,7 @@ En el menú lateral se encuentran las **12 secciones** del panel:
 
 ---
 
-## 🔊 Notificaciones de Sonido
+## Notificaciones de Sonido
 
 El panel supervisa nuevos pedidos y reservas en tiempo real mediante Supabase Realtime:
 
@@ -426,7 +426,7 @@ El panel supervisa nuevos pedidos y reservas en tiempo real mediante Supabase Re
 - **Triple señal (Triple Chirp):** pedido prioritario realizado desde una mesa del restaurante (**MESA**).
 - **Recordatorio automático:** si un pedido o reserva permanece pendiente durante más de **5 minutos**, la alerta sonora vuelve a reproducirse.
 
-> ⚠️ Al abrir el panel por primera vez, haz clic en cualquier punto de la pantalla para que el navegador autorice el sonido. Puedes probar o silenciar las alertas desde los controles de la sección **Pedidos**.
+> Al abrir el panel por primera vez, haz clic en cualquier punto de la pantalla para que el navegador autorice el sonido. Puedes probar o silenciar las alertas desde los controles de la sección **Pedidos**.
 
 ---
 
@@ -469,8 +469,8 @@ Los nombres de cada estado y los mensajes Push enviados automáticamente al clie
 | **3. Confirmado** | Pedido confirmado | Pedido confirmado | Pedido confirmado | *«Tu pedido ha sido confirmado.»* |
 | **4. Cocina** | Cocina (Reparto) | En cocina | Cocina (Sala) | *«Tu pedido ya está en la cocina.»* |
 | **5. Listo / En camino** | En camino | Listo para recoger | Servicio en mesa | *«El repartidor ya va hacia tu dirección.»* / *«Tu pedido está listo...»* |
-| **6. Completado ✅** | Pedido entregado | Pedido entregado | Pedido servido | *«¡Gracias por tu compra! Que aproveche.»* |
-| **Cancelado ❌** | Cancelado | Cancelado | Cancelado | *«Tu pedido ha sido cancelado.»* |
+| **6. Completado** | Pedido entregado | Pedido entregado | Pedido servido | *«¡Gracias por tu compra! Que aproveche.»* |
+| **Cancelado** | Cancelado | Cancelado | Cancelado | *«Tu pedido ha sido cancelado.»* |
 
 ### Automatizaciones al marcar un pedido como «Entregado»
 
@@ -523,7 +523,7 @@ Pulsa el botón **Categorías** para:
 | **Restaurar** | Reactivar un usuario archivado |
 | **Eliminar definitivamente** | Borrado permanente e irreversible de la cuenta, pedidos, direcciones y favoritos (solo desde el archivo) |
 
-> ⚠️ Solo el **Owner (\`superadmin\`)** puede modificar roles de usuario. No es posible cambiar ni eliminar tu propia cuenta.
+> Solo el **Owner (\`superadmin\`)** puede modificar roles de usuario. No es posible cambiar ni eliminar tu propia cuenta.
 
 ---
 
@@ -610,7 +610,7 @@ Listado de suscriptores del boletín:
 
 ---
 
-## 💡 Consejos útiles para el día a día
+## Consejos útiles para el día a día
 
 1. **Mantén la pestaña abierta:** los pedidos y reservas entran al instante sin recargar la página y el bloqueo de pantalla (Wake Lock) evita que el dispositivo entre en reposo.
 2. **Pedidos de MESA:** aparecen destacados en rojo y emiten un triple aviso sonoro para darles prioridad en sala.

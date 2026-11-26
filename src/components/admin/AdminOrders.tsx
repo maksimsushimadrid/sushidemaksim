@@ -683,26 +683,26 @@ export default function AdminOrders({
                                 <div
                                     key={order.id}
                                     className={cn(
-                                        'bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden group border-b-4',
+                                        'bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden group border-b-2',
                                         order.deliveryAddress?.toUpperCase().includes('MESA')
                                             ? 'border-b-red-600 ring-2 ring-red-600/5 shadow-red-100/50'
                                             : 'border-b-gray-100'
                                     )}
                                 >
                                     {/* Header del pedido */}
-                                    <div className="p-5 sm:p-6 border-b border-gray-50 bg-gray-50/20 flex flex-wrap items-center justify-between gap-6 transition-colors">
-                                        <div className="flex items-center gap-4">
-                                            <div className="bg-white p-3 rounded-2xl border border-gray-100 shadow-sm">
+                                    <div className="px-4 py-3 md:px-5 md:py-2.5 border-b border-gray-100 bg-gray-50/30 flex flex-wrap items-center justify-between gap-3 transition-colors">
+                                        <div className="flex items-center gap-3">
+                                            <div className="bg-white p-2 rounded-xl border border-gray-100 shadow-sm">
                                                 <Package
                                                     className="text-orange-500"
-                                                    size={24}
+                                                    size={18}
                                                     strokeWidth={2}
                                                 />
                                             </div>
                                             <div>
-                                                <div className="flex items-center gap-3 mb-1">
+                                                <div className="flex items-center gap-2 mb-0.5">
                                                     <h4
-                                                        className="font-black text-gray-900 text-lg tracking-tight cursor-pointer active:scale-95 transition-transform"
+                                                        className="font-black text-gray-900 text-base tracking-tight cursor-pointer active:scale-95 transition-transform"
                                                         title={order.id}
                                                         onClick={() => {
                                                             navigator.clipboard.writeText(order.id);
@@ -719,7 +719,7 @@ export default function AdminOrders({
                                                             : order.id}
                                                     </h4>
                                                     <span
-                                                        className={`px-3 py-1 rounded-xl text-[10px] font-black uppercase tracking-[0.1em] border shadow-sm ${
+                                                        className={`px-2.5 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-[0.08em] border shadow-sm ${
                                                             statusOptions.find(
                                                                 s => s.value === order.status
                                                             )?.color || ''
@@ -778,7 +778,7 @@ export default function AdminOrders({
                                                         </div>
                                                     )}
                                                 </div>
-                                                <p className="text-[11px] text-gray-400 font-bold uppercase tracking-widest">
+                                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
                                                     {new Date(order.createdAt).toLocaleString(
                                                         dateLocale,
                                                         {
@@ -788,17 +788,6 @@ export default function AdminOrders({
                                                             minute: '2-digit',
                                                         }
                                                     )}
-                                                </p>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center gap-6 ml-auto sm:ml-0">
-                                            <div className="text-right">
-                                                <p className="text-[10px] text-gray-400 font-black uppercase tracking-widest mb-1.5 leading-none">
-                                                    {t.total}
-                                                </p>
-                                                <p className="text-2xl font-black text-gray-900 leading-none">
-                                                    {formatCurrency(order.total)}
                                                 </p>
                                             </div>
                                         </div>
@@ -914,6 +903,11 @@ export default function AdminOrders({
                                                     .replace('[PERSONAS:', '')
                                                     .replace(']', '')
                                                     .trim();
+                                            } else if (
+                                                part.includes('[PROMO:') ||
+                                                part.includes('[PRE-ORDEN:')
+                                            ) {
+                                                // System metadata tags already displayed separately
                                             } else {
                                                 actualNote += (actualNote ? ' | ' : '') + part;
                                             }
@@ -929,20 +923,20 @@ export default function AdminOrders({
                                                 order.deliveryAddress === 'RECOGIDA');
 
                                         return (
-                                            <div className="p-5 sm:p-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 overflow-hidden">
+                                            <div className="p-4 md:p-4 lg:p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_1.15fr_0.85fr] gap-4 lg:gap-5 overflow-hidden">
                                                 {/* Column 1: Client & Delivery */}
-                                                <div className="space-y-8">
+                                                <div className="space-y-3">
                                                     <div>
-                                                        <div className="flex items-center gap-3 text-gray-400 mb-4 border-l-4 border-orange-100 pl-3">
-                                                            <Smartphone size={16} strokeWidth={2} />
-                                                            <span className="text-[11px] font-black uppercase tracking-widest leading-none">
+                                                        <div className="flex items-center gap-2 text-gray-400 mb-2 border-l-3 border-orange-100 pl-2.5">
+                                                            <Smartphone size={14} strokeWidth={2} />
+                                                            <span className="text-[10px] font-black uppercase tracking-widest leading-none">
                                                                 {t.clientContact}
                                                             </span>
                                                         </div>
-                                                        <div className="flex items-center gap-4 mb-4">
+                                                        <div className="flex items-center gap-3 mb-2">
                                                             <div
-                                                                className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-xs overflow-hidden shrink-0 shadow-sm border-2 border-white
-                                                                ${order.users?.avatar?.startsWith('http') ? 'bg-white' : order.users?.avatar ? 'bg-gray-100 text-[24px]' : 'bg-orange-600'}`}
+                                                                className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-black text-xs overflow-hidden shrink-0 shadow-sm border border-white
+                                                                ${order.users?.avatar?.startsWith('http') ? 'bg-white' : order.users?.avatar ? 'bg-gray-100 text-[20px]' : 'bg-orange-600'}`}
                                                             >
                                                                 {order.users?.avatar ? (
                                                                     order.users.avatar.startsWith(
@@ -1245,17 +1239,17 @@ export default function AdminOrders({
                                                         </div>
 
                                                         {actualNote && (
-                                                            <div className="bg-amber-50 border-2 border-amber-200/40 rounded-3xl p-5 shadow-inner">
-                                                                <div className="flex items-center gap-3 text-amber-600 mb-3">
+                                                            <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-3 shadow-inner">
+                                                                <div className="flex items-center gap-2 text-amber-600 mb-1.5">
                                                                     <MessageSquare
-                                                                        size={16}
+                                                                        size={13}
                                                                         strokeWidth={3}
                                                                     />
-                                                                    <span className="text-[11px] font-black uppercase tracking-[0.2em]">
+                                                                    <span className="text-[10px] font-black uppercase tracking-[0.15em]">
                                                                         {t.clientMessage}
                                                                     </span>
                                                                 </div>
-                                                                <p className="text-[15px] text-amber-900 font-black leading-relaxed relative z-10">
+                                                                <p className="text-[13px] text-amber-900 font-bold leading-snug relative z-10">
                                                                     {actualNote}
                                                                 </p>
                                                             </div>
@@ -1264,14 +1258,14 @@ export default function AdminOrders({
                                                 </div>
 
                                                 {/* Column 2: Products */}
-                                                <div className="space-y-4">
-                                                    <div className="flex items-center justify-between gap-3 text-gray-400 mb-4 border-l-4 border-purple-100 pl-3">
-                                                        <div className="flex items-center gap-3">
+                                                <div className="space-y-2.5">
+                                                    <div className="flex items-center justify-between gap-2 text-gray-400 mb-2 border-l-3 border-purple-100 pl-2.5">
+                                                        <div className="flex items-center gap-2">
                                                             <ShoppingCart
-                                                                size={16}
+                                                                size={14}
                                                                 strokeWidth={2}
                                                             />
-                                                            <span className="text-[11px] font-black uppercase tracking-widest">
+                                                            <span className="text-[10px] font-black uppercase tracking-widest">
                                                                 {t.products} (
                                                                 {order.items?.length || 0})
                                                             </span>
@@ -1279,15 +1273,15 @@ export default function AdminOrders({
                                                         {order.total > 0 &&
                                                             (!order.items ||
                                                                 order.items.length === 0) && (
-                                                                <div className="flex items-center gap-2 bg-red-50 text-red-600 px-3 py-1 rounded-xl border border-red-100 animate-pulse">
-                                                                    <X size={14} strokeWidth={3} />
+                                                                <div className="flex items-center gap-1.5 bg-red-50 text-red-600 px-2.5 py-0.5 rounded-lg border border-red-100 animate-pulse">
+                                                                    <X size={12} strokeWidth={3} />
                                                                     <span className="text-[9px] font-black uppercase tracking-tighter">
                                                                         {t.corruptOrder}
                                                                     </span>
                                                                 </div>
                                                             )}
                                                     </div>
-                                                    <div className="space-y-1 bg-gray-50/50 p-4 rounded-3xl border border-gray-100 shadow-inner">
+                                                    <div className="space-y-0.5 bg-gray-50/60 p-2.5 md:p-3 rounded-2xl border border-gray-100 shadow-inner">
                                                         {order.items
                                                             ?.filter((item: OrderItem) => {
                                                                 const isDeliveryFee =
@@ -1309,17 +1303,17 @@ export default function AdminOrders({
                                                             .map((item: OrderItem) => (
                                                                 <div
                                                                     key={item.id || item.name}
-                                                                    className="flex items-center justify-between gap-3 py-3 border-b border-gray-100 last:border-0 px-4 rounded-2xl transition-all group/item shadow-sm hover:bg-white"
+                                                                    className="flex items-center justify-between gap-2 py-1.5 border-b border-gray-100 last:border-0 px-2.5 rounded-xl transition-all group/item hover:bg-white"
                                                                 >
-                                                                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                                    <div className="flex items-center gap-2.5 flex-1 min-w-0">
                                                                         <span
-                                                                            className={`text-[13px] font-black w-8 h-8 flex items-center justify-center rounded-xl shadow-sm transition-all ${item.isGift ? 'bg-green-100 text-green-600' : 'bg-orange-50 text-orange-600 group-hover/item:bg-orange-600 group-hover/item:text-white'}`}
+                                                                            className={`text-[12px] font-black w-6 h-6 flex items-center justify-center rounded-lg shadow-sm shrink-0 transition-all ${item.isGift ? 'bg-green-100 text-green-600' : 'bg-orange-50 text-orange-600 group-hover/item:bg-orange-600 group-hover/item:text-white'}`}
                                                                         >
                                                                             {item.quantity}
                                                                         </span>
                                                                         <div className="flex flex-col min-w-0">
-                                                                            <div className="flex items-center gap-2">
-                                                                                <span className="text-[13px] font-black uppercase tracking-tight line-clamp-1 text-gray-800">
+                                                                            <div className="flex items-center gap-1.5">
+                                                                                <span className="text-[12px] font-black uppercase tracking-tight line-clamp-1 text-gray-800">
                                                                                     {item.name}
                                                                                 </span>
                                                                                 {item.isGift && (
@@ -1507,10 +1501,10 @@ export default function AdminOrders({
                                                         {order.total > 0 &&
                                                             (!order.items ||
                                                                 order.items.length === 0) && (
-                                                                <div className="p-4 bg-red-50 border-2 border-red-100 rounded-2xl flex flex-col items-center justify-center text-center gap-3 my-2 animate-in zoom-in duration-300">
-                                                                    <div className="bg-white p-2 rounded-full shadow-sm">
+                                                                <div className="p-3 bg-red-50 border border-red-100 rounded-xl flex flex-col items-center justify-center text-center gap-2 my-1.5 animate-in zoom-in duration-300">
+                                                                    <div className="bg-white p-1.5 rounded-full shadow-sm">
                                                                         <X
-                                                                            size={24}
+                                                                            size={18}
                                                                             strokeWidth={3}
                                                                             className="text-red-500"
                                                                         />
@@ -1520,14 +1514,24 @@ export default function AdminOrders({
                                                                     </p>
                                                                 </div>
                                                             )}
+
+                                                        {/* Total price right under the order items list */}
+                                                        <div className="flex items-center justify-between gap-3 pt-2.5 mt-2 border-t-2 border-gray-200/80 px-2.5">
+                                                            <span className="text-[11px] font-black text-gray-500 uppercase tracking-widest">
+                                                                {t.total}
+                                                            </span>
+                                                            <span className="text-lg md:text-xl font-black text-gray-900 tabular-nums leading-none">
+                                                                {formatCurrency(order.total)}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                 </div>
 
                                                 {/* Column 3: Actions */}
-                                                <div className="lg:border-l-2 border-dashed border-gray-100 lg:pl-10 flex flex-col justify-start">
-                                                    <div className="flex items-center gap-3 text-gray-400 mb-5 border-l-4 border-green-100 pl-3">
-                                                        <Activity size={16} strokeWidth={2} />
-                                                        <span className="text-[11px] font-black uppercase tracking-widest">
+                                                <div className="lg:border-l border-dashed border-gray-100 lg:pl-5 flex flex-col justify-start">
+                                                    <div className="flex items-center gap-2 text-gray-400 mb-2.5 border-l-3 border-green-100 pl-2.5">
+                                                        <Activity size={14} strokeWidth={2} />
+                                                        <span className="text-[10px] font-black uppercase tracking-widest">
                                                             {t.orderStatus}
                                                         </span>
                                                     </div>
@@ -1539,7 +1543,7 @@ export default function AdminOrders({
                                                         <motion.button
                                                             initial={{ scale: 0.95, opacity: 0 }}
                                                             animate={{ scale: 1, opacity: 1 }}
-                                                            whileHover={{ scale: 1.02 }}
+                                                            whileHover={{ scale: 1.01 }}
                                                             whileTap={{ scale: 0.98 }}
                                                             onClick={() =>
                                                                 handleUpdateStatus(
@@ -1548,15 +1552,15 @@ export default function AdminOrders({
                                                                 )
                                                             }
                                                             className={cn(
-                                                                'w-full mb-3 py-4 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-lg transition-all flex items-center justify-center gap-3 border-2',
+                                                                'w-full mb-2 py-2.5 rounded-xl font-black text-[11px] uppercase tracking-[0.15em] shadow-md transition-all flex items-center justify-center gap-2 border',
                                                                 order.deliveryAddress
                                                                     ?.toUpperCase()
                                                                     .includes('MESA')
                                                                     ? 'bg-orange-600 text-white border-orange-500 shadow-orange-600/30 animate-pulse'
-                                                                    : 'bg-slate-900 text-white border-slate-800 shadow-slate-900/30'
+                                                                    : 'bg-slate-900 text-white border-slate-800 shadow-slate-900/20'
                                                             )}
                                                         >
-                                                            <ChefHat size={18} strokeWidth={2.5} />A
+                                                            <ChefHat size={15} strokeWidth={2.5} />A
                                                             LA COCINA
                                                         </motion.button>
                                                     )}
@@ -1572,7 +1576,7 @@ export default function AdminOrders({
                                                                 )
                                                             }
                                                             disabled={statusMutation.isPending}
-                                                            className={`w-full px-5 py-4 rounded-2xl text-[13px] font-black uppercase tracking-widest border-2 transition-all appearance-none cursor-pointer focus:outline-none focus:ring-8 focus:ring-gray-100 shadow-md ${
+                                                            className={`w-full px-3.5 py-2.5 rounded-xl text-[12px] font-black uppercase tracking-widest border-2 transition-all appearance-none cursor-pointer focus:outline-none focus:ring-4 focus:ring-gray-100 shadow-sm ${
                                                                 statusOptions.find(
                                                                     s => s.value === order.status
                                                                 )?.color ||
@@ -1623,28 +1627,28 @@ export default function AdminOrders({
 
                                                     {/* Print Receipt Button */}
                                                     <motion.button
-                                                        whileHover={{ scale: 1.02 }}
+                                                        whileHover={{ scale: 1.01 }}
                                                         whileTap={{ scale: 0.98 }}
                                                         onClick={() => onPrintOrder?.(order)}
-                                                        className="w-full mt-3 py-4 bg-white border-2 border-gray-100 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-sm hover:shadow-md hover:border-orange-200 hover:text-orange-600 transition-all flex items-center justify-center gap-3 text-gray-500 no-print"
+                                                        className="w-full mt-2 py-2.5 bg-white border border-gray-200 rounded-xl font-black text-[11px] uppercase tracking-[0.15em] shadow-sm hover:shadow hover:border-orange-200 hover:text-orange-600 transition-all flex items-center justify-center gap-2 text-gray-600 no-print"
                                                     >
-                                                        <Printer size={18} strokeWidth={2.5} />
+                                                        <Printer size={15} strokeWidth={2.5} />
                                                         {t.printReceipt}
                                                     </motion.button>
 
                                                     {/* Delete / Restore Order Button */}
                                                     {filter === 'archived' ? (
                                                         <motion.button
-                                                            whileHover={{ scale: 1.02 }}
+                                                            whileHover={{ scale: 1.01 }}
                                                             whileTap={{ scale: 0.98 }}
                                                             onClick={() =>
                                                                 restoreMutation.mutate(order.id)
                                                             }
                                                             disabled={restoreMutation.isPending}
-                                                            className="w-full mt-2 py-3 bg-green-50 border-2 border-green-100 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-sm hover:shadow-md hover:border-green-300 hover:bg-green-100 transition-all flex items-center justify-center gap-3 text-green-500 hover:text-green-700 no-print disabled:opacity-50"
+                                                            className="w-full mt-1.5 py-2 bg-green-50 border border-green-100 rounded-xl font-black text-[11px] uppercase tracking-[0.15em] shadow-sm hover:border-green-300 hover:bg-green-100 transition-all flex items-center justify-center gap-2 text-green-600 hover:text-green-700 no-print disabled:opacity-50"
                                                         >
                                                             <RotateCcw
-                                                                size={16}
+                                                                size={14}
                                                                 strokeWidth={2.5}
                                                                 className={
                                                                     restoreMutation.isPending
@@ -1656,12 +1660,12 @@ export default function AdminOrders({
                                                         </motion.button>
                                                     ) : (
                                                         <motion.button
-                                                            whileHover={{ scale: 1.02 }}
+                                                            whileHover={{ scale: 1.01 }}
                                                             whileTap={{ scale: 0.98 }}
                                                             onClick={() =>
                                                                 setOrderToDelete(order.id)
                                                             }
-                                                            className="w-full mt-2 py-3 bg-red-50 border-2 border-red-100 rounded-2xl font-black text-xs uppercase tracking-[0.2em] shadow-sm hover:shadow-md hover:border-red-300 hover:bg-red-100 transition-all flex items-center justify-center gap-3 text-red-400 hover:text-red-600 no-print"
+                                                            className="w-full mt-1.5 py-2 bg-red-50 border border-red-100 rounded-xl font-black text-[11px] uppercase tracking-[0.15em] shadow-sm hover:border-red-300 hover:bg-red-100 transition-all flex items-center justify-center gap-2 text-red-500 hover:text-red-600 no-print"
                                                         >
                                                             <Trash2 size={16} strokeWidth={2.5} />
                                                             {t.deleteOrder}
