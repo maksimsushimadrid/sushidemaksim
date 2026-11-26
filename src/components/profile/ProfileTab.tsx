@@ -20,6 +20,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../context/ToastContext';
 import { User as UserType } from '../../types';
 import { getSharpAvatar } from '../../utils/avatar';
+import { prepareAvatarForUpload } from '../../utils/imageUpload';
 import { USER_QUERY_KEY } from '../../hooks/queries/useUser';
 import SafeImage from '../common/SafeImage';
 
@@ -294,22 +295,12 @@ export default function ProfileTab({ user, updateProfile }: Props) {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Validations
-        if (file.size > 5 * 1024 * 1024) {
-            error('La imagen no debe superar los 5MB');
-            return;
-        }
-
-        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-            error('Formato no permitido. Usa JPG, PNG o WebP');
-            return;
-        }
-
         try {
             setIsUploading(true);
+            const preparedFile = await prepareAvatarForUpload(file);
             const { api } = await import('../../utils/api');
             const formData = new FormData();
-            formData.append('avatar', file);
+            formData.append('avatar', preparedFile);
 
             const res = await api.formData('/user/upload-avatar', formData);
             if (!res.url) throw new Error('No se recibió la URL de la imagen');
@@ -317,11 +308,12 @@ export default function ProfileTab({ user, updateProfile }: Props) {
             // Force query refresh immediately to sync global state
             await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
             setEditAvatar(res.url);
-            success('¡Foto de perfil subida con éxito! 📸');
+            success('¡Foto de perfil subida con éxito!');
         } catch (err: any) {
             error(err.message || 'Error al subir la imagen');
         } finally {
             setIsUploading(false);
+            if (e.target) e.target.value = '';
         }
     };
 

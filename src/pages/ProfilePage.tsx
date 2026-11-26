@@ -26,6 +26,7 @@ import { usePushNotifications } from '../hooks/usePushNotifications';
 import { useToast } from '../context/ToastContext';
 import SEO from '../components/SEO';
 import { getSharpAvatar } from '../utils/avatar';
+import { prepareAvatarForUpload } from '../utils/imageUpload';
 import ProfileTab from '../components/profile/ProfileTab';
 import AddressesTab from '../components/profile/AddressesTab';
 import OrdersTab from '../components/profile/OrdersTab';
@@ -113,27 +114,18 @@ export default function ProfilePage() {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        if (file.size > 5 * 1024 * 1024) {
-            showError('La imagen no debe superar los 5MB');
-            return;
-        }
-
-        if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
-            showError('Formato no permitido. Usa JPG, PNG o WebP');
-            return;
-        }
-
         try {
             setIsUploadingHeroPhoto(true);
+            const preparedFile = await prepareAvatarForUpload(file);
             const formData = new FormData();
-            formData.append('avatar', file);
+            formData.append('avatar', preparedFile);
 
             const res = await api.formData('/user/upload-avatar', formData);
             if (!res.url) throw new Error('No se recibió la URL de la imagen');
 
             await queryClient.invalidateQueries({ queryKey: USER_QUERY_KEY });
             await updateProfile({ avatar: res.url });
-            showSuccess('¡Foto de perfil subida con éxito! 📸');
+            showSuccess('¡Foto de perfil subida con éxito!');
         } catch (err: any) {
             showError(err.message || 'Error al subir la imagen');
         } finally {
@@ -479,7 +471,7 @@ export default function ProfilePage() {
                 <input
                     ref={heroPhotoInputRef}
                     type="file"
-                    accept="image/jpeg,image/png,image/webp"
+                    accept="image/*"
                     onChange={handleHeroPhotoUpload}
                     className="hidden"
                 />

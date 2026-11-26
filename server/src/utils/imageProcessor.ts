@@ -6,22 +6,24 @@ interface ImageOptions {
 }
 
 /**
- * Optimized image processor to standardize quality, dimensions, and format (WebP).
+ * Optimized image processor to standardize orientation, quality, dimensions, and format (WebP).
+ * - Always calls `.rotate()` first so phone photos with EXIF Orientation tags are never sideways.
  * - Menu/Blog items: Max 800px width, aspect ratio preserved.
- * - Avatars: 400x400px, center-cropped square.
+ * - Avatars: Up to 1000x1000px square crop (crisp for full-screen profile hero).
  * - Tablon (community posts): Max 1200px width, quality 75.
  */
 export async function processImage(buffer: Buffer, options: ImageOptions): Promise<Buffer> {
-    let pipeline = sharp(buffer);
+    let pipeline = sharp(buffer).rotate();
 
     // Convert to WebP with sensible defaults
-    pipeline = pipeline.webp({ quality: options.quality || 80 });
+    pipeline = pipeline.webp({ quality: options.quality || 82 });
 
     if (options.type === 'avatar') {
-        // Square crop for avatars
-        pipeline = pipeline.resize(400, 400, {
+        // High-res square crop for full-screen profile hero & crisp avatars
+        pipeline = pipeline.resize(1000, 1000, {
             fit: 'cover',
             position: 'center',
+            withoutEnlargement: true,
         });
     } else if (options.type === 'tablon') {
         // Tablon community posts: larger images, slightly lower quality
