@@ -78,7 +78,7 @@ export default function MenuCategoryBar({
         return (
             <motion.div
                 initial={false}
-                className="fixed left-0 right-0 z-sticky transform-gpu bg-[#FBF7F0]/75 backdrop-blur-md backdrop-saturate-150 border-b border-gray-200/60 md:hidden shadow-[0_4px_20px_-6px_rgba(0,0,0,0.06)] select-none pt-[1px]"
+                className="fixed left-0 right-0 z-sticky transform-gpu bg-[#FBF7F0]/45 backdrop-blur-xl backdrop-saturate-[180%] border-b border-white/50 md:hidden shadow-[inset_0_-1px_0_0_rgba(255,255,255,0.35),0_8px_24px_-8px_rgba(0,0,0,0.08)] select-none pt-[1px]"
                 style={{ top: 'calc(var(--header-height, 64px) - 1px)' }}
             >
                 <div className="max-w-7xl mx-auto">

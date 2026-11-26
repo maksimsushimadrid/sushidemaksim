@@ -228,22 +228,22 @@ export default function Header() {
         <>
             <header
                 ref={headerRef}
-                className={`fixed top-0 inset-x-0 z-header transform-gpu transition-[background-color,border-color,backdrop-filter] duration-300
+                className={`fixed top-0 inset-x-0 z-header transform-gpu transition-[background-color,border-color,backdrop-filter,box-shadow] duration-300
                 ${
                     isTable
-                        ? 'bg-[#0A0A0A]/80 backdrop-blur-md border-b border-white/10'
+                        ? 'bg-[#0A0A0A]/55 backdrop-blur-xl backdrop-saturate-[180%] border-b border-white/15 shadow-[inset_0_-1px_0_0_rgba(255,255,255,0.08)]'
                         : isScrolled
-                          ? `bg-[#FBF7F0]/75 backdrop-blur-md backdrop-saturate-150 ${
+                          ? `bg-[#FBF7F0]/45 backdrop-blur-xl backdrop-saturate-[180%] ${
                                 isMenu
-                                    ? 'md:shadow-[0_4px_24px_-6px_rgba(0,0,0,0.06)] md:border-b md:border-gray-200/60 border-b-0 shadow-none'
-                                    : 'shadow-[0_4px_24px_-6px_rgba(0,0,0,0.06)] border-b border-gray-200/60'
+                                    ? 'md:border-b md:border-white/50 md:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.65),inset_0_-1px_0_0_rgba(255,255,255,0.35),0_8px_30px_-8px_rgba(0,0,0,0.1)] border-b-0 shadow-none'
+                                    : 'border-b border-white/50 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.65),inset_0_-1px_0_0_rgba(255,255,255,0.35),0_8px_30px_-8px_rgba(0,0,0,0.1)]'
                             }`
                           : isTransparentHeaderPage
                             ? 'bg-transparent border-b border-transparent'
-                            : `bg-[#FBF7F0]/75 backdrop-blur-md backdrop-saturate-150 ${
+                            : `bg-[#FBF7F0]/45 backdrop-blur-xl backdrop-saturate-[180%] ${
                                   isMenu
-                                      ? 'md:border-b md:border-gray-200/50 border-b-0 shadow-none'
-                                      : 'border-b border-gray-200/50'
+                                      ? 'md:border-b md:border-white/50 md:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_4px_20px_-6px_rgba(0,0,0,0.06)] border-b-0 shadow-none'
+                                      : 'border-b border-white/50 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.6),0_4px_20px_-6px_rgba(0,0,0,0.06)]'
                               }`
                 }
             `}
@@ -253,9 +253,9 @@ export default function Header() {
                     aria-hidden="true"
                     className={`pointer-events-none absolute bottom-full inset-x-0 h-[80px] transition-[background-color,backdrop-filter] duration-300 ${
                         isTable
-                            ? 'bg-[#0A0A0A]/80 backdrop-blur-md'
+                            ? 'bg-[#0A0A0A]/55 backdrop-blur-xl backdrop-saturate-[180%]'
                             : isScrolled || !isTransparentHeaderPage
-                              ? 'bg-[#FBF7F0]/75 backdrop-blur-md backdrop-saturate-150'
+                              ? 'bg-[#FBF7F0]/45 backdrop-blur-xl backdrop-saturate-[180%]'
                               : 'bg-transparent'
                     }`}
                 />
