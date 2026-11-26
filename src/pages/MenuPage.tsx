@@ -420,7 +420,7 @@ export default function MenuPage() {
 
                     {/* Search Section - Absolute when collapsed to align with title, Relative when expanded to push content */}
                     <div
-                        className={`${isSearchExpanded ? 'relative w-full mb-6' : 'absolute top-[68px] right-0 w-auto'} md:relative md:top-0 md:right-0 md:w-full md:mb-4 z-10 transition-all duration-300`}
+                        className={`${isSearchExpanded ? 'relative w-full mb-6' : 'absolute top-[54px] right-0 w-auto'} md:relative md:top-0 md:right-0 md:w-full md:mb-4 z-10 transition-all duration-300`}
                     >
                         <MenuSearch
                             search={search}
