@@ -221,17 +221,16 @@ export async function sendOrderReceiptEmail(
     parts.forEach((part: string) => {
         if (part.includes('[TIPO:')) {
             deliveryType = part.replace('[TIPO: ', '').replace(']', '').replace('[TIPO:', '');
-        } else if (
-            (part.includes('[MÉTODO DE PAGO:') || part.includes('[PAGO:')) &&
-            (!orderData.paymentMethod || orderData.paymentMethod === 'No especificado')
-        ) {
-            paymentMethod = part
-                .replace('[MÉTODO DE PAGO: ', '')
-                .replace('[MÉTODO DE PAGO:', '')
-                .replace('[PAGO: ', '')
-                .replace('[PAGO:', '')
-                .replace(']', '')
-                .trim();
+        } else if (part.includes('[MÉTODO DE PAGO:') || part.includes('[PAGO:')) {
+            if (!orderData.paymentMethod || orderData.paymentMethod === 'No especificado') {
+                paymentMethod = part
+                    .replace('[MÉTODO DE PAGO: ', '')
+                    .replace('[MÉTODO DE PAGO:', '')
+                    .replace('[PAGO: ', '')
+                    .replace('[PAGO:', '')
+                    .replace(']', '')
+                    .trim();
+            }
         } else if (part.includes('[ENTREGA PROGRAMADA:') || part.includes('[PROGRAMADO:')) {
             if (!scheduledTime) {
                 scheduledTime = part

@@ -843,17 +843,18 @@ export default function AdminOrders({
                                         const parts = notes.split(' | ');
                                         parts.forEach((part: string) => {
                                             if (
-                                                (part.includes('[MÉTODO DE PAGO:') ||
-                                                    part.includes('[PAGO:')) &&
-                                                !paymentMethod
+                                                part.includes('[MÉTODO DE PAGO:') ||
+                                                part.includes('[PAGO:')
                                             ) {
-                                                paymentMethod = part
-                                                    .replace('[MÉTODO DE PAGO: ', '')
-                                                    .replace('[MÉTODO DE PAGO:', '')
-                                                    .replace('[PAGO: ', '')
-                                                    .replace('[PAGO:', '')
-                                                    .replace(']', '')
-                                                    .trim();
+                                                if (!paymentMethod) {
+                                                    paymentMethod = part
+                                                        .replace('[MÉTODO DE PAGO: ', '')
+                                                        .replace('[MÉTODO DE PAGO:', '')
+                                                        .replace('[PAGO: ', '')
+                                                        .replace('[PAGO:', '')
+                                                        .replace(']', '')
+                                                        .trim();
+                                                }
                                             } else if (part.includes('[TIPO:')) {
                                                 deliveryType = part
                                                     .replace('[TIPO: ', '')
