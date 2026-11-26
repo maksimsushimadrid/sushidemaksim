@@ -52,8 +52,8 @@ export default function HeaderLogo({
                         className="h-11 sm:h-12 md:h-14 w-auto object-contain transition-all duration-300"
                         style={{
                             filter: isDarkBackground
-                                ? 'drop-shadow(0 2px 12px rgba(242,101,34,0.65)) drop-shadow(0 1px 4px rgba(0,0,0,0.85))'
-                                : 'drop-shadow(0 2px 8px rgba(242,101,34,0.35))',
+                                ? 'drop-shadow(0 2px 6px rgba(0,0,0,0.85)) drop-shadow(0 1px 2px rgba(0,0,0,0.95))'
+                                : 'drop-shadow(0 1px 3px rgba(0,0,0,0.45)) drop-shadow(0 2px 8px rgba(0,0,0,0.22))',
                         }}
                         aria-hidden="true"
                     >
