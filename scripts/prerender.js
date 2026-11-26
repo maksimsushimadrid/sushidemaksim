@@ -558,16 +558,16 @@ function injectMetaAndBody(templateHtml, page) {
     // We preserve the lcp placeholder if present on homepage
     if (page.bodyHtml) {
         if (page.path === '') {
-            // Homepage: keep the lcp placeholder and append initial semantic markup
+            // Homepage: keep the lcp placeholder inside #root and append initial semantic markup
             html = html.replace(
-                /(<div id="root">[\s\S]*?)(<\/div>\s*<script)/,
+                /(<div id="root">[\s\S]*)(<\/div>\s*<\/body>)/,
                 `$1\n<div id="seo-prerender-content" style="position: relative; z-index: 1;">${page.bodyHtml}</div>\n$2`
             );
         } else {
-            // Other pages: replace empty root with semantic shell
+            // Other pages: replace the entire #root contents (including nested lcp placeholder divs)
             html = html.replace(
-                /<div id="root">[\s\S]*?<\/div>/,
-                `<div id="root">\n<div id="seo-prerender-content">${page.bodyHtml}</div>\n</div>`
+                /<div id="root">[\s\S]*<\/div>(\s*<\/body>)/,
+                `<div id="root">\n<div id="seo-prerender-content">${page.bodyHtml}</div>\n</div>$1`
             );
         }
     }
