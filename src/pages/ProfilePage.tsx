@@ -10,7 +10,6 @@ import {
     Heart,
     Gift,
     Percent,
-    Trophy,
     Tag,
     Copy,
     ClipboardCheck,
@@ -36,6 +35,57 @@ import { ProfileSkeleton } from '../components/skeletons/ProfileSkeleton';
 import { api } from '../utils/api';
 
 type TabId = 'profile' | 'addresses' | 'orders' | 'favorites';
+
+function AnimatedCounter({
+    value,
+    decimals = 0,
+    duration = 1000,
+}: {
+    value: number;
+    decimals?: number;
+    duration?: number;
+}) {
+    const [displayValue, setDisplayValue] = useState(0);
+
+    useEffect(() => {
+        const startValue = 0;
+        const targetValue = Number(value) || 0;
+
+        if (targetValue === 0) {
+            setDisplayValue(0);
+            return;
+        }
+
+        let startTime: number | null = null;
+        let animationFrame: number;
+
+        const step = (timestamp: number) => {
+            if (!startTime) startTime = timestamp;
+            const progress = Math.min((timestamp - startTime) / duration, 1);
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            const current = startValue + (targetValue - startValue) * easeOut;
+            setDisplayValue(current);
+
+            if (progress < 1) {
+                animationFrame = requestAnimationFrame(step);
+            } else {
+                setDisplayValue(targetValue);
+            }
+        };
+
+        animationFrame = requestAnimationFrame(step);
+        return () => cancelAnimationFrame(animationFrame);
+    }, [value, duration]);
+
+    return (
+        <span className="tabular-nums">
+            {displayValue.toLocaleString('es-ES', {
+                minimumFractionDigits: decimals,
+                maximumFractionDigits: decimals,
+            })}
+        </span>
+    );
+}
 
 export default function ProfilePage() {
     const {
@@ -425,54 +475,20 @@ export default function ProfilePage() {
                 {/* Bottom Dark Gradient for Legibility of Overlaid Information */}
                 <div className="absolute inset-x-0 bottom-0 h-[85%] bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C]/80 via-45% to-transparent z-[3] pointer-events-none" />
 
-                {/* Centered Add Photo Button in Open Hero Space */}
-                <div className="flex-1 flex items-center justify-center relative z-10 py-6">
-                    <input
-                        ref={heroPhotoInputRef}
-                        type="file"
-                        accept="image/jpeg,image/png,image/webp"
-                        onChange={handleHeroPhotoUpload}
-                        className="hidden"
-                    />
-                    <button
-                        type="button"
-                        disabled={isUploadingHeroPhoto}
-                        onClick={() => heroPhotoInputRef.current?.click()}
-                        className="group flex flex-col items-center justify-center gap-2 text-white/85 hover:text-white transition-all active:scale-95 cursor-pointer bg-transparent border-none p-3 disabled:opacity-50"
-                    >
-                        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white/10 group-hover:bg-white/20 backdrop-blur-md border border-white/25 flex items-center justify-center shadow-2xl transition-all group-hover:scale-105">
-                            <Camera size={24} strokeWidth={2} className="text-white" />
-                        </div>
-                        <span className="text-xs sm:text-sm font-extrabold uppercase tracking-widest drop-shadow-md">
-                            {isUploadingHeroPhoto
-                                ? 'Subiendo...'
-                                : user.avatar && user.avatar.startsWith('http')
-                                  ? 'Cambiar foto'
-                                  : 'Añadir foto'}
-                        </span>
-                    </button>
-                </div>
+                {/* Hidden Photo Upload Input */}
+                <input
+                    ref={heroPhotoInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    onChange={handleHeroPhotoUpload}
+                    className="hidden"
+                />
 
                 {/* Information Layer Overlaid on Top of the Photo */}
-                <div className="max-w-7xl mx-auto w-full relative z-10">
+                <div className="max-w-7xl mx-auto w-full relative z-10 pt-16 sm:pt-24 md:pt-32">
                     <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-6">
                         {/* User Identity Details */}
                         <div className="flex-1">
-                            {/* Status & Online Badge */}
-                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/20 text-white text-[11px] sm:text-xs font-bold shadow-xl mb-3">
-                                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-                                <Trophy size={13} className="text-amber-400 shrink-0" />
-                                <span>
-                                    {(user.orderCount || 0) >= 50
-                                        ? 'Leyenda del Sushi'
-                                        : (user.orderCount || 0) >= 20
-                                          ? 'Cliente VIP'
-                                          : (user.orderCount || 0) >= 5
-                                            ? 'Cliente Fiel'
-                                            : 'Nuevo Miembro'}
-                                </span>
-                            </div>
-
                             {/* Name */}
                             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-white m-0 tracking-tight drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
                                 {user.name}
@@ -492,34 +508,71 @@ export default function ProfilePage() {
                             </div>
                         </div>
 
-                        {/* Quick Stats Grid & Logout Overlaid */}
-                        <div className="grid grid-cols-2 md:flex items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
-                            <div className="bg-black/50 hover:bg-black/60 backdrop-blur-xl px-5 py-3 rounded-2xl border border-white/15 text-center min-w-[110px] flex-1 md:flex-none shadow-2xl transition-all">
-                                <div className="text-white font-black text-2xl leading-none drop-shadow">
-                                    {user.orderCount || 0}
-                                </div>
-                                <div className="text-zinc-300 text-[10px] uppercase font-bold tracking-widest mt-1 opacity-80">
-                                    Pedidos
-                                </div>
-                            </div>
-
-                            <div className="bg-black/50 hover:bg-black/60 backdrop-blur-xl px-5 py-3 rounded-2xl border border-white/15 text-center min-w-[110px] flex-1 md:flex-none shadow-2xl transition-all">
-                                <div className="text-amber-400 font-black text-2xl leading-none flex items-center justify-center gap-1 drop-shadow">
-                                    {user.coinsBalance || 0}
-                                </div>
-                                <div className="text-zinc-300 text-[10px] uppercase font-bold tracking-widest mt-1 opacity-80">
-                                    Maksim Coins
-                                </div>
-                            </div>
-
-                            <button
-                                onClick={handleLogout}
-                                className="bg-white/15 hover:bg-red-500/80 hover:border-red-400/50 backdrop-blur-xl px-5 py-3 rounded-2xl border border-white/20 text-white font-bold transition-all flex items-center justify-center gap-2 flex-1 md:flex-none shadow-2xl active:scale-95 cursor-pointer"
-                                title="Cerrar sesión"
+                        {/* Quick Stats & Action Buttons (Unboxed Stats + Salir + Cambiar foto a la derecha) */}
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 w-full md:w-auto mt-2 md:mt-0">
+                            {/* Unboxed Animated Stats */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, delay: 0.1 }}
+                                className="flex items-center gap-6 sm:gap-8 py-1"
                             >
-                                <LogOut size={18} strokeWidth={2} />
-                                <span className="md:hidden">Salir</span>
-                            </button>
+                                <div className="flex flex-col">
+                                    <div className="text-white font-black text-3xl sm:text-4xl leading-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
+                                        <AnimatedCounter
+                                            value={user.orderCount || 0}
+                                            decimals={0}
+                                        />
+                                    </div>
+                                    <div className="text-zinc-300 text-[10px] sm:text-xs uppercase font-extrabold tracking-wider mt-1.5 opacity-90 drop-shadow">
+                                        Pedidos
+                                    </div>
+                                </div>
+
+                                <div className="h-8 w-px bg-white/25" />
+
+                                <div className="flex flex-col">
+                                    <div className="text-amber-400 font-black text-3xl sm:text-4xl leading-none drop-shadow-[0_2px_10px_rgba(0,0,0,0.85)]">
+                                        <AnimatedCounter
+                                            value={user.coinsBalance || 0}
+                                            decimals={
+                                                Number.isInteger(Number(user.coinsBalance) || 0)
+                                                    ? 0
+                                                    : 2
+                                            }
+                                        />
+                                    </div>
+                                    <div className="text-zinc-300 text-[10px] sm:text-xs uppercase font-extrabold tracking-wider mt-1.5 opacity-90 drop-shadow">
+                                        Maksim Coins
+                                    </div>
+                                </div>
+                            </motion.div>
+
+                            {/* Actions: Salir and Cambiar foto placed to its right */}
+                            <div className="flex items-center gap-2.5 w-full sm:w-auto">
+                                <button
+                                    type="button"
+                                    onClick={handleLogout}
+                                    className="flex-1 sm:flex-none bg-white/15 hover:bg-red-500/80 hover:border-red-400/50 backdrop-blur-xl px-4 py-2.5 rounded-xl border border-white/20 text-white font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-2xl active:scale-95 cursor-pointer"
+                                    title="Cerrar sesión"
+                                >
+                                    <LogOut size={16} strokeWidth={2} />
+                                    <span>Salir</span>
+                                </button>
+
+                                <button
+                                    type="button"
+                                    disabled={isUploadingHeroPhoto}
+                                    onClick={() => heroPhotoInputRef.current?.click()}
+                                    className="flex-1 sm:flex-none bg-white/15 hover:bg-white/25 backdrop-blur-xl px-4 py-2.5 rounded-xl border border-white/20 text-white font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-2xl active:scale-95 cursor-pointer disabled:opacity-50"
+                                    title="Cambiar foto de perfil"
+                                >
+                                    <Camera size={16} strokeWidth={2} />
+                                    <span>
+                                        {isUploadingHeroPhoto ? 'Subiendo...' : 'Cambiar foto'}
+                                    </span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

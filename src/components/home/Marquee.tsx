@@ -6,7 +6,7 @@ export const Marquee = () => (
                     <span className="text-white/10 text-3xl md:text-5xl font-black italic tracking-tighter">
                         FRESH SEAFOOD DAILY
                     </span>
-                    <span className="text-orange-500/50 text-2xl md:text-4xl">🍣</span>
+                    <span className="text-orange-600/30 text-3xl md:text-5xl font-black">●</span>
                     <span className="text-orange-500/80 text-3xl md:text-5xl font-black italic tracking-tighter">
                         SUSHI ARTESANAL PREMIUM
                     </span>
@@ -14,7 +14,7 @@ export const Marquee = () => (
                     <span className="text-white/10 text-3xl md:text-5xl font-black italic tracking-tighter">
                         CERVEZA ARTESANA 0.33L
                     </span>
-                    <span className="text-orange-500/50 text-2xl md:text-4xl">✨</span>
+                    <span className="text-orange-600/30 text-3xl md:text-5xl font-black">●</span>
                     <span className="text-white/10 text-3xl md:text-5xl font-black italic tracking-tighter">
                         CHEF PARA FIESTAS
                     </span>
