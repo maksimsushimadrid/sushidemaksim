@@ -228,22 +228,22 @@ export default function Header() {
         <>
             <header
                 ref={headerRef}
-                className={`fixed top-0 inset-x-0 z-header transform-gpu transition-[background-color,border-color] duration-300
+                className={`fixed top-0 inset-x-0 z-header transform-gpu transition-[background-color,border-color,backdrop-filter] duration-300
                 ${
                     isTable
-                        ? 'bg-[#0A0A0A] border-b border-white/5'
+                        ? 'bg-[#0A0A0A]/80 backdrop-blur-md border-b border-white/10'
                         : isScrolled
-                          ? `bg-[#FBF7F0] ${
+                          ? `bg-[#FBF7F0]/75 backdrop-blur-md backdrop-saturate-150 ${
                                 isMenu
-                                    ? 'md:shadow-sm md:border-b md:border-gray-200 border-b-0 shadow-none'
-                                    : 'shadow-sm border-b border-gray-200'
+                                    ? 'md:shadow-[0_4px_24px_-6px_rgba(0,0,0,0.06)] md:border-b md:border-gray-200/60 border-b-0 shadow-none'
+                                    : 'shadow-[0_4px_24px_-6px_rgba(0,0,0,0.06)] border-b border-gray-200/60'
                             }`
                           : isTransparentHeaderPage
                             ? 'bg-transparent border-b border-transparent'
-                            : `bg-[#FBF7F0] ${
+                            : `bg-[#FBF7F0]/75 backdrop-blur-md backdrop-saturate-150 ${
                                   isMenu
-                                      ? 'md:border-b md:border-gray-100 border-b-0 shadow-none'
-                                      : 'border-b border-gray-100'
+                                      ? 'md:border-b md:border-gray-200/50 border-b-0 shadow-none'
+                                      : 'border-b border-gray-200/50'
                               }`
                 }
             `}
@@ -251,11 +251,11 @@ export default function Header() {
                 {/* Upward backdrop bleed to cover Telegram / iOS in-app browser top inset above fixed top-0 */}
                 <div
                     aria-hidden="true"
-                    className={`pointer-events-none absolute bottom-full inset-x-0 h-[80px] transition-colors duration-300 ${
+                    className={`pointer-events-none absolute bottom-full inset-x-0 h-[80px] transition-[background-color,backdrop-filter] duration-300 ${
                         isTable
-                            ? 'bg-[#0A0A0A]'
+                            ? 'bg-[#0A0A0A]/80 backdrop-blur-md'
                             : isScrolled || !isTransparentHeaderPage
-                              ? 'bg-[#FBF7F0]'
+                              ? 'bg-[#FBF7F0]/75 backdrop-blur-md backdrop-saturate-150'
                               : 'bg-transparent'
                     }`}
                 />
