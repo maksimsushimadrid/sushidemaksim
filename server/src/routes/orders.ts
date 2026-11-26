@@ -12,6 +12,11 @@ import { idempotency } from '../middleware/idempotency.js';
 import { isStoreOpen, isTimeWithinBusinessHours } from '../utils/storeStatus.js';
 import { formatOrder, escapeHtml } from '../utils/helpers.js';
 import { findActiveSecretPromo } from '../utils/secretPromos.js';
+import {
+    VECINOS_PROMO_CODE,
+    VECINOS_DISCOUNT_PERCENTAGE,
+    validateVecinosPromo,
+} from '../utils/neighborPromo.js';
 
 const router = Router();
 
@@ -190,6 +195,14 @@ router.post(
             if (!config.isProd && promoCode === 'TEST10') {
                 finalTotal = finalTotal * 0.9; // 10% discount
                 notesToSave += notesToSave ? ` | [PROMO: TEST10 (-10%)]` : `[PROMO: TEST10 (-10%)]`;
+            } else if (promoCode === VECINOS_PROMO_CODE) {
+                const check = await validateVecinosPromo(req.userId, deliveryType);
+                if (!check.eligible) {
+                    return res.status(400).json({ error: check.error });
+                }
+                finalTotal = finalTotal * (1 - VECINOS_DISCOUNT_PERCENTAGE / 100);
+                const promoTag = `[PROMO: ${VECINOS_PROMO_CODE} (-${VECINOS_DISCOUNT_PERCENTAGE}%)]`;
+                notesToSave += notesToSave ? ` | ${promoTag}` : promoTag;
             } else if (secretPromo) {
                 finalTotal = finalTotal * (1 - secretPromo.discountPercentage / 100);
                 const promoTag = `[PROMO: ${secretPromo.code} (-${secretPromo.discountPercentage}%)]`;

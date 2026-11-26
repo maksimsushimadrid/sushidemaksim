@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Clock, Tag, Plus, Check } from 'lucide-react';
+import { ArrowRight, Clock, Tag, Plus, Check, Copy, MapPin } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { api } from '../utils/api';
 import { useCart } from '../hooks/useCart';
@@ -38,6 +38,16 @@ export default function PromoPage() {
     const { addItem } = useCart();
     const { user } = useAuth();
     const [addedItems, setAddedItems] = useState<Set<string>>(new Set());
+    const [copiedVecinos, setCopiedVecinos] = useState(false);
+
+    const handleCopyVecinos = () => {
+        navigator.clipboard.writeText('VECINOS');
+        setCopiedVecinos(true);
+        if (typeof navigator !== 'undefined' && navigator.vibrate) {
+            navigator.vibrate(10);
+        }
+        setTimeout(() => setCopiedVecinos(false), 2000);
+    };
 
     // Use React Query for consolidated fetching and caching
     const { data: menuData, isLoading: menuLoading } = useQuery({
@@ -327,6 +337,90 @@ export default function PromoPage() {
                             </span>
                             <span className="text-[10px] text-white/65 font-medium mt-0.5">
                                 En su primer pedido
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Vecinos Pickup Static Banner */}
+                <div className="bg-gradient-to-br from-emerald-700 to-teal-900 rounded-2xl sm:rounded-3xl p-5 sm:p-6 md:p-8 mb-6 md:mb-10 relative overflow-hidden shadow-xl flex flex-col lg:flex-row items-center gap-6 lg:gap-10 group isolate">
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full -ml-32 -mb-32 blur-3xl pointer-events-none"></div>
+
+                    <div className="flex-1 relative z-10 w-full text-center lg:text-left">
+                        <div className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-md px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full text-[9px] sm:text-[10px] md:text-xs font-black mb-3 sm:mb-4 border border-white/25 uppercase tracking-[0.18em] text-white shadow-sm">
+                            <MapPin size={12} strokeWidth={2.5} />
+                            <span>EXCLUSIVO VECINOS • RECOGIDA</span>
+                        </div>
+                        <h2 className="text-2xl sm:text-4xl md:text-5xl font-black mb-3 tracking-tighter leading-tight sm:leading-[0.95] text-white drop-shadow-xl">
+                            Descuento para Vecinos
+                        </h2>
+                        <p className="text-xs sm:text-sm md:text-base font-medium mb-4 text-white/90 leading-relaxed max-w-xl mx-auto lg:mx-0 drop-shadow-sm">
+                            ¿Vives cerca de nuestro local en{' '}
+                            <strong className="text-white">Calle Barrilero, 20</strong>? Usa el
+                            código <strong className="text-white font-mono">VECINOS</strong> y
+                            consigue un <strong className="text-white">5% de descuento</strong> en
+                            todo tu pedido al recogerlo en tienda.
+                        </p>
+                        <div className="border-t border-white/20 pt-3.5 sm:pt-4 mb-5 sm:mb-7 text-left max-w-xl mx-auto lg:mx-0">
+                            <div className="text-[10px] font-black uppercase tracking-widest text-white/90 mb-2">
+                                Condiciones:
+                            </div>
+                            <ul className="space-y-1.5 text-[11px] sm:text-xs text-white/85 font-medium m-0 p-0 list-none">
+                                <li>
+                                    • <strong className="text-white">Solo recogida:</strong>{' '}
+                                    Aplicable únicamente seleccionando{' '}
+                                    <strong className="text-white">Recogida en local</strong> en la
+                                    cesta.
+                                </li>
+                                <li>
+                                    • <strong className="text-white">Vecinos registrados:</strong>{' '}
+                                    Debes tener cuenta iniciada y tu dirección guardada en el perfil
+                                    cerca del local (hasta 1,5 km / CP 28007).
+                                </li>
+                            </ul>
+                        </div>
+                        <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
+                            <button
+                                type="button"
+                                onClick={handleCopyVecinos}
+                                className="inline-flex items-center justify-center gap-2.5 bg-white text-emerald-800 px-6 py-3 md:px-7 md:py-3.5 rounded-xl sm:rounded-2xl font-black text-xs sm:text-sm uppercase transition-all active:scale-95 shadow-lg hover:bg-gray-50 w-full sm:w-auto tracking-wider cursor-pointer border-none"
+                            >
+                                {copiedVecinos ? (
+                                    <>
+                                        <Check size={17} strokeWidth={2.8} />
+                                        <span>CÓDIGO COPIADO</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Copy size={16} strokeWidth={2.5} />
+                                        <span>COPIAR: VECINOS</span>
+                                    </>
+                                )}
+                            </button>
+                            <Link
+                                to={user ? '/menu' : '/profile'}
+                                className="inline-flex items-center justify-center gap-2 bg-white/15 hover:bg-white/25 backdrop-blur-md text-white px-6 py-3 md:px-7 md:py-3.5 rounded-xl sm:rounded-2xl font-black text-xs sm:text-sm uppercase transition-all active:scale-95 border border-white/25 w-full sm:w-auto tracking-wider no-underline"
+                            >
+                                {user ? 'PEDIR PARA RECOGER' : 'REGISTRARME'}{' '}
+                                <ArrowRight size={17} strokeWidth={2.5} />
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div className="w-full lg:w-auto shrink-0 relative z-10 border-t lg:border-t-0 lg:border-l border-white/20 pt-5 lg:pt-0 lg:pl-10 flex flex-row lg:flex-col items-center justify-around lg:justify-center gap-4 sm:gap-6 text-center">
+                        <div className="flex flex-col items-center">
+                            <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-[0.2em] text-emerald-200 mb-1">
+                                Todo tu pedido
+                            </span>
+                            <div className="text-4xl sm:text-6xl font-black text-white tracking-tight leading-none drop-shadow-md">
+                                -5%
+                            </div>
+                            <span className="mt-2 inline-block font-mono text-xs sm:text-sm font-black tracking-[0.2em] text-white bg-white/15 border border-white/25 px-3 py-1 rounded-lg">
+                                VECINOS
+                            </span>
+                            <span className="text-[10px] text-white/70 font-medium mt-1.5">
+                                Recogida en Calle Barrilero, 20
                             </span>
                         </div>
                     </div>

@@ -7,6 +7,7 @@ export const validatePromoSchema = z.object({
     body: z.object({
         code: z.string().min(1, 'El código es obligatorio').trim().toUpperCase(),
         subtotal: z.number().min(0).optional(),
+        deliveryType: z.enum(['delivery', 'pickup', 'reservation', 'table']).optional(),
     }),
 });
 

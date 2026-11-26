@@ -459,6 +459,7 @@ export default function CartPage() {
             const data = await api.post('/promo/validate', {
                 code: code.trim().toUpperCase(),
                 subtotal: cartSubtotal,
+                deliveryType,
             });
             setPromoDiscount(data.percentage);
             setPromoCode(code.trim().toUpperCase());
@@ -536,6 +537,14 @@ export default function CartPage() {
             setPromoError('El código de bienvenida requiere un pedido mínimo de 20,00€');
         }
     }, [cartSubtotal, promoCode, promoDiscount]);
+
+    useEffect(() => {
+        if (promoDiscount && promoCode === 'VECINOS' && deliveryType !== 'pickup') {
+            setPromoCode('');
+            setPromoDiscount(null);
+            setPromoError('El código VECINOS solo es válido al elegir recogida en local');
+        }
+    }, [deliveryType, promoCode, promoDiscount]);
 
     // Auto-apply pending promo code from magic link (welcome email)
     useEffect(() => {

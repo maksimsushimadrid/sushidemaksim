@@ -244,3 +244,60 @@ describe('POST /api/promo/validate — personal & one-time codes', () => {
         expect(res.text).not.toContain('secret detail');
     });
 });
+
+describe('POST /api/promo/validate — VECINOS neighborhood pickup promo', () => {
+    it('rejects unauthenticated guests', async () => {
+        const res = await validate({ code: 'VECINOS', deliveryType: 'pickup' });
+        expect(res.status).toBe(400);
+        expect(res.json.error).toMatch(/inicia sesión/i);
+    });
+
+    it('rejects delivery orders (must be pickup)', async () => {
+        const res = await validate(
+            { code: 'VECINOS', deliveryType: 'delivery' },
+            tokenFor(USER_ID)
+        );
+        expect(res.status).toBe(400);
+        expect(res.json.error).toMatch(/recogida/i);
+    });
+
+    it('rejects users without a saved address', async () => {
+        mockTables({ user_addresses: { data: [] } });
+        const res = await validate({ code: 'VECINOS', deliveryType: 'pickup' }, tokenFor(USER_ID));
+        expect(res.status).toBe(400);
+        expect(res.json.error).toMatch(/dirección/i);
+    });
+
+    it('rejects users whose saved address is far from the restaurant', async () => {
+        mockTables({
+            user_addresses: {
+                data: [{ id: 'a1', lat: 40.465, lon: -3.688, postal_code: '28036' }],
+            },
+        });
+        const res = await validate({ code: 'VECINOS', deliveryType: 'pickup' }, tokenFor(USER_ID));
+        expect(res.status).toBe(400);
+        expect(res.json.error).toMatch(/vecinos/i);
+    });
+
+    it('applies 5% discount for registered neighbors within 1.5 km on pickup', async () => {
+        mockTables({
+            user_addresses: {
+                data: [{ id: 'a1', lat: 40.3995, lon: -3.674, postal_code: '28007' }],
+            },
+        });
+        const res = await validate({ code: 'vecinos', deliveryType: 'pickup' }, tokenFor(USER_ID));
+        expect(res.status).toBe(200);
+        expect(res.json).toEqual({ percentage: 5 });
+    });
+
+    it('applies 5% discount when postal_code is 28007 even without coordinates', async () => {
+        mockTables({
+            user_addresses: {
+                data: [{ id: 'a1', lat: null, lon: null, postal_code: '28007' }],
+            },
+        });
+        const res = await validate({ code: 'VECINOS', deliveryType: 'pickup' }, tokenFor(USER_ID));
+        expect(res.status).toBe(200);
+        expect(res.json).toEqual({ percentage: 5 });
+    });
+});

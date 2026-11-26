@@ -7,6 +7,11 @@ import { validateResource } from '../middleware/validateResource.js';
 import { validatePromoSchema } from '../schemas/promo.schema.js';
 import { promoLimiter } from '../middleware/rateLimiters.js';
 import { findActiveSecretPromo } from '../utils/secretPromos.js';
+import {
+    VECINOS_PROMO_CODE,
+    VECINOS_DISCOUNT_PERCENTAGE,
+    validateVecinosPromo,
+} from '../utils/neighborPromo.js';
 
 const router = Router();
 router.use(optionalAuthMiddleware);
@@ -16,7 +21,7 @@ router.post(
     promoLimiter,
     validateResource(validatePromoSchema),
     asyncHandler(async (req: AuthRequest, res: Response) => {
-        const { code, subtotal } = req.body;
+        const { code, subtotal, deliveryType } = req.body;
         const normalizedCode = String(code || '')
             .trim()
             .toUpperCase();
@@ -24,6 +29,15 @@ router.post(
         // ─── Hardcoded Test Promos (Dev/Test only) ───
         if (!config.isProd && normalizedCode === 'TEST10') {
             return res.json({ percentage: 10 });
+        }
+
+        // ─── Neighborhood Pickup Promo (VECINOS: -5% for registered nearby users on pickup) ───
+        if (normalizedCode === VECINOS_PROMO_CODE) {
+            const check = await validateVecinosPromo(req.userId, deliveryType);
+            if (!check.eligible) {
+                return res.status(400).json({ error: check.error });
+            }
+            return res.json({ percentage: VECINOS_DISCOUNT_PERCENTAGE });
         }
 
         // ─── Permanent Secret Promo Codes ───
