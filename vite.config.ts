@@ -60,10 +60,34 @@ export default defineConfig({
             },
             workbox: {
                 importScripts: ['/notifications-sw.js'],
-                maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // 6 MB to fit 5.1MB sound file
-                globPatterns: ['**/*.{js,css,html,ico,svg,webp,mp3}'],
-                globIgnores: ['**/sushidemaksim_black_style_photos/**/*'],
+                maximumFileSizeToCacheInBytes: 2 * 1024 * 1024,
+                globPatterns: ['**/*.{js,css,html,ico,svg}'],
+                globIgnores: [
+                    '**/sushidemaksim_black_style_photos/**/*',
+                    '**/images/**/*',
+                    '**/assets/Admin*.js',
+                    '**/assets/vendor-charts-*.js',
+                    '**/assets/vendor-map-*.js',
+                    '**/assets/HallMenuPage-*.js',
+                    '**/assets/WaiterOrderPage-*.js',
+                    '**/assets/CartPage-*.js',
+                    '**/assets/ProfilePage-*.js',
+                ],
                 runtimeCaching: [
+                    {
+                        urlPattern: /\/(sounds\/.*\.mp3|.*\.(webp|png|jpg|jpeg))$/i,
+                        handler: 'CacheFirst',
+                        options: {
+                            cacheName: 'local-media-cache',
+                            expiration: {
+                                maxEntries: 150,
+                                maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                            },
+                            cacheableResponse: {
+                                statuses: [0, 200],
+                            },
+                        },
+                    },
                     {
                         urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/v1\/object\/public\/.*/i,
                         handler: 'CacheFirst',

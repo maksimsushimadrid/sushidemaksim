@@ -5,7 +5,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { ShieldCheck, Menu, Megaphone, Phone, Star, LogOut, X, User } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '../../context/ToastContext';
-import { GoogleAuthButton } from '../LoginModal';
+import { GoogleAuthButton } from '../auth/GoogleAuthButton';
 import SafeImage from '../common/SafeImage';
 import { getSharpAvatar, getDefaultAvatar } from '../../utils/avatar';
 
