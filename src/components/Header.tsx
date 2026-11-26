@@ -248,6 +248,17 @@ export default function Header() {
                 }
             `}
             >
+                {/* Upward backdrop bleed to cover Telegram / iOS in-app browser top inset above fixed top-0 */}
+                <div
+                    aria-hidden="true"
+                    className={`pointer-events-none absolute bottom-full inset-x-0 h-[120px] transition-colors duration-300 ${
+                        isTable
+                            ? 'bg-[#0A0A0A]'
+                            : isScrolled || !isTransparentHeaderPage
+                              ? 'bg-[#FBF7F0]'
+                              : 'bg-transparent'
+                    }`}
+                />
                 <StoreStatusBanner />
                 <div className="max-w-[1440px] mx-auto px-3 md:px-6">
                     <div
