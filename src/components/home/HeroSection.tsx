@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSettings } from '../../hooks/queries/useSettings';
 
 const REVIEWS = [
@@ -130,11 +130,11 @@ export function HeroSection() {
     }, [isReviewPaused]);
 
     const [shouldPlayVideo, setShouldPlayVideo] = useState(false);
+    const videoRef = useRef<HTMLVideoElement | null>(null);
 
     useEffect(() => {
         let timer: NodeJS.Timeout;
         const checkPerformancePrefs = () => {
-            const isMobile = window.innerWidth < 768;
             const prefersReducedMotion = window.matchMedia(
                 '(prefers-reduced-motion: reduce)'
             ).matches;
@@ -147,12 +147,11 @@ export function HeroSection() {
                 isDataSaver = conn.saveData;
             }
 
-            if (!isMobile && !prefersReducedMotion && !isSlowConnection && !isDataSaver) {
-                // Defer loading of heavy background video by 2 seconds to optimize LCP.
-                // The lightweight preloaded poster image will render first and serve as the LCP element.
+            if (!prefersReducedMotion && !isSlowConnection && !isDataSaver) {
+                // Defer loading of background video slightly so the preloaded poster renders first for LCP.
                 timer = setTimeout(() => {
                     setShouldPlayVideo(true);
-                }, 2000);
+                }, 600);
             }
         };
 
@@ -161,6 +160,17 @@ export function HeroSection() {
             if (timer) clearTimeout(timer);
         };
     }, []);
+
+    useEffect(() => {
+        if (!shouldPlayVideo || !videoRef.current) return;
+        const video = videoRef.current;
+        video.muted = true;
+        video.defaultMuted = true;
+        video.playsInline = true;
+        video.play().catch(() => {
+            // Silently ignore autoplay rejections (e.g. iOS Low Power Mode); poster remains visible
+        });
+    }, [shouldPlayVideo]);
 
     return (
         <section className="relative h-[100svh] md:h-screen w-full px-4 md:px-6 flex flex-col items-center justify-center text-center overflow-hidden bg-black">
@@ -193,20 +203,21 @@ export function HeroSection() {
                 {/* Video loads on top and fades in smoothly once playing to avoid flash */}
                 {shouldPlayVideo && (
                     <video
+                        ref={videoRef}
                         autoPlay
                         muted
                         loop
                         playsInline
                         preload="auto"
-                        onPlay={e => {
+                        onPlaying={e => {
                             const video = e.currentTarget;
                             video.style.opacity = '1';
                         }}
                         style={{ opacity: 0, transition: 'opacity 1s ease-in-out' }}
                         className="absolute inset-0 w-full h-full object-cover"
                     >
-                        <source src="/hero-video.webm" type="video/webm" />
                         <source src="/hero-video.mp4" type="video/mp4" />
+                        <source src="/hero-video.webm" type="video/webm" />
                     </video>
                 )}
             </div>
