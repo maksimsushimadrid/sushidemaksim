@@ -9,7 +9,7 @@ export default defineConfig({
     forbidOnly: !!process.env.CI,
     retries: process.env.CI ? 1 : 0,
     workers: process.env.CI ? 2 : undefined,
-    reporter: process.env.CI ? 'github' : 'html',
+    reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'html',
     timeout: 30_000,
     use: {
         baseURL: 'http://localhost:5173',
